@@ -1,4 +1,4 @@
 Knobs-QML
 =========
 
-Qt's QML based knobs
+Qt and QML based Knobs
