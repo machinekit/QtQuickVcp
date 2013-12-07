@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import NeedleStyle 1.0
 
 Rectangle {
     width: 900
@@ -51,7 +52,7 @@ Rectangle {
         chunkStyle: 2
         dialEndValue: 80
         dialSize: 200
-        dialPointStyle: 0
+        dialPointStyle: NeedleStyle.Point
     }
 
     Text {
@@ -95,7 +96,7 @@ Rectangle {
         chunkStyle: 2
         dialEndValue: 65
         dialSize: 200
-        dialPointStyle: 0
+        dialPointStyle: NeedleStyle.Point
         meter: true
         chunkColor: "#FEC56B"
     }
@@ -119,7 +120,7 @@ Rectangle {
         chunkStyle: 2
         dialEndValue: 35
         dialSize: 200
-        dialPointStyle: 2
+        dialPointStyle: NeedleStyle.Groove
     }
 
     Text {
@@ -140,7 +141,7 @@ Rectangle {
         dialEndValue: 35
         chunkColor: "#C5518F"
         dialSize: 200
-        dialPointStyle: 1
+        dialPointStyle: NeedleStyle.Round
     }
 
     Text {
