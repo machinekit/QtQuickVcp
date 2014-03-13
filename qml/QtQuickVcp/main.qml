@@ -17,9 +17,65 @@ ApplicationWindow {
         }
     }*/
 
+    RadioButton {
+        id: runningCheck
+
+        anchors.verticalCenter: parent.verticalCenter
+
+        text: qsTr("Discovery running")
+        checked: serviceDiscovery.running
+    }
+    RadioButton {
+        id: halrcompServiceCheck
+
+        anchors.bottom: runningCheck.top
+
+        text: qsTr("ST_STP_HALRCOMP command discovered")
+        checked: halrcompService.found
+    }
+    RadioButton {
+        id: rcommandServiceCheck
+
+        anchors.bottom: halrcompServiceCheck.top
+
+        text: qsTr("ST_HAL_RCOMMAND command discovered")
+        checked: rcommandService.found
+    }
     Button {
-        text: qsTr("Hello World")
-        anchors.centerIn: parent
+        id: discoverButton
+
+        anchors.bottom: rcommandServiceCheck.top
+
+        text: qsTr("Discover")
+        onClicked: serviceDiscovery.startDiscovery()
+    }
+
+    ServiceDiscovery {
+        id: serviceDiscovery
+
+        port: 10042
+        retryTime: 500
+        maxWait: 2000
+        trace: true
+        instance: 0
+
+        services: [
+            Service {
+                id: halrcompService
+                type: Service.ST_STP_HALRCOMP
+                minVersion: 0
+            },
+            Service {
+                id: rcommandService
+                type: Service.ST_HAL_RCOMMAND
+                minVersion: 0
+            },
+            Service {
+                id: websocketService
+                type: Service.ST_WEBSOCKET
+                minVersion: 0
+            }
+        ]
     }
 
     Component {

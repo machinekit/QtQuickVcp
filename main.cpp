@@ -2,12 +2,15 @@
 #include <QtQml>
 #include "hal/qpin.h"
 #include "hal/qcomponent.h"
+#include "hal/qservice.h"
+#include "hal/qservicediscovery.h"
 
 int main(int argc, char *argv[])
 {
     Application app(argc, argv);
 
-    qmlRegisterType<QComponent>("Hal", 1, 0, "ServiceDiscovery");
+    qmlRegisterType<QService>("Hal", 1, 0, "Service");
+    qmlRegisterType<QServiceDiscovery>("Hal", 1, 0, "ServiceDiscovery");
     qmlRegisterType<QComponent>("Hal", 1, 0, "Component");
     qmlRegisterType<QPin>("Hal", 1, 0, "Pin");
 

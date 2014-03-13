@@ -18,13 +18,15 @@ QML_IMPORT_PATH =
 SOURCES += main.cpp \
     hal/qpin.cpp \
     hal/qcomponent.cpp \
-    hal/qservicediscovery.cpp
+    hal/qservicediscovery.cpp \
+    hal/qservice.cpp
 #    $$LINUXCNCDIR/src/middleware/service-discovery/sdiscover.cc
 
 HEADERS += \
     hal/qpin.h \
     hal/qcomponent.h \
-    hal/qservicediscovery.h
+    hal/qservicediscovery.h \
+    hal/qservice.h
 #    $$LINUXCNCDIR/src/middleware/service-discovery/sdiscover.h
 
 INCLUDEPATH += \
