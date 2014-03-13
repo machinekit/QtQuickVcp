@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<QService>("Hal", 1, 0, "Service");
     qmlRegisterType<QServiceDiscovery>("Hal", 1, 0, "ServiceDiscovery");
-    qmlRegisterType<QComponent>("Hal", 1, 0, "Component");
+    qmlRegisterType<QComponent>("Hal", 1, 0, "RemoteComponent");
     qmlRegisterType<QPin>("Hal", 1, 0, "Pin");
 
     QtQuick2ControlsApplicationViewer viewer;

@@ -4,7 +4,7 @@ NZMQTDIR = /home/alexander/projects/nzmqt
 #NZMQT_ANDROID_DIR = $$NZMQTDIR/bin/android/
 ZEROMQ_ANDROID_DIR = /opt/zeromq-android
 PROTOBUF_ANDROID_DIR = /home/alexander/projects/tmp/protobuf-2.5.0
-#NZMQT_X86_DIR = $$NZMQTDIR/bin/
+NZMQT_X86_DIR = $$NZMQTDIR/bin/
 
 # Add more folders to ship with the application, here
 folder_01.source = qml/QtQuickVcp
@@ -34,7 +34,7 @@ INCLUDEPATH += \
     $$NZMQTDIR/externals/include \
     $$LINUXCNCDIR/src/middleware/service-discovery
 
-LIBS += -lzmq -lprotobuf #-lnzmqt
+LIBS += -lzmq -lprotobuf -lnzmqt
 
 android: {
 LIBS += -L$$ZEROMQ_ANDROID_DIR/lib/ \
@@ -44,7 +44,7 @@ INCLUDEPATH += $$ZEROMQ_ANDROID_DIR/include/ \
             $$PROTOBUF_ANDROID_DIR/src/
 }
 else: {
-#LIBS += -L$$NZMQT_X86_DIR
+LIBS += -L$$NZMQT_X86_DIR
 }
 
 # Installation path

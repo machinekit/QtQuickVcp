@@ -25,6 +25,7 @@ class QPin : public QQuickItem
     Q_PROPERTY(ValueType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(HalPinDirection direction READ direction WRITE setDirection NOTIFY directionChanged)
     Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
+    Q_PROPERTY(int handle READ handle WRITE setHandle NOTIFY handleChanged)
     Q_ENUMS(ValueType)
     Q_ENUMS(HalPinDirection)
 
@@ -65,6 +66,11 @@ public:
         return m_value;
     }
 
+    int handle() const
+    {
+        return m_handle;
+    }
+
 signals:
 
     void nameChanged(QString arg);
@@ -74,6 +80,8 @@ signals:
     void directionChanged(HalPinDirection arg);
 
     void valueChanged(QVariant arg);
+
+    void handleChanged(int arg);
 
 public slots:
 
@@ -106,12 +114,21 @@ void setValue(QVariant arg)
     }
 }
 
+void setHandle(int arg)
+{
+    if (m_handle != arg) {
+        m_handle = arg;
+        emit handleChanged(arg);
+    }
+}
+
 private:
     QString m_name;
     ValueType m_type;
     HalPinDirection m_direction;
     QVariant m_value;
 
+    int m_handle;
 };
 
 

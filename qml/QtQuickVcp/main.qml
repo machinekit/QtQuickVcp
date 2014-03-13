@@ -1,6 +1,6 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.0
-import Hal 1.0
+import Hal 1.0 as HAL
 
 ApplicationWindow {
     title: qsTr("Hello World")
@@ -47,10 +47,21 @@ ApplicationWindow {
         anchors.bottom: rcommandServiceCheck.top
 
         text: qsTr("Discover")
-        onClicked: serviceDiscovery.startDiscovery()
+        onClicked: {
+            if ((serviceDiscovery.running === false)
+                    && (halrcompService.found)
+                    && (rcommandService.found))
+            {
+                testComponent.ready()
+            }
+            else
+            {
+                serviceDiscovery.startDiscovery()
+            }
+        }
     }
 
-    ServiceDiscovery {
+    HAL.ServiceDiscovery {
         id: serviceDiscovery
 
         port: 10042
@@ -60,25 +71,67 @@ ApplicationWindow {
         instance: 0
 
         services: [
-            Service {
+            HAL.Service {
                 id: halrcompService
-                type: Service.ST_STP_HALRCOMP
+                type: HAL.Service.ST_STP_HALRCOMP
                 minVersion: 0
             },
-            Service {
+            HAL.Service {
                 id: rcommandService
-                type: Service.ST_HAL_RCOMMAND
+                type: HAL.Service.ST_HAL_RCOMMAND
                 minVersion: 0
             },
-            Service {
+            HAL.Service {
                 id: websocketService
-                type: Service.ST_WEBSOCKET
+                type: HAL.Service.ST_WEBSOCKET
                 minVersion: 0
             }
         ]
     }
 
-    Component {
+    HAL.RemoteComponent {
+        id: testComponent
 
+        anchors.fill: parent
+
+        name: "motorctrl"
+        cmdUri: rcommandService.uri
+        updateUri: halrcompService.uri
+        heartbeatPeriod: 3000
+
+        Button {
+            id: myButton
+
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            text: qsTr("Button")
+
+            HAL.Pin {
+                id: myPin
+
+                name: "scope_trigger"
+                type: HAL.Pin.HAL_BIT
+                direction: HAL.Pin.HAL_OUT
+                value: myButton.checked
+            }
+        }
+
+        RadioButton {
+            id: myRadio
+
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            text: qsTr("RadioButton")
+
+            HAL.Pin {
+                id: myRadioPin
+
+                name: "led1"
+                type: HAL.Pin.HAL_BIT
+                direction: HAL.Pin.HAL_IN
+            }
+
+            checked: myRadioPin.value
+        }
     }
 }

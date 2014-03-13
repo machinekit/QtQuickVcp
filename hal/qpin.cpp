@@ -8,4 +8,5 @@ QPin::QPin(QQuickItem *parent) :
     m_type = HAL_BIT;
     m_direction = HAL_OUT;
     m_value = false;
+    m_handle = 0;
 }
