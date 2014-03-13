@@ -1,5 +1,6 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.0
+import Hal 1.0
 
 ApplicationWindow {
     title: qsTr("Hello World")
@@ -19,5 +20,9 @@ ApplicationWindow {
     Button {
         text: qsTr("Hello World")
         anchors.centerIn: parent
+    }
+
+    Component {
+
     }
 }

@@ -7,6 +7,7 @@ int main(int argc, char *argv[])
 {
     Application app(argc, argv);
 
+    qmlRegisterType<QComponent>("Hal", 1, 0, "ServiceDiscovery");
     qmlRegisterType<QComponent>("Hal", 1, 0, "Component");
     qmlRegisterType<QPin>("Hal", 1, 0, "Pin");
 
