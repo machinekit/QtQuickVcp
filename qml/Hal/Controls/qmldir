@@ -1,0 +1,5 @@
+Button 1.0 Button.qml
+RadioButton 1.0 RadioButton.qml
+Slider 1.0 Slider.qml
+VirtualJoystick 1.0 VirtualJoystick.qml
+Led 1.0 Led.qml

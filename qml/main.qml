@@ -1,7 +1,6 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1
 import Hal 1.0 as HAL
-import "components"
 
 ApplicationWindow {
     title: qsTr("Hello World")

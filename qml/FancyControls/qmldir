@@ -1,0 +1,4 @@
+Line 1.0 Line.qml
+TemperatureSelector 1.0 TemperatureSelector.qml
+TouchButton 1.0 TouchButton.qml
+VirtualJoystick 1.0 VirtualJoystick.qml

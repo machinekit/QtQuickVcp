@@ -7,12 +7,12 @@ PROTOBUF_ANDROID_DIR = /home/alexander/projects/tmp/protobuf-2.5.0
 NZMQT_X86_DIR = $$NZMQTDIR/bin/
 
 # Add more folders to ship with the application, here
-folder_01.source = qml/QtQuickVcp
-folder_01.target = qml
+folder_01.source = qml
+folder_01.target =
 DEPLOYMENTFOLDERS = folder_01
 
 # Additional import path used to resolve QML modules in Creator's code model
-QML_IMPORT_PATH =
+QML_IMPORT_PATH = qml/
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
@@ -74,5 +74,5 @@ include(qtquick2controlsapplicationviewer/qtquick2controlsapplicationviewer.pri)
 qtcAddDeployment()
 
 OTHER_FILES += \
-    qml/QtQuickVcp/StartPage.qml \
-    qml/QtQuickVcp/ViewPage.qml
+    qml/StartPage.qml \
+    qml/ViewPage.qml
