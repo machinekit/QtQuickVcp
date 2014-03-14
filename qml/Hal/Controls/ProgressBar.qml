@@ -15,5 +15,14 @@ ProgressBar {
         direction: HAL.Pin.HAL_IN
     }
 
+    HAL.Pin {
+        id: pinScale
+
+        name: main.name + ".scale"
+        type: HAL.Pin.HAL_FLOAT
+        direction: HAL.Pin.HAL_IN
+    }
+
     Binding { target: main; property: "value"; value: pin.value}
+    Binding { target: main; property: "maximumValue"; value: pinScale.value}
 }

@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<QPin>("Hal", 1, 0, "Pin");
 
     QtQuick2ControlsApplicationViewer viewer;
-    viewer.addImportPath(QStringLiteral("qml"));//QDir::currentPath() + "/qml");
+    viewer.addImportPath(QStringLiteral("qml"));
     viewer.addImportPath(QStringLiteral("assets:/qml"));
     //qDebug() << QDir::currentPath() + "/qml";
     viewer.setMainQmlFile(QStringLiteral("qml/main.qml"));

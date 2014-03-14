@@ -4,8 +4,8 @@ import Hal 1.0 as HAL
 
 ApplicationWindow {
     title: qsTr("Hello World")
-    width: 640
-    height: 480
+    width: 500
+    height: 800
 
     Item {
         id: pageStack
@@ -47,7 +47,7 @@ ApplicationWindow {
     HAL.RemoteComponent {
         id: testComponent
 
-        name: "test"
+        name: "motorctrl"
         cmdUri: rcommandService.uri
         updateUri: halrcompService.uri
         heartbeatPeriod: 3000
@@ -61,7 +61,7 @@ ApplicationWindow {
         port: 10042
         retryTime: 500
         maxWait: 2000
-        trace: true
+        trace: false
         instance: 0
         running: true
         repeat: false

@@ -3,9 +3,11 @@ import QtQuick.Controls 1.1
 import Hal 1.0 as HAL
 
 Button {
+    property string name: "toggleButton"
+
     id: main
 
-    property string name: "button"
+    checkable: true
 
     HAL.Pin {
         id: pin
@@ -15,6 +17,6 @@ Button {
         direction: HAL.Pin.HAL_OUT
     }
 
-    Binding { target: main; property: "pressed"; value: pin.value}
-    Binding { target: pin; property: "value"; value: main.pressed}
+    Binding { target: main; property: "checked"; value: pin.value}
+    Binding { target: pin; property: "value"; value: main.checked}
 }

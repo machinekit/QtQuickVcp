@@ -3,8 +3,7 @@ import Hal 1.0 as HAL
 import FancyControls 1.0
 
 VirtualJoystick {
-    property string nameX: "xVelocity"
-    property string nameY: "yVelocity"
+    property string name: "joystick"
 
     id: main
 
@@ -14,7 +13,7 @@ VirtualJoystick {
     HAL.Pin {
         id: xVelocityPin
 
-        name: main.nameX
+        name: main.name + ".x"
         type: HAL.Pin.HAL_FLOAT
         direction: HAL.Pin.HAL_OUT
         value: main.xVelocity
@@ -23,7 +22,7 @@ VirtualJoystick {
     HAL.Pin {
         id: yVelocityPin
 
-        name: main.nameY
+        name: main.name + ".y"
         type: HAL.Pin.HAL_FLOAT
         direction: HAL.Pin.HAL_OUT
         value: main.yVelocity

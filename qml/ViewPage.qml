@@ -1,63 +1,249 @@
 import QtQuick 2.0
-import Hal.Controls 1.0
+import Hal.Controls 1.0 as H
+import QtQuick.Controls 1.0
+import Hal 1.0 as HAL
 
 Item  {
+    id: item1
     width: 500
     height: 500
 
-        Button {
-            id: myButton
-            name: "button"
+        Column {
+            anchors.rightMargin: 10
+            anchors.leftMargin: 10
+            anchors.bottomMargin: 10
+            anchors.topMargin: 10
+            anchors.fill: parent
+            spacing: 0
 
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            text: qsTr("Button")
-        }
+            GroupBox {
+                height: parent.height*0.3
+                anchors.right: parent.right
+                anchors.rightMargin: 0
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                title: qsTr("feedback")
 
-        Led {
-            id: myRadio
-            name: "led"
+                Column {
+                    anchors.rightMargin: 10
+                    anchors.leftMargin: 10
+                    anchors.bottomMargin: 10
+                    anchors.topMargin: 10
+                    anchors.fill: parent
+                    spacing: 0
 
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            blink: true
-            //text: qsTr("RadioButton")
-        }
+                    GroupBox {
+                        height: parent.height*0.33
+                        anchors.right: parent.right
+                        anchors.rightMargin: 0
+                        anchors.left: parent.left
+                        anchors.leftMargin: 0
+                        title: qsTr("position")
 
-        VirtualJoystick {
-            id: virtualJoyStick
-            nameX: "xVelocity"
-            nameY: "yVelocity"
+                        H.ProgressBar {
+                            name: "fb_pos"
 
-            anchors.top: parent.top
-            anchors.right: parent.right
+                            anchors.fill: parent
+                        }
+                    }
+                    GroupBox {
+                        height: parent.height*0.33
+                        anchors.right: parent.right
+                        anchors.rightMargin: 0
+                        anchors.left: parent.left
+                        anchors.leftMargin: 0
+                        title: qsTr("velocity")
 
-            width: parent.height* 0.6
-            height: width
+                        H.ProgressBar {
+                            name: "fb_vel"
 
-            //autoCenter: false
-        }
+                            anchors.fill: parent
+                        }
+                    }
+                    GroupBox {
+                        height: parent.height*0.33
+                        anchors.right: parent.right
+                        anchors.rightMargin: 0
+                        anchors.left: parent.left
+                        anchors.leftMargin: 0
+                        title: qsTr("acceleration")
 
-        Slider {
-            id: slider
-            name: "xVelocity"
+                        H.ProgressBar {
+                            name: "fb_acc"
 
-            width: virtualJoyStick.width
-            minimumValue: -100
-            maximumValue: 100
-            anchors.top: virtualJoyStick.bottom
-            anchors.right: parent.right
-        }
+                            anchors.fill: parent
+                        }
+                    }
+                }
+            }
 
-        ProgressBar {
-            id: test
-            name: "velocityOut"
+            GroupBox {
+                height: parent.height*0.5
+                anchors.right: parent.right
+                anchors.rightMargin: 0
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                title: qsTr("control")
 
-            width: virtualJoyStick.width
-            minimumValue: -100
-            maximumValue: 100
-            anchors.top: slider.bottom
-            anchors.right: parent.right
+                Column {
+                    anchors.rightMargin: 10
+                    anchors.leftMargin: 10
+                    anchors.bottomMargin: 10
+                    anchors.topMargin: 10
+                    anchors.fill: parent
+                    spacing: 0
+
+                    GroupBox {
+                        height: parent.height*0.25
+                        anchors.right: parent.right
+                        anchors.rightMargin: 0
+                        anchors.left: parent.left
+                        anchors.leftMargin: 0
+                        title: qsTr("commanded position")
+
+                        H.Slider {
+                            name: "cmd_pos"
+
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            minimumValue: 0
+                            maximumValue: 100
+                        }
+                    }
+                    GroupBox {
+                        height: parent.height*0.25
+                        anchors.right: parent.right
+                        anchors.rightMargin: 0
+                        anchors.left: parent.left
+                        anchors.leftMargin: 0
+                        title: qsTr("maximum velocity")
+
+                        H.Slider {
+                            name: "cmd_maxvel"
+
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            minimumValue: 0
+                            maximumValue: 100
+                        }
+                    }
+                    GroupBox {
+                        height: parent.height*0.25
+                        anchors.right: parent.right
+                        anchors.rightMargin: 0
+                        anchors.left: parent.left
+                        anchors.leftMargin: 0
+                        title: qsTr("maximum acceleration")
+
+                        H.Slider {
+                            name: "cmd_maxacc"
+
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            minimumValue: 0
+                            maximumValue: 100
+                        }
+                    }
+                    GroupBox {
+                        height: parent.height*0.25
+                        anchors.right: parent.right
+                        anchors.rightMargin: 0
+                        anchors.left: parent.left
+                        anchors.leftMargin: 0
+                        title: qsTr("lowpass filter gain")
+
+                        H.Slider {
+                            name: "lowpass_gain"
+
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            minimumValue: 0
+                            maximumValue: 10
+                        }
+                    }
+                }
+            }
+            GroupBox {
+                height: parent.height*0.2
+                anchors.right: parent.right
+                anchors.rightMargin: 0
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                title: qsTr("misc")
+
+                Row {
+                    id: row1
+                    anchors.rightMargin: 10
+                    anchors.leftMargin: 10
+                    anchors.bottomMargin: 10
+                    anchors.topMargin: 10
+                    anchors.fill: parent
+                    spacing: 0
+
+                    Column {
+                        width: parent.width * 0.5
+                        anchors.top: parent.top
+                        anchors.topMargin: 10
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 10
+                        spacing: 0
+
+                        H.ToggleButton {
+                            name: "togglebutton1"
+
+                            height: parent.height*0.5
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            text: qsTr("togglebutton")
+
+                            HAL.Pin {
+                                name: "togglebutton1-not"
+                                type: HAL.Pin.HAL_BIT
+                                direction: HAL.Pin.HAL_OUT
+                                value: !parent.value
+                            }
+                        }
+                        H.ToggleButton {
+                            name: "scope_trigger"
+
+                            height: parent.height*0.5
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            text: qsTr("trigger scope")
+                        }
+                    }
+                    Column {
+                        width: parent.width * 0.5
+                        anchors.top: parent.top
+                        anchors.topMargin: 10
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 10
+                        spacing: 0
+
+                        H.Led {
+                            name: "led1"
+
+                            x: parent.width * 0.4
+                            y: parent.height * 0.5
+                            width: parent.width * 0.15
+                            height: width
+                            blink: false
+                        }
+                    }
+                }
+            }
         }
 
 }

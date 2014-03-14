@@ -19,7 +19,7 @@ folder_01.target =
 DEPLOYMENTFOLDERS = folder_01
 
 # Additional import path used to resolve QML modules in Creator's code model
-QML_IMPORT_PATH =
+QML_IMPORT_PATH = qml
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
@@ -45,7 +45,8 @@ SOURCES += main.cpp \
 
 INCLUDEPATH += \
     $$NZMQTDIR/include \
-    $$NZMQTDIR/externals/include
+    $$NZMQTDIR/externals/include \
+    $$PROTOGEN
 
 android: {
 LIBS += -L$$ZEROMQ_ANDROID_DIR/lib/ \
