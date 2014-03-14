@@ -39,13 +39,24 @@ Item  {
         }
 
         Slider {
+            id: slider
+            name: "xVelocity"
+
+            width: virtualJoyStick.width
+            minimumValue: -100
+            maximumValue: 100
+            anchors.top: virtualJoyStick.bottom
+            anchors.right: parent.right
+        }
+
+        ProgressBar {
             id: test
             name: "velocityOut"
 
             width: virtualJoyStick.width
             minimumValue: -100
             maximumValue: 100
-            anchors.top: virtualJoyStick.bottom
+            anchors.top: slider.bottom
             anchors.right: parent.right
         }
 

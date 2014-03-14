@@ -2,12 +2,13 @@ import QtQuick 2.0
 import Hal 1.0 as HAL
 
 Rectangle {
-    property bool value: ledPin.value
+    property string name: "led"
+    property bool value: false
     property color onColor: "red"
     property color offColor: "darkGrey"
     property bool blink: false
     property int blinkRate: 500
-    property string name: "led"
+    property bool shine: true
 
     id: main
 
@@ -17,6 +18,17 @@ Rectangle {
     radius: width/2
     border.color: "black"
     color: (value && (helpItem.blinkHelper || !blink))?onColor:offColor
+
+    Rectangle {
+        x: parent.width*0.15
+        y: parent.width*0.15
+        width: parent.width*0.4
+        height: width
+        radius: width/2
+        color: "white"
+        opacity: 0.4
+        visible: main.shine
+    }
 
     Timer {
         id: blinkTimer
@@ -38,4 +50,6 @@ Rectangle {
         type: HAL.Pin.HAL_BIT
         direction: HAL.Pin.HAL_IN
     }
+
+    Binding { target: main; property: "value"; value: ledPin.value}
 }

@@ -6,14 +6,15 @@ Button {
     id: main
 
     property string name
-    checkable: true
 
     HAL.Pin {
-        id: myPin
+        id: buttonPin
 
         name: main.name
         type: HAL.Pin.HAL_BIT
         direction: HAL.Pin.HAL_OUT
-        value: main.checked
     }
+
+    Binding { target: main; property: "pressed"; value: buttonPin.value}
+    Binding { target: buttonPin; property: "value"; value: main.pressed}
 }

@@ -9,16 +9,16 @@ Slider {
 
     width: 100
     height: 62
-    value: velocityOut.value
+    //value: velocityOut.value
 
     HAL.Pin {
-        id: velocityOut
+        id: sliderPin
 
         name: main.name
         type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_IN
+        direction: HAL.Pin.HAL_OUT
     }
 
-    //Binding { target: virtualJoyStick; property: "xVelocity"; value: test.value}
-    //Binding { target: test; property: "value"; value: virtualJoyStick.xVelocity}
+    Binding { target: main; property: "value"; value: sliderPin.value}
+    Binding { target: sliderPin; property: "value"; value: main.value}
 }
