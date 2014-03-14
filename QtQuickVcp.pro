@@ -1,6 +1,8 @@
 #Directories
-LINUXCNCDIR = /home/alexander/projects/linuxcnc
-NZMQTDIR = /home/alexander/projects/nzmqt
+TOP = /home/mah
+LINUXCNCDIR = $$TOP/linuxcnc
+PROTOGEN = $$LINUXCNCDIR/src/middleware/generated
+NZMQTDIR = $$TOP/nzmqt
 NZMQT_ANDROID_DIR = $$NZMQTDIR/bin/android/
 ZEROMQ_ANDROID_DIR = /opt/zeromq-android
 PROTOBUF_ANDROID_DIR = /home/alexander/projects/tmp/protobuf-2.5.0
@@ -17,7 +19,22 @@ QML_IMPORT_PATH =
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     hal/qpin.cpp \
-    hal/qcomponent.cpp
+    hal/qcomponent.cpp \
+    $$PROTOGEN/canon.pb.cc \
+    $$PROTOGEN/emcclass.pb.cc \
+    $$PROTOGEN/log.pb.cc \
+    $$PROTOGEN/message.pb.cc \
+    $$PROTOGEN/motcmds.pb.cc \
+    $$PROTOGEN/nanopb.pb.cc \
+    $$PROTOGEN/object.pb.cc \
+    $$PROTOGEN/rtapicommand.pb.cc \
+    $$PROTOGEN/rtapi_message.pb.cc \
+    $$PROTOGEN/rtmessage.pb.cc \
+    $$PROTOGEN/task.pb.cc \
+    $$PROTOGEN/test.pb.cc \
+    $$PROTOGEN/types.pb.cc \
+    $$PROTOGEN/value.pb.cc
+
 
 INCLUDEPATH += \
     $$NZMQTDIR/nzmqt/include \
@@ -34,30 +51,10 @@ else: {
 LIBS += -L$$NZMQT_X86_DIR
 }
 
-LIBS += -lzmq -lnzmqt -lprotobuf
+LIBS += -lzmq -lnzmqtd -lprotobuf
 
 # Installation path
 # target.path =
-
-#Protobuf
-include(protobuf.pri)
-PROTOS_IN += $$LINUXCNCDIR/src/middleware/proto/types.proto \
-          $$LINUXCNCDIR/src/middleware/proto/emcclass.proto \
-          $$LINUXCNCDIR/src/middleware/proto/value.proto \
-          $$LINUXCNCDIR/src/middleware/proto/motcmds.proto \
-#          $$LINUXCNCDIR/src/middleware/nanopb/generator/proto/nanopb.proto \
-          $$LINUXCNCDIR/src/middleware/proto/canon.proto \
-          $$LINUXCNCDIR/src/middleware/proto/halrcomp.proto \
-          $$LINUXCNCDIR/src/middleware/proto/halupdate.proto \
-          $$LINUXCNCDIR/src/middleware/proto/log.proto \
-          $$LINUXCNCDIR/src/middleware/proto/object.proto \
-          $$LINUXCNCDIR/src/middleware/proto/rtapi_message.proto \
-          $$LINUXCNCDIR/src/middleware/proto/rtapicommand.proto \
-          $$LINUXCNCDIR/src/middleware/proto/rtmessage.proto \
-          $$LINUXCNCDIR/src/middleware/proto/task.proto \
-          $$LINUXCNCDIR/src/middleware/proto/test.proto
-          $$LINUXCNCDIR/src/middleware/proto/message.proto
-
 
 
 # Please do not modify the following two lines. Required for deployment.
@@ -66,4 +63,18 @@ qtcAddDeployment()
 
 HEADERS += \
     hal/qpin.h \
-    hal/qcomponent.h
+    hal/qcomponent.h \
+    $$PROTOGEN/canon.pb.h \
+    $$PROTOGEN/emcclass.pb.h \
+    $$PROTOGEN/log.pb.h \
+    $$PROTOGEN/message.pb.h \
+    $$PROTOGEN/motcmds.pb.h \
+    $$PROTOGEN/nanopb.pb.h \
+    $$PROTOGEN/object.pb.h \
+    $$PROTOGEN/rtapicommand.pb.h \
+    $$PROTOGEN/rtapi_message.pb.h \
+    $$PROTOGEN/rtmessage.pb.h \
+    $$PROTOGEN/task.pb.h \
+    $$PROTOGEN/test.pb.h \
+    $$PROTOGEN/types.pb.h \
+    $$PROTOGEN/value.pb.h
