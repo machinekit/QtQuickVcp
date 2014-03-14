@@ -72,3 +72,7 @@ PROTOS_IN += $$LINUXCNCDIR/src/middleware/proto/types.proto \
 # Please do not modify the following two lines. Required for deployment.
 include(qtquick2controlsapplicationviewer/qtquick2controlsapplicationviewer.pri)
 qtcAddDeployment()
+
+OTHER_FILES += \
+    qml/QtQuickVcp/StartPage.qml \
+    qml/QtQuickVcp/ViewPage.qml

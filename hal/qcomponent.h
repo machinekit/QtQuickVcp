@@ -21,6 +21,8 @@ class QComponent : public QQuickItem
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
     Q_PROPERTY(State sState READ sState NOTIFY sStateChanged)
     Q_PROPERTY(State cState READ cState NOTIFY cStateChanged)
+    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
+    Q_PROPERTY(QQuickItem *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
     Q_ENUMS(State)
 
 public:
@@ -70,12 +72,17 @@ public:
         return m_cState;
     }
 
-public slots:
-    void connectToHost();
-    void bind();
-    void ready();
-    void exit();
+    bool ready() const
+    {
+        return m_ready;
+    }
 
+    QQuickItem *containerItem() const
+    {
+        return m_containerItem;
+    }
+
+public slots:
     void pinUpdate(pb::Pin remotePin, QPin *localPin);
     void pinChange(QVariant value);
 
@@ -111,6 +118,16 @@ public slots:
         }
     }
 
+    void setReady(bool arg);
+
+    void setContainerItem(QQuickItem *arg)
+    {
+        if (m_containerItem != arg) {
+            m_containerItem = arg;
+            emit containerItemChanged(arg);
+        }
+    }
+
 private:
     QString m_cmdUri;
     QString m_updateUri;
@@ -119,6 +136,8 @@ private:
     bool m_synced;
     State m_sState;
     State m_cState;
+    bool m_ready;
+    QQuickItem *m_containerItem;
 
     ZMQContext *m_context;
     ZMQSocket  *m_updateSocket;
@@ -134,12 +153,13 @@ private:
 
     QObjectList recurseObjects(const QObjectList &list);
 
-
-
 private slots:
     void updateMessageReceived(QList<QByteArray> messageList);
     void cmdMessageReceived(QList<QByteArray> messageList);
     void hearbeatTimerTick();
+
+    void connectToHost();
+    void bind();
 
 signals:
 void cmdUriChanged(QString arg);
@@ -150,6 +170,8 @@ void syncedChanged(bool arg);
 void protocolError(QStringList notes);
 void sStateChanged(State arg);
 void cStateChanged(State arg);
+void readyChanged(bool arg);
+void containerItemChanged(QQuickItem *arg);
 };
 
 #endif // QCOMPONENT_H

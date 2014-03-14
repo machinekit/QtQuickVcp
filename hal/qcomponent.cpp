@@ -11,6 +11,8 @@ QComponent::QComponent(QQuickItem *parent) :
     m_synced = false;
     m_sState = STATE_DOWN;
     m_cState = STATE_DOWN;
+    m_ready = false;
+    m_containerItem = NULL;
 
     m_context = createDefaultContext(this);
 
@@ -35,7 +37,12 @@ void QComponent::componentComplete()
 {
     QObjectList halObjects;
 
-    halObjects = recurseObjects(this->children());
+    if (m_containerItem == NULL)
+    {
+        return;
+    }
+
+    halObjects = recurseObjects(m_containerItem->children());
     foreach (QObject *object, halObjects)
     {
         QPin *pin = static_cast<QPin *>(object);
@@ -89,35 +96,6 @@ void QComponent::bind()
 
     m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
-}
-
-void QComponent::ready()
-{
-#ifdef QT_DEBUG
-    qDebug() << "ready" << m_name;
-#endif
-    m_heartbeatTimer->setInterval(m_heartbeatPeriod);
-    m_heartbeatTimer->start();
-    m_cState = STATE_TRYING;
-    emit cStateChanged(m_cState);
-
-    connectToHost();
-    // no we have to wait for connection
-    bind();
-}
-
-void QComponent::exit()
-{
-    m_instanceCount--;
-
-    if (m_instanceCount == 0)
-    {
-        // cleanup here
-        disconnect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-                   this, SLOT(updateMessageReceived(QList<QByteArray>)));
-        disconnect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-                   this, SLOT(cmdMessageReceived(QList<QByteArray>)));
-    }
 }
 
 void QComponent::pinUpdate(pb::Pin remotePin, QPin *localPin)
@@ -198,6 +176,48 @@ void QComponent::pinChange(QVariant value)
 
     m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
+}
+
+void QComponent::setReady(bool arg)
+{
+
+    {
+        if (m_ready != arg) {
+            m_ready = arg;
+            emit readyChanged(arg);
+
+            if (m_ready)
+            {
+#ifdef QT_DEBUG
+                qDebug() << "ready" << m_name;
+#endif
+                m_heartbeatTimer->setInterval(m_heartbeatPeriod);
+                m_heartbeatTimer->start();
+                m_cState = STATE_TRYING;
+                emit cStateChanged(m_cState);
+
+                connectToHost();
+                bind();
+            }
+            else
+            {
+#ifdef QT_DEBUG
+                qDebug() << "exit" << m_name;
+#endif
+
+                m_instanceCount--;
+
+                if (m_instanceCount == 0)
+                {
+                    // cleanup here
+                    disconnect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
+                               this, SLOT(updateMessageReceived(QList<QByteArray>)));
+                    disconnect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
+                               this, SLOT(cmdMessageReceived(QList<QByteArray>)));
+                }
+            }
+        }
+    }
 }
 
 QObjectList QComponent::recurseObjects(const QObjectList &list)

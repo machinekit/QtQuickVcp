@@ -12,18 +12,22 @@
 class QServiceDiscovery : public QQuickItem
 {
     Q_OBJECT
+    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
     Q_PROPERTY(int instance READ instance WRITE setInstance NOTIFY instanceChanged)
     Q_PROPERTY(int retryTime READ retryTime WRITE setRetryTime NOTIFY retryTimeChanged)
     Q_PROPERTY(int maxWait READ maxWait WRITE setMaxWait NOTIFY maxWaitChanged)
     Q_PROPERTY(bool trace READ trace WRITE setTrace NOTIFY traceChanged)
-    Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
+    Q_PROPERTY(bool running READ isRunning WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(bool repeat READ repeat WRITE setRepeat NOTIFY repeatChanged)
     Q_PROPERTY(QQmlListProperty<QService> services READ services)
     Q_PROPERTY(QQmlListProperty<QService> replies READ replies)
 
 
 public:
     explicit QServiceDiscovery(QQuickItem *parent = 0);
+
+    virtual void componentComplete();
 
     int port() const
     {
@@ -53,6 +57,11 @@ public:
     bool isRunning() const
     {
         return m_running;
+    }
+
+    bool repeat() const
+    {
+        return m_repeat;
     }
 
     QQmlListProperty<QService> services();
@@ -99,6 +108,16 @@ public slots:
     }
     void setTrace(bool arg);
 
+    void setRunning(bool arg);
+
+    void setRepeat(bool arg)
+    {
+        if (m_repeat != arg) {
+            m_repeat = arg;
+            emit repeatChanged(arg);
+        }
+    }
+
 private:
     int m_currentWanted;
     int m_port;
@@ -116,6 +135,8 @@ private:
     QList<QService*> m_services;
     QList<QService*> m_replies;
 
+    bool m_repeat;
+
 private slots:
     void udpReadyRead();
     void timeout();
@@ -130,6 +151,7 @@ signals:
     void maxWaitChanged(int arg);
     void traceChanged(bool arg);
     void runningChanged(bool arg);
+    void repeatChanged(bool arg);
 };
 
 #endif // QSERVICEDISCOVERY_H

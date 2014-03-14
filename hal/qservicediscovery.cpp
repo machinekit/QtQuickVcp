@@ -12,6 +12,7 @@ QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     m_maxWait = 2000;
     m_trace = false;
     m_running = false;
+    m_repeat = false;
 
     m_udpSocket = new QUdpSocket(this);
     connect(m_udpSocket, SIGNAL(readyRead()),
@@ -24,13 +25,16 @@ QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     m_waitTime = new QTime();
 }
 
-void QServiceDiscovery::startDiscovery()
+void QServiceDiscovery::componentComplete()
 {
     if (m_running)
     {
-        return;
+        startDiscovery();
     }
+}
 
+void QServiceDiscovery::startDiscovery()
+{
     foreach (QService *service, m_services)
     {
         service->clearFound();  // reset the found tag
@@ -57,9 +61,16 @@ void QServiceDiscovery::startDiscovery()
 
 void QServiceDiscovery::stopDiscovery()
 {
-    m_timeoutTimer->stop();
-    m_running = false;
-    emit runningChanged(m_running);
+    if (!m_repeat)
+    {
+        m_timeoutTimer->stop();
+        m_running = false;
+        emit runningChanged(m_running);
+    }
+    else
+    {
+        startDiscovery();
+    }
 }
 
 void QServiceDiscovery::sendBroadcast()
@@ -199,6 +210,23 @@ void QServiceDiscovery::setTrace(bool arg)
     if (m_trace != arg) {
         m_trace = arg;
         emit traceChanged(arg);
+    }
+}
+
+void QServiceDiscovery::setRunning(bool arg)
+{
+    if (m_running != arg) {
+        m_running = arg;
+        emit runningChanged(arg);
+
+        if (m_running)
+        {
+            startDiscovery();
+        }
+        else
+        {
+            stopDiscovery();
+        }
     }
 }
 
