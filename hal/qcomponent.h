@@ -6,7 +6,6 @@
 #include <QTimer>
 #include "qpin.h"
 #include <nzmqt/nzmqt.hpp>
-#include <sstream>
 #include "message.pb.h"
 
 using namespace nzmqt;

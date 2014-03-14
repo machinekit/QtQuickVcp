@@ -13,14 +13,14 @@ QComponent::QComponent(QQuickItem *parent) :
     m_cState = STATE_DOWN;
 
     m_context = createDefaultContext(this);
+
+    m_context->start();
     //m_context->setProperty("Linger", 0);
 
     m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
     m_cmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
     m_updateSocket->setLinger(0);
     m_cmdSocket->setLinger(0);
-    //m_updateSocket->setObjectName("Subscriber.Socket.socket(SUB)");
-    //m_cmdSocket->setObjectName("Command.Socket.socket(DEALER)");
     connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
             this, SLOT(updateMessageReceived(QList<QByteArray>)));
     connect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
@@ -87,11 +87,7 @@ void QComponent::bind()
     qDebug() << "bind:" << QString::fromStdString(m_tx.SerializeAsString());
 #endif
 
-    std::ostringstream out;
-    QByteArray data;
-    m_tx.SerializeToOstream(&out);
-    data = QByteArray(out.str().c_str());
-    m_cmdSocket->sendMessage(data);
+    m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
 }
 
@@ -181,7 +177,7 @@ void QComponent::pinChange(QVariant value)
     halPin = m_tx.add_pin();
 
     halPin->set_handle(pin->handle());
-    halPin->set_name(pin->name().toStdString());
+    halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());
     halPin->set_type((pb::ValueType)pin->type());
     if (pin->type() == QPin::HAL_FLOAT)
     {
@@ -200,11 +196,7 @@ void QComponent::pinChange(QVariant value)
         halPin->set_halu32(pin->value().toUInt());
     }
 
-    std::ostringstream out;
-    QByteArray data;
-    m_tx.SerializeToOstream(&out);
-    data = QByteArray(out.str().c_str());
-    m_cmdSocket->sendMessage(data);
+    m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
 }
 
@@ -233,7 +225,7 @@ void QComponent::updateMessageReceived(QList<QByteArray> messageList)
     QByteArray topic;
 
     topic = messageList.at(0);
-    m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
+    m_rx.ParseFromArray(messageList.at(1).data(), messageList.at(1).size());
 
 #ifdef QT_DEBUG
     qDebug() << "status update" << topic << QString::fromStdString(m_rx.SerializeAsString());
@@ -314,7 +306,7 @@ void QComponent::cmdMessageReceived(QList<QByteArray> messageList)
 {
     QByteArray topic;
 
-    topic = messageList.at(0);
+    //topic = messageList.at(0);
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
 #ifdef QT_DEBUG
@@ -338,7 +330,7 @@ void QComponent::cmdMessageReceived(QList<QByteArray> messageList)
         m_sState = STATE_TRYING;
         emit cStateChanged(m_cState);
         emit sStateChanged(m_sState);
-        m_updateSocket->sendMessage(QString("\001%1").arg(m_name).toLocal8Bit());
+        m_updateSocket->subscribeTo(m_name.toLocal8Bit());
 
         return;
     }
@@ -382,11 +374,7 @@ void QComponent::hearbeatTimerTick()
 
     m_tx.set_type(pb::MT_PING);
 
-    std::ostringstream out;
-    QByteArray data;
-    m_tx.SerializeToOstream(&out);
-    data = QByteArray(out.str().c_str());
-    m_cmdSocket->sendMessage(data);
+    m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
 
     m_pingOutstanding = true;

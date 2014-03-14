@@ -1,7 +1,7 @@
 #Directories
 LINUXCNCDIR = /home/alexander/projects/linuxcnc
 NZMQTDIR = /home/alexander/projects/nzmqt
-#NZMQT_ANDROID_DIR = $$NZMQTDIR/bin/android/
+NZMQT_ANDROID_DIR = $$NZMQTDIR/bin/android/
 ZEROMQ_ANDROID_DIR = /opt/zeromq-android
 PROTOBUF_ANDROID_DIR = /home/alexander/projects/tmp/protobuf-2.5.0
 NZMQT_X86_DIR = $$NZMQTDIR/bin/
@@ -38,7 +38,7 @@ LIBS += -lzmq -lprotobuf -lnzmqt
 
 android: {
 LIBS += -L$$ZEROMQ_ANDROID_DIR/lib/ \
-#        -L$$NZMQT_ANDROID_DIR \
+        -L$$NZMQT_ANDROID_DIR \
         -L$$PROTOBUF_ANDROID_DIR/src/.libs/
 INCLUDEPATH += $$ZEROMQ_ANDROID_DIR/include/ \
             $$PROTOBUF_ANDROID_DIR/src/

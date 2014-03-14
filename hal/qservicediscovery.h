@@ -8,7 +8,6 @@
 #include <QQmlListProperty>
 #include "message.pb.h"
 #include "qservice.h"
-#include <sstream>
 
 class QServiceDiscovery : public QQuickItem
 {
@@ -25,11 +24,6 @@ class QServiceDiscovery : public QQuickItem
 
 public:
     explicit QServiceDiscovery(QQuickItem *parent = 0);
-
-    static const int SERVICE_DISCOVERY_PORT = 10042;
-    //static const QString BROADCAST_IP;
-    static const int RETRY = 500;
-    static const double MAX_WAIT = 2000;
 
     int port() const
     {

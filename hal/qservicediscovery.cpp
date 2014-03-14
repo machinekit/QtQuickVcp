@@ -6,10 +6,10 @@ QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     QQuickItem(parent)
 {
     //int port, int instance, int retryTime, int maxWait, bool trace,
-    m_port = SERVICE_DISCOVERY_PORT;
+    m_port = 10042;
     m_instance = 0;
-    m_retryTime = RETRY;
-    m_maxWait = MAX_WAIT;
+    m_retryTime = 500;
+    m_maxWait = 2000;
     m_trace = false;
     m_running = false;
 
@@ -47,9 +47,7 @@ void QServiceDiscovery::startDiscovery()
     pb::Container tx;
     tx.set_type(pb::MT_SERVICE_PROBE);
     tx.set_trace(m_trace);
-    std::ostringstream out;
-    tx.SerializeToOstream(&out);
-    m_probe = QByteArray(out.str().c_str());
+    m_probe = QByteArray(QByteArray(tx.SerializeAsString().c_str(), tx.ByteSize()));
 
     m_waitTime->restart();
     m_timeoutTimer->start();
