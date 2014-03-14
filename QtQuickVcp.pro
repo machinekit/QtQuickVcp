@@ -1,7 +1,12 @@
 #Directories
 TOP = /home/mah
 LINUXCNCDIR = $$TOP/linuxcnc
-PROTOGEN = $$LINUXCNCDIR/src/middleware/generated
+#PROTOGEN = $$LINUXCNCDIR/src/middleware/generated
+
+# for now, use included pre-protoc'ed includes and C++ files:
+PROTOGEN = generated
+
+
 NZMQTDIR = $$TOP/nzmqt
 NZMQT_ANDROID_DIR = $$NZMQTDIR/bin/android/
 ZEROMQ_ANDROID_DIR = /opt/zeromq-android
