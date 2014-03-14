@@ -104,10 +104,7 @@ Item  {
                         H.Slider {
                             name: "cmd_pos"
 
-                            anchors.right: parent.right
-                            anchors.rightMargin: 0
-                            anchors.left: parent.left
-                            anchors.leftMargin: 0
+                            anchors.fill: parent
                             minimumValue: 0
                             maximumValue: 100
                         }
@@ -123,10 +120,7 @@ Item  {
                         H.Slider {
                             name: "cmd_maxvel"
 
-                            anchors.right: parent.right
-                            anchors.rightMargin: 0
-                            anchors.left: parent.left
-                            anchors.leftMargin: 0
+                            anchors.fill: parent
                             minimumValue: 0
                             maximumValue: 100
                         }
@@ -142,10 +136,7 @@ Item  {
                         H.Slider {
                             name: "cmd_maxacc"
 
-                            anchors.right: parent.right
-                            anchors.rightMargin: 0
-                            anchors.left: parent.left
-                            anchors.leftMargin: 0
+                            anchors.fill: parent
                             minimumValue: 0
                             maximumValue: 100
                         }
@@ -161,10 +152,7 @@ Item  {
                         H.Slider {
                             name: "lowpass_gain"
 
-                            anchors.right: parent.right
-                            anchors.rightMargin: 0
-                            anchors.left: parent.left
-                            anchors.leftMargin: 0
+                            anchors.fill: parent
                             minimumValue: 0
                             maximumValue: 10
                         }

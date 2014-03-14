@@ -4,6 +4,7 @@ import Hal 1.0 as HAL
 
 ProgressBar {
     property string name: "progressBar"
+    property bool showText: true
 
     id: main
 
@@ -21,6 +22,14 @@ ProgressBar {
         name: main.name + ".scale"
         type: HAL.Pin.HAL_FLOAT
         direction: HAL.Pin.HAL_IN
+    }
+
+    Text {
+        id: progressText
+
+        anchors.centerIn: parent
+        text: main.value
+        visible: main.showText
     }
 
     Binding { target: main; property: "value"; value: pin.value}
