@@ -8,7 +8,7 @@ Item {
     property double maximumValue: pinScale.value    // can be overwritten
     property bool showText: true
     property double value: 0
-    property alias hovered: progressBar1.hovered
+    property bool hovered: progressBar1.hovered || progressBar2.hovered
 
     id: main
 
@@ -41,7 +41,6 @@ Item {
         minimumValue: 0
         maximumValue: main.maximumValue
         value: (main.value > 0)?main.value:0
-        hovered: progressBar1.hovered
     }
 
     Text {
