@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Hal.Controls 1.0 as H
-import QtQuick.Controls 1.0
+import QtQuick.Controls 1.1
+import QtQuick.Layouts 1.1
 import Hal 1.0 as HAL
 
 Item  {
@@ -8,36 +9,23 @@ Item  {
     width: 500
     height: 500
 
-        Column {
-            anchors.rightMargin: 10
-            anchors.leftMargin: 10
-            anchors.bottomMargin: 10
-            anchors.topMargin: 10
+        ColumnLayout {
+            anchors.margins: 10
             anchors.fill: parent
             spacing: 0
 
             GroupBox {
-                height: parent.height*0.3
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.left: parent.left
-                anchors.leftMargin: 0
+                Layout.fillWidth: true
+                Layout.preferredHeight: item1.height * 0.3
                 title: qsTr("feedback")
 
-                Column {
-                    anchors.rightMargin: 10
-                    anchors.leftMargin: 10
-                    anchors.bottomMargin: 10
-                    anchors.topMargin: 10
+                ColumnLayout {
                     anchors.fill: parent
-                    spacing: 0
+                    spacing: 5
 
                     GroupBox {
-                        height: parent.height*0.33
-                        anchors.right: parent.right
-                        anchors.rightMargin: 0
-                        anchors.left: parent.left
-                        anchors.leftMargin: 0
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         title: qsTr("position")
 
                         H.ProgressBar {
@@ -49,11 +37,8 @@ Item  {
                         }
                     }
                     GroupBox {
-                        height: parent.height*0.33
-                        anchors.right: parent.right
-                        anchors.rightMargin: 0
-                        anchors.left: parent.left
-                        anchors.leftMargin: 0
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         title: qsTr("velocity")
 
                         H.Gauge {
@@ -65,11 +50,8 @@ Item  {
                         }
                     }
                     GroupBox {
-                        height: parent.height*0.33
-                        anchors.right: parent.right
-                        anchors.rightMargin: 0
-                        anchors.left: parent.left
-                        anchors.leftMargin: 0
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         title: qsTr("acceleration")
 
                         H.Gauge {
@@ -84,27 +66,17 @@ Item  {
             }
 
             GroupBox {
-                height: parent.height*0.5
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.left: parent.left
-                anchors.leftMargin: 0
+                Layout.fillWidth: true
+                Layout.preferredHeight: item1.height * 0.5
                 title: qsTr("control")
 
-                Column {
-                    anchors.rightMargin: 10
-                    anchors.leftMargin: 10
-                    anchors.bottomMargin: 10
-                    anchors.topMargin: 10
+                ColumnLayout {
                     anchors.fill: parent
-                    spacing: 0
+                    spacing: 5
 
                     GroupBox {
-                        height: parent.height*0.25
-                        anchors.right: parent.right
-                        anchors.rightMargin: 0
-                        anchors.left: parent.left
-                        anchors.leftMargin: 0
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         title: qsTr("commanded position")
 
                         H.Slider {
@@ -116,11 +88,8 @@ Item  {
                         }
                     }
                     GroupBox {
-                        height: parent.height*0.25
-                        anchors.right: parent.right
-                        anchors.rightMargin: 0
-                        anchors.left: parent.left
-                        anchors.leftMargin: 0
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         title: qsTr("maximum velocity")
 
                         H.Slider {
@@ -132,11 +101,8 @@ Item  {
                         }
                     }
                     GroupBox {
-                        height: parent.height*0.25
-                        anchors.right: parent.right
-                        anchors.rightMargin: 0
-                        anchors.left: parent.left
-                        anchors.leftMargin: 0
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         title: qsTr("maximum acceleration")
 
                         H.Slider {
@@ -148,11 +114,8 @@ Item  {
                         }
                     }
                     GroupBox {
-                        height: parent.height*0.25
-                        anchors.right: parent.right
-                        anchors.rightMargin: 0
-                        anchors.left: parent.left
-                        anchors.leftMargin: 0
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         title: qsTr("lowpass filter gain")
 
                         H.Slider {
@@ -160,44 +123,32 @@ Item  {
 
                             anchors.fill: parent
                             minimumValue: 0
-                            maximumValue: 1
+                            maximumValue: 0.9
                         }
                     }
                 }
             }
             GroupBox {
-                height: parent.height*0.2
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.left: parent.left
-                anchors.leftMargin: 0
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 title: qsTr("misc")
 
-                Row {
+                RowLayout {
                     id: row1
-                    anchors.rightMargin: 10
-                    anchors.leftMargin: 10
-                    anchors.bottomMargin: 10
-                    anchors.topMargin: 10
                     anchors.fill: parent
-                    spacing: 0
+                    spacing: 5
 
-                    Column {
-                        width: parent.width * 0.5
-                        anchors.top: parent.top
-                        anchors.topMargin: 10
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: 10
-                        spacing: 0
+                    ColumnLayout {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        //Layout.: 2
+                        spacing: 5
 
                         H.ToggleButton {
                             name: "togglebutton1"
 
-                            height: parent.height*0.5
-                            anchors.right: parent.right
-                            anchors.rightMargin: 0
-                            anchors.left: parent.left
-                            anchors.leftMargin: 0
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
                             text: qsTr("togglebutton")
 
                             HAL.Pin {
@@ -210,27 +161,22 @@ Item  {
                         H.ToggleButton {
                             name: "scope_trigger"
 
-                            height: parent.height*0.5
-                            anchors.right: parent.right
-                            anchors.rightMargin: 0
-                            anchors.left: parent.left
-                            anchors.leftMargin: 0
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
                             text: qsTr("trigger scope")
                         }
                     }
-                    Column {
-                        width: parent.width * 0.5
-                        anchors.top: parent.top
-                        anchors.topMargin: 10
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: 10
-                        spacing: 0
+
+                    ColumnLayout {
+                        Layout.preferredWidth: parent.width *0.4
+                        Layout.fillHeight: true
+                        spacing: 5
 
                         H.Led {
                             name: "led1"
 
                             x: parent.width * 0.4
-                            y: parent.height * 0.5
+                            y: parent.height * 0.3
                             width: parent.width * 0.15
                             height: width
                             blink: false

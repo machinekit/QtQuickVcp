@@ -1,8 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
+import QtQuick.Controls.Styles 1.1
 import Hal 1.0 as HAL
 
-Item {
+ProgressBar {
     property string name: "gauge"
     property double minimumValue: -pinScale.value   // can be overwritten
     property double maximumValue: pinScale.value    // can be overwritten
@@ -15,6 +16,13 @@ Item {
     width: 100
     height: 62
 
+    style: ProgressBarStyle {
+        progress: Item {
+        }
+    }
+
+    SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
+
     ProgressBar {
         id: progressBar1
 
@@ -26,8 +34,12 @@ Item {
         minimumValue: 0
         maximumValue: -main.minimumValue
         rotation: 180
-
         value: (main.value < 0)?-main.value:0
+
+        style: ProgressBarStyle {
+            background: Item {
+            }
+        }
     }
 
     ProgressBar {
@@ -41,6 +53,11 @@ Item {
         minimumValue: 0
         maximumValue: main.maximumValue
         value: (main.value > 0)?main.value:0
+
+        style: ProgressBarStyle {
+            background: Item {
+            }
+        }
     }
 
     Text {
