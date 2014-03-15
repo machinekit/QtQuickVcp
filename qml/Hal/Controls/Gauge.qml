@@ -3,19 +3,19 @@ import QtQuick.Controls 1.1
 import Hal 1.0 as HAL
 
 Item {
-    property string name: "progressBar"
-    property double minimumValue: -100
-    property alias maximumValue: progressBar2.maximumValue
+    property string name: "gauge"
+    property double minimumValue: -pinScale.value   // can be overwritten
+    property double maximumValue: pinScale.value    // can be overwritten
     property bool showText: true
     property double value: 0
+    property alias hovered: progressBar1.hovered
 
-     id: main
+    id: main
 
     width: 100
     height: 62
 
     ProgressBar {
-        //maximumValue: pinScale.value    // can be overwritten
         id: progressBar1
 
         anchors.top: parent.top
@@ -31,7 +31,6 @@ Item {
     }
 
     ProgressBar {
-        //maximumValue: pinScale.value    // can be overwritten
         id: progressBar2
 
         anchors.top: parent.top
@@ -40,9 +39,9 @@ Item {
         anchors.right: parent.right
 
         minimumValue: 0
-        maximumValue: 100
-
+        maximumValue: main.maximumValue
         value: (main.value > 0)?main.value:0
+        hovered: progressBar1.hovered
     }
 
     Text {
