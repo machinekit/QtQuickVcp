@@ -21,8 +21,6 @@ ProgressBar {
         }
     }
 
-    SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
-
     ProgressBar {
         id: progressBar1
 
