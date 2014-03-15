@@ -1,11 +1,13 @@
 #Directories
-TOP = /home/alexander/projects
-LINUXCNCDIR = $$TOP/linuxcnc
-#PROTOGEN = $$LINUXCNCDIR/src/middleware/generated
+
+TOP = /qt/projects
+LINUXCNCDIR = /home/mah/linuxcnc
 
 # for now, use included pre-protoc'ed includes and C++ files:
 PROTOGEN = generated
 
+# eventually import directly from linuxcnc build dir
+#PROTOGEN = $$LINUXCNCDIR/src/middleware/generated
 
 NZMQTDIR = $$TOP/nzmqt
 NZMQT_ANDROID_DIR = $$NZMQTDIR/bin/android/
