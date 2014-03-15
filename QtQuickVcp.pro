@@ -88,3 +88,6 @@ HEADERS += \
     $$PROTOGEN/test.pb.h \
     $$PROTOGEN/types.pb.h \
     $$PROTOGEN/value.pb.h
+
+OTHER_FILES += \
+    qml/Hal/Controls/Gauge.qml

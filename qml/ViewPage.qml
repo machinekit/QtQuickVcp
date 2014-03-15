@@ -44,6 +44,8 @@ Item  {
                             name: "fb_pos"
 
                             anchors.fill: parent
+                            minimumValue: 0
+                            maximumValue: 100
                         }
                     }
                     GroupBox {
@@ -54,10 +56,12 @@ Item  {
                         anchors.leftMargin: 0
                         title: qsTr("velocity")
 
-                        H.ProgressBar {
+                        H.Gauge {
                             name: "fb_vel"
 
                             anchors.fill: parent
+                            minimumValue: -100
+                            maximumValue: 100
                         }
                     }
                     GroupBox {
@@ -68,10 +72,12 @@ Item  {
                         anchors.leftMargin: 0
                         title: qsTr("acceleration")
 
-                        H.ProgressBar {
+                        H.Gauge {
                             name: "fb_acc"
 
                             anchors.fill: parent
+                            minimumValue: -100
+                            maximumValue: 100
                         }
                     }
                 }
@@ -154,7 +160,7 @@ Item  {
 
                             anchors.fill: parent
                             minimumValue: 0
-                            maximumValue: 10
+                            maximumValue: 1
                         }
                     }
                 }

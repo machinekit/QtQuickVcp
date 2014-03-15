@@ -8,6 +8,8 @@ ProgressBar {
 
     id: main
 
+    maximumValue: pinScale.value    // can be overwritten
+
     HAL.Pin {
         id: pin
 
@@ -28,10 +30,9 @@ ProgressBar {
         id: progressText
 
         anchors.centerIn: parent
-        text: main.value
+        text: main.value.toFixed(2)
         visible: main.showText
     }
 
     Binding { target: main; property: "value"; value: pin.value}
-    Binding { target: main; property: "maximumValue"; value: pinScale.value}
 }
