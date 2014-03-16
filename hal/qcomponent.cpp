@@ -88,14 +88,28 @@ void QComponent::bind()
         halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());
         halPin->set_type((pb::ValueType)pin->type());
         halPin->set_dir((pb::HalPinDirection)pin->direction());
+        if (pin->type() == QPin::HAL_FLOAT)
+        {
+            halPin->set_halfloat(pin->value().toDouble());
+        }
+        else if (pin->type() == QPin::HAL_BIT)
+        {
+            halPin->set_halbit(pin->value().toBool());
+        }
+        else if (pin->type() == QPin::HAL_S32)
+        {
+            halPin->set_hals32(pin->value().toInt());
+        }
+        else if (pin->type() == QPin::HAL_U32)
+        {
+            halPin->set_halu32(pin->value().toUInt());
+        }
     }
 
 #ifdef QT_DEBUG
-    qDebug() << "bind:" << QString::fromStdString(m_tx.SerializeAsString());
     std::string s;
     gpb::TextFormat::PrintToString(m_tx, &s);
-    qDebug() << "bind text:" << QString::fromStdString(s);
-
+    qDebug() << "bind:" << QString::fromStdString(s);
 #endif
 
     m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));

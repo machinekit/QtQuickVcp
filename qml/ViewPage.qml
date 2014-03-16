@@ -95,6 +95,7 @@ Item  {
                         H.Slider {
                             name: "cmd_maxvel"
 
+                            value: 20
                             anchors.fill: parent
                             minimumValue: 0
                             maximumValue: 100
@@ -108,6 +109,7 @@ Item  {
                         H.Slider {
                             name: "cmd_maxacc"
 
+                            value: 10
                             anchors.fill: parent
                             minimumValue: 0
                             maximumValue: 100
@@ -121,6 +123,7 @@ Item  {
                         H.Slider {
                             name: "lowpass_gain"
 
+                            value: 0.01
                             anchors.fill: parent
                             minimumValue: 0
                             maximumValue: 0.9
