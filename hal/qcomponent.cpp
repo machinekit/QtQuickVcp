@@ -92,6 +92,10 @@ void QComponent::bind()
 
 #ifdef QT_DEBUG
     qDebug() << "bind:" << QString::fromStdString(m_tx.SerializeAsString());
+    std::string s;
+    gpb::TextFormat::PrintToString(m_tx, &s);
+    qDebug() << "bind text:" << QString::fromStdString(s);
+
 #endif
 
     m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
