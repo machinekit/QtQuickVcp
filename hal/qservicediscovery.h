@@ -126,6 +126,7 @@ private:
     int m_maxWait;
     bool m_trace;
     bool m_running;
+    bool m_repeat;
 
     QByteArray m_probe;
     QUdpSocket *m_udpSocket;
@@ -134,8 +135,6 @@ private:
 
     QList<QService*> m_services;
     QList<QService*> m_replies;
-
-    bool m_repeat;
 
 private slots:
     void udpReadyRead();

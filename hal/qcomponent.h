@@ -161,7 +161,10 @@ private slots:
     void cmdMessageReceived(QList<QByteArray> messageList);
     void hearbeatTimerTick();
 
-    void connectToHost();
+    void addPins();
+    void removePins();
+    void connectSockets();
+    void disconnectSockets();
     void bind();
 
 signals:

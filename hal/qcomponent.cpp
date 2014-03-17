@@ -1,5 +1,6 @@
 #include "qcomponent.h"
 
+/** Remote HAL Component implementation for use with C++ and QML */
 QComponent::QComponent(QQuickItem *parent) :
     QQuickItem(parent)
 {
@@ -17,23 +18,25 @@ QComponent::QComponent(QQuickItem *parent) :
     m_context = createDefaultContext(this);
 
     m_context->start();
-    //m_context->setProperty("Linger", 0);
 
     m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
     m_cmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
     m_updateSocket->setLinger(0);
     m_cmdSocket->setLinger(0);
-    connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(updateMessageReceived(QList<QByteArray>)));
-    connect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(cmdMessageReceived(QList<QByteArray>)));
 
     m_heartbeatTimer = new QTimer(this);
     connect(m_heartbeatTimer, SIGNAL(timeout()),
             this, SLOT(hearbeatTimerTick()));
 }
 
+/** componentComplete is executed when the QML component is fully loaded */
 void QComponent::componentComplete()
+{
+    QQuickItem::componentComplete();
+}
+
+/** Scans all children of the container item for pins and adds them to a map */
+void QComponent::addPins()
 {
     QObjectList halObjects;
 
@@ -57,16 +60,33 @@ void QComponent::componentComplete()
         qDebug() << "pin added: " << pin->name();
 #endif
     }
-
-    QQuickItem::componentComplete();
 }
 
-void QComponent::connectToHost()
+/** Removes all previously added pins */
+void QComponent::removePins()
+{
+    foreach (QPin *pin, m_pinsByName)
+    {
+        disconnect(pin, SIGNAL(valueChanged(QVariant)),
+                this, SLOT(pinChange(QVariant)));
+    }
+
+    m_pinsByHandle.clear();
+    m_pinsByName.clear();
+}
+
+/** Connects the 0MQ sockets */
+void QComponent::connectSockets()
 {
     m_cmdSocket->setIdentity(QString("%1-%2").arg(m_name).arg(QCoreApplication::applicationPid()).toLocal8Bit());
 
     m_updateSocket->connectTo(m_updateUri);
     m_cmdSocket->connectTo(m_cmdUri);
+
+    connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
+            this, SLOT(updateMessageReceived(QList<QByteArray>)));
+    connect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
+            this, SLOT(cmdMessageReceived(QList<QByteArray>)));
 
     m_instanceCount++;
 
@@ -75,6 +95,16 @@ void QComponent::connectToHost()
 #endif
 }
 
+/** Disconnects the 0MQ sockets */
+void QComponent::disconnectSockets()
+{
+    disconnect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
+               this, SLOT(updateMessageReceived(QList<QByteArray>)));
+    disconnect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
+               this, SLOT(cmdMessageReceived(QList<QByteArray>)));
+}
+
+/** Generates a Bind messages and sends it over the suitable 0MQ socket */
 void QComponent::bind()
 {
     pb::Component *component;
@@ -85,7 +115,7 @@ void QComponent::bind()
     foreach (QPin *pin, m_pinsByName)
     {
         pb::Pin *halPin = component->add_pin();
-        halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());
+        halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());  // pin name is always component.name
         halPin->set_type((pb::ValueType)pin->type());
         halPin->set_dir((pb::HalPinDirection)pin->direction());
         if (pin->type() == QPin::HAL_FLOAT)
@@ -116,6 +146,7 @@ void QComponent::bind()
     m_tx.Clear();
 }
 
+/** Updates a local pin with the value of a remote pin */
 void QComponent::pinUpdate(pb::Pin remotePin, QPin *localPin)
 {
 #ifdef QT_DEBUG
@@ -140,6 +171,7 @@ void QComponent::pinUpdate(pb::Pin remotePin, QPin *localPin)
     }
 }
 
+/** Updates a remote pin witht the value of a local pin */
 void QComponent::pinChange(QVariant value)
 {
     Q_UNUSED(value)
@@ -157,7 +189,7 @@ void QComponent::pinChange(QVariant value)
 
     pin = static_cast<QPin *>(QObject::sender());
 
-    if (pin->direction() == QPin::HAL_IN)
+    if (pin->direction() == QPin::HAL_IN)   // Only update IN or IO pins
     {
         return;
     }
@@ -196,48 +228,48 @@ void QComponent::pinChange(QVariant value)
     m_tx.Clear();
 }
 
+/** If the ready property has a rising edge we try to connect
+ *  if it is has a falling edge we disconnect and cleanup
+ */
 void QComponent::setReady(bool arg)
 {
+    if (m_ready != arg) {
+        m_ready = arg;
+        emit readyChanged(arg);
 
-    {
-        if (m_ready != arg) {
-            m_ready = arg;
-            emit readyChanged(arg);
-
-            if (m_ready)
-            {
+        if (m_ready)
+        {
 #ifdef QT_DEBUG
-                qDebug() << "ready" << m_name;
+            qDebug() << "ready" << m_name;
 #endif
-                m_heartbeatTimer->setInterval(m_heartbeatPeriod);
-                m_heartbeatTimer->start();
-                m_cState = STATE_TRYING;
-                emit cStateChanged(m_cState);
+            m_heartbeatTimer->setInterval(m_heartbeatPeriod);
+            m_heartbeatTimer->start();
+            m_cState = STATE_TRYING;
+            emit cStateChanged(m_cState);
 
-                connectToHost();
-                bind();
-            }
-            else
-            {
+            addPins();
+            connectSockets();
+            bind();
+        }
+        else
+        {
 #ifdef QT_DEBUG
-                qDebug() << "exit" << m_name;
+            qDebug() << "exit" << m_name;
 #endif
 
-                m_instanceCount--;
+            m_instanceCount--;
 
-                if (m_instanceCount == 0)
-                {
-                    // cleanup here
-                    disconnect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-                               this, SLOT(updateMessageReceived(QList<QByteArray>)));
-                    disconnect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-                               this, SLOT(cmdMessageReceived(QList<QByteArray>)));
-                }
+            if (m_instanceCount == 0)
+            {
+                // cleanup here
+                disconnectSockets();
+                removePins();
             }
         }
     }
 }
 
+/** Recurses through a list of objects */
 QObjectList QComponent::recurseObjects(const QObjectList &list)
 {
     QObjectList halObjects;
@@ -258,6 +290,7 @@ QObjectList QComponent::recurseObjects(const QObjectList &list)
     return halObjects;
 }
 
+/** Processes all message received on the update 0MQ socket */
 void QComponent::updateMessageReceived(QList<QByteArray> messageList)
 {
     QByteArray topic;
@@ -340,6 +373,7 @@ void QComponent::updateMessageReceived(QList<QByteArray> messageList)
 #endif
 }
 
+/** Processes all message received on the command 0MQ socket */
 void QComponent::cmdMessageReceived(QList<QByteArray> messageList)
 {
     QByteArray topic;
@@ -348,7 +382,9 @@ void QComponent::cmdMessageReceived(QList<QByteArray> messageList)
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
 #ifdef QT_DEBUG
-    qDebug() << "server message" << topic << QString::fromStdString(m_rx.SerializeAsString());
+    std::string s;
+    gpb::TextFormat::PrintToString(m_rx, &s);
+    qDebug() << "server message" << topic << QString::fromStdString(s);
 #endif
 
     if (m_rx.type() == pb::MT_PING_ACKNOWLEDGE)

@@ -1,11 +1,10 @@
 #include "qservicediscovery.h"
 
-
-
+/** Service discovery class implemented for use with C++ or QML.
+ */
 QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     QQuickItem(parent)
 {
-    //int port, int instance, int retryTime, int maxWait, bool trace,
     m_port = 10042;
     m_instance = 0;
     m_retryTime = 500;
@@ -25,14 +24,16 @@ QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     m_waitTime = new QTime();
 }
 
+/** componentComplete is executed when the QML component is fully loaded */
 void QServiceDiscovery::componentComplete()
 {
-    if (m_running)
+    if (m_running)  // If the the component is set to running inside QML we start the discovery at startup
     {
         startDiscovery();
     }
 }
 
+/** This function starts the service discovery process. It is non blocking. */
 void QServiceDiscovery::startDiscovery()
 {
     foreach (QService *service, m_services)
@@ -59,6 +60,9 @@ void QServiceDiscovery::startDiscovery()
     sendBroadcast();
 }
 
+/** This function either stops the service discovery process if
+ *  a service discovery is running or restarts it if repeat is set to true
+ */
 void QServiceDiscovery::stopDiscovery()
 {
     if (!m_repeat)
@@ -73,8 +77,16 @@ void QServiceDiscovery::stopDiscovery()
     }
 }
 
+/** Sends a single broadcast if probe was generated (a discovery must have
+ *  been issued previously)
+ */
 void QServiceDiscovery::sendBroadcast()
 {
+    if (m_probe.isEmpty())
+    {
+        return;
+    }
+
     m_udpSocket->writeDatagram(m_probe,
                                QHostAddress("255.255.255.255"),
                                m_port);
@@ -110,6 +122,7 @@ QService *QServiceDiscovery::replie(int index) const
     return m_replies.at(index);
 }
 
+/** This function processes all responses received over the UDP socket */
 void QServiceDiscovery::udpReadyRead()
 {
     QByteArray datagram;
@@ -145,13 +158,14 @@ void QServiceDiscovery::udpReadyRead()
                     QService *receivedService = new QService(this);
 
                     announcement = rx.service_announcement(i);
-                    receivedService->setData(QString::fromStdString(announcement.uri()),
-                                            announcement.version(),
-                                            (QService::ServiceApi)announcement.api(),
-                                            QString::fromStdString(announcement.description()),
-                                            true);
+                    receivedService->setData(QString::fromStdString(announcement.uri()),        // URI
+                                            announcement.version(),                             // version
+                                            (QService::ServiceApi)announcement.api(),           // API
+                                            QString::fromStdString(announcement.description()), // Description
+                                            true);                                              // found
                     receivedService->setType((QService::ServiceType)announcement.stype());
 
+                    // Iterate through all serives and update all services suitable for the announcement
                     foreach(QService *service, m_services)
                     {
                         if ((service->type() == receivedService->type())
@@ -188,6 +202,9 @@ void QServiceDiscovery::udpReadyRead()
     }
 }
 
+/** The function called by the timeout timer
+ *  Checks the amount of time passed by since the last broadcast
+ */
 void QServiceDiscovery::timeout()
 {
     if (m_waitTime->elapsed() > m_maxWait) // test for timeout
