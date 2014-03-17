@@ -1,7 +1,7 @@
 #Directories
 
-TOP = /home/alexander/projects/
-#LINUXCNCDIR = /home/mah/linuxcnc
+#TOP = /home/alexander/projects/
+#LINUXCNCDIR = $$TOP/linuxcnc
 
 # for now, use included pre-protoc'ed includes and C++ files:
 PROTOGEN = generated
@@ -9,11 +9,13 @@ PROTOGEN = generated
 # eventually import directly from linuxcnc build dir
 #PROTOGEN = $$LINUXCNCDIR/src/middleware/generated
 
-NZMQTDIR = $$TOP/nzmqt
-NZMQT_ANDROID_DIR = $$NZMQTDIR/bin/android/
+NZMQTDIR = ./externals-src/nzmqt
 ZEROMQ_ANDROID_DIR = /opt/zeromq-android
 PROTOBUF_ANDROID_DIR = /home/alexander/projects/tmp/protobuf-2.5.0
-NZMQT_X86_DIR = $$NZMQTDIR/bin/
+
+# This define will "move" nzmqt class method
+# implementations to nzmqt.cpp file.
+DEFINES += NZMQT_LIB
 
 # Add more folders to ship with the application, here
 folder_01.source = qml
@@ -42,34 +44,8 @@ SOURCES += main.cpp \
     $$PROTOGEN/task.pb.cc \
     $$PROTOGEN/test.pb.cc \
     $$PROTOGEN/types.pb.cc \
-    $$PROTOGEN/value.pb.cc
-
-
-INCLUDEPATH += \
-    $$NZMQTDIR/include \
-    $$NZMQTDIR/externals/include \
-    $$PROTOGEN
-
-android: {
-LIBS += -L$$ZEROMQ_ANDROID_DIR/lib/ \
-        -L$$NZMQT_ANDROID_DIR \
-        -L$$PROTOBUF_ANDROID_DIR/src/.libs/
-INCLUDEPATH += $$ZEROMQ_ANDROID_DIR/include/ \
-            $$PROTOBUF_ANDROID_DIR/src/
-}
-else: {
-LIBS += -L$$NZMQT_X86_DIR
-}
-
-LIBS += -lzmq -lnzmqtd -lprotobuf
-
-# Installation path
-# target.path =
-
-
-# Please do not modify the following two lines. Required for deployment.
-include(qtquick2controlsapplicationviewer/qtquick2controlsapplicationviewer.pri)
-qtcAddDeployment()
+    $$PROTOGEN/value.pb.cc \
+    $$NZMQTDIR/src/nzmqt/nzmqt.cpp
 
 HEADERS += \
     hal/qpin.h \
@@ -89,7 +65,29 @@ HEADERS += \
     $$PROTOGEN/task.pb.h \
     $$PROTOGEN/test.pb.h \
     $$PROTOGEN/types.pb.h \
-    $$PROTOGEN/value.pb.h
+    $$PROTOGEN/value.pb.h \
+    $$NZMQTDIR/include/nzmqt/global.hpp \
+    $$NZMQTDIR/include/nzmqt/nzmqt.hpp \
+    $$NZMQTDIR/include/nzmqt/impl.hpp
 
-OTHER_FILES += \
-    qml/Hal/Controls/Gauge.qml
+INCLUDEPATH += \
+    $$NZMQTDIR/include \
+    $$NZMQTDIR/externals/include \
+    $$PROTOGEN
+
+android: {
+LIBS += -L$$ZEROMQ_ANDROID_DIR/lib/ \
+        -L$$PROTOBUF_ANDROID_DIR/src/.libs/
+INCLUDEPATH += $$ZEROMQ_ANDROID_DIR/include/ \
+            $$PROTOBUF_ANDROID_DIR/src/
+}
+
+LIBS += -lzmq -lprotobuf
+
+# Installation path
+# target.path =
+
+
+# Please do not modify the following two lines. Required for deployment.
+include(qtquick2controlsapplicationviewer/qtquick2controlsapplicationviewer.pri)
+qtcAddDeployment()
