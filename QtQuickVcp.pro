@@ -1,7 +1,7 @@
 #Directories
 
-TOP = /qt/projects
-LINUXCNCDIR = /home/mah/linuxcnc
+TOP = /home/alexander/projects/
+#LINUXCNCDIR = /home/mah/linuxcnc
 
 # for now, use included pre-protoc'ed includes and C++ files:
 PROTOGEN = generated
