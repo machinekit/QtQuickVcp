@@ -153,8 +153,11 @@ private:
     QMap<QString, QPin*> m_pinsByName;
     QHash<int, QPin*> m_pinsByHandle;
     QTimer      *m_heartbeatTimer;
+    bool m_componentCompleted;
 
     QObjectList recurseObjects(const QObjectList &list);
+    void start();
+    void stop();
 
 private slots:
     void updateMessageReceived(QList<QByteArray> messageList);

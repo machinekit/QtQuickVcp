@@ -7049,7 +7049,7 @@ Emc_Operator_Display::Emc_Operator_Display(const Emc_Operator_Display& from)
 void Emc_Operator_Display::SharedCtor() {
   _cached_size_ = 0;
   id_ = 0;
-  display_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  display_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -7058,7 +7058,7 @@ Emc_Operator_Display::~Emc_Operator_Display() {
 }
 
 void Emc_Operator_Display::SharedDtor() {
-  if (display_ != &::google::protobuf::internal::kEmptyString) {
+  if (display_ != &::google::protobuf::internal::GetEmptyString()) {
     delete display_;
   }
   if (this != default_instance_) {
@@ -7090,7 +7090,7 @@ void Emc_Operator_Display::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     id_ = 0;
     if (has_display()) {
-      if (display_ != &::google::protobuf::internal::kEmptyString) {
+      if (display_ != &::google::protobuf::internal::GetEmptyString()) {
         display_->clear();
       }
     }
@@ -7315,7 +7315,7 @@ Emc_Operator_Text::Emc_Operator_Text(const Emc_Operator_Text& from)
 void Emc_Operator_Text::SharedCtor() {
   _cached_size_ = 0;
   id_ = 0;
-  text_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  text_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -7324,7 +7324,7 @@ Emc_Operator_Text::~Emc_Operator_Text() {
 }
 
 void Emc_Operator_Text::SharedDtor() {
-  if (text_ != &::google::protobuf::internal::kEmptyString) {
+  if (text_ != &::google::protobuf::internal::GetEmptyString()) {
     delete text_;
   }
   if (this != default_instance_) {
@@ -7356,7 +7356,7 @@ void Emc_Operator_Text::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     id_ = 0;
     if (has_text()) {
-      if (text_ != &::google::protobuf::internal::kEmptyString) {
+      if (text_ != &::google::protobuf::internal::GetEmptyString()) {
         text_->clear();
       }
     }
@@ -7581,7 +7581,7 @@ Emc_Operator_Error::Emc_Operator_Error(const Emc_Operator_Error& from)
 void Emc_Operator_Error::SharedCtor() {
   _cached_size_ = 0;
   id_ = 0;
-  error_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  error_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -7590,7 +7590,7 @@ Emc_Operator_Error::~Emc_Operator_Error() {
 }
 
 void Emc_Operator_Error::SharedDtor() {
-  if (error_ != &::google::protobuf::internal::kEmptyString) {
+  if (error_ != &::google::protobuf::internal::GetEmptyString()) {
     delete error_;
   }
   if (this != default_instance_) {
@@ -7622,7 +7622,7 @@ void Emc_Operator_Error::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     id_ = 0;
     if (has_error()) {
-      if (error_ != &::google::protobuf::internal::kEmptyString) {
+      if (error_ != &::google::protobuf::internal::GetEmptyString()) {
         error_->clear();
       }
     }
@@ -8830,7 +8830,7 @@ Emc_Exec_Plugin_Ca1l::Emc_Exec_Plugin_Ca1l(const Emc_Exec_Plugin_Ca1l& from)
 
 void Emc_Exec_Plugin_Ca1l::SharedCtor() {
   _cached_size_ = 0;
-  call_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  call_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -8839,7 +8839,7 @@ Emc_Exec_Plugin_Ca1l::~Emc_Exec_Plugin_Ca1l() {
 }
 
 void Emc_Exec_Plugin_Ca1l::SharedDtor() {
-  if (call_ != &::google::protobuf::internal::kEmptyString) {
+  if (call_ != &::google::protobuf::internal::GetEmptyString()) {
     delete call_;
   }
   if (this != default_instance_) {
@@ -8870,7 +8870,7 @@ Emc_Exec_Plugin_Ca1l* Emc_Exec_Plugin_Ca1l::New() const {
 void Emc_Exec_Plugin_Ca1l::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_call()) {
-      if (call_ != &::google::protobuf::internal::kEmptyString) {
+      if (call_ != &::google::protobuf::internal::GetEmptyString()) {
         call_->clear();
       }
     }
@@ -9047,7 +9047,7 @@ Emc_Io_Plugin_Call::Emc_Io_Plugin_Call(const Emc_Io_Plugin_Call& from)
 
 void Emc_Io_Plugin_Call::SharedCtor() {
   _cached_size_ = 0;
-  call_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  call_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -9056,7 +9056,7 @@ Emc_Io_Plugin_Call::~Emc_Io_Plugin_Call() {
 }
 
 void Emc_Io_Plugin_Call::SharedDtor() {
-  if (call_ != &::google::protobuf::internal::kEmptyString) {
+  if (call_ != &::google::protobuf::internal::GetEmptyString()) {
     delete call_;
   }
   if (this != default_instance_) {
@@ -9087,7 +9087,7 @@ Emc_Io_Plugin_Call* Emc_Io_Plugin_Call::New() const {
 void Emc_Io_Plugin_Call::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_call()) {
-      if (call_ != &::google::protobuf::internal::kEmptyString) {
+      if (call_ != &::google::protobuf::internal::GetEmptyString()) {
         call_->clear();
       }
     }

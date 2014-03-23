@@ -141,10 +141,10 @@ RTAPICommand::RTAPICommand(const RTAPICommand& from)
 void RTAPICommand::SharedCtor() {
   _cached_size_ = 0;
   instance_ = 0;
-  modname_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  modname_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   rt_msglevel_ = 0;
   user_msglevel_ = 0;
-  threadname_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  threadname_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   threadperiod_ = 0;
   use_fp_ = false;
   cpu_ = 0;
@@ -156,10 +156,10 @@ RTAPICommand::~RTAPICommand() {
 }
 
 void RTAPICommand::SharedDtor() {
-  if (modname_ != &::google::protobuf::internal::kEmptyString) {
+  if (modname_ != &::google::protobuf::internal::GetEmptyString()) {
     delete modname_;
   }
-  if (threadname_ != &::google::protobuf::internal::kEmptyString) {
+  if (threadname_ != &::google::protobuf::internal::GetEmptyString()) {
     delete threadname_;
   }
   if (this != default_instance_) {
@@ -191,14 +191,14 @@ void RTAPICommand::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     instance_ = 0;
     if (has_modname()) {
-      if (modname_ != &::google::protobuf::internal::kEmptyString) {
+      if (modname_ != &::google::protobuf::internal::GetEmptyString()) {
         modname_->clear();
       }
     }
     rt_msglevel_ = 0;
     user_msglevel_ = 0;
     if (has_threadname()) {
-      if (threadname_ != &::google::protobuf::internal::kEmptyString) {
+      if (threadname_ != &::google::protobuf::internal::GetEmptyString()) {
         threadname_->clear();
       }
     }

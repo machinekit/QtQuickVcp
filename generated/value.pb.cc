@@ -162,13 +162,13 @@ void Value::SharedCtor() {
   halfloat_ = 0;
   hals32_ = 0;
   halu32_ = 0u;
-  v_bytes_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  v_bytes_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   v_int32_ = 0;
   v_int64_ = GOOGLE_LONGLONG(0);
   v_uint32_ = 0u;
   v_uint64_ = GOOGLE_ULONGLONG(0);
   v_double_ = 0;
-  v_string_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  v_string_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   v_bool_ = false;
   carte_ = NULL;
   pose_ = NULL;
@@ -180,10 +180,10 @@ Value::~Value() {
 }
 
 void Value::SharedDtor() {
-  if (v_bytes_ != &::google::protobuf::internal::kEmptyString) {
+  if (v_bytes_ != &::google::protobuf::internal::GetEmptyString()) {
     delete v_bytes_;
   }
-  if (v_string_ != &::google::protobuf::internal::kEmptyString) {
+  if (v_string_ != &::google::protobuf::internal::GetEmptyString()) {
     delete v_string_;
   }
   if (this != default_instance_) {
@@ -221,7 +221,7 @@ void Value::Clear() {
     hals32_ = 0;
     halu32_ = 0u;
     if (has_v_bytes()) {
-      if (v_bytes_ != &::google::protobuf::internal::kEmptyString) {
+      if (v_bytes_ != &::google::protobuf::internal::GetEmptyString()) {
         v_bytes_->clear();
       }
     }
@@ -233,7 +233,7 @@ void Value::Clear() {
     v_uint64_ = GOOGLE_ULONGLONG(0);
     v_double_ = 0;
     if (has_v_string()) {
-      if (v_string_ != &::google::protobuf::internal::kEmptyString) {
+      if (v_string_ != &::google::protobuf::internal::GetEmptyString()) {
         v_string_->clear();
       }
     }

@@ -274,7 +274,7 @@ TaskPlanExecute::TaskPlanExecute(const TaskPlanExecute& from)
 
 void TaskPlanExecute::SharedCtor() {
   _cached_size_ = 0;
-  command_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  command_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   line_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -284,7 +284,7 @@ TaskPlanExecute::~TaskPlanExecute() {
 }
 
 void TaskPlanExecute::SharedDtor() {
-  if (command_ != &::google::protobuf::internal::kEmptyString) {
+  if (command_ != &::google::protobuf::internal::GetEmptyString()) {
     delete command_;
   }
   if (this != default_instance_) {
@@ -315,7 +315,7 @@ TaskPlanExecute* TaskPlanExecute::New() const {
 void TaskPlanExecute::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_command()) {
-      if (command_ != &::google::protobuf::internal::kEmptyString) {
+      if (command_ != &::google::protobuf::internal::GetEmptyString()) {
         command_->clear();
       }
     }
@@ -950,7 +950,7 @@ TaskPlanOpen::TaskPlanOpen(const TaskPlanOpen& from)
 
 void TaskPlanOpen::SharedCtor() {
   _cached_size_ = 0;
-  filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -959,7 +959,7 @@ TaskPlanOpen::~TaskPlanOpen() {
 }
 
 void TaskPlanOpen::SharedDtor() {
-  if (filename_ != &::google::protobuf::internal::kEmptyString) {
+  if (filename_ != &::google::protobuf::internal::GetEmptyString()) {
     delete filename_;
   }
   if (this != default_instance_) {
@@ -990,7 +990,7 @@ TaskPlanOpen* TaskPlanOpen::New() const {
 void TaskPlanOpen::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_filename()) {
-      if (filename_ != &::google::protobuf::internal::kEmptyString) {
+      if (filename_ != &::google::protobuf::internal::GetEmptyString()) {
         filename_->clear();
       }
     }
@@ -1178,7 +1178,7 @@ TaskPlanReply::TaskPlanReply(const TaskPlanReply& from)
 void TaskPlanReply::SharedCtor() {
   _cached_size_ = 0;
   cmd_ = 3;
-  errormsg_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  errormsg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1187,7 +1187,7 @@ TaskPlanReply::~TaskPlanReply() {
 }
 
 void TaskPlanReply::SharedDtor() {
-  if (errormsg_ != &::google::protobuf::internal::kEmptyString) {
+  if (errormsg_ != &::google::protobuf::internal::GetEmptyString()) {
     delete errormsg_;
   }
   if (this != default_instance_) {
@@ -1219,7 +1219,7 @@ void TaskPlanReply::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     cmd_ = 3;
     if (has_errormsg()) {
-      if (errormsg_ != &::google::protobuf::internal::kEmptyString) {
+      if (errormsg_ != &::google::protobuf::internal::GetEmptyString()) {
         errormsg_->clear();
       }
     }
@@ -1659,7 +1659,7 @@ void TicketUpdate::SharedCtor() {
   _cached_size_ = 0;
   cticket_ = 0u;
   status_ = -1;
-  text_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  text_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1668,7 +1668,7 @@ TicketUpdate::~TicketUpdate() {
 }
 
 void TicketUpdate::SharedDtor() {
-  if (text_ != &::google::protobuf::internal::kEmptyString) {
+  if (text_ != &::google::protobuf::internal::GetEmptyString()) {
     delete text_;
   }
   if (this != default_instance_) {
@@ -1701,7 +1701,7 @@ void TicketUpdate::Clear() {
     cticket_ = 0u;
     status_ = -1;
     if (has_text()) {
-      if (text_ != &::google::protobuf::internal::kEmptyString) {
+      if (text_ != &::google::protobuf::internal::GetEmptyString()) {
         text_->clear();
       }
     }

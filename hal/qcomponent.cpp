@@ -4,6 +4,7 @@
 QComponent::QComponent(QQuickItem *parent) :
     QQuickItem(parent)
 {
+    m_componentCompleted = false;
     m_updateSocket = NULL;
     m_cmdSocket = NULL;
     m_instanceCount = 0;
@@ -32,6 +33,13 @@ QComponent::QComponent(QQuickItem *parent) :
 /** componentComplete is executed when the QML component is fully loaded */
 void QComponent::componentComplete()
 {
+    m_componentCompleted = true;
+
+    if (m_ready == true)    // the component was set to ready before it was completed
+    {
+        start();
+    }
+
     QQuickItem::componentComplete();
 }
 
@@ -228,6 +236,37 @@ void QComponent::pinChange(QVariant value)
     m_tx.Clear();
 }
 
+void QComponent::start()
+{
+#ifdef QT_DEBUG
+            qDebug() << "ready" << m_name;
+#endif
+    m_heartbeatTimer->setInterval(m_heartbeatPeriod);
+    m_heartbeatTimer->start();
+    m_cState = STATE_TRYING;
+    emit cStateChanged(m_cState);
+
+    addPins();
+    connectSockets();
+    bind();
+}
+
+void QComponent::stop()
+{
+#ifdef QT_DEBUG
+            qDebug() << "stop" << m_name;
+#endif
+
+    m_instanceCount--;
+
+    if (m_instanceCount == 0)
+    {
+        // cleanup here
+        disconnectSockets();
+        removePins();
+    }
+}
+
 /** If the ready property has a rising edge we try to connect
  *  if it is has a falling edge we disconnect and cleanup
  */
@@ -237,34 +276,18 @@ void QComponent::setReady(bool arg)
         m_ready = arg;
         emit readyChanged(arg);
 
+        if (m_componentCompleted == false)
+        {
+            return;
+        }
+
         if (m_ready)
         {
-#ifdef QT_DEBUG
-            qDebug() << "ready" << m_name;
-#endif
-            m_heartbeatTimer->setInterval(m_heartbeatPeriod);
-            m_heartbeatTimer->start();
-            m_cState = STATE_TRYING;
-            emit cStateChanged(m_cState);
-
-            addPins();
-            connectSockets();
-            bind();
+            start();
         }
         else
         {
-#ifdef QT_DEBUG
-            qDebug() << "exit" << m_name;
-#endif
-
-            m_instanceCount--;
-
-            if (m_instanceCount == 0)
-            {
-                // cleanup here
-                disconnectSockets();
-                removePins();
-            }
+            stop();
         }
     }
 }
@@ -376,15 +399,12 @@ void QComponent::updateMessageReceived(QList<QByteArray> messageList)
 /** Processes all message received on the command 0MQ socket */
 void QComponent::cmdMessageReceived(QList<QByteArray> messageList)
 {
-    QByteArray topic;
-
-    //topic = messageList.at(0);
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
 #ifdef QT_DEBUG
     std::string s;
     gpb::TextFormat::PrintToString(m_rx, &s);
-    qDebug() << "server message" << topic << QString::fromStdString(s);
+    qDebug() << "server message" << QString::fromStdString(s);
 #endif
 
     if (m_rx.type() == pb::MT_PING_ACKNOWLEDGE)

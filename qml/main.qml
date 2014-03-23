@@ -3,28 +3,95 @@ import QtQuick.Controls 1.1
 import Hal 1.0 as HAL
 
 ApplicationWindow {
+    id: mainWindow
+
     title: qsTr("Hello World")
     width: 500
-    height: 800
+    height: 700
 
     Item {
         id: pageStack
 
         anchors.fill: parent
 
-        StartPage {
+        Item {
             id: startPage
 
             anchors.fill: parent
+
+            Text {
+                id: dummyText
+            }
+
+            Text {
+                id: pageTitleText
+
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.topMargin: 10
+                text: qsTr("Available Apps:")
+                font.pointSize: dummyText.font.pointSize * 1.6
+                font.bold: true
+            }
+
+            ListView {
+                anchors.top: pageTitleText.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 10
+                spacing: 10
+
+                model: appConfig.appConfigs
+                delegate: Button {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: mainWindow.height*0.1
+                    Text {
+                        id: titleText
+
+                        anchors.centerIn: parent
+                        anchors.verticalCenterOffset: -5
+                        font.pointSize: descriptionText.font.pointSize*1.6
+                        font.bold: true
+                        text: name
+                    }
+                    Text {
+                        id: descriptionText
+
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: titleText.bottom
+                        anchors.margins: 2
+                        text: description
+                    }
+
+                    onClicked: appConfig.selectAppConfig(name)
+                }
+            }
         }
 
-        ViewPage {
+        Item {
             id: viewPage
 
             anchors.fill: parent
+
+            Loader {
+                id: appLoader
+
+                anchors.fill: parent
+                active: selectedConfig.loaded
+                source: selectedConfig.mainFile
+
+                onSourceChanged: {
+                    console.log(source)
+                    console.log(active)
+                }
+
+                onLoaded: console.log("loaded")
+            }
         }
 
-        state: testComponent.ready?"connected":"discovery"
+        state: (appLoader.active) ?"loaded":"discovery"
 
         states: [
             State {
@@ -33,7 +100,7 @@ ApplicationWindow {
                 PropertyChanges { target: viewPage; opacity: 0.0 }
             },
             State {
-                name: "connected"
+                name: "loaded"
                 PropertyChanges { target: startPage; opacity: 0.0 }
                 PropertyChanges { target: viewPage; opacity: 1.0 }
             }
@@ -42,46 +109,39 @@ ApplicationWindow {
         transitions: Transition {
                 PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic }
             }
-    }
 
-    HAL.RemoteComponent {
-        id: testComponent
+        // Capture the Android Back kay and backspace key
+        // on the desktop tp go back in the application
+        // focus needs to be true to capture key events
+        focus: true
+        Keys.onReleased: {
+                if ((event.key == Qt.Key_Back) ||
+                        (event.key == Qt.Key_Backspace)) {
+                    if (pageStack.state == "discovery")
+                    {
+                        Qt.quit()
+                    }
+                    else if (pageStack.state == "loaded")
+                    {
+                        appConfig.unselectAppConfig()
+                    }
 
-        name: "motorctrl"
-        cmdUri: rcommandService.uri
-        updateUri: halrcompService.uri
-        heartbeatPeriod: 3000
-        ready: halrcompService.found && rcommandService.found
-        containerItem: viewPage
-    }
-
-    HAL.ServiceDiscovery {
-        id: serviceDiscovery
-
-        port: 10042
-        retryTime: 500
-        maxWait: 2000
-        trace: false
-        instance: 0
-        running: true
-        repeat: false
-
-        services: [
-            HAL.Service {
-                id: halrcompService
-                type: HAL.Service.ST_STP_HALRCOMP
-                minVersion: 0
-            },
-            HAL.Service {
-                id: rcommandService
-                type: HAL.Service.ST_HAL_RCOMMAND
-                minVersion: 0
-            },
-            HAL.Service {
-                id: websocketService
-                type: HAL.Service.ST_WEBSOCKET
-                minVersion: 0
+                    event.accepted = true
+                }
             }
-        ]
+    }
+
+    HAL.AppConfig {
+        id: appConfig
+
+        uri: "tcp://192.168.1.18:5590"
+        timeout: 3000
+        ready: true
+        filters: [ HAL.AppConfigFilter { type: HAL.AppConfigItem.QT5_QML },
+                   HAL.AppConfigFilter { type: HAL.AppConfigItem.GLADEVCP } ]
+        selectedConfig: HAL.AppConfigItem {
+            id: selectedConfig
+        }
+
     }
 }

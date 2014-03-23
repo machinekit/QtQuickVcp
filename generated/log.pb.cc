@@ -133,8 +133,8 @@ void LogMessage::SharedCtor() {
   origin_ = 0;
   pid_ = 0;
   level_ = 0;
-  tag_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  text_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  tag_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  text_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -143,10 +143,10 @@ LogMessage::~LogMessage() {
 }
 
 void LogMessage::SharedDtor() {
-  if (tag_ != &::google::protobuf::internal::kEmptyString) {
+  if (tag_ != &::google::protobuf::internal::GetEmptyString()) {
     delete tag_;
   }
-  if (text_ != &::google::protobuf::internal::kEmptyString) {
+  if (text_ != &::google::protobuf::internal::GetEmptyString()) {
     delete text_;
   }
   if (this != default_instance_) {
@@ -180,12 +180,12 @@ void LogMessage::Clear() {
     pid_ = 0;
     level_ = 0;
     if (has_tag()) {
-      if (tag_ != &::google::protobuf::internal::kEmptyString) {
+      if (tag_ != &::google::protobuf::internal::GetEmptyString()) {
         tag_->clear();
       }
     }
     if (has_text()) {
-      if (text_ != &::google::protobuf::internal::kEmptyString) {
+      if (text_ != &::google::protobuf::internal::GetEmptyString()) {
         text_->clear();
       }
     }

@@ -11,7 +11,7 @@ PROTOGEN = generated
 
 NZMQTDIR = ./externals-src/nzmqt
 ZEROMQ_ANDROID_DIR = /opt/zeromq-android
-PROTOBUF_ANDROID_DIR = /home/alexander/projects/tmp/protobuf-2.5.0
+PROTOBUF_ANDROID_DIR = /home/alexander/projects/tmp/protobuf-read-only
 
 # This define will "move" nzmqt class method
 # implementations to nzmqt.cpp file.
@@ -32,6 +32,7 @@ SOURCES += main.cpp \
     hal/qservice.cpp \
     hal/qservicediscovery.cpp \
     $$PROTOGEN/canon.pb.cc \
+    $$PROTOGEN/config.pb.cc \
     $$PROTOGEN/emcclass.pb.cc \
     $$PROTOGEN/log.pb.cc \
     $$PROTOGEN/message.pb.cc \
@@ -45,7 +46,10 @@ SOURCES += main.cpp \
     $$PROTOGEN/test.pb.cc \
     $$PROTOGEN/types.pb.cc \
     $$PROTOGEN/value.pb.cc \
-    $$NZMQTDIR/src/nzmqt/nzmqt.cpp
+    $$NZMQTDIR/src/nzmqt/nzmqt.cpp \
+    hal/qappconfig.cpp \
+    hal/qappconfigitem.cpp \
+    hal/qappconfigfilter.cpp
 
 HEADERS += \
     hal/qpin.h \
@@ -68,7 +72,10 @@ HEADERS += \
     $$PROTOGEN/value.pb.h \
     $$NZMQTDIR/include/nzmqt/global.hpp \
     $$NZMQTDIR/include/nzmqt/nzmqt.hpp \
-    $$NZMQTDIR/include/nzmqt/impl.hpp
+    $$NZMQTDIR/include/nzmqt/impl.hpp \
+    hal/qappconfig.h \
+    hal/qappconfigitem.h \
+    hal/qappconfigfilter.h
 
 INCLUDEPATH += \
     $$NZMQTDIR/include \
@@ -91,3 +98,9 @@ LIBS += -lzmq -lprotobuf
 # Please do not modify the following two lines. Required for deployment.
 include(qtquick2controlsapplicationviewer/qtquick2controlsapplicationviewer.pri)
 qtcAddDeployment()
+
+OTHER_FILES += \
+    qml/mainbak.qml \
+    android/AndroidManifest.xml
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

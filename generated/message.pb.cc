@@ -34,7 +34,7 @@ void protobuf_AssignDesc_message_2eproto() {
       "message.proto");
   GOOGLE_CHECK(file != NULL);
   Container_descriptor_ = file->message_type(0);
-  static const int Container_offsets_[100] = {
+  static const int Container_offsets_[101] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, motcmd_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, motstat_),
@@ -80,6 +80,7 @@ void protobuf_AssignDesc_message_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, group_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, member_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, function_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, app_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, ascii_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, unicode_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Container, gcode_),
@@ -186,94 +187,96 @@ void protobuf_AddDesc_message_2eproto() {
   ::pb::protobuf_AddDesc_canon_2eproto();
   ::pb::protobuf_AddDesc_rtapicommand_2eproto();
   ::pb::protobuf_AddDesc_rtapi_5fmessage_2eproto();
+  ::pb::protobuf_AddDesc_config_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\rmessage.proto\022\002pb\032\014nanopb.proto\032\013types"
     ".proto\032\014object.proto\032\tlog.proto\032\rmotcmds"
     ".proto\032\ntest.proto\032\ntask.proto\032\013canon.pr"
     "oto\032\022rtapicommand.proto\032\023rtapi_message.p"
-    "roto\"\345\031\n\tContainer\022\037\n\004type\030\001 \002(\0162\021.pb.Co"
-    "ntainerType\022!\n\006motcmd\030\t \001(\0132\021.pb.MotionC"
-    "ommand\022!\n\007motstat\030\n \001(\0132\020.pb.MotionStatu"
-    "s\022\025\n\rlegacy_motcmd\030\013 \001(\014\022\026\n\016legacy_motst"
-    "at\030\014 \001(\014\022(\n\rrtapi_message\030\r \001(\0132\021.pb.RTA"
-    "PI_Message\022!\n\ntask_reply\030\016 \001(\0132\r.pb.Task"
-    "Reply\022\'\n\rticket_update\030\017 \001(\0132\020.pb.Ticket"
-    "Update\022\016\n\006syslog\030\022 \001(\014\022\022\n\nlegacy_nml\030\023 \001"
-    "(\014\022\030\n\020legacy_motconfig\030\024 \001(\014\022\016\n\006tv_sec\030\025"
-    " \001(\005\022\017\n\007tv_nsec\030\026 \001(\005\022\r\n\005topic\030\027 \001(\t\022\026\n\016"
-    "reply_required\030\030 \001(\010\022\014\n\004rsvp\030\036 \001(\005\022&\n\013in"
-    "_reply_to\030! \001(\0162\021.pb.ContainerType\022\"\n\nrc"
-    "s_status\030# \001(\0162\016.pb.RCS_STATUS\022\036\n\006status"
-    "\030( \001(\0162\016.pb.StatusType\022\016\n\006serial\030- \001(\005\022\024"
-    "\n\014reply_serial\0302 \001(\005\022\016\n\006ticket\0307 \001(\005\022\024\n\014"
-    "reply_ticket\030< \001(\005\022\020\n\010sequence\030> \001(\005\022\016\n\006"
-    "credit\030A \001(\005\022\023\n\013line_number\030B \001(\005\022\014\n\004nam"
-    "e\030C \001(\t\022\014\n\004note\030D \003(\t\022\017\n\007retcode\030E \001(\005\022\032"
-    "\n\005error\030F \001(\0132\013.pb.AnError\022\014\n\004uuid\030H \001(\014"
-    "\022\r\n\005trace\030K \001(\010\022\020\n\010instance\030M \001(\005\022\036\n\006ori"
-    "gin\030P \001(\0132\016.pb.Originator\022\"\n\010rtapicmd\030V "
-    "\001(\0132\020.pb.RTAPICommand\0225\n\024service_announc"
-    "ement\030X \003(\0132\027.pb.ServiceAnnouncement\022\033\n\004"
-    "comp\030d \003(\0132\r.pb.Component\022\024\n\003pin\030\002 \003(\0132\007"
-    ".pb.Pin\022\032\n\006signal\030\003 \003(\0132\n.pb.Signal\022\030\n\005p"
-    "aram\030g \003(\0132\t.pb.Param\022\032\n\006thread\030h \003(\0132\n."
-    "pb.Thread\022\026\n\004ring\030i \003(\0132\010.pb.Ring\022\030\n\005gro"
-    "up\030j \003(\0132\t.pb.Group\022\032\n\006member\030k \003(\0132\n.pb"
-    ".Member\022\036\n\010function\030l \003(\0132\014.pb.Function\022"
-    "\016\n\005ascii\030\214\001 \001(\t\022\020\n\007unicode\030\215\001 \001(\014\022\016\n\005gco"
-    "de\030\216\001 \001(\t\022\017\n\006python\030\217\001 \001(\t\022\017\n\006pickle\030\220\001 "
-    "\001(\014\022\014\n\003tcl\030\221\001 \001(\t\022\014\n\003xml\030\222\001 \001(\t\022\r\n\004json\030"
-    "\223\001 \001(\t\022\r\n\004jpeg\030\224\001 \001(\014\022\014\n\003png\030\225\001 \001(\014\022\r\n\004t"
-    "iff\030\226\001 \001(\014\022\023\n\npostscript\030\227\001 \001(\014\022\014\n\003svg\030\230"
-    "\001 \001(\014\022\014\n\003wou\030\240\001 \001(\014\022#\n\013log_message\030W \001(\013"
-    "2\016.pb.LogMessage\022\'\n\ttpexecute\030\310\001 \001(\0132\023.p"
-    "b.TaskPlanExecute\022/\n\rtpblockdelete\030\311\001 \001("
-    "\0132\027.pb.TaskPlanBlockDelete\0221\n\016tpoptional"
-    "stop\030\312\001 \001(\0132\030.pb.TaskPlanOptionalStop\022!\n"
-    "\006tpopen\030\313\001 \001(\0132\020.pb.TaskPlanOpen\022*\n\016task"
-    "plan_reply\030\322\001 \001(\0132\021.pb.TaskPlanReply\022+\n\014"
-    "traj_set_g5x\030\254\002 \001(\0132\024.pb.Emc_Traj_Set_G5"
-    "x\022+\n\014traj_set_g92\030\266\002 \001(\0132\024.pb.Emc_Traj_S"
-    "et_G92\0225\n\021traj_set_rotation\030\300\002 \001(\0132\031.pb."
-    "Emc_Traj_Set_Rotation\0223\n\020traj_linear_mov"
-    "e\030\312\002 \001(\0132\030.pb.Emc_Traj_Linear_Move\022\'\n\ntr"
-    "aj_probe\030\324\002 \001(\0132\022.pb.Emc_Traj_Probe\0227\n\022t"
-    "raj_circular_move\030\336\002 \001(\0132\032.pb.Emc_Traj_C"
-    "ircular_Move\022/\n\016traj_rigid_tap\030\350\002 \001(\0132\026."
-    "pb.Emc_Traj_Rigid_Tap\0227\n\022traj_set_term_c"
-    "ond\030\362\002 \001(\0132\032.pb.Emc_Traj_Set_Term_Cond\022;"
-    "\n\024traj_set_spindlesync\030\374\002 \001(\0132\034.pb.Emc_T"
-    "raj_Set_Spindlesync\022\'\n\ntraj_delay\030\206\003 \001(\013"
-    "2\022.pb.Emc_Traj_Delay\022\'\n\nspindle_on\030\220\003 \001("
-    "\0132\022.pb.Emc_Spindle_On\022-\n\rspindle_speed\030\232"
-    "\003 \001(\0132\025.pb.Emc_Spindle_Speed\022/\n\016spindle_"
-    "orient\030\244\003 \001(\0132\026.pb.Emc_Spindle_Orient\022K\n"
-    "\034spindle_wait_orient_complete\030\256\003 \001(\0132$.p"
-    "b.Emc_Spindle_Wait_Orient_Complete\0220\n\016to"
-    "ol_set_offet\030\270\003 \001(\0132\027.pb.Emc_Tool_Set_Of"
-    "fset\0221\n\017traj_set_offset\030\302\003 \001(\0132\027.pb.Emc_"
-    "Traj_Set_Offset\022+\n\014tool_prepare\030\314\003 \001(\0132\024"
-    ".pb.Emc_Tool_Prepare\0221\n\017tool_set_number\030"
-    "\326\003 \001(\0132\027.pb.Emc_Tool_Set_Number\0227\n\022traj_"
-    "set_fo_enable\030\340\003 \001(\0132\032.pb.Emc_Traj_Set_F"
-    "o_Enable\0227\n\022traj_set_so_enable\030\352\003 \001(\0132\032."
-    "pb.Emc_Traj_Set_So_Enable\0227\n\022traj_set_fh"
-    "_enable\030\364\003 \001(\0132\032.pb.Emc_Traj_Set_Fh_Enab"
-    "le\0221\n\017motion_adaptive\030\376\003 \001(\0132\027.pb.Emc_Mo"
-    "tion_Adaptive\0223\n\020operator_display\030\210\004 \001(\013"
-    "2\030.pb.Emc_Operator_Display\022-\n\roperator_t"
-    "ext\030\222\004 \001(\0132\025.pb.Emc_Operator_Text\022/\n\016ope"
-    "rator_error\030\234\004 \001(\0132\026.pb.Emc_Operator_Err"
-    "or\0221\n\017motion_set_dout\030\246\004 \001(\0132\027.pb.Emc_Mo"
-    "tion_Set_Dout\0221\n\017motion_set_aout\030\260\004 \001(\0132"
-    "\027.pb.Emc_Motion_Set_Aout\022/\n\016aux_input_wa"
-    "it\030\272\004 \001(\0132\026.pb.Emc_Aux_Input_Wait\0223\n\020exe"
-    "c_plugin_call\030\304\004 \001(\0132\030.pb.Emc_Exec_Plugi"
-    "n_Ca1l\022/\n\016io_plugin_call\030\316\004 \001(\0132\026.pb.Emc"
-    "_Io_Plugin_Call\022\025\n\014pru_firmware\030\200\020 \001(\014\022\033"
-    "\n\022mesa_5i20_firmware\030\270\027 \001(\014\022\031\n\005test1\030\211\' "
-    "\001(\0132\t.pb.Test1\022\031\n\005test2\030\212\' \001(\0132\t.pb.Test"
-    "2\022\031\n\005test3\030\213\' \001(\0132\t.pb.Test3", 3468);
+    "roto\032\014config.proto\"\203\032\n\tContainer\022\037\n\004type"
+    "\030\001 \002(\0162\021.pb.ContainerType\022!\n\006motcmd\030\t \001("
+    "\0132\021.pb.MotionCommand\022!\n\007motstat\030\n \001(\0132\020."
+    "pb.MotionStatus\022\025\n\rlegacy_motcmd\030\013 \001(\014\022\026"
+    "\n\016legacy_motstat\030\014 \001(\014\022(\n\rrtapi_message\030"
+    "\r \001(\0132\021.pb.RTAPI_Message\022!\n\ntask_reply\030\016"
+    " \001(\0132\r.pb.TaskReply\022\'\n\rticket_update\030\017 \001"
+    "(\0132\020.pb.TicketUpdate\022\016\n\006syslog\030\022 \001(\014\022\022\n\n"
+    "legacy_nml\030\023 \001(\014\022\030\n\020legacy_motconfig\030\024 \001"
+    "(\014\022\016\n\006tv_sec\030\025 \001(\005\022\017\n\007tv_nsec\030\026 \001(\005\022\r\n\005t"
+    "opic\030\027 \001(\t\022\026\n\016reply_required\030\030 \001(\010\022\014\n\004rs"
+    "vp\030\036 \001(\005\022&\n\013in_reply_to\030! \001(\0162\021.pb.Conta"
+    "inerType\022\"\n\nrcs_status\030# \001(\0162\016.pb.RCS_ST"
+    "ATUS\022\036\n\006status\030( \001(\0162\016.pb.StatusType\022\016\n\006"
+    "serial\030- \001(\005\022\024\n\014reply_serial\0302 \001(\005\022\016\n\006ti"
+    "cket\0307 \001(\005\022\024\n\014reply_ticket\030< \001(\005\022\020\n\010sequ"
+    "ence\030> \001(\005\022\016\n\006credit\030A \001(\005\022\023\n\013line_numbe"
+    "r\030B \001(\005\022\014\n\004name\030C \001(\t\022\014\n\004note\030D \003(\t\022\017\n\007r"
+    "etcode\030E \001(\005\022\032\n\005error\030F \001(\0132\013.pb.AnError"
+    "\022\014\n\004uuid\030H \001(\014\022\r\n\005trace\030K \001(\010\022\020\n\010instanc"
+    "e\030M \001(\005\022\036\n\006origin\030P \001(\0132\016.pb.Originator\022"
+    "\"\n\010rtapicmd\030V \001(\0132\020.pb.RTAPICommand\0225\n\024s"
+    "ervice_announcement\030X \003(\0132\027.pb.ServiceAn"
+    "nouncement\022\033\n\004comp\030d \003(\0132\r.pb.Component\022"
+    "\024\n\003pin\030\002 \003(\0132\007.pb.Pin\022\032\n\006signal\030\003 \003(\0132\n."
+    "pb.Signal\022\030\n\005param\030g \003(\0132\t.pb.Param\022\032\n\006t"
+    "hread\030h \003(\0132\n.pb.Thread\022\026\n\004ring\030i \003(\0132\010."
+    "pb.Ring\022\030\n\005group\030j \003(\0132\t.pb.Group\022\032\n\006mem"
+    "ber\030k \003(\0132\n.pb.Member\022\036\n\010function\030l \003(\0132"
+    "\014.pb.Function\022\034\n\003app\030x \003(\0132\017.pb.Applicat"
+    "ion\022\016\n\005ascii\030\214\001 \001(\t\022\020\n\007unicode\030\215\001 \001(\014\022\016\n"
+    "\005gcode\030\216\001 \001(\t\022\017\n\006python\030\217\001 \001(\t\022\017\n\006pickle"
+    "\030\220\001 \001(\014\022\014\n\003tcl\030\221\001 \001(\t\022\014\n\003xml\030\222\001 \001(\t\022\r\n\004j"
+    "son\030\223\001 \001(\t\022\r\n\004jpeg\030\224\001 \001(\014\022\014\n\003png\030\225\001 \001(\014\022"
+    "\r\n\004tiff\030\226\001 \001(\014\022\023\n\npostscript\030\227\001 \001(\014\022\014\n\003s"
+    "vg\030\230\001 \001(\014\022\014\n\003wou\030\240\001 \001(\014\022#\n\013log_message\030W"
+    " \001(\0132\016.pb.LogMessage\022\'\n\ttpexecute\030\310\001 \001(\013"
+    "2\023.pb.TaskPlanExecute\022/\n\rtpblockdelete\030\311"
+    "\001 \001(\0132\027.pb.TaskPlanBlockDelete\0221\n\016tpopti"
+    "onalstop\030\312\001 \001(\0132\030.pb.TaskPlanOptionalSto"
+    "p\022!\n\006tpopen\030\313\001 \001(\0132\020.pb.TaskPlanOpen\022*\n\016"
+    "taskplan_reply\030\322\001 \001(\0132\021.pb.TaskPlanReply"
+    "\022+\n\014traj_set_g5x\030\254\002 \001(\0132\024.pb.Emc_Traj_Se"
+    "t_G5x\022+\n\014traj_set_g92\030\266\002 \001(\0132\024.pb.Emc_Tr"
+    "aj_Set_G92\0225\n\021traj_set_rotation\030\300\002 \001(\0132\031"
+    ".pb.Emc_Traj_Set_Rotation\0223\n\020traj_linear"
+    "_move\030\312\002 \001(\0132\030.pb.Emc_Traj_Linear_Move\022\'"
+    "\n\ntraj_probe\030\324\002 \001(\0132\022.pb.Emc_Traj_Probe\022"
+    "7\n\022traj_circular_move\030\336\002 \001(\0132\032.pb.Emc_Tr"
+    "aj_Circular_Move\022/\n\016traj_rigid_tap\030\350\002 \001("
+    "\0132\026.pb.Emc_Traj_Rigid_Tap\0227\n\022traj_set_te"
+    "rm_cond\030\362\002 \001(\0132\032.pb.Emc_Traj_Set_Term_Co"
+    "nd\022;\n\024traj_set_spindlesync\030\374\002 \001(\0132\034.pb.E"
+    "mc_Traj_Set_Spindlesync\022\'\n\ntraj_delay\030\206\003"
+    " \001(\0132\022.pb.Emc_Traj_Delay\022\'\n\nspindle_on\030\220"
+    "\003 \001(\0132\022.pb.Emc_Spindle_On\022-\n\rspindle_spe"
+    "ed\030\232\003 \001(\0132\025.pb.Emc_Spindle_Speed\022/\n\016spin"
+    "dle_orient\030\244\003 \001(\0132\026.pb.Emc_Spindle_Orien"
+    "t\022K\n\034spindle_wait_orient_complete\030\256\003 \001(\013"
+    "2$.pb.Emc_Spindle_Wait_Orient_Complete\0220"
+    "\n\016tool_set_offet\030\270\003 \001(\0132\027.pb.Emc_Tool_Se"
+    "t_Offset\0221\n\017traj_set_offset\030\302\003 \001(\0132\027.pb."
+    "Emc_Traj_Set_Offset\022+\n\014tool_prepare\030\314\003 \001"
+    "(\0132\024.pb.Emc_Tool_Prepare\0221\n\017tool_set_num"
+    "ber\030\326\003 \001(\0132\027.pb.Emc_Tool_Set_Number\0227\n\022t"
+    "raj_set_fo_enable\030\340\003 \001(\0132\032.pb.Emc_Traj_S"
+    "et_Fo_Enable\0227\n\022traj_set_so_enable\030\352\003 \001("
+    "\0132\032.pb.Emc_Traj_Set_So_Enable\0227\n\022traj_se"
+    "t_fh_enable\030\364\003 \001(\0132\032.pb.Emc_Traj_Set_Fh_"
+    "Enable\0221\n\017motion_adaptive\030\376\003 \001(\0132\027.pb.Em"
+    "c_Motion_Adaptive\0223\n\020operator_display\030\210\004"
+    " \001(\0132\030.pb.Emc_Operator_Display\022-\n\roperat"
+    "or_text\030\222\004 \001(\0132\025.pb.Emc_Operator_Text\022/\n"
+    "\016operator_error\030\234\004 \001(\0132\026.pb.Emc_Operator"
+    "_Error\0221\n\017motion_set_dout\030\246\004 \001(\0132\027.pb.Em"
+    "c_Motion_Set_Dout\0221\n\017motion_set_aout\030\260\004 "
+    "\001(\0132\027.pb.Emc_Motion_Set_Aout\022/\n\016aux_inpu"
+    "t_wait\030\272\004 \001(\0132\026.pb.Emc_Aux_Input_Wait\0223\n"
+    "\020exec_plugin_call\030\304\004 \001(\0132\030.pb.Emc_Exec_P"
+    "lugin_Ca1l\022/\n\016io_plugin_call\030\316\004 \001(\0132\026.pb"
+    ".Emc_Io_Plugin_Call\022\025\n\014pru_firmware\030\200\020 \001"
+    "(\014\022\033\n\022mesa_5i20_firmware\030\270\027 \001(\014\022\031\n\005test1"
+    "\030\211\' \001(\0132\t.pb.Test1\022\031\n\005test2\030\212\' \001(\0132\t.pb."
+    "Test2\022\031\n\005test3\030\213\' \001(\0132\t.pb.Test3", 3512);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "message.proto", &protobuf_RegisterTypes);
   Container::default_instance_ = new Container();
@@ -336,6 +339,7 @@ const int Container::kRingFieldNumber;
 const int Container::kGroupFieldNumber;
 const int Container::kMemberFieldNumber;
 const int Container::kFunctionFieldNumber;
+const int Container::kAppFieldNumber;
 const int Container::kAsciiFieldNumber;
 const int Container::kUnicodeFieldNumber;
 const int Container::kGcodeFieldNumber;
@@ -459,17 +463,17 @@ void Container::SharedCtor() {
   type_ = 3;
   motcmd_ = NULL;
   motstat_ = NULL;
-  legacy_motcmd_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  legacy_motstat_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  legacy_motcmd_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  legacy_motstat_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   rtapi_message_ = NULL;
   task_reply_ = NULL;
   ticket_update_ = NULL;
-  syslog_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  legacy_nml_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  legacy_motconfig_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  syslog_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  legacy_nml_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  legacy_motconfig_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   tv_sec_ = 0;
   tv_nsec_ = 0;
-  topic_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  topic_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   reply_required_ = false;
   rsvp_ = 0;
   in_reply_to_ = 3;
@@ -482,28 +486,28 @@ void Container::SharedCtor() {
   sequence_ = 0;
   credit_ = 0;
   line_number_ = 0;
-  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   retcode_ = 0;
   error_ = NULL;
-  uuid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  uuid_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   trace_ = false;
   instance_ = 0;
   origin_ = NULL;
   rtapicmd_ = NULL;
-  ascii_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  unicode_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  gcode_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  python_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  pickle_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  tcl_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  xml_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  json_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  jpeg_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  png_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  tiff_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  postscript_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  svg_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  wou_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ascii_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  unicode_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  gcode_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  python_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  pickle_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  tcl_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  xml_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  json_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  jpeg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  png_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  tiff_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  postscript_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  svg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  wou_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   log_message_ = NULL;
   tpexecute_ = NULL;
   tpblockdelete_ = NULL;
@@ -540,8 +544,8 @@ void Container::SharedCtor() {
   aux_input_wait_ = NULL;
   exec_plugin_call_ = NULL;
   io_plugin_call_ = NULL;
-  pru_firmware_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  mesa_5i20_firmware_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  pru_firmware_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
+  mesa_5i20_firmware_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyString());
   test1_ = NULL;
   test2_ = NULL;
   test3_ = NULL;
@@ -553,76 +557,76 @@ Container::~Container() {
 }
 
 void Container::SharedDtor() {
-  if (legacy_motcmd_ != &::google::protobuf::internal::kEmptyString) {
+  if (legacy_motcmd_ != &::google::protobuf::internal::GetEmptyString()) {
     delete legacy_motcmd_;
   }
-  if (legacy_motstat_ != &::google::protobuf::internal::kEmptyString) {
+  if (legacy_motstat_ != &::google::protobuf::internal::GetEmptyString()) {
     delete legacy_motstat_;
   }
-  if (syslog_ != &::google::protobuf::internal::kEmptyString) {
+  if (syslog_ != &::google::protobuf::internal::GetEmptyString()) {
     delete syslog_;
   }
-  if (legacy_nml_ != &::google::protobuf::internal::kEmptyString) {
+  if (legacy_nml_ != &::google::protobuf::internal::GetEmptyString()) {
     delete legacy_nml_;
   }
-  if (legacy_motconfig_ != &::google::protobuf::internal::kEmptyString) {
+  if (legacy_motconfig_ != &::google::protobuf::internal::GetEmptyString()) {
     delete legacy_motconfig_;
   }
-  if (topic_ != &::google::protobuf::internal::kEmptyString) {
+  if (topic_ != &::google::protobuf::internal::GetEmptyString()) {
     delete topic_;
   }
-  if (name_ != &::google::protobuf::internal::kEmptyString) {
+  if (name_ != &::google::protobuf::internal::GetEmptyString()) {
     delete name_;
   }
-  if (uuid_ != &::google::protobuf::internal::kEmptyString) {
+  if (uuid_ != &::google::protobuf::internal::GetEmptyString()) {
     delete uuid_;
   }
-  if (ascii_ != &::google::protobuf::internal::kEmptyString) {
+  if (ascii_ != &::google::protobuf::internal::GetEmptyString()) {
     delete ascii_;
   }
-  if (unicode_ != &::google::protobuf::internal::kEmptyString) {
+  if (unicode_ != &::google::protobuf::internal::GetEmptyString()) {
     delete unicode_;
   }
-  if (gcode_ != &::google::protobuf::internal::kEmptyString) {
+  if (gcode_ != &::google::protobuf::internal::GetEmptyString()) {
     delete gcode_;
   }
-  if (python_ != &::google::protobuf::internal::kEmptyString) {
+  if (python_ != &::google::protobuf::internal::GetEmptyString()) {
     delete python_;
   }
-  if (pickle_ != &::google::protobuf::internal::kEmptyString) {
+  if (pickle_ != &::google::protobuf::internal::GetEmptyString()) {
     delete pickle_;
   }
-  if (tcl_ != &::google::protobuf::internal::kEmptyString) {
+  if (tcl_ != &::google::protobuf::internal::GetEmptyString()) {
     delete tcl_;
   }
-  if (xml_ != &::google::protobuf::internal::kEmptyString) {
+  if (xml_ != &::google::protobuf::internal::GetEmptyString()) {
     delete xml_;
   }
-  if (json_ != &::google::protobuf::internal::kEmptyString) {
+  if (json_ != &::google::protobuf::internal::GetEmptyString()) {
     delete json_;
   }
-  if (jpeg_ != &::google::protobuf::internal::kEmptyString) {
+  if (jpeg_ != &::google::protobuf::internal::GetEmptyString()) {
     delete jpeg_;
   }
-  if (png_ != &::google::protobuf::internal::kEmptyString) {
+  if (png_ != &::google::protobuf::internal::GetEmptyString()) {
     delete png_;
   }
-  if (tiff_ != &::google::protobuf::internal::kEmptyString) {
+  if (tiff_ != &::google::protobuf::internal::GetEmptyString()) {
     delete tiff_;
   }
-  if (postscript_ != &::google::protobuf::internal::kEmptyString) {
+  if (postscript_ != &::google::protobuf::internal::GetEmptyString()) {
     delete postscript_;
   }
-  if (svg_ != &::google::protobuf::internal::kEmptyString) {
+  if (svg_ != &::google::protobuf::internal::GetEmptyString()) {
     delete svg_;
   }
-  if (wou_ != &::google::protobuf::internal::kEmptyString) {
+  if (wou_ != &::google::protobuf::internal::GetEmptyString()) {
     delete wou_;
   }
-  if (pru_firmware_ != &::google::protobuf::internal::kEmptyString) {
+  if (pru_firmware_ != &::google::protobuf::internal::GetEmptyString()) {
     delete pru_firmware_;
   }
-  if (mesa_5i20_firmware_ != &::google::protobuf::internal::kEmptyString) {
+  if (mesa_5i20_firmware_ != &::google::protobuf::internal::GetEmptyString()) {
     delete mesa_5i20_firmware_;
   }
   if (this != default_instance_) {
@@ -707,12 +711,12 @@ void Container::Clear() {
       if (motstat_ != NULL) motstat_->::pb::MotionStatus::Clear();
     }
     if (has_legacy_motcmd()) {
-      if (legacy_motcmd_ != &::google::protobuf::internal::kEmptyString) {
+      if (legacy_motcmd_ != &::google::protobuf::internal::GetEmptyString()) {
         legacy_motcmd_->clear();
       }
     }
     if (has_legacy_motstat()) {
-      if (legacy_motstat_ != &::google::protobuf::internal::kEmptyString) {
+      if (legacy_motstat_ != &::google::protobuf::internal::GetEmptyString()) {
         legacy_motstat_->clear();
       }
     }
@@ -728,24 +732,24 @@ void Container::Clear() {
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (has_syslog()) {
-      if (syslog_ != &::google::protobuf::internal::kEmptyString) {
+      if (syslog_ != &::google::protobuf::internal::GetEmptyString()) {
         syslog_->clear();
       }
     }
     if (has_legacy_nml()) {
-      if (legacy_nml_ != &::google::protobuf::internal::kEmptyString) {
+      if (legacy_nml_ != &::google::protobuf::internal::GetEmptyString()) {
         legacy_nml_->clear();
       }
     }
     if (has_legacy_motconfig()) {
-      if (legacy_motconfig_ != &::google::protobuf::internal::kEmptyString) {
+      if (legacy_motconfig_ != &::google::protobuf::internal::GetEmptyString()) {
         legacy_motconfig_->clear();
       }
     }
     tv_sec_ = 0;
     tv_nsec_ = 0;
     if (has_topic()) {
-      if (topic_ != &::google::protobuf::internal::kEmptyString) {
+      if (topic_ != &::google::protobuf::internal::GetEmptyString()) {
         topic_->clear();
       }
     }
@@ -766,7 +770,7 @@ void Container::Clear() {
     credit_ = 0;
     line_number_ = 0;
     if (has_name()) {
-      if (name_ != &::google::protobuf::internal::kEmptyString) {
+      if (name_ != &::google::protobuf::internal::GetEmptyString()) {
         name_->clear();
       }
     }
@@ -775,7 +779,7 @@ void Container::Clear() {
       if (error_ != NULL) error_->::pb::AnError::Clear();
     }
     if (has_uuid()) {
-      if (uuid_ != &::google::protobuf::internal::kEmptyString) {
+      if (uuid_ != &::google::protobuf::internal::GetEmptyString()) {
         uuid_->clear();
       }
     }
@@ -790,78 +794,78 @@ void Container::Clear() {
       if (rtapicmd_ != NULL) rtapicmd_->::pb::RTAPICommand::Clear();
     }
   }
-  if (_has_bits_[45 / 32] & (0xffu << (45 % 32))) {
+  if (_has_bits_[46 / 32] & (0xffu << (46 % 32))) {
     if (has_ascii()) {
-      if (ascii_ != &::google::protobuf::internal::kEmptyString) {
+      if (ascii_ != &::google::protobuf::internal::GetEmptyString()) {
         ascii_->clear();
       }
     }
     if (has_unicode()) {
-      if (unicode_ != &::google::protobuf::internal::kEmptyString) {
+      if (unicode_ != &::google::protobuf::internal::GetEmptyString()) {
         unicode_->clear();
-      }
-    }
-    if (has_gcode()) {
-      if (gcode_ != &::google::protobuf::internal::kEmptyString) {
-        gcode_->clear();
       }
     }
   }
   if (_has_bits_[48 / 32] & (0xffu << (48 % 32))) {
+    if (has_gcode()) {
+      if (gcode_ != &::google::protobuf::internal::GetEmptyString()) {
+        gcode_->clear();
+      }
+    }
     if (has_python()) {
-      if (python_ != &::google::protobuf::internal::kEmptyString) {
+      if (python_ != &::google::protobuf::internal::GetEmptyString()) {
         python_->clear();
       }
     }
     if (has_pickle()) {
-      if (pickle_ != &::google::protobuf::internal::kEmptyString) {
+      if (pickle_ != &::google::protobuf::internal::GetEmptyString()) {
         pickle_->clear();
       }
     }
     if (has_tcl()) {
-      if (tcl_ != &::google::protobuf::internal::kEmptyString) {
+      if (tcl_ != &::google::protobuf::internal::GetEmptyString()) {
         tcl_->clear();
       }
     }
     if (has_xml()) {
-      if (xml_ != &::google::protobuf::internal::kEmptyString) {
+      if (xml_ != &::google::protobuf::internal::GetEmptyString()) {
         xml_->clear();
       }
     }
     if (has_json()) {
-      if (json_ != &::google::protobuf::internal::kEmptyString) {
+      if (json_ != &::google::protobuf::internal::GetEmptyString()) {
         json_->clear();
       }
     }
     if (has_jpeg()) {
-      if (jpeg_ != &::google::protobuf::internal::kEmptyString) {
+      if (jpeg_ != &::google::protobuf::internal::GetEmptyString()) {
         jpeg_->clear();
       }
     }
     if (has_png()) {
-      if (png_ != &::google::protobuf::internal::kEmptyString) {
+      if (png_ != &::google::protobuf::internal::GetEmptyString()) {
         png_->clear();
-      }
-    }
-    if (has_tiff()) {
-      if (tiff_ != &::google::protobuf::internal::kEmptyString) {
-        tiff_->clear();
       }
     }
   }
   if (_has_bits_[56 / 32] & (0xffu << (56 % 32))) {
+    if (has_tiff()) {
+      if (tiff_ != &::google::protobuf::internal::GetEmptyString()) {
+        tiff_->clear();
+      }
+    }
     if (has_postscript()) {
-      if (postscript_ != &::google::protobuf::internal::kEmptyString) {
+      if (postscript_ != &::google::protobuf::internal::GetEmptyString()) {
         postscript_->clear();
       }
     }
     if (has_svg()) {
-      if (svg_ != &::google::protobuf::internal::kEmptyString) {
+      if (svg_ != &::google::protobuf::internal::GetEmptyString()) {
         svg_->clear();
       }
     }
     if (has_wou()) {
-      if (wou_ != &::google::protobuf::internal::kEmptyString) {
+      if (wou_ != &::google::protobuf::internal::GetEmptyString()) {
         wou_->clear();
       }
     }
@@ -877,11 +881,11 @@ void Container::Clear() {
     if (has_tpoptionalstop()) {
       if (tpoptionalstop_ != NULL) tpoptionalstop_->::pb::TaskPlanOptionalStop::Clear();
     }
+  }
+  if (_has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     if (has_tpopen()) {
       if (tpopen_ != NULL) tpopen_->::pb::TaskPlanOpen::Clear();
     }
-  }
-  if (_has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     if (has_taskplan_reply()) {
       if (taskplan_reply_ != NULL) taskplan_reply_->::pb::TaskPlanReply::Clear();
     }
@@ -903,11 +907,11 @@ void Container::Clear() {
     if (has_traj_circular_move()) {
       if (traj_circular_move_ != NULL) traj_circular_move_->::pb::Emc_Traj_Circular_Move::Clear();
     }
+  }
+  if (_has_bits_[72 / 32] & (0xffu << (72 % 32))) {
     if (has_traj_rigid_tap()) {
       if (traj_rigid_tap_ != NULL) traj_rigid_tap_->::pb::Emc_Traj_Rigid_Tap::Clear();
     }
-  }
-  if (_has_bits_[72 / 32] & (0xffu << (72 % 32))) {
     if (has_traj_set_term_cond()) {
       if (traj_set_term_cond_ != NULL) traj_set_term_cond_->::pb::Emc_Traj_Set_Term_Cond::Clear();
     }
@@ -929,11 +933,11 @@ void Container::Clear() {
     if (has_spindle_wait_orient_complete()) {
       if (spindle_wait_orient_complete_ != NULL) spindle_wait_orient_complete_->::pb::Emc_Spindle_Wait_Orient_Complete::Clear();
     }
+  }
+  if (_has_bits_[80 / 32] & (0xffu << (80 % 32))) {
     if (has_tool_set_offet()) {
       if (tool_set_offet_ != NULL) tool_set_offet_->::pb::Emc_Tool_Set_Offset::Clear();
     }
-  }
-  if (_has_bits_[80 / 32] & (0xffu << (80 % 32))) {
     if (has_traj_set_offset()) {
       if (traj_set_offset_ != NULL) traj_set_offset_->::pb::Emc_Traj_Set_Offset::Clear();
     }
@@ -955,11 +959,11 @@ void Container::Clear() {
     if (has_motion_adaptive()) {
       if (motion_adaptive_ != NULL) motion_adaptive_->::pb::Emc_Motion_Adaptive::Clear();
     }
+  }
+  if (_has_bits_[88 / 32] & (0xffu << (88 % 32))) {
     if (has_operator_display()) {
       if (operator_display_ != NULL) operator_display_->::pb::Emc_Operator_Display::Clear();
     }
-  }
-  if (_has_bits_[88 / 32] & (0xffu << (88 % 32))) {
     if (has_operator_text()) {
       if (operator_text_ != NULL) operator_text_->::pb::Emc_Operator_Text::Clear();
     }
@@ -981,15 +985,15 @@ void Container::Clear() {
     if (has_io_plugin_call()) {
       if (io_plugin_call_ != NULL) io_plugin_call_->::pb::Emc_Io_Plugin_Call::Clear();
     }
+  }
+  if (_has_bits_[96 / 32] & (0xffu << (96 % 32))) {
     if (has_pru_firmware()) {
-      if (pru_firmware_ != &::google::protobuf::internal::kEmptyString) {
+      if (pru_firmware_ != &::google::protobuf::internal::GetEmptyString()) {
         pru_firmware_->clear();
       }
     }
-  }
-  if (_has_bits_[96 / 32] & (0xffu << (96 % 32))) {
     if (has_mesa_5i20_firmware()) {
-      if (mesa_5i20_firmware_ != &::google::protobuf::internal::kEmptyString) {
+      if (mesa_5i20_firmware_ != &::google::protobuf::internal::GetEmptyString()) {
         mesa_5i20_firmware_->clear();
       }
     }
@@ -1014,6 +1018,7 @@ void Container::Clear() {
   group_.Clear();
   member_.Clear();
   function_.Clear();
+  app_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -1740,6 +1745,21 @@ bool Container::MergePartialFromCodedStream(
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(866)) goto parse_function;
+        if (input->ExpectTag(962)) goto parse_app;
+        break;
+      }
+
+      // repeated .pb.Application app = 120;
+      case 120: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_app:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_app()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(962)) goto parse_app;
         if (input->ExpectTag(1122)) goto parse_ascii;
         break;
       }
@@ -2807,6 +2827,12 @@ void Container::SerializeWithCachedSizes(
       108, this->function(i), output);
   }
 
+  // repeated .pb.Application app = 120;
+  for (int i = 0; i < this->app_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      120, this->app(i), output);
+  }
+
   // optional string ascii = 140;
   if (has_ascii()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
@@ -3455,6 +3481,13 @@ void Container::SerializeWithCachedSizes(
         108, this->function(i), target);
   }
 
+  // repeated .pb.Application app = 120;
+  for (int i = 0; i < this->app_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        120, this->app(i), target);
+  }
+
   // optional string ascii = 140;
   if (has_ascii()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
@@ -4101,7 +4134,7 @@ int Container::ByteSize() const {
     }
 
   }
-  if (_has_bits_[45 / 32] & (0xffu << (45 % 32))) {
+  if (_has_bits_[46 / 32] & (0xffu << (46 % 32))) {
     // optional string ascii = 140;
     if (has_ascii()) {
       total_size += 2 +
@@ -4116,6 +4149,8 @@ int Container::ByteSize() const {
           this->unicode());
     }
 
+  }
+  if (_has_bits_[48 / 32] & (0xffu << (48 % 32))) {
     // optional string gcode = 142;
     if (has_gcode()) {
       total_size += 2 +
@@ -4123,8 +4158,6 @@ int Container::ByteSize() const {
           this->gcode());
     }
 
-  }
-  if (_has_bits_[48 / 32] & (0xffu << (48 % 32))) {
     // optional string python = 143;
     if (has_python()) {
       total_size += 2 +
@@ -4174,6 +4207,8 @@ int Container::ByteSize() const {
           this->png());
     }
 
+  }
+  if (_has_bits_[56 / 32] & (0xffu << (56 % 32))) {
     // optional bytes tiff = 150;
     if (has_tiff()) {
       total_size += 2 +
@@ -4181,8 +4216,6 @@ int Container::ByteSize() const {
           this->tiff());
     }
 
-  }
-  if (_has_bits_[56 / 32] & (0xffu << (56 % 32))) {
     // optional bytes postscript = 151;
     if (has_postscript()) {
       total_size += 2 +
@@ -4232,6 +4265,8 @@ int Container::ByteSize() const {
           this->tpoptionalstop());
     }
 
+  }
+  if (_has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     // optional .pb.TaskPlanOpen tpopen = 203;
     if (has_tpopen()) {
       total_size += 2 +
@@ -4239,8 +4274,6 @@ int Container::ByteSize() const {
           this->tpopen());
     }
 
-  }
-  if (_has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     // optional .pb.TaskPlanReply taskplan_reply = 210;
     if (has_taskplan_reply()) {
       total_size += 2 +
@@ -4290,6 +4323,8 @@ int Container::ByteSize() const {
           this->traj_circular_move());
     }
 
+  }
+  if (_has_bits_[72 / 32] & (0xffu << (72 % 32))) {
     // optional .pb.Emc_Traj_Rigid_Tap traj_rigid_tap = 360;
     if (has_traj_rigid_tap()) {
       total_size += 2 +
@@ -4297,8 +4332,6 @@ int Container::ByteSize() const {
           this->traj_rigid_tap());
     }
 
-  }
-  if (_has_bits_[72 / 32] & (0xffu << (72 % 32))) {
     // optional .pb.Emc_Traj_Set_Term_Cond traj_set_term_cond = 370;
     if (has_traj_set_term_cond()) {
       total_size += 2 +
@@ -4348,6 +4381,8 @@ int Container::ByteSize() const {
           this->spindle_wait_orient_complete());
     }
 
+  }
+  if (_has_bits_[80 / 32] & (0xffu << (80 % 32))) {
     // optional .pb.Emc_Tool_Set_Offset tool_set_offet = 440;
     if (has_tool_set_offet()) {
       total_size += 2 +
@@ -4355,8 +4390,6 @@ int Container::ByteSize() const {
           this->tool_set_offet());
     }
 
-  }
-  if (_has_bits_[80 / 32] & (0xffu << (80 % 32))) {
     // optional .pb.Emc_Traj_Set_Offset traj_set_offset = 450;
     if (has_traj_set_offset()) {
       total_size += 2 +
@@ -4406,6 +4439,8 @@ int Container::ByteSize() const {
           this->motion_adaptive());
     }
 
+  }
+  if (_has_bits_[88 / 32] & (0xffu << (88 % 32))) {
     // optional .pb.Emc_Operator_Display operator_display = 520;
     if (has_operator_display()) {
       total_size += 2 +
@@ -4413,8 +4448,6 @@ int Container::ByteSize() const {
           this->operator_display());
     }
 
-  }
-  if (_has_bits_[88 / 32] & (0xffu << (88 % 32))) {
     // optional .pb.Emc_Operator_Text operator_text = 530;
     if (has_operator_text()) {
       total_size += 2 +
@@ -4464,6 +4497,8 @@ int Container::ByteSize() const {
           this->io_plugin_call());
     }
 
+  }
+  if (_has_bits_[96 / 32] & (0xffu << (96 % 32))) {
     // optional bytes pru_firmware = 2048;
     if (has_pru_firmware()) {
       total_size += 3 +
@@ -4471,8 +4506,6 @@ int Container::ByteSize() const {
           this->pru_firmware());
     }
 
-  }
-  if (_has_bits_[96 / 32] & (0xffu << (96 % 32))) {
     // optional bytes mesa_5i20_firmware = 3000;
     if (has_mesa_5i20_firmware()) {
       total_size += 3 +
@@ -4589,6 +4622,14 @@ int Container::ByteSize() const {
         this->function(i));
   }
 
+  // repeated .pb.Application app = 120;
+  total_size += 2 * this->app_size();
+  for (int i = 0; i < this->app_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->app(i));
+  }
+
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -4625,6 +4666,7 @@ void Container::MergeFrom(const Container& from) {
   group_.MergeFrom(from.group_);
   member_.MergeFrom(from.member_);
   function_.MergeFrom(from.function_);
+  app_.MergeFrom(from.app_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_type()) {
       set_type(from.type());
@@ -4737,18 +4779,18 @@ void Container::MergeFrom(const Container& from) {
       mutable_rtapicmd()->::pb::RTAPICommand::MergeFrom(from.rtapicmd());
     }
   }
-  if (from._has_bits_[45 / 32] & (0xffu << (45 % 32))) {
+  if (from._has_bits_[46 / 32] & (0xffu << (46 % 32))) {
     if (from.has_ascii()) {
       set_ascii(from.ascii());
     }
     if (from.has_unicode()) {
       set_unicode(from.unicode());
     }
+  }
+  if (from._has_bits_[48 / 32] & (0xffu << (48 % 32))) {
     if (from.has_gcode()) {
       set_gcode(from.gcode());
     }
-  }
-  if (from._has_bits_[48 / 32] & (0xffu << (48 % 32))) {
     if (from.has_python()) {
       set_python(from.python());
     }
@@ -4770,11 +4812,11 @@ void Container::MergeFrom(const Container& from) {
     if (from.has_png()) {
       set_png(from.png());
     }
+  }
+  if (from._has_bits_[56 / 32] & (0xffu << (56 % 32))) {
     if (from.has_tiff()) {
       set_tiff(from.tiff());
     }
-  }
-  if (from._has_bits_[56 / 32] & (0xffu << (56 % 32))) {
     if (from.has_postscript()) {
       set_postscript(from.postscript());
     }
@@ -4796,11 +4838,11 @@ void Container::MergeFrom(const Container& from) {
     if (from.has_tpoptionalstop()) {
       mutable_tpoptionalstop()->::pb::TaskPlanOptionalStop::MergeFrom(from.tpoptionalstop());
     }
+  }
+  if (from._has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     if (from.has_tpopen()) {
       mutable_tpopen()->::pb::TaskPlanOpen::MergeFrom(from.tpopen());
     }
-  }
-  if (from._has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     if (from.has_taskplan_reply()) {
       mutable_taskplan_reply()->::pb::TaskPlanReply::MergeFrom(from.taskplan_reply());
     }
@@ -4822,11 +4864,11 @@ void Container::MergeFrom(const Container& from) {
     if (from.has_traj_circular_move()) {
       mutable_traj_circular_move()->::pb::Emc_Traj_Circular_Move::MergeFrom(from.traj_circular_move());
     }
+  }
+  if (from._has_bits_[72 / 32] & (0xffu << (72 % 32))) {
     if (from.has_traj_rigid_tap()) {
       mutable_traj_rigid_tap()->::pb::Emc_Traj_Rigid_Tap::MergeFrom(from.traj_rigid_tap());
     }
-  }
-  if (from._has_bits_[72 / 32] & (0xffu << (72 % 32))) {
     if (from.has_traj_set_term_cond()) {
       mutable_traj_set_term_cond()->::pb::Emc_Traj_Set_Term_Cond::MergeFrom(from.traj_set_term_cond());
     }
@@ -4848,11 +4890,11 @@ void Container::MergeFrom(const Container& from) {
     if (from.has_spindle_wait_orient_complete()) {
       mutable_spindle_wait_orient_complete()->::pb::Emc_Spindle_Wait_Orient_Complete::MergeFrom(from.spindle_wait_orient_complete());
     }
+  }
+  if (from._has_bits_[80 / 32] & (0xffu << (80 % 32))) {
     if (from.has_tool_set_offet()) {
       mutable_tool_set_offet()->::pb::Emc_Tool_Set_Offset::MergeFrom(from.tool_set_offet());
     }
-  }
-  if (from._has_bits_[80 / 32] & (0xffu << (80 % 32))) {
     if (from.has_traj_set_offset()) {
       mutable_traj_set_offset()->::pb::Emc_Traj_Set_Offset::MergeFrom(from.traj_set_offset());
     }
@@ -4874,11 +4916,11 @@ void Container::MergeFrom(const Container& from) {
     if (from.has_motion_adaptive()) {
       mutable_motion_adaptive()->::pb::Emc_Motion_Adaptive::MergeFrom(from.motion_adaptive());
     }
+  }
+  if (from._has_bits_[88 / 32] & (0xffu << (88 % 32))) {
     if (from.has_operator_display()) {
       mutable_operator_display()->::pb::Emc_Operator_Display::MergeFrom(from.operator_display());
     }
-  }
-  if (from._has_bits_[88 / 32] & (0xffu << (88 % 32))) {
     if (from.has_operator_text()) {
       mutable_operator_text()->::pb::Emc_Operator_Text::MergeFrom(from.operator_text());
     }
@@ -4900,11 +4942,11 @@ void Container::MergeFrom(const Container& from) {
     if (from.has_io_plugin_call()) {
       mutable_io_plugin_call()->::pb::Emc_Io_Plugin_Call::MergeFrom(from.io_plugin_call());
     }
+  }
+  if (from._has_bits_[96 / 32] & (0xffu << (96 % 32))) {
     if (from.has_pru_firmware()) {
       set_pru_firmware(from.pru_firmware());
     }
-  }
-  if (from._has_bits_[96 / 32] & (0xffu << (96 % 32))) {
     if (from.has_mesa_5i20_firmware()) {
       set_mesa_5i20_firmware(from.mesa_5i20_firmware());
     }
@@ -4959,6 +5001,9 @@ bool Container::IsInitialized() const {
   }
   for (int i = 0; i < service_announcement_size(); i++) {
     if (!this->service_announcement(i).IsInitialized()) return false;
+  }
+  for (int i = 0; i < app_size(); i++) {
+    if (!this->app(i).IsInitialized()) return false;
   }
   if (has_log_message()) {
     if (!this->log_message().IsInitialized()) return false;
@@ -5118,6 +5163,7 @@ void Container::Swap(Container* other) {
     group_.Swap(&other->group_);
     member_.Swap(&other->member_);
     function_.Swap(&other->function_);
+    app_.Swap(&other->app_);
     std::swap(ascii_, other->ascii_);
     std::swap(unicode_, other->unicode_);
     std::swap(gcode_, other->gcode_);
