@@ -1,0 +1,6 @@
+get_filename_component(myDir ${CMAKE_CURRENT_LIST_FILE} PATH)
+
+set(QJDNS_LIBRARIES qjdns)
+set(QJDNS_INCLUDE_DIR "@INCLUDE_INSTALL_DIR@")
+
+include(${myDir}/QJDNSTargets.cmake)
