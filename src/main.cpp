@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "main.h"
 #include <QtCore>
 #include <QtNetwork>
 #include "qjdns.h"
@@ -82,208 +83,189 @@ void print_record(const QJDns::Record &r)
 	}
 }
 
-class App : public QObject
+App::App()
 {
-	Q_OBJECT
-public:
-	bool opt_debug, opt_ipv6, opt_quit;
-	int quit_time;
-	QString mode, type, name, ipaddr;
-	QStringList nslist;
-	QList<QJDns::Record> pubitems;
-	QJDns jdns;
-	int req_id;
+	connect(&jdns, SIGNAL(resultsReady(int,QJDns::Response)), SLOT(jdns_resultsReady(int,QJDns::Response)));
+	connect(&jdns, SIGNAL(published(int)), SLOT(jdns_published(int)));
+	connect(&jdns, SIGNAL(error(int,QJDns::Error)), SLOT(jdns_error(int,QJDns::Error)));
+	connect(&jdns, SIGNAL(shutdownFinished()), SLOT(jdns_shutdownFinished()));
+	connect(&jdns, SIGNAL(debugLinesReady()), SLOT(jdns_debugLinesReady()));
+}
 
-	App()
-	{
-		connect(&jdns, SIGNAL(resultsReady(int,QJDns::Response)), SLOT(jdns_resultsReady(int,QJDns::Response)));
-		connect(&jdns, SIGNAL(published(int)), SLOT(jdns_published(int)));
-		connect(&jdns, SIGNAL(error(int,QJDns::Error)), SLOT(jdns_error(int,QJDns::Error)));
-		connect(&jdns, SIGNAL(shutdownFinished()), SLOT(jdns_shutdownFinished()));
-		connect(&jdns, SIGNAL(debugLinesReady()), SLOT(jdns_debugLinesReady()));
-	}
+App::~App()
+{
+}
 
-	~App()
+void  App::start()
+{
+	if(mode == "uni")
 	{
-	}
-
-public slots:
-	void start()
-	{
-		if(mode == "uni")
+		if(!jdns.init(QJDns::Unicast, opt_ipv6 ? QHostAddress::AnyIPv6 : QHostAddress::Any))
 		{
-			if(!jdns.init(QJDns::Unicast, opt_ipv6 ? QHostAddress::AnyIPv6 : QHostAddress::Any))
-			{
-				jdns_debugLinesReady();
-				printf("unable to bind\n");
-				emit quit();
-				return;
-			}
+			jdns_debugLinesReady();
+			printf("unable to bind\n");
+			emit quit();
+			return;
+		}
 
-			QList<QJDns::NameServer> addrs;
-			for(int n = 0; n < nslist.count(); ++n)
+		QList<QJDns::NameServer> addrs;
+		for(int n = 0; n < nslist.count(); ++n)
+		{
+			QJDns::NameServer host;
+			QString str = nslist[n];
+			if(str == "mul")
 			{
-				QJDns::NameServer host;
-				QString str = nslist[n];
-				if(str == "mul")
+				if(opt_ipv6)
+					host.address = QHostAddress("FF02::FB");
+				else
+					host.address = QHostAddress("224.0.0.251");
+				host.port = 5353;
+			}
+			else
+			{
+				int at = str.indexOf(';');
+				if(at != -1)
 				{
-					if(opt_ipv6)
-						host.address = QHostAddress("FF02::FB");
-					else
-						host.address = QHostAddress("224.0.0.251");
-					host.port = 5353;
+					host.address = QHostAddress(str.mid(0, at));
+					host.port = str.mid(at + 1).toInt();
 				}
 				else
 				{
-					int at = str.indexOf(';');
-					if(at != -1)
-					{
-						host.address = QHostAddress(str.mid(0, at));
-						host.port = str.mid(at + 1).toInt();
-					}
-					else
-					{
-						host.address = QHostAddress(str);
-					}
+					host.address = QHostAddress(str);
 				}
-
-				if(host.address.isNull() || host.port <= 0)
-				{
-					printf("bad nameserver: [%s]\n", qPrintable(nslist[n]));
-					emit quit();
-					return;
-				}
-				addrs += host;
 			}
 
-			if(addrs.isEmpty())
-				addrs = QJDns::systemInfo().nameServers;
-
-			if(addrs.isEmpty())
+			if(host.address.isNull() || host.port <= 0)
 			{
-				printf("no nameservers were detected or specified\n");
+				printf("bad nameserver: [%s]\n", qPrintable(nslist[n]));
 				emit quit();
 				return;
 			}
-
-			jdns.setNameServers(addrs);
+			addrs += host;
 		}
+
+		if(addrs.isEmpty())
+			addrs = QJDns::systemInfo().nameServers;
+
+		if(addrs.isEmpty())
+		{
+			printf("no nameservers were detected or specified\n");
+			emit quit();
+			return;
+		}
+
+		jdns.setNameServers(addrs);
+	}
+	else
+	{
+		if(!jdns.init(QJDns::Multicast, opt_ipv6 ? QHostAddress::AnyIPv6 : QHostAddress::Any))
+		{
+			jdns_debugLinesReady();
+			printf("unable to bind\n");
+			emit quit();
+			return;
+		}
+	}
+
+	if(mode == "uni" || mode == "mul")
+	{
+		int x = QJDns::A;
+		if(type == "ptr")
+			x = QJDns::Ptr;
+		else if(type == "srv")
+			x = QJDns::Srv;
+		else if(type == "a")
+			x = QJDns::A;
+		else if(type == "aaaa")
+			x = QJDns::Aaaa;
+		else if(type == "mx")
+			x = QJDns::Mx;
+		else if(type == "txt")
+			x = QJDns::Txt;
+		else if(type == "hinfo")
+			x = QJDns::Hinfo;
+		else if(type == "cname")
+			x = QJDns::Cname;
+		else if(type == "any")
+			x = QJDns::Any;
 		else
 		{
-			if(!jdns.init(QJDns::Multicast, opt_ipv6 ? QHostAddress::AnyIPv6 : QHostAddress::Any))
-			{
-				jdns_debugLinesReady();
-				printf("unable to bind\n");
-				emit quit();
-				return;
-			}
+			bool ok;
+			int y = type.toInt(&ok);
+			if(ok)
+				x = y;
 		}
 
-		if(mode == "uni" || mode == "mul")
+		req_id = jdns.queryStart(name.toLatin1(), x);
+		printf("[%d] Querying for [%s] type=%d ...\n", req_id, qPrintable(name), x);
+	}
+	else // publish
+	{
+		for(int n = 0; n < pubitems.count(); ++n)
 		{
-			int x = QJDns::A;
-			if(type == "ptr")
-				x = QJDns::Ptr;
-			else if(type == "srv")
-				x = QJDns::Srv;
-			else if(type == "a")
-				x = QJDns::A;
-			else if(type == "aaaa")
-				x = QJDns::Aaaa;
-			else if(type == "mx")
-				x = QJDns::Mx;
-			else if(type == "txt")
-				x = QJDns::Txt;
-			else if(type == "hinfo")
-				x = QJDns::Hinfo;
-			else if(type == "cname")
-				x = QJDns::Cname;
-			else if(type == "any")
-				x = QJDns::Any;
-			else
-			{
-				bool ok;
-				int y = type.toInt(&ok);
-				if(ok)
-					x = y;
-			}
-
-			req_id = jdns.queryStart(name.toLatin1(), x);
-			printf("[%d] Querying for [%s] type=%d ...\n", req_id, qPrintable(name), x);
+			const QJDns::Record &rr = pubitems[n];
+			QJDns::PublishMode m = QJDns::Unique;
+			if(rr.type == QJDns::Ptr)
+				m = QJDns::Shared;
+			int id = jdns.publishStart(m, rr);
+			printf("[%d] Publishing [%s] type=%d ...\n", id, rr.owner.data(), rr.type);
 		}
-		else // publish
-		{
-			for(int n = 0; n < pubitems.count(); ++n)
-			{
-				const QJDns::Record &rr = pubitems[n];
-				QJDns::PublishMode m = QJDns::Unique;
-				if(rr.type == QJDns::Ptr)
-					m = QJDns::Shared;
-				int id = jdns.publishStart(m, rr);
-				printf("[%d] Publishing [%s] type=%d ...\n", id, rr.owner.data(), rr.type);
-			}
-		}
-
-		if(opt_quit)
-			QTimer::singleShot(quit_time * 1000, this, SLOT(doShutdown()));
 	}
 
-signals:
-	void quit();
+	if(opt_quit)
+		QTimer::singleShot(quit_time * 1000, this, SLOT(doShutdown()));
+}
 
-private slots:
-	void jdns_resultsReady(int id, const QJDns::Response &results)
-	{
-		printf("[%d] Results\n", id);
-		for(int n = 0; n < results.answerRecords.count(); ++n)
-			print_record(results.answerRecords[n]);
 
-		if(mode == "uni")
-			jdns.shutdown();
-	}
+void App::jdns_resultsReady(int id, const QJDns::Response &results)
+{
+	printf("[%d] Results\n", id);
+	for(int n = 0; n < results.answerRecords.count(); ++n)
+		print_record(results.answerRecords[n]);
 
-	void jdns_published(int id)
-	{
-		printf("[%d] Published\n", id);
-	}
-
-	void jdns_error(int id, QJDns::Error e)
-	{
-		QString str;
-		if(e == QJDns::ErrorGeneric)
-			str = "Generic";
-		else if(e == QJDns::ErrorNXDomain)
-			str = "NXDomain";
-		else if(e == QJDns::ErrorTimeout)
-			str = "Timeout";
-		else if(e == QJDns::ErrorConflict)
-			str = "Conflict";
-		printf("[%d] Error: %s\n", id, qPrintable(str));
+	if(mode == "uni")
 		jdns.shutdown();
-	}
+}
 
-	void jdns_shutdownFinished()
+void App::jdns_published(int id)
+{
+	printf("[%d] Published\n", id);
+}
+
+void App::jdns_error(int id, QJDns::Error e)
+{
+	QString str;
+	if(e == QJDns::ErrorGeneric)
+		str = "Generic";
+	else if(e == QJDns::ErrorNXDomain)
+		str = "NXDomain";
+	else if(e == QJDns::ErrorTimeout)
+		str = "Timeout";
+	else if(e == QJDns::ErrorConflict)
+		str = "Conflict";
+	printf("[%d] Error: %s\n", id, qPrintable(str));
+	jdns.shutdown();
+}
+
+void App::jdns_shutdownFinished()
+{
+	emit quit();
+}
+
+void App::jdns_debugLinesReady()
+{
+	QStringList lines = jdns.debugLines();
+	if(opt_debug)
 	{
-		emit quit();
+		for(int n = 0; n < lines.count(); ++n)
+			printf("jdns: %s\n", qPrintable(lines[n]));
 	}
+}
 
-	void jdns_debugLinesReady()
-	{
-		QStringList lines = jdns.debugLines();
-		if(opt_debug)
-		{
-			for(int n = 0; n < lines.count(); ++n)
-				printf("jdns: %s\n", qPrintable(lines[n]));
-		}
-	}
-
-	void doShutdown()
-	{
-		jdns.shutdown();
-	}
-};
-
-#include "main.moc"
+void App::doShutdown()
+{
+	jdns.shutdown();
+}
 
 void usage()
 {
