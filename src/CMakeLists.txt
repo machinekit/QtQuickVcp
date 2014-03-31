@@ -59,7 +59,7 @@ if(NOT android)
   )
 endif()
 set_target_properties(qjdns PROPERTIES
-                      DEFINE_SYMBOL QJDNS_MAKEDLL
+                      DEFINE_SYMBOL JDNS_MAKEDLL
                       PUBLIC_HEADER qjdns.h
 #                     FRAMEWORK ${OSX_FRAMEWORK}
 )

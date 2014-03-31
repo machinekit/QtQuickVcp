@@ -30,7 +30,7 @@
 #include <QtCore>
 #include <QtNetwork>
 
-class QJDNS_EXPORT QJDns : public QObject
+class JDNS_EXPORT QJDns : public QObject
 {
 	Q_OBJECT
 public:
@@ -68,7 +68,7 @@ public:
 		ErrorConflict  // publish only
 	};
 
-	class QJDNS_EXPORT NameServer
+	class JDNS_EXPORT NameServer
 	{
 	public:
 		QHostAddress address;
@@ -77,14 +77,14 @@ public:
 		NameServer();
 	};
 
-	class QJDNS_EXPORT DnsHost
+	class JDNS_EXPORT DnsHost
 	{
 	public:
 		QByteArray name;
 		QHostAddress address;
 	};
 
-	class QJDNS_EXPORT SystemInfo
+	class JDNS_EXPORT SystemInfo
 	{
 	public:
 		QList<NameServer> nameServers;
@@ -92,7 +92,7 @@ public:
 		QList<DnsHost> hosts;
 	};
 
-	class QJDNS_EXPORT Record
+	class JDNS_EXPORT Record
 	{
 	public:
 		QByteArray owner;
@@ -115,7 +115,7 @@ public:
 		bool verify() const;
 	};
 
-	class QJDNS_EXPORT Response
+	class JDNS_EXPORT Response
 	{
 	public:
 		QList<Record> answerRecords;

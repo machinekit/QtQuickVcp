@@ -33,22 +33,20 @@
    </tt> instead.
 */
 
-#ifndef QJDNS_EXPORT_H
-#define QJDNS_EXPORT_H
+#ifndef JDNS_EXPORT_H
+#define JDNS_EXPORT_H
 
-#include <QtGlobal>
-
-#ifdef Q_OS_WIN
-# ifndef QJDNS_STATIC
-#  ifdef QJDNS_MAKEDLL
-#   define QJDNS_EXPORT Q_DECL_EXPORT
+#ifdef _WIN32
+# ifndef JDNS_STATIC
+#  ifdef JDNS_MAKEDLL
+#   define JDNS_EXPORT __declspec(dllexport)
 #  else
-#   define QJDNS_EXPORT Q_DECL_IMPORT
+#   define JDNS_EXPORT __declspec(dllimport)
 #  endif
 # endif
 #endif
-#ifndef QJDNS_EXPORT
-# define QJDNS_EXPORT
+#ifndef JDNS_EXPORT
+# define JDNS_EXPORT
 #endif
 
 #endif
