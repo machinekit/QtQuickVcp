@@ -1,5 +1,5 @@
 set(qjdns_MOC_HDRS
-	qjdns.h
+    qjdns.h
     qjdns_p.h
 )
 
@@ -8,10 +8,10 @@ set(jdns_app_MOC_HDRS
 )
 
 set(qjdns_HDRS
-	jdns_packet.h
-	jdns_mdnsd.h
-	jdns.h
-	qjdns_sock.h
+    jdns_packet.h
+    jdns_mdnsd.h
+    jdns.h
+    qjdns_sock.h
 )
 
 if(NOT Qt5Core_FOUND)
@@ -29,12 +29,13 @@ set(qjdns_SRCS
     jdns_util.c
 )
 
-set(qjdns_HEADERS 	
+set(qjdns_HEADERS
     jdns_packet.h
-	jdns_mdnsd.h
-	jdns_p.h
-	jdns.h
-	qjdns_sock.h
+    jdns_mdnsd.h
+    jdns_p.h
+    jdns.h
+    qjdns_sock.h
+    qjdns_export.h
 )
 
 add_library (qjdns SHARED ${qjdns_SRCS} ${qjdns_MOC_SRCS} ${qjdns_HEADERS})
@@ -47,7 +48,7 @@ endif(Qt5Core_FOUND)
 if(WIN32)
   target_link_libraries(qjdns Ws2_32 Advapi32)
 endif(WIN32)
- 
+
 add_executable(jdns main.cpp ${jdns_app_MOC_SRCS})
 target_link_libraries(jdns qjdns)
 
