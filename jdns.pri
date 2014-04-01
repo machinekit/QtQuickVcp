@@ -3,6 +3,7 @@
 QT *= network
 
 DEFINES += JDNS_STATIC
+INCLUDEPATH += $$PWD/include/jdns
 
 windows:{
 	LIBS += -lWs2_32 -lAdvapi32
@@ -12,19 +13,20 @@ unix:{
 }
 
 HEADERS += \
-	$$PWD/src/jdns_packet.h \
-	$$PWD/src/jdns_mdnsd.h \
-	$$PWD/src/jdns_p.h \
-	$$PWD/src/jdns.h \
-	$$PWD/src/qjdns_sock.h \
-	$$PWD/src/qjdns_p.h \
-	$$PWD/src/qjdns.h
+	$$PWD/src/jdns/jdns_packet.h \
+	$$PWD/src/jdns/jdns_mdnsd.h \
+	$$PWD/src/jdns/jdns_p.h \
+	$$PWD/include/jdns/jdns.h \
+	$$PWD/src/qjdns/qjdns_sock.h \
+	$$PWD/src/qjdns/qjdns_p.h \
+	$$PWD/include/jdns/qjdns.h \
+	$$PWD/include/jdns/jdns_export.h
 
 SOURCES += \
-	$$PWD/src/jdns_util.c \
-	$$PWD/src/jdns_packet.c \
-	$$PWD/src/jdns_mdnsd.c \
-	$$PWD/src/jdns_sys.c \
-	$$PWD/src/jdns.c \
-	$$PWD/src/qjdns_sock.cpp \
-	$$PWD/src/qjdns.cpp
+	$$PWD/src/jdns/jdns_util.c \
+	$$PWD/src/jdns/jdns_packet.c \
+	$$PWD/src/jdns/jdns_mdnsd.c \
+	$$PWD/src/jdns/jdns_sys.c \
+	$$PWD/src/jdns/jdns.c \
+	$$PWD/src/qjdns/qjdns_sock.cpp \
+	$$PWD/src/qjdns/qjdns.cpp
