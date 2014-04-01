@@ -24,6 +24,8 @@
 #ifndef JDNS_H
 #define JDNS_H
 
+#include "jdns_export.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -45,11 +47,11 @@ typedef struct jdns_object
 	JDNS_OBJECT
 } jdns_object_t;
 
-void *jdns_object_new(int size, void (*dtor)(void *),
-	void *(*cctor)(const void *));
-void *jdns_object_copy(const void *a);
-void jdns_object_delete(void *a);
-void jdns_object_free(void *a);
+JDNS_EXPORT void *jdns_object_new(int size, void (*dtor)(void *),
+                                  void *(*cctor)(const void *));
+JDNS_EXPORT void *jdns_object_copy(const void *a);
+JDNS_EXPORT void jdns_object_delete(void *a);
+JDNS_EXPORT void jdns_object_free(void *a);
 
 #define JDNS_LIST_DECLARE(name) \
 	JDNS_OBJECT \
@@ -65,14 +67,14 @@ typedef struct jdns_list
 	int autoDelete;
 } jdns_list_t;
 
-jdns_list_t *jdns_list_new();
-jdns_list_t *jdns_list_copy(const jdns_list_t *a);
-void jdns_list_delete(jdns_list_t *a);
-void jdns_list_clear(jdns_list_t *a);
-void jdns_list_insert(jdns_list_t *a, void *item, int pos);
-void jdns_list_insert_value(jdns_list_t *a, const void *item, int pos);
-void jdns_list_remove(jdns_list_t *a, void *item);
-void jdns_list_remove_at(jdns_list_t *a, int pos);
+JDNS_EXPORT jdns_list_t *jdns_list_new();
+JDNS_EXPORT jdns_list_t *jdns_list_copy(const jdns_list_t *a);
+JDNS_EXPORT void jdns_list_delete(jdns_list_t *a);
+JDNS_EXPORT void jdns_list_clear(jdns_list_t *a);
+JDNS_EXPORT void jdns_list_insert(jdns_list_t *a, void *item, int pos);
+JDNS_EXPORT void jdns_list_insert_value(jdns_list_t *a, const void *item, int pos);
+JDNS_EXPORT void jdns_list_remove(jdns_list_t *a, void *item);
+JDNS_EXPORT void jdns_list_remove_at(jdns_list_t *a, int pos);
 
 typedef struct jdns_string
 {
@@ -81,12 +83,12 @@ typedef struct jdns_string
 	int size;
 } jdns_string_t;
 
-jdns_string_t *jdns_string_new();
-jdns_string_t *jdns_string_copy(const jdns_string_t *s);
-void jdns_string_delete(jdns_string_t *s);
-void jdns_string_set(jdns_string_t *s, const unsigned char *str,
-	int str_len);
-void jdns_string_set_cstr(jdns_string_t *s, const char *str);
+JDNS_EXPORT jdns_string_t *jdns_string_new();
+JDNS_EXPORT jdns_string_t *jdns_string_copy(const jdns_string_t *s);
+JDNS_EXPORT void jdns_string_delete(jdns_string_t *s);
+JDNS_EXPORT void jdns_string_set(jdns_string_t *s, const unsigned char *str,
+                                 int str_len);
+JDNS_EXPORT void jdns_string_set_cstr(jdns_string_t *s, const char *str);
 
  // overlays jdns_list
 typedef struct jdns_stringlist
@@ -96,10 +98,10 @@ typedef struct jdns_stringlist
 	jdns_string_t **item;
 } jdns_stringlist_t;
 
-jdns_stringlist_t *jdns_stringlist_new();
-jdns_stringlist_t *jdns_stringlist_copy(const jdns_stringlist_t *a);
-void jdns_stringlist_delete(jdns_stringlist_t *a);
-void jdns_stringlist_append(jdns_stringlist_t *a, const jdns_string_t *str);
+JDNS_EXPORT jdns_stringlist_t *jdns_stringlist_new();
+JDNS_EXPORT jdns_stringlist_t *jdns_stringlist_copy(const jdns_stringlist_t *a);
+JDNS_EXPORT void jdns_stringlist_delete(jdns_stringlist_t *a);
+JDNS_EXPORT void jdns_stringlist_append(jdns_stringlist_t *a, const jdns_string_t *str);
 
 typedef struct jdns_address
 {
@@ -112,21 +114,21 @@ typedef struct jdns_address
 	char *c_str;
 } jdns_address_t;
 
-jdns_address_t *jdns_address_new();
-jdns_address_t *jdns_address_copy(const jdns_address_t *a);
-void jdns_address_delete(jdns_address_t *a);
-void jdns_address_set_ipv4(jdns_address_t *a, unsigned long int ipv4);
-void jdns_address_set_ipv6(jdns_address_t *a, const unsigned char *ipv6);
+JDNS_EXPORT jdns_address_t *jdns_address_new();
+JDNS_EXPORT jdns_address_t *jdns_address_copy(const jdns_address_t *a);
+JDNS_EXPORT void jdns_address_delete(jdns_address_t *a);
+JDNS_EXPORT void jdns_address_set_ipv4(jdns_address_t *a, unsigned long int ipv4);
+JDNS_EXPORT void jdns_address_set_ipv6(jdns_address_t *a, const unsigned char *ipv6);
 // return 1 if string was ok, else 0.  Note: IPv4 addresses only!
-int jdns_address_set_cstr(jdns_address_t *a, const char *str);
+JDNS_EXPORT int jdns_address_set_cstr(jdns_address_t *a, const char *str);
 // return 1 if the same, else 0
-int jdns_address_cmp(const jdns_address_t *a, const jdns_address_t *b);
+JDNS_EXPORT int jdns_address_cmp(const jdns_address_t *a, const jdns_address_t *b);
 
 // convenient predefined addresses/ports
 #define JDNS_UNICAST_PORT    53
 #define JDNS_MULTICAST_PORT  5353
-jdns_address_t *jdns_address_multicast4_new(); // 224.0.0.251
-jdns_address_t *jdns_address_multicast6_new(); // FF02::FB
+JDNS_EXPORT jdns_address_t *jdns_address_multicast4_new(); // 224.0.0.251
+JDNS_EXPORT jdns_address_t *jdns_address_multicast6_new(); // FF02::FB
 
 typedef struct jdns_server
 {
@@ -136,10 +138,10 @@ typedef struct jdns_server
 	int weight; // SRV only
 } jdns_server_t;
 
-jdns_server_t *jdns_server_new();
-jdns_server_t *jdns_server_copy(const jdns_server_t *s);
-void jdns_server_delete(jdns_server_t *s);
-void jdns_server_set_name(jdns_server_t *s, const unsigned char *name);
+JDNS_EXPORT jdns_server_t *jdns_server_new();
+JDNS_EXPORT jdns_server_t *jdns_server_copy(const jdns_server_t *s);
+JDNS_EXPORT void jdns_server_delete(jdns_server_t *s);
+JDNS_EXPORT void jdns_server_set_name(jdns_server_t *s, const unsigned char *name);
 
 typedef struct jdns_nameserver
 {
@@ -147,11 +149,11 @@ typedef struct jdns_nameserver
 	int port;
 } jdns_nameserver_t;
 
-jdns_nameserver_t *jdns_nameserver_new();
-jdns_nameserver_t *jdns_nameserver_copy(const jdns_nameserver_t *a);
-void jdns_nameserver_delete(jdns_nameserver_t *a);
-void jdns_nameserver_set(jdns_nameserver_t *a, const jdns_address_t *addr,
-	int port);
+JDNS_EXPORT jdns_nameserver_t *jdns_nameserver_new();
+JDNS_EXPORT jdns_nameserver_t *jdns_nameserver_copy(const jdns_nameserver_t *a);
+JDNS_EXPORT void jdns_nameserver_delete(jdns_nameserver_t *a);
+JDNS_EXPORT void jdns_nameserver_set(jdns_nameserver_t *a, const jdns_address_t *addr,
+                                     int port);
 
 typedef struct jdns_nameserverlist
 {
@@ -159,12 +161,11 @@ typedef struct jdns_nameserverlist
 	jdns_nameserver_t **item;
 } jdns_nameserverlist_t;
 
-jdns_nameserverlist_t *jdns_nameserverlist_new();
-jdns_nameserverlist_t *jdns_nameserverlist_copy(
-	const jdns_nameserverlist_t *a);
-void jdns_nameserverlist_delete(jdns_nameserverlist_t *a);
-void jdns_nameserverlist_append(jdns_nameserverlist_t *a,
-	const jdns_address_t *addr, int port);
+JDNS_EXPORT jdns_nameserverlist_t *jdns_nameserverlist_new();
+JDNS_EXPORT jdns_nameserverlist_t *jdns_nameserverlist_copy(const jdns_nameserverlist_t *a);
+JDNS_EXPORT void jdns_nameserverlist_delete(jdns_nameserverlist_t *a);
+JDNS_EXPORT void jdns_nameserverlist_append(jdns_nameserverlist_t *a,
+                                            const jdns_address_t *addr, int port);
 
 typedef struct jdns_dnshost
 {
@@ -185,14 +186,14 @@ typedef struct jdns_dnsparams
 	jdns_dnshostlist_t *hosts;
 } jdns_dnsparams_t;
 
-jdns_dnsparams_t *jdns_dnsparams_new();
-jdns_dnsparams_t *jdns_dnsparams_copy(jdns_dnsparams_t *a);
-void jdns_dnsparams_delete(jdns_dnsparams_t *a);
-void jdns_dnsparams_append_nameserver(jdns_dnsparams_t *a,
+JDNS_EXPORT jdns_dnsparams_t *jdns_dnsparams_new();
+JDNS_EXPORT jdns_dnsparams_t *jdns_dnsparams_copy(jdns_dnsparams_t *a);
+JDNS_EXPORT void jdns_dnsparams_delete(jdns_dnsparams_t *a);
+JDNS_EXPORT void jdns_dnsparams_append_nameserver(jdns_dnsparams_t *a,
 	const jdns_address_t *addr, int port);
-void jdns_dnsparams_append_domain(jdns_dnsparams_t *a,
+JDNS_EXPORT void jdns_dnsparams_append_domain(jdns_dnsparams_t *a,
 	const jdns_string_t *domain);
-void jdns_dnsparams_append_host(jdns_dnsparams_t *a,
+JDNS_EXPORT void jdns_dnsparams_append_host(jdns_dnsparams_t *a,
 	const jdns_string_t *name, const jdns_address_t *address);
 
 #define JDNS_RTYPE_A         1
@@ -230,25 +231,25 @@ typedef struct jdns_rr
 	} data;
 } jdns_rr_t;
 
-jdns_rr_t *jdns_rr_new();
-jdns_rr_t *jdns_rr_copy(const jdns_rr_t *r);
-void jdns_rr_delete(jdns_rr_t *r);
-void jdns_rr_set_owner(jdns_rr_t *r, const unsigned char *name);
-void jdns_rr_set_record(jdns_rr_t *r, int type, const unsigned char *rdata,
+JDNS_EXPORT jdns_rr_t *jdns_rr_new();
+JDNS_EXPORT jdns_rr_t *jdns_rr_copy(const jdns_rr_t *r);
+JDNS_EXPORT void jdns_rr_delete(jdns_rr_t *r);
+JDNS_EXPORT void jdns_rr_set_owner(jdns_rr_t *r, const unsigned char *name);
+JDNS_EXPORT void jdns_rr_set_record(jdns_rr_t *r, int type, const unsigned char *rdata,
 	int rdlength);
-void jdns_rr_set_A(jdns_rr_t *r, const jdns_address_t *address);
-void jdns_rr_set_AAAA(jdns_rr_t *r, const jdns_address_t *address);
-void jdns_rr_set_MX(jdns_rr_t *r, const unsigned char *name, int priority);
-void jdns_rr_set_SRV(jdns_rr_t *r, const unsigned char *name, int port,
+JDNS_EXPORT void jdns_rr_set_A(jdns_rr_t *r, const jdns_address_t *address);
+JDNS_EXPORT void jdns_rr_set_AAAA(jdns_rr_t *r, const jdns_address_t *address);
+JDNS_EXPORT void jdns_rr_set_MX(jdns_rr_t *r, const unsigned char *name, int priority);
+JDNS_EXPORT void jdns_rr_set_SRV(jdns_rr_t *r, const unsigned char *name, int port,
 	int priority, int weight);
-void jdns_rr_set_CNAME(jdns_rr_t *r, const unsigned char *name);
-void jdns_rr_set_PTR(jdns_rr_t *r, const unsigned char *name);
-void jdns_rr_set_TXT(jdns_rr_t *r, const jdns_stringlist_t *texts);
-void jdns_rr_set_HINFO(jdns_rr_t *r, const jdns_string_t *cpu,
+JDNS_EXPORT void jdns_rr_set_CNAME(jdns_rr_t *r, const unsigned char *name);
+JDNS_EXPORT void jdns_rr_set_PTR(jdns_rr_t *r, const unsigned char *name);
+JDNS_EXPORT void jdns_rr_set_TXT(jdns_rr_t *r, const jdns_stringlist_t *texts);
+JDNS_EXPORT void jdns_rr_set_HINFO(jdns_rr_t *r, const jdns_string_t *cpu,
 	const jdns_string_t *os);
-void jdns_rr_set_NS(jdns_rr_t *r, const unsigned char *name);
+JDNS_EXPORT void jdns_rr_set_NS(jdns_rr_t *r, const unsigned char *name);
 // note: only works on known types
-int jdns_rr_verify(const jdns_rr_t *r);
+JDNS_EXPORT int jdns_rr_verify(const jdns_rr_t *r);
 
 typedef struct jdns_response
 {
@@ -260,12 +261,12 @@ typedef struct jdns_response
 	jdns_rr_t **additionalRecords;
 } jdns_response_t;
 
-jdns_response_t *jdns_response_new();
-jdns_response_t *jdns_response_copy(const jdns_response_t *r);
-void jdns_response_delete(jdns_response_t *r);
-void jdns_response_append_answer(jdns_response_t *r, const jdns_rr_t *rr);
-void jdns_response_append_authority(jdns_response_t *r, const jdns_rr_t *rr);
-void jdns_response_append_additional(jdns_response_t *r,
+JDNS_EXPORT jdns_response_t *jdns_response_new();
+JDNS_EXPORT jdns_response_t *jdns_response_copy(const jdns_response_t *r);
+JDNS_EXPORT void jdns_response_delete(jdns_response_t *r);
+JDNS_EXPORT void jdns_response_append_answer(jdns_response_t *r, const jdns_rr_t *rr);
+JDNS_EXPORT void jdns_response_append_authority(jdns_response_t *r, const jdns_rr_t *rr);
+JDNS_EXPORT void jdns_response_append_additional(jdns_response_t *r,
 	const jdns_rr_t *rr);
 
 #define JDNS_PUBLISH_SHARED   0x0001
@@ -371,24 +372,24 @@ typedef struct jdns_event
 	jdns_response_t *response;
 } jdns_event_t;
 
-void jdns_event_delete(jdns_event_t *e);
+JDNS_EXPORT void jdns_event_delete(jdns_event_t *e);
 
 // jdns_session_new:
 //   callbacks: the struct of callbacks
 //   return: newly allocated session
-jdns_session_t *jdns_session_new(jdns_callbacks_t *callbacks);
+JDNS_EXPORT jdns_session_t *jdns_session_new(jdns_callbacks_t *callbacks);
 
 // jdns_session_delete:
 //   s: session to free
 //   return: nothing
-void jdns_session_delete(jdns_session_t *s);
+JDNS_EXPORT void jdns_session_delete(jdns_session_t *s);
 
 // jdns_init_unicast:
 //   s: session
 //   addr: ip address of interface to bind to.  NULL for all
 //   port: port of interface to bind to.  0 for any
 //   return: 1 on success, 0 on failure
-int jdns_init_unicast(jdns_session_t *s, const jdns_address_t *addr,
+JDNS_EXPORT int jdns_init_unicast(jdns_session_t *s, const jdns_address_t *addr,
 	int port);
 
 // jdns_init_multicast:
@@ -397,38 +398,38 @@ int jdns_init_unicast(jdns_session_t *s, const jdns_address_t *addr,
 //   port: port of interface to bind to.  0 for any
 //   addr: multicast address to associate with.  cannot be NULL
 //   return: 1 on success, 0 on failure
-int jdns_init_multicast(jdns_session_t *s, const jdns_address_t *addr,
+JDNS_EXPORT int jdns_init_multicast(jdns_session_t *s, const jdns_address_t *addr,
 	int port, const jdns_address_t *maddr);
 
 // jdns_shutdown:
 //   s: session
 //   return: nothing
-void jdns_shutdown(jdns_session_t *s);
+JDNS_EXPORT void jdns_shutdown(jdns_session_t *s);
 
 // jdns_set_nameservers:
 //   s: session
 //   nslist: list of nameservers
 //   return nothing
-void jdns_set_nameservers(jdns_session_t *s,
+JDNS_EXPORT void jdns_set_nameservers(jdns_session_t *s,
 	const jdns_nameserverlist_t *nslist);
 
 // jdns_probe:
 //   s: session
 //   return: nothing
-void jdns_probe(jdns_session_t *s);
+JDNS_EXPORT void jdns_probe(jdns_session_t *s);
 
 // jdns_query:
 //   s: session
 //   name: the name to look up
 //   rtype: the record type
 //   return: id of this operation
-int jdns_query(jdns_session_t *s, const unsigned char *name, int rtype);
+JDNS_EXPORT int jdns_query(jdns_session_t *s, const unsigned char *name, int rtype);
 
 // jdns_cancel_query:
 //   s: session
 //   id: the operation id to cancel
 //   return: nothing
-void jdns_cancel_query(jdns_session_t *s, int id);
+JDNS_EXPORT void jdns_cancel_query(jdns_session_t *s, int id);
 
 // jdns_publish:
 //   s: session
@@ -437,7 +438,7 @@ void jdns_cancel_query(jdns_session_t *s, int id);
 //   return: id of this operation
 // note: supported record types: A, AAAA, SRV, CNAME, PTR, TXT, and HINFO.
 //   if the published type is not one of these, raw rdata must be set.
-int jdns_publish(jdns_session_t *s, int mode, const jdns_rr_t *rec);
+JDNS_EXPORT int jdns_publish(jdns_session_t *s, int mode, const jdns_rr_t *rec);
 
 // jdns_update_publish:
 //   s: session
@@ -446,44 +447,44 @@ int jdns_publish(jdns_session_t *s, int mode, const jdns_rr_t *rec);
 //   return: nothing
 // note: update only works on successfully published records, and no event
 //   is generated for a successful update.
-void jdns_update_publish(jdns_session_t *s, int id, const jdns_rr_t *rec);
+JDNS_EXPORT void jdns_update_publish(jdns_session_t *s, int id, const jdns_rr_t *rec);
 
 // jdns_cancel_publish:
 //   s: session
 //   id: the operation id to cancel
 //   return: nothing
-void jdns_cancel_publish(jdns_session_t *s, int id);
+JDNS_EXPORT void jdns_cancel_publish(jdns_session_t *s, int id);
 
 // jdns_step:
 //   s: session
 //   return: JDNS_STEP flags OR'd together
-int jdns_step(jdns_session_t *s);
+JDNS_EXPORT int jdns_step(jdns_session_t *s);
 
 // jdns_next_timer:
 //   s: session
 //   return: milliseconds until timeout
-int jdns_next_timer(jdns_session_t *s);
+JDNS_EXPORT int jdns_next_timer(jdns_session_t *s);
 
 // jdns_set_handle_readable:
 //   s: session
 //   handle: handle that is now readable
 //   return: nothing
-void jdns_set_handle_readable(jdns_session_t *s, int handle);
+JDNS_EXPORT void jdns_set_handle_readable(jdns_session_t *s, int handle);
 
 // jdns_set_handle_writable:
 //   s: session
 //   handle: handle that is now writable
 //   return: nothing
-void jdns_set_handle_writable(jdns_session_t *s, int handle);
+JDNS_EXPORT void jdns_set_handle_writable(jdns_session_t *s, int handle);
 
 // jdns_next_event:
 //   s: session
 //   return: newly allocated event, or zero if none are ready
-jdns_event_t *jdns_next_event(jdns_session_t *s);
+JDNS_EXPORT jdns_event_t *jdns_next_event(jdns_session_t *s);
 
 // jdns_system_dnsparams:
 //   return: newly allocated dnsparams from the system
-jdns_dnsparams_t *jdns_system_dnsparams();
+JDNS_EXPORT jdns_dnsparams_t *jdns_system_dnsparams();
 
 // jdns_set_hold_ids_enabled
 //   s: session
@@ -498,7 +499,7 @@ jdns_dnsparams_t *jdns_system_dnsparams();
 //   determining which operation a particular event belongs to.  it is disabled
 //   be default so as to not introduce memory leaks in existing applications,
 //   however new applications really should use it.
-void jdns_set_hold_ids_enabled(jdns_session_t *s, int enabled);
+JDNS_EXPORT void jdns_set_hold_ids_enabled(jdns_session_t *s, int enabled);
 
 #ifdef __cplusplus
 }
