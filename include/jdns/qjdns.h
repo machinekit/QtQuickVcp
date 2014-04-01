@@ -26,7 +26,7 @@
 #ifndef QJDNS_H
 #define QJDNS_H
 
-#include "qjdns_export.h"
+#include "jdns_export.h"
 #include <QtCore>
 #include <QtNetwork>
 
