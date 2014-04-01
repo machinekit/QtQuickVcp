@@ -18,6 +18,14 @@ endif(WIN32)
 # SET(FRAMEWORK_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks"
 #     CACHE PATH "Where to place jdns.framework if OSX_FRAMEWORK is selected")
 
+option(BUILD_QJDNS "Buid JDNS Qt-wrapper" ON)
+option(BUILD_JDNS_TOOL "Build jdns test tool" ON)
+
+# jdns tool requires qjdns
+if(NOT BUILD_QJDNS)
+  set(BUILD_JDNS_TOOL OFF)
+endif(NOT BUILD_QJDNS)
+
 option(QT4_BUILD "Force building with Qt4 even if Qt5 is found")
 if(NOT QT4_BUILD)
   find_package(Qt5Core QUIET)
@@ -93,7 +101,10 @@ include_directories("include/jdns/")
 
 # Subdirs
 add_subdirectory(src)
-add_subdirectory(tools/jdns)
+
+if(BUILD_JDNS_TOOL)
+  add_subdirectory(tools/jdns)
+endif(BUILD_JDNS_TOOL)
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"

@@ -1,3 +1,4 @@
 add_subdirectory(jdns)
-add_subdirectory(qjdns)
-
+if(BUILD_QJDNS)
+  add_subdirectory(qjdns)
+endif(BUILD_QJDNS)
