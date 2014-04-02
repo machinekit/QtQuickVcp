@@ -7,8 +7,6 @@ cmake_policy(SET CMP0003 NEW)
 # Do not link against qtmain on Windows
 cmake_policy(SET CMP0020 OLD)
 
-set(CMAKE_INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
-
 # On Windows debug library should have 'd' postfix.
 if(WIN32)
   set(CMAKE_DEBUG_POSTFIX "d")
@@ -72,6 +70,10 @@ set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE STRING "Directory where 
 set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Directory where library will install")
 set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "The directory the headers are installed in")
 # set(CMAKECONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/${CMAKE_PROJECT_NAME}" CACHE PATH "Directory where to install QJDNSConfig.cmake")
+
+if(APPLE)
+   set(CMAKE_INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
+endif(APPLE)
 
 set(JDNS_LIB_MAJOR_VERSION "1")
 set(JDNS_LIB_MINOR_VERSION "0")
