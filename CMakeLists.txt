@@ -31,37 +31,39 @@ if(NOT BUILD_SHARED_LIBS)
   add_definitions(-DJDNS_STATIC)
 endif(NOT BUILD_SHARED_LIBS)
 
-option(QT4_BUILD "Force building with Qt4 even if Qt5 is found")
-if(NOT QT4_BUILD)
-  find_package(Qt5Core QUIET)
-  find_package(Qt5Network QUIET)
-endif(NOT QT4_BUILD)
+if(BUILD_QJDNS)
+  option(QT4_BUILD "Force building with Qt4 even if Qt5 is found")
+  if(NOT QT4_BUILD)
+    find_package(Qt5Core QUIET)
+    find_package(Qt5Network QUIET)
+  endif(NOT QT4_BUILD)
 
-if(Qt5Core_FOUND)
-  message("Qt5 found")
+  if(Qt5Core_FOUND)
+    message("Qt5 found")
 
-  include_directories(${Qt5Core_INCLUDE_DIRS})
-  include_directories(${Qt5Network_INCLUDE_DIRS})
-  add_definitions(${Qt5Core_DEFINITIONS})
-  add_definitions(${Qt5Network_DEFINITIONS})
+    include_directories(${Qt5Core_INCLUDE_DIRS})
+    include_directories(${Qt5Network_INCLUDE_DIRS})
+    add_definitions(${Qt5Core_DEFINITIONS})
+    add_definitions(${Qt5Network_DEFINITIONS})
 
-  # Tell CMake to run moc when necessary:
-  set(CMAKE_AUTOMOC ON)
-  # As moc files are generated in the binary dir, tell CMake
-  # to always look for includes there:
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
-else(Qt5Core_FOUND)
-  message("Qt5 not found, searching for Qt4")
-  # Find Qt4
-  find_package(Qt4 REQUIRED QtCore QtNetwork)
+    # Tell CMake to run moc when necessary:
+    set(CMAKE_AUTOMOC ON)
+    # As moc files are generated in the binary dir, tell CMake
+    # to always look for includes there:
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+  else(Qt5Core_FOUND)
+    message("Qt5 not found, searching for Qt4")
+    # Find Qt4
+    find_package(Qt4 REQUIRED QtCore QtNetwork)
 
-  # Include the cmake file needed to use qt4
-  include(${QT_USE_FILE})
-endif(Qt5Core_FOUND)
+    # Include the cmake file needed to use qt4
+    include(${QT_USE_FILE})
+  endif(Qt5Core_FOUND)
 
-if(NOT WIN32)
-  set(QT_DONT_USE_QTGUI TRUE)
-endif(NOT WIN32)
+  if(NOT WIN32)
+    set(QT_DONT_USE_QTGUI TRUE)
+  endif(NOT WIN32)
+endif(BUILD_QJDNS)
 
 # put the include dirs which are in the source or build tree
 # before all other include dirs, so the headers in the sources
