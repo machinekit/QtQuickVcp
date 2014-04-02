@@ -18,6 +18,7 @@ endif(WIN32)
 # SET(FRAMEWORK_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks"
 #     CACHE PATH "Where to place jdns.framework if OSX_FRAMEWORK is selected")
 
+option(BUILD_SHARED_LIBS "Build shared library" ON)
 option(BUILD_QJDNS "Buid JDNS Qt-wrapper" ON)
 option(BUILD_JDNS_TOOL "Build jdns test tool" ON)
 
@@ -25,6 +26,10 @@ option(BUILD_JDNS_TOOL "Build jdns test tool" ON)
 if(NOT BUILD_QJDNS)
   set(BUILD_JDNS_TOOL OFF)
 endif(NOT BUILD_QJDNS)
+
+if(NOT BUILD_SHARED_LIBS)
+  add_definitions(-DJDNS_STATIC)
+endif(NOT BUILD_SHARED_LIBS)
 
 option(QT4_BUILD "Force building with Qt4 even if Qt5 is found")
 if(NOT QT4_BUILD)

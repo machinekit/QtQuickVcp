@@ -18,7 +18,7 @@ set(jdns_HEADERS
     jdns_p.h
 )
 
-add_library (jdns SHARED ${jdns_SRCS} ${jdns_HEADERS} ${jdns_PUBLIC_HEADERS})
+add_library(jdns ${jdns_SRCS} ${jdns_HEADERS} ${jdns_PUBLIC_HEADERS})
 
 if(WIN32)
   target_link_libraries(jdns Ws2_32 Advapi32)

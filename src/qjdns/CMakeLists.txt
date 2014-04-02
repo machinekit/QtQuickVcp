@@ -20,7 +20,7 @@ set(qjdns_HEADERS
     qjdns_sock.h
 )
 
-add_library (qjdns SHARED ${qjdns_SRCS} ${qjdns_MOC_SRCS} ${qjdns_MOC_HDRS} ${qjdns_PUBLIC_HEADERS})
+add_library(qjdns ${qjdns_SRCS} ${qjdns_MOC_SRCS} ${qjdns_MOC_HDRS} ${qjdns_PUBLIC_HEADERS})
 if(Qt5Core_FOUND)
   target_link_libraries(qjdns ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES})
 else(Qt5Core_FOUND)
