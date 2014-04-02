@@ -8,8 +8,8 @@ set(jdns_SRCS
 
 
 set(jdns_PUBLIC_HEADERS
-    "${JDNS_INCLUDEDIR}/jdns/jdns.h"
-    "${JDNS_INCLUDEDIR}/jdns/jdns_export.h"
+    "${JDNS_INCLUDEDIR}/jdns.h"
+    "${JDNS_INCLUDEDIR}/jdns_export.h"
 )
 
 set(jdns_HEADERS

@@ -63,7 +63,7 @@ endif(NOT WIN32)
 # are prefered over the already installed ones
 set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
-set(JDNS_INCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/include" )
+set(JDNS_INCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/include/jdns" )
 
 
 #add extra search paths for libraries and includes

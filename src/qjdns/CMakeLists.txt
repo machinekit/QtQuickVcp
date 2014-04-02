@@ -1,5 +1,5 @@
 set(qjdns_MOC_HDRS
-    "${JDNS_INCLUDEDIR}/jdns/qjdns.h"
+    "${JDNS_INCLUDEDIR}/qjdns.h"
     qjdns_p.h
 )
 
@@ -13,7 +13,7 @@ set(qjdns_SRCS
 )
 
 set(qjdns_PUBLIC_HEADERS
-    "${JDNS_INCLUDEDIR}/jdns/qjdns.h"
+    "${JDNS_INCLUDEDIR}/qjdns.h"
 )
 
 set(qjdns_HEADERS
