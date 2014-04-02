@@ -10,6 +10,8 @@ cmake_policy(SET CMP0020 OLD)
 # On Windows debug library should have 'd' postfix.
 if(WIN32)
   set(CMAKE_DEBUG_POSTFIX "d")
+elseif(APPLE)
+ set(CMAKE_DEBUG_POSTFIX "_debug")
 endif(WIN32)
 
 # OPTION(OSX_FRAMEWORK "Build a Mac OS X Framework")
