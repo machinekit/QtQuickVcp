@@ -1,6 +1,8 @@
 set(qjdns_MOC_HDRS
     "${JDNS_INCLUDEDIR}/qjdns.h"
+    "${JDNS_INCLUDEDIR}/qjdnsshared.h"
     qjdns_p.h
+    qjdnsshared_p.h
 )
 
 if(NOT Qt5Core_FOUND)
@@ -10,10 +12,12 @@ endif()
 set(qjdns_SRCS
     qjdns.cpp
     qjdns_sock.cpp
+    qjdnsshared.cpp
 )
 
 set(qjdns_PUBLIC_HEADERS
     "${JDNS_INCLUDEDIR}/qjdns.h"
+    "${JDNS_INCLUDEDIR}/qjdnsshared.h"
 )
 
 set(qjdns_HEADERS

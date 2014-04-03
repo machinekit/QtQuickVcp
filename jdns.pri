@@ -19,7 +19,9 @@ HEADERS += \
 	$$PWD/include/jdns/jdns.h \
 	$$PWD/src/qjdns/qjdns_sock.h \
 	$$PWD/src/qjdns/qjdns_p.h \
+	$$PWD/src/qjdns/qjdnsshared_p.h \
 	$$PWD/include/jdns/qjdns.h \
+	$$PWD/include/jdns/qjdnsshared.h \
 	$$PWD/include/jdns/jdns_export.h
 
 SOURCES += \
@@ -29,4 +31,5 @@ SOURCES += \
 	$$PWD/src/jdns/jdns_sys.c \
 	$$PWD/src/jdns/jdns.c \
 	$$PWD/src/qjdns/qjdns_sock.cpp \
-	$$PWD/src/qjdns/qjdns.cpp
+	$$PWD/src/qjdns/qjdns.cpp \
+	$$PWD/src/qjdns/qjdnsshared.cpp

@@ -31,7 +31,7 @@
 
 // safeobj stuff, from qca
 
-void releaseAndDeleteLater(QObject *owner, QObject *obj)
+static void releaseAndDeleteLater(QObject *owner, QObject *obj)
 {
 	obj->disconnect(owner);
 	obj->setParent(0);
