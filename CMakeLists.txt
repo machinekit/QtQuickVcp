@@ -51,6 +51,7 @@ if(BUILD_QJDNS)
     # As moc files are generated in the binary dir, tell CMake
     # to always look for includes there:
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
+    set(QJDns_QT_PC_VERSION "Qt5Core Qt5Network")
   else(Qt5Core_FOUND)
     message("Qt5 not found, searching for Qt4")
     # Find Qt4
@@ -58,6 +59,7 @@ if(BUILD_QJDNS)
 
     # Include the cmake file needed to use qt4
     include(${QT_USE_FILE})
+    set(QJDns_QT_PC_VERSION "QtCore QtNetwork")
   endif(Qt5Core_FOUND)
 
   if(NOT WIN32)
