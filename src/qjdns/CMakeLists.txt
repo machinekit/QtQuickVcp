@@ -44,7 +44,7 @@ set_target_properties(qjdns PROPERTIES
 #                     FRAMEWORK ${OSX_FRAMEWORK}
 )
 
-install(TARGETS qjdns
+install(TARGETS qjdns EXPORT qjdns-export
         LIBRARY DESTINATION ${LIB_INSTALL_DIR}
         RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR}

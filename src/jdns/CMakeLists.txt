@@ -36,7 +36,7 @@ set_target_properties(jdns PROPERTIES
 #                     FRAMEWORK ${OSX_FRAMEWORK}
 )
 
-install(TARGETS jdns
+install(TARGETS jdns EXPORT jdns-export
         LIBRARY DESTINATION ${LIB_INSTALL_DIR}
         RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
