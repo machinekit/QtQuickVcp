@@ -9,6 +9,6 @@ fi
 VERSION=$1
 
 mkdir -p build/jdns-$VERSION
-cp -a .gitignore COPYING README.md TODO CMakeLists.txt cmake_uninstall.cmake.in jdns.* qjdns.* include src tools build/jdns-$VERSION
+cp -a .gitignore COPYING README.md TODO CMakeLists.txt cmake_uninstall.cmake.in jdns.* qjdns.* JDns* QJDns* include src tools build/jdns-$VERSION
 cd build
 tar jcvf jdns-$VERSION.tar.bz2 jdns-$VERSION
