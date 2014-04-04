@@ -8,8 +8,6 @@ set(QJDns_VERSION "@JDNS_LIB_VERSION_STRING@")
 get_filename_component(currentDir ${CMAKE_CURRENT_LIST_FILE} PATH) # get the directory where I myself am
 get_filename_component(rootDir ${currentDir}/@relInstallDir@ ABSOLUTE) # get the chosen install prefix
 
-message("rootdir ${rootDir}")
-
 # install locations
 set(QJDns_INCLUDE_DIR "${rootDir}/@JDNS_INCLUDEDIR_REL@")
 set(QJDns_LIBRARY_DIR "${rootDir}/@LIB_INSTALL_DIR_REL@")
