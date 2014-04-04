@@ -4,6 +4,9 @@ endif(NOT JDns_FOUND)
 
 # known at buildtime
 set(QJDns_VERSION "@JDNS_LIB_VERSION_STRING@")
+set(QJDns_VERSION_MAJOR @JDNS_LIB_MAJOR_VERSION@)
+set(QJDns_VERSION_MINOR @JDNS_LIB_MINOR_VERSION@)
+set(QJDns_VERSION_PATCH @JDNS_LIB_PATCH_VERSION@)
 
 get_filename_component(currentDir ${CMAKE_CURRENT_LIST_FILE} PATH) # get the directory where I myself am
 get_filename_component(rootDir ${currentDir}/@relInstallDir@ ABSOLUTE) # get the chosen install prefix
