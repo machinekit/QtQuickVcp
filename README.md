@@ -49,3 +49,18 @@ export SYSROOT=$NDK/platform/android-9/arch-arm
 ./autogen.sh
 ./configure --host=arm-eabi --with-sysroot=$SYSROOT CC=$CC CXX=$CXX --enable-cross-compile --with-protoc=protoc LIBS="-lc"
 make
+
+-- iOS install --
+install XCode from the App Store
+install MacPorts: http://www.macports.org/install.php
+sudo port selfupdate
+sudo port install libtool
+sudo port install automake
+sudo port install m4
+sudo port install autoconf
+
+-- ZeroMQ on iOS --
+https://github.com/drewcrawford/libzmq-ios
+
+-- protobuf on iOS --
+https://gist.github.com/BennettSmith/7150245
