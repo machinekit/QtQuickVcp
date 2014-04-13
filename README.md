@@ -61,6 +61,7 @@ sudo port install autoconf
 
 -- ZeroMQ on iOS --
 https://github.com/drewcrawford/libzmq-ios
+Use the precompiled binaries
 
 -- protobuf on iOS --
-https://gist.github.com/BennettSmith/7150245
+https://gist.github.com/strahlex/10585771
