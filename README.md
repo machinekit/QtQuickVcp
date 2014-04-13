@@ -8,15 +8,18 @@ This application is intended to be used demonstration for the new HAL remote com
 Install/Compile
 ---------------
 
--- Prerequirements --
+Prerequirements
+------
 Install Qt SDK for Android
 Download and extract Android NDK and SDK
 
--- ZeroMQ on Android --
+ZeroMQ on Android
+------
  http://zeromq.org/build:android
  Compile fix: http://stackoverflow.com/questions/21017296/how-to-build-zeromq-on-windows-with-cygwin
 
-- Alter and execute the following commands
+Alter and execute the following commands
+--
 sudo ./android-ndk-r95/build/tools/make-standalone-toolchain.sh --install-dir=/opt/android-toolchain
 export PATH=/opt/android-toolchain/bin:$PATH
 export OUTPUT_DIR=/tmp/zeromq-android
@@ -32,10 +35,12 @@ rm -f tools/.deps/curve_keygen.Po
 make
 make install
 
--- nzmqt --
+nzmqt
+------
 run ./setup_project.sh
 
--- protobuf on Android --
+protobuf on Android
+------
 svn checkout http://protobuf.googlecode.com/svn/trunk/ protobuf-read-only
 cd protobuf-read-only
 
@@ -50,7 +55,8 @@ export SYSROOT=$NDK/platform/android-9/arch-arm
 ./configure --host=arm-eabi --with-sysroot=$SYSROOT CC=$CC CXX=$CXX --enable-cross-compile --with-protoc=protoc LIBS="-lc"
 make
 
--- iOS install --
+iOS install
+------
 install XCode from the App Store
 install MacPorts: http://www.macports.org/install.php
 sudo port selfupdate
@@ -59,9 +65,11 @@ sudo port install automake
 sudo port install m4
 sudo port install autoconf
 
--- ZeroMQ on iOS --
+ZeroMQ on iOS
+------
 https://github.com/drewcrawford/libzmq-ios
 Use the precompiled binaries
 
--- protobuf on iOS --
+protobuf on iOS
+------
 https://gist.github.com/strahlex/10585771
