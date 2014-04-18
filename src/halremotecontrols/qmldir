@@ -1,0 +1,4 @@
+module Machinekit.HalRemote.Controls
+plugin machinekithalremotecontrolsplugin
+classname MachinekitHalRemoteControlsPlugin
+#typeinfo plugins.qmltypes

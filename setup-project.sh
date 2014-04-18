@@ -3,7 +3,7 @@ git submodule init
 git submodule update
 
 #Setup nzmqt
-cd externals-src/nzmqt/
+cd ./3rdparty/nzmqt/
 ./setup-project.sh
 cd ../../
 

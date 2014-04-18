@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/Machinekit/Controls">
+        <file>TemperatureSelector.qml</file>
+        <file>TouchButton.qml</file>
+        <file>ValueChart.qml</file>
+        <file>ValueModel.qml</file>
+        <file>VirtualJoystick.qml</file>
+        <file>ColorPicker.qml</file>
+        <file>Line.qml</file>
+        <file>LogChart.qml</file>
+    </qresource>
+</RCC>

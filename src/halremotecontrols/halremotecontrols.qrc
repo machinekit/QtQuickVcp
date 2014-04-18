@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/Machinekit/HalRemote/Controls">
+        <file>ProgressBar.qml</file>
+        <file>RadioButton.qml</file>
+        <file>Slider.qml</file>
+        <file>ToggleButton.qml</file>
+        <file>VirtualJoystick.qml</file>
+        <file>ApplicationWindow.qml</file>
+        <file>Button.qml</file>
+        <file>ColorPicker.qml</file>
+        <file>DiscoveryPage.qml</file>
+        <file>Gauge.qml</file>
+        <file>Led.qml</file>
+        <file>LogChart.qml</file>
+    </qresource>
+</RCC>

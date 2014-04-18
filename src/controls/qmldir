@@ -1,0 +1,4 @@
+module Machinekit.Controls
+plugin machinekitcontrolsplugin
+classname MachinekitControlsPlugin
+#typeinfo plugins.qmltypes
