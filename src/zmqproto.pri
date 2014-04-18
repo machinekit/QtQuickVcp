@@ -8,7 +8,7 @@
 
 NZMQTDIR = ../../3rdparty/nzmqt
 ZEROMQ_ANDROID_DIR = /opt/zeromq-android
-PROTOBUF_ANDROID_DIR = /home/alexander/projects/tmp/protobuf-read-only
+PROTOBUF_ANDROID_DIR = /opt/protobuf-android
 
 # This define will "move" nzmqt class method
 # implementations to nzmqt.cpp file.
