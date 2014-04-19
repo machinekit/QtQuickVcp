@@ -1,0 +1,18 @@
+MetaInfo {
+
+    Type {
+        name: "Machinekit.HalRemote.Controls.Slider"
+        icon: ":/machinekitplugin/images/slider16.png"
+
+        ItemLibraryEntry {
+            name: "Slider"
+            category: "Machinekit - HalRemote Controls"
+            libraryIcon: ":/machinekitplugin/images/slider.png"
+            version: "1.0"
+            requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "slider"; }
+        }
+    }
+
+}

@@ -7,8 +7,7 @@
 #PROTOGEN = $$LINUXCNCDIR/src/middleware/generated
 
 NZMQTDIR = ../../3rdparty/nzmqt
-ZEROMQ_ANDROID_DIR = /opt/zeromq-android
-PROTOBUF_ANDROID_DIR = /opt/protobuf-android
+include(../paths.pri)
 
 # This define will "move" nzmqt class method
 # implementations to nzmqt.cpp file.
