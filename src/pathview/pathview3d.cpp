@@ -44,7 +44,7 @@
 #include <QtQuick/qquickwindow.h>
 #include <QtGui/QOpenGLShaderProgram>
 #include <QtGui/QOpenGLContext>
-#include <GLES2/gl2.h>
+//#include <GLES2/gl2.h>
 
 //! [7]
 PathView3d::PathView3d()
