@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
-import Machinekit.HalRemote 1.0 as HAL
+import Machinekit.HalRemote 1.0
 
 ProgressBar {
     property string name: "gauge"
@@ -9,6 +9,7 @@ ProgressBar {
     property double maximumValue: pinScale.value    // can be overwritten
     property bool showText: true
     property double value: 0
+    property int digits: 2
     property bool hovered: progressBar1.hovered || progressBar2.hovered
 
     id: main
@@ -62,24 +63,24 @@ ProgressBar {
         id: progressText1
 
         anchors.centerIn: parent
-        text: main.value.toFixed(2)
+        text: main.value.toFixed(digits)
         visible: main.showText
     }
 
-    HAL.Pin {
+    Pin {
         id: pin
 
         name: main.name
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_IN
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_IN
     }
 
-    HAL.Pin {
+    Pin {
         id: pinScale
 
         name: main.name + ".scale"
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_IN
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_IN
     }
 
     Binding { target: main; property: "value"; value: pin.value}

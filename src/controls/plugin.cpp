@@ -10,6 +10,7 @@ static const struct {
     int major, minor;
 } qmldir [] = {
     { "ColorPicker", 1, 0 },
+    { "Led", 1, 0 },
     { "Line", 1, 0 },
     { "TemperatureSelector", 1, 0 },
     { "TouchButton", 1, 0 },

@@ -1,36 +1,37 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
-import Machinekit.HalRemote 1.0 as HAL
+import Machinekit.HalRemote 1.0
 
 ProgressBar {
     property string name: "progressBar"
     property bool showText: true
+    property int digits: 2
 
     id: main
 
     maximumValue: pinScale.value    // can be overwritten
 
-    HAL.Pin {
+    Pin {
         id: pin
 
         name: main.name
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_IN
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_IN
     }
 
-    HAL.Pin {
+    Pin {
         id: pinScale
 
         name: main.name + ".scale"
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_IN
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_IN
     }
 
     Text {
         id: progressText
 
         anchors.centerIn: parent
-        text: main.value.toFixed(2)
+        text: main.value.toFixed(digits)
         visible: main.showText
     }
 

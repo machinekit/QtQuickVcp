@@ -18,23 +18,21 @@ RESOURCES += \
     halremotecontrols.qrc
 
 QML_FILES = \
-    ApplicationWindow.qml \
-    Button.qml \
-    ColorPicker.qml \
-    DiscoveryPage.qml \
-    Gauge.qml \
-    Led.qml \
-    LogChart.qml \
-    ProgressBar.qml \
-    RadioButton.qml \
-    Slider.qml \
-    ToggleButton.qml \
-    VirtualJoystick.qml
+    HalApplicationWindow.qml \
+    HalButton.qml \
+    HalColorPicker.qml \
+    HalDiscoveryPage.qml \
+    HalGauge.qml \
+    HalLed.qml \
+    HalLogChart.qml \
+    HalProgressBar.qml \
+    HalRadioButton.qml \
+    HalSlider.qml \
+    HalToggleButton.qml \
+    HalVirtualJoystick.qml
 
 QML_INFRA_FILES += \
     $$QML_FILES \
     qmldir
 
 include(../deployment.pri)
-#DEPLOYMENT -= target
-#DESTDIR =

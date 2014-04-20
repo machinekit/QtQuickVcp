@@ -9,18 +9,18 @@ static const struct {
     const char *type;
     int major, minor;
 } qmldir [] = {
-    { "ApplicationWindow", 1, 0 },
-    { "Button", 1, 0 },
-    { "ColorPicker", 1, 0 },
-    { "DiscoveryPage", 1, 0 },
-    { "Gauge", 1, 0 },
-    { "Led", 1, 0 },
-    { "LogChart", 1, 0 },
-    { "ProgressBar", 1, 0 },
-    { "RadioButton", 1, 0 },
-    { "Slider", 1, 0 },
-    { "ToggleButton", 1, 0 },
-    { "VirtualJoystick", 1, 0 }
+    { "HalApplicationWindow", 1, 0 },
+    { "HalButton", 1, 0 },
+    { "HalColorPicker", 1, 0 },
+    { "HalDiscoveryPage", 1, 0 },
+    { "HalGauge", 1, 0 },
+    { "HalLed", 1, 0 },
+    { "HalLogChart", 1, 0 },
+    { "HalProgressBar", 1, 0 },
+    { "HalRadioButton", 1, 0 },
+    { "HalSlider", 1, 0 },
+    { "HalToggleButton", 1, 0 },
+    { "HalVirtualJoystick", 1, 0 }
 };
 
 void MachinekitHalRemoteControlsPlugin::registerTypes(const char *uri)

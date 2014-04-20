@@ -1,35 +1,34 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1
-import Machinekit.HalRemote 1.0 as HAL
+import Machinekit.HalRemote 1.0
 
 Slider {
     property string name: "slider"
     property bool showText: true
     property alias pinDirection: sliderPin.direction
+    property int digits: 2
 
     id: main
 
-    width: 100
+    width: 200
     height: 62
-    //value: velocityOut.value
 
-    HAL.Pin {
+    Pin {
         id: sliderPin
 
         name: main.name
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_OUT
     }
 
     Text {
         id: valueText
 
-        x: parent.width * 0.99 * (main.value/main.maximumValue) - width/2
+        x: (parent.width - width) * (main.value/main.maximumValue)
         anchors.verticalCenter: parent.verticalCenter
         anchors.verticalCenterOffset: - parent.height * 0.3
-        width: parent.width*0.2
-        horizontalAlignment: Text.AlignHCenter
-        text: main.value.toFixed(2)
+        horizontalAlignment: Text.AlignLeft
+        text: main.value.toFixed(digits)
         visible: main.showText
     }
 

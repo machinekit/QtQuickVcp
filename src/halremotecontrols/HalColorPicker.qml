@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import Machinekit.Controls 1.0
-import Machinekit.HalRemote 1.0 as HAL
+import Machinekit.HalRemote 1.0
 
 ColorPicker {
     property string name: "colorPicker"
@@ -9,47 +9,47 @@ ColorPicker {
     width: 400
     height: 300
 
-    HAL.Pin {
+    Pin {
         id: rPin
         name: main.name + ".r"
-        type: HAL.Pin.HAL_U32
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_U32
+        direction: Pin.HAL_OUT
     }
-    HAL.Pin {
+    Pin {
         id: gPin
         name: main.name + ".g"
-        type: HAL.Pin.HAL_U32
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_U32
+        direction: Pin.HAL_OUT
     }
-    HAL.Pin {
+    Pin {
         id: bPin
         name: main.name + ".b"
-        type: HAL.Pin.HAL_U32
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_U32
+        direction: Pin.HAL_OUT
     }
-    HAL.Pin {
+    Pin {
         id: aPin
         name: main.name + ".a"
-        type: HAL.Pin.HAL_U32
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_U32
+        direction: Pin.HAL_OUT
     }
-    HAL.Pin {
+    Pin {
         id: hPin
         name: main.name + ".h"
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_OUT
     }
-    HAL.Pin {
+    Pin {
         id: sPin
         name: main.name + ".s"
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_OUT
     }
-    HAL.Pin {
+    Pin {
         id: vPin
         name: main.name + ".v"
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_OUT
     }
 
     Binding { target: rPin; property: "value"; value: parseInt(main.colorValue.toString().substr(1, 2), 16)}

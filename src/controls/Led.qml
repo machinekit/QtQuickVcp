@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import Machinekit.HalRemote 1.0 as HAL
 
 Rectangle {
     property string name: "led"
@@ -42,14 +41,4 @@ Rectangle {
         id: helpItem
         property bool blinkHelper: true
     }
-
-    HAL.Pin {
-        id: ledPin
-
-        name: main.name
-        type: HAL.Pin.HAL_BIT
-        direction: HAL.Pin.HAL_IN
-    }
-
-    Binding { target: main; property: "value"; value: ledPin.value}
 }

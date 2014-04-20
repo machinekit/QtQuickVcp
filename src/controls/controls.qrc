@@ -8,5 +8,6 @@
         <file>ColorPicker.qml</file>
         <file>Line.qml</file>
         <file>LogChart.qml</file>
+        <file>Led.qml</file>
     </qresource>
 </RCC>

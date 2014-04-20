@@ -14,8 +14,12 @@ SOURCES += \
 HEADERS += \
     plugin.h
 
+RESOURCES += \
+    controls.qrc
+
 QML_FILES = \
     ColorPicker.qml \
+    Led.qml \
     Line.qml \
     LogChart.qml \
     TemperatureSelector.qml \
@@ -30,6 +34,3 @@ QML_INFRA_FILES += \
 #    src/plugins.qmltypes
 
 include(../deployment.pri)
-
-RESOURCES += \
-    controls.qrc

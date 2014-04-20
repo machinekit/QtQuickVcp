@@ -1,6 +1,6 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1
-import Machinekit.HalRemote 1.0 as HAL
+import Machinekit.HalRemote 1.0
 
 Button {
     property string name: "button"
@@ -8,12 +8,12 @@ Button {
 
     id: main
 
-    HAL.Pin {
+    Pin {
         id: pin
 
         name: main.name
-        type: HAL.Pin.HAL_BIT
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_BIT
+        direction: Pin.HAL_OUT
     }
 
     Binding { target: main; property: "pressed"; value: pin.value}

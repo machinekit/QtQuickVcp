@@ -1,8 +1,8 @@
 import QtQuick 2.1
-import Machinekit.HalRemote 1.0 as HAL
-import Machinekit.Controls 1.0 as H
+import Machinekit.HalRemote 1.0
+import Machinekit.Controls 1.0
 
-H.VirtualJoystick {
+VirtualJoystick {
     property string name: "joystick"
     property alias pinDirection: xVelocityPin.direction
 
@@ -11,16 +11,16 @@ H.VirtualJoystick {
     width: 300
     height: 400
 
-    HAL.Pin {
+    Pin {
         id: xVelocityPin
 
         name: main.name + ".x"
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_OUT
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_OUT
         value: main.xVelocity
     }
 
-    HAL.Pin {
+    Pin {
         id: yVelocityPin
 
         name: main.name + ".y"

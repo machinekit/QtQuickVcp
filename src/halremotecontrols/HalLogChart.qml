@@ -1,8 +1,8 @@
 import QtQuick 2.0
-import Machinekit.Controls 1.0 as H
-import Machinekit.HalRemote 1.0 as HAL
+import Machinekit.Controls 1.0
+import Machinekit.HalRemote 1.0
 
-H.LogChart {
+LogChart {
     property string name: "logChart"
     property alias value: logChartPin.value
 
@@ -12,12 +12,12 @@ H.LogChart {
     height: 200
     autoSample: false
 
-    HAL.Pin {
+    Pin {
         id: logChartPin
 
         name: main.name
-        type: HAL.Pin.HAL_FLOAT
-        direction: HAL.Pin.HAL_IN
+        type: Pin.HAL_FLOAT
+        direction: Pin.HAL_IN
 
         onValueChanged: {
             main.addData(value)

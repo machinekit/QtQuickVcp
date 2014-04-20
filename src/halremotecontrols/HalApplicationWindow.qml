@@ -1,6 +1,6 @@
 import QtQuick 2.0
-import Machinekit.HalRemote 1.0 as HAL
-import Machinekit.HalRemote.Controls 1.0 as H
+import Machinekit.HalRemote 1.0
+import Machinekit.HalRemote.Controls 1.0
 
 Item {
     property string title: "HAL Application Template"
@@ -27,7 +27,7 @@ Item {
 
         anchors.fill: parent
 
-        H.DiscoveryPage {
+        HalDiscoveryPage {
             id: discoveryPage
 
             anchors.fill: parent
@@ -63,7 +63,7 @@ Item {
             }
     }
 
-    HAL.RemoteComponent {
+    RemoteComponent {
         id: remoteComponent
 
         name: main.name
@@ -74,7 +74,7 @@ Item {
         containerItem: viewPage
     }
 
-    HAL.ServiceDiscovery {
+    ServiceDiscovery {
         id: serviceDiscovery
 
         port: 10042
@@ -86,12 +86,12 @@ Item {
         repeat: false
 
         services: [
-            HAL.Service {
+            Service {
                 id: halrcompService
                 type: HAL.Service.ST_STP_HALRCOMP
                 minVersion: 0
             },
-            HAL.Service {
+            Service {
                 id: rcommandService
                 type: HAL.Service.ST_HAL_RCOMMAND
                 minVersion: 0
