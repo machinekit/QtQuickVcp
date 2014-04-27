@@ -21,6 +21,9 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifndef QJDNS_P_H
+#define QJDNS_P_H
+
 #include "jdns.h"
 #include "qjdns.h"
 #include <QObject>
@@ -127,3 +130,5 @@ private:
 	static int cb_udp_read(jdns_session_t *, void *app, int handle, jdns_address_t *addr, int *port, unsigned char *buf, int *bufsize);
 	static int cb_udp_write(jdns_session_t *, void *app, int handle, const jdns_address_t *addr, int port, unsigned char *buf, int bufsize);
 };
+
+#endif

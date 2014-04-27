@@ -21,6 +21,9 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifndef QJDNSSHARED_P_H
+#define QJDNSSHARED_P_H
+
 // SafeTimer
 #include "qjdns_p.h"
 #include "qjdnsshared.h"
@@ -226,3 +229,5 @@ public:
 private slots:
 	void lateTimer_timeout();
 };
+
+#endif
