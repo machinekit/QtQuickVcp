@@ -1,30 +1,69 @@
 import QtQuick 2.0
 import Machinekit.Controls 1.0
 
+/*!
+    \qmltype VirtualJoystick
+    \inqmlmodule Machinekit.Controls
+    \brief A virtual joystick control.
+    \ingroup machinekitcontrols
+
+    The virtual joystick provides a to simulate a joystick-like control
+    for touchscreen displays.
+
+    The controls has two output values called \l xValue and \l{yValue}.
+    The possible output values are - \l maximumValue to \l maximumValue whereas
+    0 is the value in the center of the joystick.
+
+    \qml
+    VirtualJoystick {
+        id: virtualJoystick
+    }
+    \endqml
+*/
+
 Rectangle {
-    id: main
 
-    property double maxVelocity: 100.0
-    property double stepSize: 10.0
+    /*! This property holds the maximum alowed value in x and y direction.
+        The output value is in the range of  - \c maximumValue to \c{maximumValue}.
+
+        The default value is \c{100}.
+    */
+    property double maximumValue: 100.0
+
+    /*! This property holds the output value step size.
+
+      The default value is \c{1}.
+    */
+    property double stepSize: 1.0
+
+    /*! This property holds wheter the joystick should be automacially fall back
+        to the center position or not.
+
+        The default value is \c{true}.
+    */
     property bool autoCenter: true
-    property double xVelocity: 0
-    readonly property double yVelocity: 0
 
-    Binding { target: main; property: "xVelocity"; value: (Math.floor(((control.x + maxControlX()) / Math.abs(maxControlX()) * maxVelocity) / stepSize) * stepSize)}
-    //Binding { target: control; property: "x"; value: Math.pow(main.xVelocity/stepSize,2) * stepSize / maxVelocity * Math.abs(maxControlX()) - maxControlX()}
+    /*! This property holds joystick position in x direction
+    */
+    readonly property double xValue: 0
 
-    Binding { target: main; property: "yVelocity"; value: (Math.floor(((control.y + maxControlY()) / Math.abs(maxControlY()) * maxVelocity) / stepSize) * stepSize)}
+    /*! This property holds joystick position in y direction
+    */
+    readonly property double yValue: 0
 
+    /*! \internal */
     function centeredX()
     {
         return main.width/2 - control.width/2
     }
 
+    /*! \internal */
     function centeredY()
     {
         return main.height/2 - control.height/2
     }
 
+    /*! \internal */
     function maxX()
     {
         //var maxRadius = main.width/2
@@ -33,21 +72,25 @@ Rectangle {
         return main.width - control.width
     }
 
+    /*! \internal */
     function maxY()
     {
         return main.height - control.height
     }
 
+    /*! \internal */
     function maxControlX()
     {
         return control.width/2 - main.width/2
     }
 
+    /*! \internal */
     function maxControlY()
     {
         return control.height/2 - main.height/2
     }
 
+    /*! \internal */
     function calculateNewX()
     {
         var newControlX = 0
@@ -65,6 +108,7 @@ Rectangle {
         control.x = newControlX
     }
 
+    /*! \internal */
     function calculateNewY()
     {
         var newControlY = 0
@@ -82,8 +126,20 @@ Rectangle {
         control.y = newControlY
     }
 
+    id: main
+
     width: 150; height: 150
     color: "#00000000"
+
+    Binding { target: main; property: "xValue"; value: (Math.floor(((control.x + maxControlX()) / Math.abs(maxControlX()) * maximumValue) / stepSize) * stepSize)}
+    //Binding { target: control; property: "x"; value: Math.pow(main.xVelocity/stepSize,2) * stepSize / maxVelocity * Math.abs(maxControlX()) - maxControlX()}
+
+    Binding { target: main; property: "yValue"; value: (Math.floor(((control.y + maxControlY()) / Math.abs(maxControlY()) * maximumValue) / stepSize) * stepSize)}
+
+    SystemPalette {
+        id: systemPalette;
+        colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
+    }
 
     Rectangle {
         id: circle1
@@ -92,7 +148,7 @@ Rectangle {
         anchors.centerIn: parent
         radius: width / 2
         clip: true
-        color: "#999999"
+        color: systemPalette.highlight
 
         Rectangle {
             id: circle2
@@ -101,7 +157,7 @@ Rectangle {
             anchors.centerIn: parent
             radius: width / 2
             clip: true
-            color: "#FFFFFF"
+            color: systemPalette.window
 
             Rectangle {
                 id: circle3
@@ -110,7 +166,7 @@ Rectangle {
                 anchors.centerIn: parent
                 radius: width / 2
                 clip: true
-                color: "#999999"
+                color: systemPalette.highlight
             }
         }
     }
@@ -122,14 +178,13 @@ Rectangle {
 
         width: main.width * 0.3; height: main.width * 0.3
         x: centeredX(); y: centeredY(); z: 1
-        //anchors.centerIn: parent
         radius: width / 2
         clip: true
         color: {
             if (!movable)
-                "#FF0000"
+                systemPalette.dark
             else
-                "#0000FF"
+                systemPalette.midlight
         }
 
 
@@ -169,6 +224,7 @@ Rectangle {
         x1: main.width/2; y1: main.height/2
         x2: control.x + control.width/2; y2: control.y + control.height/2
         lineWidth: 14
+        color: systemPalette.dark
     }
 
     /*onYVelocityChanged: {

@@ -16,9 +16,8 @@ HEADERS += \
     pathview3d.h \
     plugin.h
 
-QML_INFRA_FILES += \
+QML_INFRA_FILES = \
     qmldir
-#    src/plugins.qmltypes
 
 include(../deployment.pri)
 

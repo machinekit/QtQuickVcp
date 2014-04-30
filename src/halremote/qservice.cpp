@@ -1,7 +1,7 @@
 #include "qservice.h"
 
-QService::QService(QQuickItem *parent) :
-    QQuickItem(parent)
+QService::QService(QObject *parent) :
+    QObject(parent)
 {
     m_uri = "";
     m_version = 0;

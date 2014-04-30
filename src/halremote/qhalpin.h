@@ -1,0 +1,134 @@
+#ifndef QPIN_H
+#define QPIN_H
+
+#include <QObject>
+#include <QVariant>
+#include "message.pb.h"
+
+class QHalPin : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(ValueType type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(HalPinDirection direction READ direction WRITE setDirection NOTIFY directionChanged)
+    Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
+    Q_PROPERTY(int handle READ handle WRITE setHandle NOTIFY handleChanged)
+    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_ENUMS(ValueType)
+    Q_ENUMS(HalPinDirection)
+
+public:
+    explicit QHalPin(QObject *parent = 0);
+
+    enum ValueType {
+        Bit = pb::HAL_BIT,
+        Float = pb::HAL_FLOAT,
+        S32 = pb::HAL_S32,
+        U32 = pb::HAL_U32
+    };
+
+    enum HalPinDirection {
+      In = pb::HAL_IN,
+      Out = pb::HAL_OUT,
+      IO = pb::HAL_IO
+    };
+
+    QString name() const
+    {
+        return m_name;
+    }
+
+    ValueType type() const
+    {
+        return m_type;
+    }
+
+    HalPinDirection direction() const
+    {
+        return m_direction;
+    }
+
+    QVariant value() const
+    {
+        return m_value;
+    }
+
+    int handle() const
+    {
+        return m_handle;
+    }
+
+    bool enabled() const
+    {
+        return m_enabled;
+    }
+
+signals:
+
+    void nameChanged(QString arg);
+    void typeChanged(ValueType arg);
+    void directionChanged(HalPinDirection arg);
+    void valueChanged(QVariant arg);
+    void handleChanged(int arg);
+    void enabledChanged(bool arg);
+
+public slots:
+
+void setType(ValueType arg)
+{
+    if (m_type != arg) {
+        m_type = arg;
+        emit typeChanged(arg);
+    }
+}
+void setName(QString arg)
+{
+    if (m_name != arg) {
+        m_name = arg;
+        emit nameChanged(arg);
+    }
+}
+void setDirection(HalPinDirection arg)
+{
+    if (m_direction != arg) {
+        m_direction = arg;
+        emit directionChanged(arg);
+    }
+}
+void setValue(QVariant arg)
+{
+    if (m_value != arg) {
+        m_value = arg;
+        emit valueChanged(arg);
+    }
+}
+
+void setHandle(int arg)
+{
+    if (m_handle != arg) {
+        m_handle = arg;
+        emit handleChanged(arg);
+    }
+}
+
+void setEnabled(bool arg)
+{
+    if (m_enabled != arg) {
+        m_enabled = arg;
+        emit enabledChanged(arg);
+    }
+}
+
+private:
+    QString m_name;
+    ValueType m_type;
+    HalPinDirection m_direction;
+    QVariant m_value;
+
+    int m_handle;
+    bool m_enabled;
+};
+
+
+
+#endif // QPIN_H

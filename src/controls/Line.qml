@@ -1,27 +1,61 @@
 import QtQuick 2.0
+import Machinekit.Controls 1.0
+
+/*!
+    \qmltype Line
+    \inqmlmodule Machinekit.Controls
+    \brief Provides a component for drawing a line in QML.
+
+*/
 
 Rectangle {
     id: line
 
+
+    /*! \qmlproperty real x1
+
+        This property holds x1 coordinate of the line.
+    */
     property alias x1: line.x
+
+    /*! \qmlproperty real y1
+
+        This property holds y1 coordinate of the line.
+    */
     property alias y1: line.y
+
+    /*! \qmlproperty real x2
+
+        This property holds x2 coordinate of the line.
+    */
     property real x2: line.x
+
+    /*! \qmlproperty real y2
+
+        This property holds y2 coordinate of the line.
+    */
     property real y2: line.y
+
+    /*! \qmlproperty color lineColor
+
+        This property holds the color of the line.
+    */
     property alias lineColor: wrapper.color
+
+    /*! \qmlproperty real lineWidth
+
+        This property holds the width of the line.
+    */
     property alias lineWidth: wrapper.height
 
-    transformOrigin: Item.TopLeft;
-
-    width: getWidth(x1,y1,x2,y2);
-    rotation: getSlope(x1,y1,x2,y2);
-    color: "#00000000"
-
+    /*! \internal */
     function getWidth(sx1,sy1,sx2,sy2)
     {
         var w=Math.sqrt(Math.pow((sx2-sx1),2)+Math.pow((sy2-sy1),2));
         return w;
     }
 
+    /*! \internal */
     function getSlope(sx1,sy1,sx2,sy2)
     {
         var a,m,d;
@@ -48,6 +82,12 @@ Rectangle {
         else
             return 0;
     }
+
+    transformOrigin: Item.TopLeft;
+
+    width: getWidth(x1,y1,x2,y2);
+    rotation: getSlope(x1,y1,x2,y2);
+    color: "#00000000"
 
     Rectangle {
         id: wrapper

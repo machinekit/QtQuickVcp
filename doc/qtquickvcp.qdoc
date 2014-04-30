@@ -1,0 +1,58 @@
+/****************************************************************************
+LICENSE!!!
+****************************************************************************/
+
+// **********************************************************************
+// NOTE: the sections are not ordered by their logical order to avoid
+// reshuffling the file each time the index order changes (i.e., often).
+// Run the fixnavi.pl script to adjust the links to the index order.
+// **********************************************************************
+
+
+/*!
+    \contentspage{index.html}{Qt Quick Virtual Control Panel}
+    \page index.html
+
+    \title QtQuickVcp Manual
+
+    \section1 Version \qtquickvcpversion
+
+    QtQuickVcp is a Machinekit component which adds the ability create new user
+    interfaces for Machinekit. Unlike GladeVCP all user interface functionality
+    can be implemented in QML only.
+
+    QtQuickVcp is designed with the aspect of remote interfaces on mobile
+    devices and embedded systems in mind. A UI is designed once for a specific
+    form factor and can then be deployed to any mobile, embedded or desktop device over the network.
+
+    \note Please report bugs and suggestions to the Machinekit mailinglist
+    \l{https://groups.google.com/forum/#!forum/machinekit/}{Machinekit mailinglist}.
+
+    \section1 \l{Machinekit Controls}
+    Generic UI items not combined with HAL pins (can be used for non HAL projects).
+    \annotatedlist machinekitcontrols
+
+    \section1 \l{Machinekit HAL Remote}
+    Non GUI HAL remote pins and components.
+    \annotatedlist halremote
+
+    \section1 \l{Machinekit HAL Remote Controls}
+    UI items such as Slider and ProgressBar combined with HAL pins.
+    \annotatedlist halremotecontrols
+
+    \section1 \l{Machinekit Path View}
+    GCode path and progress views.
+    \annotatedlist machinekitpathview
+
+    \section1 \l{Machinekit Video View}
+    Video views, e.g. for mjpeg-webcam streams.
+    \annotatedlist machinekitvideoview
+
+    \section1 Related information
+
+     \list
+      \li \l{Qt Quick}
+      \li \l{Qt Quick Controls}
+      \li \l{Qt Quick Layouts}
+     \endlist
+*/

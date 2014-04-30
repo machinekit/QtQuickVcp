@@ -1,17 +1,34 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.0
+import Machinekit.HalRemote.Controls 1.0
+
+/*!
+    \qmltype HalDiscoveryPage
+    \inqmlmodule Machinekit.HalRemote.Controls
+    \brief Discovery page for the HalApplicationWindow.
+    \ingroup halremotecontrols
+    \internal
+*/
 
 Item {
+    /*! This property holds the HAL remote component.
+    */
     property variant remoteComponent
+
+    /*! This property holds the service discovery.
+    */
     property variant serviceDiscovery
+
+    /*! This property holds the HAL remote component service.
+    */
     property variant halrcompService
+
+    /*! This property holds the HAL remote command service.
+    */
     property variant rcommandService
 
     id: main
-
-    width: 100
-    height: 62
 
     ColumnLayout {
         anchors.margins: 10

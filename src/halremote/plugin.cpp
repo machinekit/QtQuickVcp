@@ -1,6 +1,6 @@
 #include "plugin.h"
-#include "qpin.h"
-#include "qcomponent.h"
+#include "qhalpin.h"
+#include "qhalremotecomponent.h"
 #include "qservice.h"
 #include "qservicediscovery.h"
 #include "qappconfig.h"
@@ -18,11 +18,11 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
     // @uri Machinekit.HalRemote
     qmlRegisterType<QService>(uri, 1, 0, "Service");
     qmlRegisterType<QServiceDiscovery>(uri, 1, 0, "ServiceDiscovery");
-    qmlRegisterType<QComponent>(uri, 1, 0, "RemoteComponent");
+    qmlRegisterType<QHalRemoteComponent>(uri, 1, 0, "HalRemoteComponent");
     qmlRegisterType<QAppConfig>(uri, 1, 0, "AppConfig");
     qmlRegisterType<QAppConfigItem>(uri, 1, 0, "AppConfigItem");
     qmlRegisterType<QAppConfigFilter>(uri, 1, 0, "AppConfigFilter");
-    qmlRegisterType<QPin>(uri, 1, 0, "Pin");
+    qmlRegisterType<QHalPin>(uri, 1, 0, "HalPin");
 }
 
 

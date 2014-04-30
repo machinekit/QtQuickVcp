@@ -1,17 +1,17 @@
 #ifndef QAPPCONFIGFILTER_H
 #define QAPPCONFIGFILTER_H
 
-#include <QQuickItem>
+#include <QObject>
 #include "qappconfigitem.h"
 
-class QAppConfigFilter : public QQuickItem
+class QAppConfigFilter : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QAppConfigItem::ApplicationType type READ type WRITE setType NOTIFY typeChanged)
 
 
 public:
-    explicit QAppConfigFilter(QQuickItem *parent = 0);
+    explicit QAppConfigFilter(QObject *parent = 0);
 
     QAppConfigItem::ApplicationType type() const
     {

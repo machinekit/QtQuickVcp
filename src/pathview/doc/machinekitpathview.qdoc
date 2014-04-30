@@ -1,0 +1,19 @@
+/************************************************
+ * **********************************************/
+
+/*!
+    \qmlmodule Machinekit.PathView 1.0
+    \title Machinekit Path View
+    \ingroup qmlmodules
+    \brief Provides QML types for GCode path and progress views.
+
+    The Machinekit Path View module provides a set of UI components for
+    GCode path and progress display.
+
+    The QML types can be imported into your application using the
+    following import statement in your .qml file.
+
+    \code
+    import Machinekit.PathView 1.0
+    \endcode
+*/

@@ -18,8 +18,6 @@ SOURCES += \
     qappconfig.cpp \
     qappconfigfilter.cpp \
     qappconfigitem.cpp \
-    qcomponent.cpp \
-    qpin.cpp \
     qservice.cpp \
     qservicediscovery.cpp \
     $$PROTOGEN/canon.pb.cc \
@@ -36,15 +34,15 @@ SOURCES += \
     $$PROTOGEN/task.pb.cc \
     $$PROTOGEN/test.pb.cc \
     $$PROTOGEN/types.pb.cc \
-    $$PROTOGEN/value.pb.cc
+    $$PROTOGEN/value.pb.cc \
+    qhalpin.cpp \
+    qhalremotecomponent.cpp
 
 HEADERS += \
     plugin.h \
     qappconfig.h \
     qappconfigfilter.h \
     qappconfigitem.h \
-    qcomponent.h \
-    qpin.h \
     qservice.h \
     qservicediscovery.h \
     $$PROTOGEN/canon.pb.h \
@@ -60,13 +58,14 @@ HEADERS += \
     $$PROTOGEN/task.pb.h \
     $$PROTOGEN/test.pb.h \
     $$PROTOGEN/types.pb.h \
-    $$PROTOGEN/value.pb.h
+    $$PROTOGEN/value.pb.h \
+    qhalpin.h \
+    qhalremotecomponent.h
 
 INCLUDEPATH += \
     $$PROTOGEN
 
-QML_INFRA_FILES += \
+QML_INFRA_FILES = \
     qmldir
-#    plugins.qmltypes \
 
 include(../deployment.pri)

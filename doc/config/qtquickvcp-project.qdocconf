@@ -1,0 +1,54 @@
+project     = "Qt Quick Virtual Control Panel"
+description = "QtQuickVcp Manual"
+language = Cpp
+
+include(macros.qdocconf)
+include(qt-cpp-ignore.qdocconf)
+
+sources.fileextensions = "*.cpp *.qdoc *.mm *.qml"
+headers.fileextensions = "*.h *.ch *.h++ *.hh *.hpp *.hxx"
+examples.fileextensions = "*.cpp *.h *.js *.xq *.svg *.xml *.ui *.qhp *.qhcp *.qml"
+examples.imageextensions = "*.png *.jpeg *.jpg *.gif *.mng"
+
+headerdirs = $SRCDIR/src/controls \
+             $SRCDIR/src/halremote \
+             $SRCDIR/src/halremotecontrols \
+             $SRCDIR/src/pathview \
+             $SRCDIR/src/videoview
+
+sourcedirs = $SRCDIR/doc \
+             $SRCDIR/src/controls \
+             $SRCDIR/src/controls/doc \
+             $SRCDIR/src/halremote \
+             $SRCDIR/src/halremotecontrols \
+             $SRCDIR/src/pathview \
+             $SRCDIR/src/videoview
+
+exampledirs = $SRCDIR/examples
+
+imagedirs =  $SRCDIR/doc/templates/images \
+             $SRCDIR/src/controls/doc/images
+
+outputdir = $OUTDIR
+base      = file:$OUTDIR
+
+indexes = $QTDOCDIR/qtquick/qtquick.index $QTDOCDIR/qtquickcontrols/qtquickcontrols.index $QTDOCDIR/qtquicklayouts/qtquicklayouts.index $QTDOCDIR/qtcore/qtcore.index
+
+qhp.projects                    = QtQuickVcp
+qhp.QtQuickVcp.file             = qtquickvcp.qhp
+qhp.QtQuickVcp.namespace        = org.machinekit.qtquickvcp.$QTQUICKVCP_VERSION_TAG
+qhp.QtQuickVcp.virtualFolder    = doc
+qhp.QtQuickVcp.indexTitle       = Qt Quick Virtual Control Panel
+qhp.QtQuickVcp.filterAttributes = qtquickvcp $QTQUICKVCP_VERSION
+qhp.QtQuickVcp.customFilters.QtQuickVcp.name = Qt Quick Virtual Control Panel $QTQUICKVCP_VERSION
+qhp.QtQuickVcp.customFilters.QtQuickVcp.filterAttributes = qtquickvcp $QTQUICKVCP_VERSION
+qhp.QtQuickVcp.indexRoot        =
+
+qhp.QtQuickVcp.subprojects = manual
+qhp.QtQuickVcp.subprojects.manual.title = QtQuickVcp Manual
+qhp.QtQuickVcp.subprojects.manual.indexTitle = QtQuickVcp Manual
+qhp.QtQuickVcp.subprojects.manual.type = manual
+
+# Doxygen compatibility commands
+macro.see                       = "\\sa"
+macro.function                  = "\\fn"

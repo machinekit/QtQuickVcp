@@ -1,4 +1,22 @@
 module Machinekit.HalRemote.Controls
 plugin machinekithalremotecontrolsplugin
 classname MachinekitHalRemoteControlsPlugin
-#typeinfo plugins.qmltypes
+
+# Workaround: inform Qt Creator about QML files
+# typeinfo plugins.qmltypes does not work
+HalApplicationWindow 1.0 HalApplicationWindow.qml
+HalButton 1.0 HalButton.qml
+HalCheckBox 1.0 HalCheckBox.qml
+HalColorPicker 1.0 HalColorPicker.qml
+HalComboBox 1.0 HalComboBox.qml
+HalContainer 1.0 HalContainer.qml
+HalDiscoveryPage 1.0 HalDiscoveryPage.qml
+HalGauge 1.0 HalGauge.qml
+HalLabel 1.0 HalLabel.qml
+HalLed 1.0 HalLed.qml
+HalLogChart 1.0 HalLogChart.qml
+HalProgressBar 1.0 HalProgressBar.qml
+HalRadioButton 1.0 HalRadioButton.qml
+HalSlider 1.0 HalSlider.qml
+HalSpinBox 1.0 HalSpinBox.qml
+HalVirtualJoystick 1.0 HalVirtualJoystick.qml

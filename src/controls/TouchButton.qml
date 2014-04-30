@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Controls.Styles 1.0
+import Machinekit.Controls 1.0
 
 Button {
     id: button
@@ -25,9 +26,6 @@ Button {
                anchors.verticalCenter: parent.verticalCenter
                fillMode: Image.Stretch //mm Image should shrink if button is too small, depends on QTBUG-14957
                anchors.fill: parent
-               anchors.leftMargin: 8
-               anchors.rightMargin: anchors.leftMargin
-               anchors.topMargin: anchors.leftMargin
-               anchors.bottomMargin: anchors.leftMargin
+               anchors.margins: 8
     }
 }

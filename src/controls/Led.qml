@@ -1,18 +1,85 @@
 import QtQuick 2.0
+import Machinekit.Controls 1.0
+
+/*!
+    \qmltype Led
+    \inqmlmodule Machinekit.Controls
+    \brief Provides a LED-like control to display binary values.
+    \ingroup machinekitcontrols
+
+    By default a the led will be red when the value is true and
+    grey when the value is false.
+
+    \qml
+    Led {
+        id: led
+    }
+    \endqml
+
+    It easily possible to change the color and shape of the led. Set the
+    \l Rectangle::radius of the led to \c 0 to get a square led.
+
+    \qml
+    Led {
+        id: led
+        radius: 0
+        onColor: "blue"
+        offColor: "black"
+    }
+    \endqml
+
+    Furthermore it is possible to make the led blinking when enabled.
+
+    \qml
+    Led {
+        id: led
+        blink: true
+        blinkInterval: 1000
+    }
+    \endqml
+*/
 
 Rectangle {
-    property string name: "led"
+    /*! This property holds the led's current value.
+
+        The default value is \c{false}.
+    */
     property bool value: false
+
+    /*! This property holds the led's on color.
+
+        The default value is \c{red}.
+    */
     property color onColor: "red"
+
+    /*! This property holds the led's off color.
+
+        The default value is \c{darkGrey}.
+    */
     property color offColor: "darkGrey"
+
+    /*! This property holds whether the led should blink or not.
+
+        The default value is \c{false}.
+    */
     property bool blink: false
-    property int blinkRate: 500
+
+    /*! This property holds the blink interval of the led in ms when \l blink is set to \c true.
+
+        The default value is \c{false}.
+    */
+    property int blinkInterval: 500
+
+    /*! This property holds whether the led should have small "shine" or not.
+
+        The default value is \c{true}.
+    */
     property bool shine: true
 
     id: main
 
-    width: 50
-    height: 50
+    width: 30
+    height: 30
     border.width: 2
     radius: width/2
     border.color: "black"
@@ -33,7 +100,7 @@ Rectangle {
         id: blinkTimer
         running: blink
         repeat: true
-        interval: blinkRate
+        interval: blinkInterval
         onTriggered: helpItem.blinkHelper = !helpItem.blinkHelper
     }
 

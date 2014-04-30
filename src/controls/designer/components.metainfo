@@ -1,0 +1,101 @@
+MetaInfo {
+
+    Type {
+        name: "Machinekit.Controls.Gauge"
+        icon: "images/progressbar16.png"
+
+        ItemLibraryEntry {
+            name: "Gauge (Horizontal)"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/progressbar.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+        }
+
+        ItemLibraryEntry {
+            name: "Gauge (Vertical)"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/progressbar.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+            Property { name: "orientation"; type: "int"; value: "0"; }
+         }
+    }
+
+    Type {
+        name: "Machinekit.Controls.ColorPicker"
+        icon: ":images/item-icon.png"
+
+        ItemLibraryEntry {
+            name: "Color Picker"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Controls.Led"
+        icon: ":images/item-icon.png"
+
+        ItemLibraryEntry {
+            name: "Led (Round)"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+        }
+
+        ItemLibraryEntry {
+            name: "Led (Square)"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+
+            Property { name: "radius"; type: "int"; value: "0"; }
+        }
+    }
+
+    Type {
+        name: "Machinekit.Controls.ValueChart"
+        icon: ":images/item-icon.png"
+
+        ItemLibraryEntry {
+            name: "Value Chart"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+
+            QmlSource { source: "source/valueChart.qml" }
+        }
+    }
+
+    Type {
+        name: "Machinekit.Controls.LogChart"
+        icon: ":images/item-icon.png"
+
+        ItemLibraryEntry {
+            name: "Log Chart"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Controls.VirtualJoystick"
+        icon: ":images/item-icon.png"
+
+        ItemLibraryEntry {
+            name: "Virtual Joystick"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+        }
+    }
+}

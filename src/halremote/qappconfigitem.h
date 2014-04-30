@@ -1,12 +1,14 @@
 #ifndef QAPPCONFIGITEM_H
 #define QAPPCONFIGITEM_H
 
-#include <QQuickItem>
+#include <QObject>
+#include <QUrl>
+#include <QStringList>
 #include "message.pb.h"
 #include "types.pb.h"
 #include "config.pb.h"
 
-class QAppConfigItem : public QQuickItem
+class QAppConfigItem : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
@@ -19,7 +21,7 @@ class QAppConfigItem : public QQuickItem
     Q_ENUMS(ApplicationType)
 
 public:
-    explicit QAppConfigItem(QQuickItem *parent = 0);
+    explicit QAppConfigItem(QObject *parent = 0);
 
     enum ApplicationType {
         QT5_QML = pb::QT5_QML,

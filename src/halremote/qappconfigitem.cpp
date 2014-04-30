@@ -1,7 +1,7 @@
 #include "qappconfigitem.h"
 
-QAppConfigItem::QAppConfigItem(QQuickItem *parent) :
-    QQuickItem(parent)
+QAppConfigItem::QAppConfigItem(QObject *parent) :
+    QObject(parent)
 {
     m_name = "";
     m_description = "";

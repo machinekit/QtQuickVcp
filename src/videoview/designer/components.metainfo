@@ -1,0 +1,16 @@
+MetaInfo {
+
+    Type {
+        name: "Machinekit.VideoView.MjpegStreamerClient"
+        icon: ":/machinekitplugin/images/slider16.png"
+
+        ItemLibraryEntry {
+            name: "MjpegStreamerClient"
+            category: "Machinekit - VideoView"
+            libraryIcon: ":/machinekitplugin/images/slider.png"
+            version: "1.0"
+            requiredImport: "Machinekit.VideoView"
+        }
+    }
+
+}

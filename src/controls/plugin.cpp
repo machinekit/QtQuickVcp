@@ -1,4 +1,5 @@
 #include "plugin.h"
+#include "dummy.h"
 
 static void initResources()
 {
@@ -9,9 +10,11 @@ static const struct {
     const char *type;
     int major, minor;
 } qmldir [] = {
+    { "Gauge", 1, 0 },
     { "ColorPicker", 1, 0 },
     { "Led", 1, 0 },
     { "Line", 1, 0 },
+    { "LogChart", 1, 0 },
     { "TemperatureSelector", 1, 0 },
     { "TouchButton", 1, 0 },
     { "VirtualJoystick", 1, 0 },
@@ -24,9 +27,11 @@ void MachinekitControlsPlugin::registerTypes(const char *uri)
 {
     initResources();
 
+    // @uri Machinekit.Controls
+    qmlRegisterType<Dummy>(uri, 1, 0, "Dummy");
+
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {
-        // @uri Machinekit.Controls
         qmlRegisterType(QUrl(filesLocation + "/" + qmldir[i].type + ".qml"), uri, qmldir[i].major, qmldir[i].minor, qmldir[i].type);
         }
 }

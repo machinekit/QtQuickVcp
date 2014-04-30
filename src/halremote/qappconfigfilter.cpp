@@ -1,6 +1,6 @@
 #include "qappconfigfilter.h"
 
-QAppConfigFilter::QAppConfigFilter(QQuickItem *parent) :
-    QQuickItem(parent)
+QAppConfigFilter::QAppConfigFilter(QObject *parent) :
+    QObject(parent)
 {
 }

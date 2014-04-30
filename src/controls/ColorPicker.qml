@@ -2,13 +2,75 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
+import QtQuick.Window 2.0
+import Machinekit.Controls 1.0
+
+/*!
+    \qmltype ColorPicker
+    \inqmlmodule Machinekit.Controls
+    \brief Provides a beautiful color picker.
+    \ingroup machinekitcontrols
+
+    The color picker provides an easy to use control to select colors. You can
+    use the selected color by using the \l colorValue property.
+
+    \qml
+    ColorPicker {
+        id: colorPicker
+    }
+    \endqml
+*/
 
 Item {
-    id: colorPicker
-    property bool showAlpha: false
-    property color colorValue: hsba(hueSlider.item.value, sbPicker.item.saturation,
+    /*!
+        \qmlproperty bool ColorPicker::showAlpha
+
+        Whether the alpha channel selection should be visible or not. By default this is
+        set to false.
+    */
+    property bool alphaVisible: false
+
+    /*!
+        \qmlproperty int ColorPicker::colorValue
+
+        Returns the color selected in the color picker.
+    */
+    readonly property color colorValue: hsba(hueSlider.item.value, sbPicker.item.saturation,
                                                sbPicker.item.brightness, alphaSlider.item.value)
-    width: 600; height: 400
+
+    /*!
+        \qmlmethod ColorPicker::hsba(double h, double s, double b, double a)
+
+        Creates color value from hue, saturation, brightness, alpha.
+    */
+    function hsba(h, s, b, a) {
+        var lightness = (2 - s)*b;
+        var satHSL = s*b/((lightness <= 1) ? lightness : 2 - lightness);
+        lightness /= 2;
+        return Qt.hsla(h, satHSL, lightness, a);
+    }
+
+    /*!
+        \qmlmethod ColorPicker::fullColorString(color clr, double a)
+
+        Creates a full color string from color value and alpha[0..1], e.g. "#FF00FF00".
+    */
+    function fullColorString(clr, a) {
+        return "#" + ((Math.ceil(a*255) + 256).toString(16).substr(1, 2) +
+                clr.toString().substr(1, 6)).toUpperCase();
+    }
+
+    /*!
+        \qmlmethod ColorPicker::getChannelStr(color clr, int channelIdx)
+
+        Extracts integer color channel value [0..255] from color value.
+    */
+    function getChannelStr(clr, channelIdx) {
+        return parseInt(clr.toString().substr(channelIdx*2 + 1, 2), 16);
+    }
+
+    id: colorPicker
+    width: 340; height: 250
 
     Component {
         id: checkerBoard
@@ -159,25 +221,6 @@ Item {
         }
     }
 
-    //  creates color value from hue, saturation, brightness, alpha
-    function hsba(h, s, b, a) {
-        var lightness = (2 - s)*b;
-        var satHSL = s*b/((lightness <= 1) ? lightness : 2 - lightness);
-        lightness /= 2;
-        return Qt.hsla(h, satHSL, lightness, a);
-    }
-
-    //  creates a full color string from color value and alpha[0..1], e.g. "#FF00FF00"
-    function fullColorString(clr, a) {
-        return "#" + ((Math.ceil(a*255) + 256).toString(16).substr(1, 2) +
-                clr.toString().substr(1, 6)).toUpperCase();
-    }
-
-    //  extracts integer color channel value [0..255] from color value
-    function getChannelStr(clr, channelIdx) {
-        return parseInt(clr.toString().substr(channelIdx*2 + 1, 2), 16);
-    }
-
     RowLayout {
         anchors.fill: parent
         spacing: 0
@@ -207,7 +250,7 @@ Item {
         Item {
             id: alphaPicker
 
-            visible: showAlpha
+            visible: alphaVisible
             Layout.preferredWidth: parent.width * 0.05
             Layout.fillHeight: true
             Loader {
@@ -245,8 +288,8 @@ Item {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 5
-                spacing: 10
+                anchors.margins: Screen.pixelDensity * 0.5
+                spacing: Screen.pixelDensity
 
                 // current color/alpha display rectangle
                 Item {

@@ -1,10 +1,10 @@
 #ifndef QSERVICE_H
 #define QSERVICE_H
 
-#include <QQuickItem>
+#include <QObject>
 #include "message.pb.h"
 
-class QService : public QQuickItem
+class QService : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString uri READ uri NOTIFY uriChanged)
@@ -18,7 +18,7 @@ class QService : public QQuickItem
     Q_ENUMS(ServiceType)
 
 public:
-    explicit QService(QQuickItem *parent = 0);
+    explicit QService(QObject *parent = 0);
 
     enum ServiceApi {
         SA_ZMQ_PROTOBUF = pb::SA_ZMQ_PROTOBUF,

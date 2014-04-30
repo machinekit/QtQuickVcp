@@ -1,4 +1,17 @@
 module Machinekit.Controls
 plugin machinekitcontrolsplugin
 classname MachinekitControlsPlugin
-#typeinfo plugins.qmltypes
+
+# Workaround: inform Qt Creator about QML files
+# typeinfo plugins.qmltypes does not work
+Gauge 1.0 Gauge.qml
+Led 1.0 Led.qml
+ColorPicker 1.0 ColorPicker.qml
+Led 1.0 Led.qml
+Line 1.0 Line.qml
+LogChart 1.0 LogChart.qml
+TemperatureSelector 1.0 TemperatureSelector.qml
+TouchButton 1.0 TouchButton.qml
+ValueChart 1.0 ValueChart.qml
+ValueModel 1.0 ValueModel.qml
+VirtualJoystick 1.0 VirtualJoystick.qml

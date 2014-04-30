@@ -30,8 +30,11 @@ HEADERS += \
 INCLUDEPATH += \
     $$PROTOGEN
 
-QML_INFRA_FILES += \
+QML_INFRA_FILES = \
     qmldir
-#    src/plugins.qmltypes
 
+QML_DESIGNER_FILES = \
+    designer
+
+#include(../protobuf.pri)
 include(../deployment.pri)

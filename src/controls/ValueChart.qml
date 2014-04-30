@@ -1,34 +1,185 @@
 import QtQuick 2.0
+import Machinekit.Controls 1.0
 
+/*!
+    \qmltype ValueChart
+    \inqmlmodule Machinekit.Controls
+    \brief Provides a chart to display value data.
+    \ingroup controls
+
+    A value chart has to be used in combination with a value model to be useful.
+
+    \qml
+    ValueChart {
+        id: valueChart
+        valueModel: ValueModel {
+                        id: myValueModel
+                        name: "My value model"
+                    }
+    }
+    \endqml
+
+    \sa ValueModel, LogChart
+*/
 Item {
-    property color backgroundColor: "black"
-    property color gridColor: "#222222"
-    property color textColor: "black"
-    property color signalColor: "red"
-    property color hLineColor: "#666666"
-    property color positiveChangeColor: "green"
-    property color negativeChangeColor: "red"
-    property int timeSpan: 5*60000    // timespan in ms
+    /*! This property holds the value model connected with the chart.
+
+        The default value is \c{null}.
+    */
     property var valueModel: null
+
+    /*! This property holds the background color of the chart.
+
+        The default value is \c{black}.
+    */
+    property color backgroundColor: "black"
+
+    /*! This property holds the color of the chart grid.
+
+        The default value is \c{#222222}.
+    */
+    property color gridColor: "#222222"
+
+    /*! This property holds color of the chart's texts.
+
+        The default value is \c{black}.
+    */
+    property color textColor: "black"
+
+    /*! This property holds the color of the displayed signal.
+
+        The default value is \c{red}.
+    */
+    property color signalColor: "red"
+
+    /*! This property holds the color of the horizontal target value line.
+
+        The default value is \c{#666666}.
+    */
+    property color hLineColor: "#666666"
+
+    /*! This property holds the color of positive changes.
+
+        The default value is \c{green}.
+    */
+    property color positiveChangeColor: "green"
+
+    /*! This property holds the color of negative changes.
+
+        The default value is \c{red}.
+    */
+    property color negativeChangeColor: "red"
+
+    /*! This property holds the time span displayed in the chart in ms.
+
+        The default value is \c{300000}.
+    */
+    property int timeSpan: 5*60000    // timespan in ms
+
+    /*! \internal */
     property real startTimestamp: 0
+
+    /*! \internal */
     property real endTimestamp: 0
-    property int minValue: 0
-    property int maxValue: 300
+
+    /*! This property holds the minimum value that should be visible in the grid.
+
+        The default value is \c{0}.
+    */
+    property double minimumValue: 0
+
+    /*! This property holds the maximum value that should be visible in the grid.
+
+        The default value is \c{0}.
+    */
+    property double maximumValue: 300
+
+    /*! This property holds the resolution of the grid for the y axis.
+
+        The default value is \c{20}.
+    */
     property double yGrid: 20
-    property double xGrid: 1000
+
+    /*! This property holds the resolution of the grid for the x axis.
+
+        The default value is \c{10000}.
+    */
+    property double xGrid: 10000
+
+    /*! This property holds the width of signal.
+
+        The default value is \c{2}.
+    */
     property int signalLineWidth: 2
+
+    /*! This property holds the width of the grid lines.
+
+        The default value is \c{0}.
+    */
     property int gridLineWidth: 1
-    property double changeScale: 10.0
+
+    /*! This property holds the scaling value for the change graph.
+
+        The default value is \c{10}.
+    */
+    property double changeGraphScale: 10.0
+
+    /*! This property enables or disabled the change graph.
+
+        The default value is \c{true}.
+    */
     property bool changeGraphEnabled: true
+
+    /*! This property holds wether auto scrolling should be enabled or not.
+
+        The default value is \c{true}.
+    */
     property bool autoScroll: true
+
+    /*! This property holds the zoom factor for auto scrolling.
+
+        The default value is \c{0.1}.
+    */
     property double scrollZoomFactor: 0.1
+
+    /*! \qmlproperty bool leftTextVisible
+
+        This property holds wether the left text should be visible or not.
+
+        The default value is \c{true}.
+    */
     property alias leftTextVisible: leftText.visible
+
+    /*! \qmlproperty bool rightTextVisible
+
+        This property holds wether the right text should be visible or not.
+
+        The default value is \c{true}.
+    */
     property alias rightTextVisible: rightText.visible
+
+    /*! This property indicates the amount of decimals.
+      Note that if you enter more decimals than specified, they will
+      be truncated to the specified amount of decimal places.
+
+      The default value is \c{2}.
+    */
+    property int decimals: 2
+
+    /*! The prefix for the value. I.e "$"
+    */
+    property string prefix: ""
+
+    /*! The suffix for the value. I.e "cm"
+    */
+    property string suffix: ""
 
     id: chart
     width: 320
     height: 320
 
+    /*! Updates and repaints the chart.
+    */
     function update() {
         if (valueModel.ready && autoScroll)
         {
@@ -37,6 +188,13 @@ Item {
         chart.startTimestamp = endTimestamp - timeSpan
 
         canvas.requestPaint();
+    }
+
+    /*! \internal */
+    function showMessage(message) {
+      messageText.text = message
+      messageText.visible = true
+      messageTimer.running = true
     }
 
     MouseArea {
@@ -81,7 +239,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: parent.width * 0.02
         anchors.top: parent.top
-        text: qsTr("Value: <br>") + "<b>" + valueModel.currentValue.toFixed(2) + "</b>"
+        text: qsTr("Value: <br>") + "<b>" + chart.prefix + valueModel.currentValue.toFixed(chart.decimals) + chart.suffix + "</b>"
     }
 
     Text {
@@ -90,7 +248,7 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: leftText.anchors.leftMargin
         anchors.top: parent.top
-        text: qsTr("Target: <br>") + "<b>" + valueModel.targetValue.toFixed(2) + "</b>"
+        text: qsTr("Target: <br>") + "<b>" + chart.prefix + valueModel.targetValue.toFixed(chart.decimals) + chart.suffix + "</b>"
     }
 
     Text {
@@ -109,12 +267,6 @@ Item {
         running: false
         repeat: false
         onTriggered: messageText.visible = false
-    }
-
-    function showMessage(message) {
-      messageText.text = message
-      messageText.visible = true
-      messageTimer.running = true
     }
 
     Canvas {
@@ -145,8 +297,8 @@ Item {
             ctx.lineWidth = gridLineWidth
             ctx.beginPath();
 
-            for (var i = minValue/yGrid; i < maxValue/yGrid; i += 1) {
-                            var y = canvas.height-(i*yGrid-minValue)/(maxValue-minValue)*canvas.height;
+            for (var i = minimumValue/yGrid; i < maximumValue/yGrid; i += 1) {
+                            var y = canvas.height-(i*yGrid-minimumValue)/(maximumValue-minimumValue)*canvas.height;
                             ctx.moveTo(0, y);
                             ctx.lineTo(canvas.width, y);
                         }
@@ -261,7 +413,7 @@ Item {
                 change = Math.abs(change)
 
                 var x = points[i].x;
-                var y = change*(canvas.height/(maxValue-minValue))*changeScale;
+                var y = change*(canvas.height/(maximumValue-minimumValue))*changeGraphScale;
 
                 ctx.fillRect(x, Math.max(canvas.height-y, 0), canvas.width/points.length, canvas.height);
             }
@@ -291,13 +443,13 @@ Item {
                     continue
                 points.push({
                                 x: (item.timestamp-startTimestamp)*canvas.width/(endTimestamp-startTimestamp+1),
-                                y: canvas.height-(item.value-minValue)/(maxValue-minValue)*canvas.height,
+                                y: canvas.height-(item.value-minimumValue)/(maximumValue-minimumValue)*canvas.height,
                                 value: item.value
                             });
             }
             if (changeGraphEnabled)
                 drawChange(ctx, first, last, positiveChangeColor, negativeChangeColor, points)
-            drawHLine(ctx, canvas.height-(valueModel.targetValue-minValue)/(maxValue-minValue)*canvas.height, hLineColor)
+            drawHLine(ctx, canvas.height-(valueModel.targetValue-minimumValue)/(maximumValue-minimumValue)*canvas.height, hLineColor)
             drawValue(ctx, first, last, signalColor, points)
 
         }

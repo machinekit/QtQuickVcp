@@ -10,7 +10,11 @@
         <file>HalProgressBar.qml</file>
         <file>HalRadioButton.qml</file>
         <file>HalSlider.qml</file>
-        <file>HalToggleButton.qml</file>
         <file>HalVirtualJoystick.qml</file>
+        <file>HalCheckBox.qml</file>
+        <file>HalComboBox.qml</file>
+        <file>HalSpinBox.qml</file>
+        <file>HalLabel.qml</file>
+        <file>HalContainer.qml</file>
     </qresource>
 </RCC>

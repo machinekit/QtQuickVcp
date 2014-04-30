@@ -9,5 +9,6 @@
         <file>Line.qml</file>
         <file>LogChart.qml</file>
         <file>Led.qml</file>
+        <file>Gauge.qml</file>
     </qresource>
 </RCC>

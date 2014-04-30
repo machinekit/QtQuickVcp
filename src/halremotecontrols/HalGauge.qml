@@ -1,86 +1,46 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.1
-import QtQuick.Controls.Styles 1.1
 import Machinekit.HalRemote 1.0
+import Machinekit.Controls 1.0
+import Machinekit.HalRemote.Controls 1.0
 
-ProgressBar {
-    property string name: "gauge"
-    property double minimumValue: -pinScale.value   // can be overwritten
-    property double maximumValue: pinScale.value    // can be overwritten
-    property bool showText: true
-    property double value: 0
-    property int digits: 2
-    property bool hovered: progressBar1.hovered || progressBar2.hovered
+/*!
+    \qmltype HalGauge
+    \inqmlmodule Machinekit.HalRemote.Controls
+    \brief Provides a linear gauge control to display data.
+    \ingroup halremotecontrols
+
+    This component provides a gauge combined with a HAL pin. By default
+    the type of the HAL pin is float and the direction in.
+
+    \qml
+    Gauge {
+        id: halGauge
+        name: "gauge"
+    }
+    \endqml
+
+    \sa Gauge, HalProgressBar, ProgressBar
+*/
+
+Gauge {
+    /*! This property holds the name of the default HAL pin.
+    */
+    property string name:   "gauge"
+
+    /*! \qmlproperty HalPin halPin
+
+        This property holds the default HAL pin.
+    */
+    property alias  halPin: pin
 
     id: main
 
-    width: 100
-    height: 62
-
-    style: ProgressBarStyle {
-        progress: Item {
-        }
-    }
-
-    ProgressBar {
-        id: progressBar1
-
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        width: parent.width * 0.5
-
-        minimumValue: 0
-        maximumValue: -main.minimumValue
-        rotation: 180
-        value: (main.value < 0)?-main.value:0
-
-        style: ProgressBarStyle {
-            background: Item {
-            }
-        }
-    }
-
-    ProgressBar {
-        id: progressBar2
-
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: progressBar1.right
-        anchors.right: parent.right
-
-        minimumValue: 0
-        maximumValue: main.maximumValue
-        value: (main.value > 0)?main.value:0
-
-        style: ProgressBarStyle {
-            background: Item {
-            }
-        }
-    }
-
-    Text {
-        id: progressText1
-
-        anchors.centerIn: parent
-        text: main.value.toFixed(digits)
-        visible: main.showText
-    }
-
-    Pin {
+    HalPin {
         id: pin
 
         name: main.name
-        type: Pin.HAL_FLOAT
-        direction: Pin.HAL_IN
-    }
-
-    Pin {
-        id: pinScale
-
-        name: main.name + ".scale"
-        type: Pin.HAL_FLOAT
-        direction: Pin.HAL_IN
+        type: HalPin.Float
+        direction: HalPin.In
     }
 
     Binding { target: main; property: "value"; value: pin.value}

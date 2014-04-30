@@ -1,6 +1,6 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.0
-import Machinekit.HalRemote 1.0 as HAL
+import Machinekit.HalRemote 1.0
 
 ApplicationWindow {
     id: mainWindow
@@ -111,7 +111,7 @@ ApplicationWindow {
                 PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic }
             }
 
-        // Capture the Android Back kay and backspace key
+        // Capture the Android Back key and backspace key
         // on the desktop tp go back in the application
         // focus needs to be true to capture key events
         focus: true
@@ -132,15 +132,15 @@ ApplicationWindow {
             }
     }
 
-    HAL.AppConfig {
+    AppConfig {
         id: appConfig
 
         uri: "tcp://192.168.1.18:5590"
         timeout: 3000
         ready: true
-        filters: [ HAL.AppConfigFilter { type: HAL.AppConfigItem.QT5_QML },
-                   HAL.AppConfigFilter { type: HAL.AppConfigItem.GLADEVCP } ]
-        selectedConfig: HAL.AppConfigItem {
+        filters: [ AppConfigFilter { type: AppConfigItem.QT5_QML },
+                   AppConfigFilter { type: AppConfigItem.GLADEVCP } ]
+        selectedConfig: AppConfigItem {
             id: selectedConfig
         }
 
