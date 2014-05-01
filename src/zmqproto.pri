@@ -23,7 +23,7 @@ HEADERS += \
 
 INCLUDEPATH += \
     $$NZMQTDIR/include \
-    $$NZMQTDIR/externals/include
+    $$NZMQTDIR/externals/include/cppzmq
 
 android: {
 LIBS += -L$$ZEROMQ_ANDROID_DIR/lib/ \
