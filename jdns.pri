@@ -9,7 +9,47 @@ windows:{
 	LIBS += -lWs2_32 -lAdvapi32
 }
 unix:{
-	#QMAKE_CFLAGS += -pedantic
+    #QMAKE_CFLAGS += -pedantic
+}
+android: {
+DEFINES += JDNS_MODERN_RES_API
+DEFINES += USE_EXTEXT
+DEFINES += JDNS_OS_ANDROID
+
+SOURCES +=  $$PWD/android/ev_streams.c \
+            $$PWD/android/ev_timers.c \
+            $$PWD/android/getaddrinfo.c \
+            $$PWD/android/ns_name.c \
+            $$PWD/android/ns_netint.c \
+            $$PWD/android/ns_parse.c \
+            $$PWD/android/ns_samedomain.c \
+            $$PWD/android/ns_ttl.c \
+            $$PWD/android/res_comp.c \
+            $$PWD/android/res_data.c \
+            $$PWD/android/res_init.c \
+            $$PWD/android/res_send.c \
+            $$PWD/android/ns_print.c \
+            $$PWD/android/res_debug.c \
+            $$PWD/android/res_mkquery.c \
+            $$PWD/android/res_state.c
+
+HEADERS +=  $$PWD/android/arpa_nameser.h \
+            $$PWD/android/arpa_nameser_compat.h \
+            $$PWD/android/assertions.h \
+            $$PWD/android/dst.h \
+            $$PWD/android/eventlib.h \
+            $$PWD/android/eventlib_p.h \
+            $$PWD/android/heap.h \
+            $$PWD/android/linker_format.h \
+            $$PWD/android/list.h \
+            $$PWD/android/memcluster.h \
+            $$PWD/android/res_debug.h \
+            $$PWD/android/res_private.h \
+            $$PWD/android/resolv_cache.h \
+            $$PWD/android/resolv_private.h \
+            $$PWD/android/resolv_static.h
+
+INCLUDEPATH += $$PWD/android/
 }
 
 HEADERS += \
