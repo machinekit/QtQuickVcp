@@ -133,11 +133,6 @@ read /etc/hosts manually:
 #endif
 #endif
 
-/* Android Bionic has res_init() but it's not in any header */
-//#ifdef __BIONIC__
-//int res_init (void);
-//#endif
-
 #define string_indexOf jdns_string_indexOf
 #define string_split jdns_string_split
 
