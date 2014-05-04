@@ -37,3 +37,8 @@ CMakeFiles
 cmake_install.cmake
 __
 cmake_uninstall.cmake
+
+# Linux
+
+.directory
+~*
