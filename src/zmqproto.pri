@@ -6,24 +6,8 @@
 # eventually import directly from linuxcnc build dir
 #PROTOGEN = $$LINUXCNCDIR/src/middleware/generated
 
-NZMQTDIR = ../../3rdparty/nzmqt
 include(../paths.pri)
-
-# This define will "move" nzmqt class method
-# implementations to nzmqt.cpp file.
-DEFINES += NZMQT_LIB
-
-SOURCES += \
-    $$NZMQTDIR/src/nzmqt/nzmqt.cpp
-
-HEADERS += \
-    $$NZMQTDIR/include/nzmqt/global.hpp \
-    $$NZMQTDIR/include/nzmqt/nzmqt.hpp \
-    $$NZMQTDIR/include/nzmqt/impl.hpp
-
-INCLUDEPATH += \
-    $$NZMQTDIR/include \
-    $$NZMQTDIR/3rdparty/cppzmq
+include(../3rdparty/nzmqt/nzmqt.pri)
 
 android: {
 LIBS += -L$$ZEROMQ_ANDROID_DIR/lib/ \
