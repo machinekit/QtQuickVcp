@@ -41,7 +41,7 @@ import Machinekit.HalRemote.Controls 1.0
     \endqml
 */
 
-Item {
+Rectangle {
     /*! This property holds the title of the application window.
     */
     property string title: "HAL Application Template"
@@ -121,54 +121,76 @@ Item {
     property bool ready: true
 
     /*! internal */
-    property Item viewPage: defaultViewPage
+    //property Item viewPage: defaultViewPage
 
     id: main
 
     width: 500
     height: 800
+    color: systemPalette.window
 
+    SystemPalette {
+        id: systemPalette;
+        colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
+    }
 
-    Item {
+    /*Item {
         id: pageStack
 
         anchors.fill: parent
 
-        HalDiscoveryPage {
-            id: discoveryPage
 
-            anchors.fill: parent
-            remoteComponent: remoteComponent
-            serviceDiscovery: serviceDiscovery
-            halrcompService: halrcompService
-            rcommandService: rcommandService
-        }
 
-        Item {
+        Rectangle {
             id: defaultViewPage
 
             anchors.fill: parent
+            color: systemPalette.window
+            opacity: 1
+            z:1
         }
 
-        state: remoteComponent.ready?"connected":"discovery"
 
-        states: [
-            State {
-                name: "discovery"
-                PropertyChanges { target: discoveryPage; opacity: 1.0 }
-                PropertyChanges { target: viewPage; opacity: 0.0 }
-            },
-            State {
-                name: "connected"
-                PropertyChanges { target: discoveryPage; opacity: 0.0 }
-                PropertyChanges { target: viewPage; opacity: 1.0 }
-            }
-        ]
+    }*/
 
-        transitions: Transition {
-                PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic }
-            }
+    HalDiscoveryPage {
+        id: discoveryPage
+
+        anchors.fill: parent
+        visible: false
+        z: 100
+        remoteComponent: remoteComponent
+        serviceDiscovery: serviceDiscovery
+        halrcompService: halrcompService
+        rcommandService: rcommandService
     }
+
+    /* This timer is a workaround to make the discoveryPage invisible in QML designer */
+    Timer {
+        interval: 10
+        repeat: false
+        running: true
+        onTriggered: discoveryPage.visible = true
+    }
+
+    state: remoteComponent.ready?"connected":"discovery"
+
+    states: [
+        State {
+            name: "discovery"
+            PropertyChanges { target: discoveryPage; opacity: 1.0 }
+            //PropertyChanges { target: viewPage; opacity: 0.0 }
+        },
+        State {
+            name: "connected"
+            PropertyChanges { target: discoveryPage; opacity: 0.0 }
+            //PropertyChanges { target: viewPage; opacity: 1.0 }
+        }
+    ]
+
+    transitions: Transition {
+            PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic }
+        }
 
     HalRemoteComponent {
         id: remoteComponent
@@ -178,7 +200,7 @@ Item {
         updateUri: halrcompService.uri
         heartbeatPeriod: 3000
         ready: main.autoDiscover?(halrcompService.found && rcommandService.found):main.ready
-        containerItem: viewPage
+        containerItem: parent
     }
 
     ServiceDiscovery {

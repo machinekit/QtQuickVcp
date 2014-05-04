@@ -32,7 +32,7 @@ import Machinekit.HalRemote.Controls 1.0
     \internal
 */
 
-Item {
+Rectangle {
     /*! This property holds the HAL remote component.
     */
     property variant remoteComponent
@@ -50,6 +50,15 @@ Item {
     property variant rcommandService
 
     id: main
+
+    width: 500
+    height: 800
+    color: systemPalette.window
+
+    SystemPalette {
+        id: systemPalette;
+        colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
+    }
 
     ColumnLayout {
         anchors.margins: 10
