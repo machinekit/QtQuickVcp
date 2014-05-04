@@ -120,10 +120,10 @@ read /etc/hosts manually:
 #ifdef JDNS_OS_ANDROID
 # include <netinet/in.h>
 # include <dlfcn.h>
-# include <arpa_nameser.h>
-# include <resolv_private.h>
-# include <res_private.h>
-# include <resolv_static.h>
+# include "arpa_nameser.h"
+# include "resolv_private.h"
+# include "res_private.h"
+# include "resolv_static.h"
 #else
 #ifdef JDNS_OS_UNIX
 # include <netinet/in.h>
