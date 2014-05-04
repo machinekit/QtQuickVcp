@@ -1,0 +1,19 @@
+# known at buildtime
+set(JDns_VERSION "@JDNS_LIB_VERSION_STRING@")
+set(JDns_VERSION_MAJOR @JDNS_LIB_MAJOR_VERSION@)
+set(JDns_VERSION_MINOR @JDNS_LIB_MINOR_VERSION@)
+set(JDns_VERSION_PATCH @JDNS_LIB_PATCH_VERSION@)
+
+get_filename_component(currentDir ${CMAKE_CURRENT_LIST_FILE} PATH) # get the directory where I myself am
+get_filename_component(rootDir ${currentDir}/@relInstallDir@ ABSOLUTE) # get the chosen install prefix
+
+# install locations
+set(JDns_INCLUDE_DIR "${rootDir}/@JDNS_INCLUDEDIR_REL@")
+set(JDns_LIBRARY_DIR "${rootDir}/@LIB_INSTALL_DIR_REL@")
+set(JDns_LIB_SONAME jdns)
+
+if(NOT TARGET jdns)
+  include(${currentDir}/JDnsTargets.cmake)
+endif()
+
+set(JDns_LIBRARY jdns)

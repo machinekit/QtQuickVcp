@@ -1,0 +1,23 @@
+if(NOT JDns_FOUND)
+  find_package(JDns "@JDNS_LIB_VERSION_STRING@" REQUIRED)
+endif(NOT JDns_FOUND)
+
+# known at buildtime
+set(QJDns_VERSION "@JDNS_LIB_VERSION_STRING@")
+set(QJDns_VERSION_MAJOR @JDNS_LIB_MAJOR_VERSION@)
+set(QJDns_VERSION_MINOR @JDNS_LIB_MINOR_VERSION@)
+set(QJDns_VERSION_PATCH @JDNS_LIB_PATCH_VERSION@)
+
+get_filename_component(currentDir ${CMAKE_CURRENT_LIST_FILE} PATH) # get the directory where I myself am
+get_filename_component(rootDir ${currentDir}/@relInstallDir@ ABSOLUTE) # get the chosen install prefix
+
+# install locations
+set(QJDns_INCLUDE_DIR "${rootDir}/@JDNS_INCLUDEDIR_REL@")
+set(QJDns_LIBRARY_DIR "${rootDir}/@LIB_INSTALL_DIR_REL@")
+set(QJDns_LIB_SONAME qjdns)
+
+if(NOT TARGET qjdns)
+  include(${currentDir}/QJDnsTargets.cmake)
+endif()
+
+set(QJDns_LIBRARY qjdns)
