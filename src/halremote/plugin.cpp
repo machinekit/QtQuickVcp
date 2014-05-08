@@ -27,6 +27,8 @@
 #include "qappconfig.h"
 #include "qappconfigitem.h"
 #include "qappconfigfilter.h"
+#include "qappdiscovery.h"
+#include "qappdiscoveryitem.h"
 
 #include <qqml.h>
 
@@ -43,6 +45,8 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
     qmlRegisterType<QAppConfig>(uri, 1, 0, "AppConfig");
     qmlRegisterType<QAppConfigItem>(uri, 1, 0, "AppConfigItem");
     qmlRegisterType<QAppConfigFilter>(uri, 1, 0, "AppConfigFilter");
+    qmlRegisterType<QAppDiscovery>(uri, 1, 0, "AppDiscovery");
+    qmlRegisterType<QAppDiscoveryItem>(uri, 1, 0, "AppDiscoveryItem");
     qmlRegisterType<QHalPin>(uri, 1, 0, "HalPin");
 }
 

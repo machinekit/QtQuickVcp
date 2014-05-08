@@ -11,6 +11,7 @@ uri = Machinekit.HalRemote
 PROTOGEN = generated
 
 include(../zmqproto.pri)
+include(../../3rdparty/jdns/jdns.pri)
 
 # Input
 SOURCES += \
@@ -36,7 +37,9 @@ SOURCES += \
     $$PROTOGEN/types.pb.cc \
     $$PROTOGEN/value.pb.cc \
     qhalpin.cpp \
-    qhalremotecomponent.cpp
+    qhalremotecomponent.cpp \
+    qappdiscovery.cpp \
+    qappdiscoveryitem.cpp
 
 HEADERS += \
     plugin.h \
@@ -60,7 +63,9 @@ HEADERS += \
     $$PROTOGEN/types.pb.h \
     $$PROTOGEN/value.pb.h \
     qhalpin.h \
-    qhalremotecomponent.h
+    qhalremotecomponent.h \
+    qappdiscovery.h \
+    qappdiscoveryitem.h
 
 INCLUDEPATH += \
     $$PROTOGEN
