@@ -21,9 +21,12 @@
 ****************************************************************************/
 import QtQuick 2.1
 import QtQuick.Controls 1.0
+import QtQuick.Window 2.0
 import Machinekit.HalRemote 1.0
 
 ApplicationWindow {
+    property var selectedInstance
+
     id: mainWindow
 
     visible: true
@@ -31,27 +34,72 @@ ApplicationWindow {
     width: 500
     height: 700
 
+    Text {
+        id: dummyText
+    }
+
     Item {
         id: pageStack
 
         anchors.fill: parent
 
         Item {
-            id: startPage
+            id: discoveryPage
 
             anchors.fill: parent
 
             Text {
-                id: dummyText
+                id: pageTitleText2
+
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.topMargin: Screen.logicalPixelDensity*3
+                text: qsTr("Available Instances:")
+                font.pointSize: dummyText.font.pointSize * 1.6
+                font.bold: true
             }
+
+            ListView {
+                anchors.top: pageTitleText2.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: Screen.logicalPixelDensity*3
+                spacing: Screen.logicalPixelDensity*3
+                model: appDiscovery.discoveredApps
+                delegate: Button {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: mainWindow.height*0.1
+                    Text {
+                        id: titleText2
+
+                        anchors.centerIn: parent
+                        font.pointSize: dummyText.font.pointSize*1.6
+                        font.bold: true
+                        text: name
+                    }
+
+                    onClicked: {
+                        selectedInstance = model.get(index)
+                        appConfig.ready = true
+                    }
+                }
+            }
+        }
+
+        Item {
+            id: appPage
+
+            anchors.fill: parent
 
             Text {
                 id: pageTitleText
 
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.topMargin: 10
-                text: qsTr("Available Apps:")
+                anchors.topMargin: Screen.logicalPixelDensity*3
+                text: selectedInstance !== undefined ? selectedInstance.name : ""
                 font.pointSize: dummyText.font.pointSize * 1.6
                 font.bold: true
             }
@@ -113,18 +161,26 @@ ApplicationWindow {
             }
         }
 
-        state: (appLoader.active) ?"loaded":"discovery"
+        state: (appConfig.ready) ? ((appLoader.active) ?"loaded":"config") :"discovery"
 
         states: [
             State {
                 name: "discovery"
-                PropertyChanges { target: startPage; opacity: 1.0 }
+                PropertyChanges { target: discoveryPage; opacity: 1.0 }
+                PropertyChanges { target: appPage; opacity: 0.0 }
                 PropertyChanges { target: viewPage; opacity: 0.0 }
             },
             State {
+                name: "config"
+                PropertyChanges { target: appPage; opacity: 1.0 }
+                PropertyChanges { target: viewPage; opacity: 0.0 }
+                PropertyChanges { target: discoveryPage; opacity: 0.0 }
+            },
+            State {
                 name: "loaded"
-                PropertyChanges { target: startPage; opacity: 0.0 }
+                PropertyChanges { target: appPage; opacity: 0.0 }
                 PropertyChanges { target: viewPage; opacity: 1.0 }
+                PropertyChanges { target: discoveryPage; opacity: 0.0 }
             }
         ]
 
@@ -137,33 +193,43 @@ ApplicationWindow {
         // focus needs to be true to capture key events
         focus: true
         Keys.onReleased: {
-                if ((event.key == Qt.Key_Back) ||
-                        (event.key == Qt.Key_Backspace)) {
-                    if (pageStack.state == "discovery")
-                    {
-                        Qt.quit()
-                    }
-                    else if (pageStack.state == "loaded")
-                    {
-                        appConfig.unselectAppConfig()
-                    }
-
-                    event.accepted = true
+            if ((event.key === Qt.Key_Back) ||
+                    (event.key === Qt.Key_Backspace)) {
+                if (pageStack.state == "discovery")
+                {
+                    Qt.quit()
                 }
+                else if (pageStack.state == "config")
+                {
+                    appConfig.ready = false
+                }
+                else if (pageStack.state == "loaded")
+                {
+                    appConfig.unselectAppConfig()
+                }
+
+                event.accepted = true
             }
+        }
     }
 
     AppConfig {
         id: appConfig
 
-        uri: "tcp://192.168.1.18:5590"
+        uri: selectedInstance !== undefined ? selectedInstance.dsname : ""
         timeout: 3000
-        ready: true
+        ready: false
         filters: [ AppConfigFilter { type: AppConfigItem.QT5_QML },
                    AppConfigFilter { type: AppConfigItem.GLADEVCP } ]
         selectedConfig: AppConfigItem {
             id: selectedConfig
         }
 
+    }
+
+    AppDiscovery {
+        id: appDiscovery
+        regType: "_machinekit._tcp.local"
+        running: pageStack.state == "discovery"
     }
 }
