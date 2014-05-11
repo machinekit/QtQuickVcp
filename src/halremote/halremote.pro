@@ -9,7 +9,6 @@ uri = Machinekit.HalRemote
 
 include(../zeromq.pri)
 include(../../3rdparty/jdns/jdns.pri)
-include(../../3rdparty/Machinekit/proto/machinekitproto.pri)
 
 # Input
 SOURCES += \
@@ -22,8 +21,7 @@ SOURCES += \
     qhalpin.cpp \
     qhalremotecomponent.cpp \
     qappdiscovery.cpp \
-    qappdiscoveryitem.cpp \
-    qhalapplicationbase.cpp
+    qappdiscoveryitem.cpp
 
 HEADERS += \
     plugin.h \
@@ -35,10 +33,11 @@ HEADERS += \
     qhalpin.h \
     qhalremotecomponent.h \
     qappdiscovery.h \
-    qappdiscoveryitem.h \
-    qhalapplicationbase.h
+    qappdiscoveryitem.h
 
 QML_INFRA_FILES = \
     qmldir
 
 include(../deployment.pri)
+
+LIBS += -lprotobuf
