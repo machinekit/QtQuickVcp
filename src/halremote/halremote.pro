@@ -9,6 +9,7 @@ uri = Machinekit.HalRemote
 
 include(../zeromq.pri)
 include(../../3rdparty/jdns/jdns.pri)
+include(../../3rdparty/machinetalk-protobuf.pri)
 
 # Input
 SOURCES += \
@@ -39,5 +40,3 @@ QML_INFRA_FILES = \
     qmldir
 
 include(../deployment.pri)
-
-LIBS += -lprotobuf
