@@ -192,7 +192,7 @@ void QServiceDiscovery::udpReadyRead()
                         if ((service->type() == receivedService->type())
                             && (receivedService->version() >= service->minVersion()))
                         {
-                            if (service->isFound() == false)
+                            if (service->isReady() == false)
                             {
                                 m_currentWanted--;
                             }

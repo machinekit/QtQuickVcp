@@ -80,19 +80,11 @@ Rectangle {
         }
 
         RadioButton {
-            id: runningCheck
-
-            Layout.fillWidth: true
-            text: qsTr("Discovery running")
-            checked: serviceDiscovery.running
-        }
-
-        RadioButton {
             id: halrcompServiceCheck
 
             Layout.fillWidth: true
             text: qsTr("ST_STP_HALRCOMP command discovered")
-            checked: halrcompService.found
+            checked: halrcompService.ready
         }
 
         RadioButton {
@@ -100,7 +92,7 @@ Rectangle {
 
             Layout.fillWidth: true
             text: qsTr("ST_HAL_RCOMMAND command discovered")
-            checked: rcommandService.found
+            checked: rcommandService.ready
         }
 
         Button {

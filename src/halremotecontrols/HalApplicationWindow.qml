@@ -81,38 +81,6 @@ Rectangle {
     */
     property bool autoDiscover: true
 
-    /*! \qmlproperty int autoDiscoverTimeout
-
-        This property holds the auto discovery timeout in ms.
-
-        The default value is \c{2000}.
-    */
-    property alias autoDiscoverTimeout: serviceDiscovery.maxWait
-
-    /*! \qmlproperty bool autoDiscoverRepeat
-
-        This property holds whether auto discovery should be repeated if it fails or not.
-
-        The default value is \c{false}.
-    */
-    property alias autoDiscoverRepeat: serviceDiscovery.repeat
-
-    /*! \qmlproperty int autoDiscoverRetryTime
-
-        This property holds the auto discovery retry time in ms.
-
-        The default value is \c{500}.
-    */
-    property alias autoDiscoverRetryTime: serviceDiscovery.retryTime
-
-    /*! \qmlproperty int autoDiscoverPort
-
-        This property holds the auto discovery port.
-
-        The default value is \c{10042}.
-    */
-    property alias autoDiscoverPort: serviceDiscovery.port
-
     /*! This property holds wheter the application window is ready or not. If the
         property is set to true auto discovery and will automaticall start.
 
@@ -120,8 +88,20 @@ Rectangle {
     */
     property bool ready: true
 
-    /*! internal */
-    //property Item viewPage: defaultViewPage
+    /*! This property holds the services used by the application.
+    */
+    property list<Service> services: [
+        Service {
+            id: halrcompService
+            type: Service.ST_STP_HALRCOMP
+            minVersion: 0
+        },
+        Service {
+            id: rcommandService
+            type: Service.ST_HAL_RCOMMAND
+            minVersion: 0
+        }
+    ]
 
     id: main
 
@@ -134,25 +114,6 @@ Rectangle {
         colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
     }
 
-    /*Item {
-        id: pageStack
-
-        anchors.fill: parent
-
-
-
-        Rectangle {
-            id: defaultViewPage
-
-            anchors.fill: parent
-            color: systemPalette.window
-            opacity: 1
-            z:1
-        }
-
-
-    }*/
-
     HalDiscoveryPage {
         id: discoveryPage
 
@@ -160,7 +121,6 @@ Rectangle {
         visible: false
         z: 100
         remoteComponent: remoteComponent
-        serviceDiscovery: serviceDiscovery
         halrcompService: halrcompService
         rcommandService: rcommandService
     }
@@ -179,12 +139,10 @@ Rectangle {
         State {
             name: "discovery"
             PropertyChanges { target: discoveryPage; opacity: 1.0 }
-            //PropertyChanges { target: viewPage; opacity: 0.0 }
         },
         State {
             name: "connected"
             PropertyChanges { target: discoveryPage; opacity: 0.0 }
-            //PropertyChanges { target: viewPage; opacity: 1.0 }
         }
     ]
 
@@ -199,32 +157,7 @@ Rectangle {
         cmdUri: rcommandService.uri
         updateUri: halrcompService.uri
         heartbeatPeriod: 3000
-        ready: main.autoDiscover?(halrcompService.found && rcommandService.found):main.ready
+        ready: main.autoDiscover?(halrcompService.ready && rcommandService.ready):main.ready
         containerItem: parent
-    }
-
-    ServiceDiscovery {
-        id: serviceDiscovery
-
-        port: 10042
-        retryTime: 500
-        maxWait: 2000
-        trace: false
-        instance: 0
-        running: main.autoDiscover
-        repeat: false
-
-        services: [
-            Service {
-                id: halrcompService
-                type: Service.ST_STP_HALRCOMP
-                minVersion: 0
-            },
-            Service {
-                id: rcommandService
-                type: Service.ST_HAL_RCOMMAND
-                minVersion: 0
-            }
-        ]
     }
 }

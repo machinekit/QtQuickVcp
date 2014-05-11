@@ -30,6 +30,7 @@
 #include <nzmqt/nzmqt.hpp>
 #include "qappconfigitem.h"
 #include "qappconfigfilter.h"
+#include "qservicediscovery.h"
 #include "message.pb.h"
 #include "types.pb.h"
 #include <google/protobuf/text_format.h>
@@ -45,9 +46,11 @@ class QAppConfig : public QQuickItem
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
     Q_PROPERTY(int timeout READ timeout WRITE setTimeout NOTIFY timeoutChanged)
     Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
-    Q_PROPERTY(QAppConfigItem *selectedConfig READ selectedConfig WRITE setSelectedConfig NOTIFY selectedConfigChanged)
+    Q_PROPERTY(QAppConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
     Q_PROPERTY(QQmlListProperty<QAppConfigItem> appConfigs READ appConfigs NOTIFY appConfigsChanged)
     Q_PROPERTY(QQmlListProperty<QAppConfigFilter> filters READ filters)
+    Q_PROPERTY(QQmlListProperty<QService> services READ services)
+    Q_PROPERTY(QQmlListProperty<QService> receivedServices READ receivedServices NOTIFY receivedServicesChanged)
 
 public:
     explicit QAppConfig(QQuickItem *parent = 0);
@@ -82,10 +85,19 @@ public:
     int filterCount() const;
     QAppConfigFilter* filter(int index) const;
 
+    QQmlListProperty<QService> services();
+    int serviceCount() const;
+    QService *service(int index) const;
+
+    QQmlListProperty<QService> receivedServices();
+    int replieCount() const;
+    QService *replie(int index) const;
+
 public slots:
 
     void selectAppConfig(QString name);
     void unselectAppConfig();
+    void updateServices();
 
     void setUri(QString arg)
     {
@@ -120,6 +132,8 @@ private:
     QAppConfigItem * m_selectedConfig;
     QList<QAppConfigItem*> m_appConfigs;
     QList<QAppConfigFilter*> m_filters;
+    QList<QService*> m_services;
+    QList<QService*> m_receivedServices;
 
     ZMQContext *m_context;
     ZMQSocket *m_configSocket;
@@ -146,6 +160,7 @@ signals:
     void readyChanged(bool arg);
     void selectedConfigChanged(QAppConfigItem * arg);
     void appConfigsChanged(QQmlListProperty<QAppConfigItem> arg);
+    void receivedServicesChanged(QQmlListProperty<QService> arg);
 };
 
 #endif // QAPPCONFIG_H

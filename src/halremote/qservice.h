@@ -32,7 +32,7 @@ class QService : public QObject
     Q_PROPERTY(int version READ version NOTIFY versionChanged)
     Q_PROPERTY(ServiceApi api READ api NOTIFY apiChanged)
     Q_PROPERTY(QString description READ description NOTIFY descriptionChanged)
-    Q_PROPERTY(bool found READ isFound NOTIFY foundChanged)
+    Q_PROPERTY(bool ready READ isReady NOTIFY readyChanged)
     Q_PROPERTY(int minVersion READ minVersion WRITE setMinVersion NOTIFY minVersionChanged)
     Q_PROPERTY(ServiceType type READ type WRITE setType NOTIFY typeChanged)
     Q_ENUMS(ServiceApi)
@@ -86,9 +86,9 @@ public:
         return m_description;
     }
 
-    bool isFound() const
+    bool isReady() const
     {
-        return m_found;
+        return m_ready;
     }
 
     int minVersion() const
@@ -103,7 +103,7 @@ public:
 
 public slots:
 
-    void setData(QString uri, int version, ServiceApi api, QString description, bool found);
+    void setData(QString uri, int version, ServiceApi api, QString description, bool ready);
     void clearFound();
 
     void setMinVersion(int arg)
@@ -122,12 +122,20 @@ public slots:
         }
     }
 
+    void setReady(bool arg)
+    {
+        if (m_ready != arg) {
+            m_ready = arg;
+            emit readyChanged(arg);
+        }
+    }
+
 private:
     QString m_uri;
     int m_version;
     ServiceApi m_api;
     QString m_description;
-    bool m_found;
+    bool m_ready;
     int m_minVersion;
     ServiceType m_type;
 
@@ -137,7 +145,7 @@ signals:
     void versionChanged(int arg);
     void apiChanged(ServiceApi arg);
     void descriptionChanged(QString arg);
-    void foundChanged(bool arg);
+    void readyChanged(bool arg);
     void minVersionChanged(int arg);
     void typeChanged(ServiceType arg);
 };

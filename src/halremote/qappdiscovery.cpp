@@ -50,11 +50,14 @@ QAppDiscoveryItem *QAppDiscovery::discoveredApp(int index) const
 
 void QAppDiscovery::startQuery()
 {
-    int id;
+    m_queryId = m_jdns->queryStart(m_regType.toLocal8Bit(), QJDns::Ptr);
+    m_queryTypeMap.insert(m_queryId, QJDns::Ptr);
+}
 
-    qDebug() << "starting query" << m_regType;
-    id = m_jdns->queryStart(m_regType.toLocal8Bit(), QJDns::Ptr);
-    m_queryTypeMap.insert(id, QJDns::Ptr);
+void QAppDiscovery::stopQuery()
+{
+    m_jdns->queryCancel(m_queryId);
+    m_queryTypeMap.remove(m_queryId);
 }
 
 QAppDiscoveryItem *QAppDiscovery::addItem(QString name)

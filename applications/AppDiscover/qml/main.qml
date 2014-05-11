@@ -66,11 +66,13 @@ ApplicationWindow {
                 anchors.bottom: parent.bottom
                 anchors.margins: Screen.logicalPixelDensity*3
                 spacing: Screen.logicalPixelDensity*3
+
                 model: appDiscovery.discoveredApps
                 delegate: Button {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: mainWindow.height*0.1
+
                     Text {
                         id: titleText2
 
@@ -81,8 +83,11 @@ ApplicationWindow {
                     }
 
                     onClicked: {
-                        selectedInstance = model.get(index)
-                        appConfig.ready = true
+                        if (appDiscovery.discoveredApps[index].dsname !== "")
+                        {
+                            selectedInstance = appDiscovery.discoveredApps[index]
+                            appConfig.ready = true
+                        }
                     }
                 }
             }
@@ -109,19 +114,20 @@ ApplicationWindow {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                anchors.margins: 10
-                spacing: 10
+                anchors.margins: Screen.logicalPixelDensity*3
+                spacing: Screen.logicalPixelDensity*3
 
                 model: appConfig.appConfigs
                 delegate: Button {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: mainWindow.height*0.1
+
                     Text {
                         id: titleText
 
                         anchors.centerIn: parent
-                        anchors.verticalCenterOffset: -5
+                        anchors.verticalCenterOffset: -Screen.logicalPixelDensity*2
                         font.pointSize: descriptionText.font.pointSize*1.6
                         font.bold: true
                         text: name
@@ -131,7 +137,7 @@ ApplicationWindow {
 
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: titleText.bottom
-                        anchors.margins: 2
+                        anchors.margins: Screen.logicalPixelDensity*1
                         text: description
                     }
 
@@ -149,15 +155,23 @@ ApplicationWindow {
                 id: appLoader
 
                 anchors.fill: parent
-                active: selectedConfig.loaded
-                source: selectedConfig.mainFile
+                active: appConfig.selectedConfig.loaded
+                source: appConfig.selectedConfig.mainFile
 
                 onSourceChanged: {
                     console.log(source)
                     console.log(active)
                 }
 
-                onLoaded: console.log("loaded")
+                onLoaded: {
+                    console.log("loaded")
+                    console.log(appLoader.item.name)
+                    if (appConfig.services !== undefined)
+                    {
+                        appConfig.services = Qt.binding(function(){return appLoader.item.services})
+                        appConfig.updateServices()
+                    }
+                }
             }
         }
 
@@ -166,21 +180,21 @@ ApplicationWindow {
         states: [
             State {
                 name: "discovery"
-                PropertyChanges { target: discoveryPage; opacity: 1.0 }
-                PropertyChanges { target: appPage; opacity: 0.0 }
-                PropertyChanges { target: viewPage; opacity: 0.0 }
+                PropertyChanges { target: discoveryPage; opacity: 1.0; z: 1 }
+                PropertyChanges { target: appPage; opacity: 0.0; z: 0 }
+                PropertyChanges { target: viewPage; opacity: 0.0; z: 0 }
             },
             State {
                 name: "config"
-                PropertyChanges { target: appPage; opacity: 1.0 }
-                PropertyChanges { target: viewPage; opacity: 0.0 }
-                PropertyChanges { target: discoveryPage; opacity: 0.0 }
+                PropertyChanges { target: appPage; opacity: 1.0; z: 1 }
+                PropertyChanges { target: viewPage; opacity: 0.0; z: 0 }
+                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0 }
             },
             State {
                 name: "loaded"
-                PropertyChanges { target: appPage; opacity: 0.0 }
-                PropertyChanges { target: viewPage; opacity: 1.0 }
-                PropertyChanges { target: discoveryPage; opacity: 0.0 }
+                PropertyChanges { target: appPage; opacity: 0.0; z: 0 }
+                PropertyChanges { target: viewPage; opacity: 1.0; z: 1 }
+                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0 }
             }
         ]
 
@@ -221,10 +235,6 @@ ApplicationWindow {
         ready: false
         filters: [ AppConfigFilter { type: AppConfigItem.QT5_QML },
                    AppConfigFilter { type: AppConfigItem.GLADEVCP } ]
-        selectedConfig: AppConfigItem {
-            id: selectedConfig
-        }
-
     }
 
     AppDiscovery {

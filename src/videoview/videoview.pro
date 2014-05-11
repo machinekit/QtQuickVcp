@@ -9,26 +9,21 @@ TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.VideoView
 
 
-include(../zmqproto.pri)
+include(../zeromq.pri)
 
-#Directories
-
-# for now, use included pre-protoc'ed includes and C++ files:
-PROTOGEN = generated
+# Protobuf
+PROTOPATH += $$PWD/proto
+PROTOS_IN += proto/package.proto
+include(../protobuf.pri)
 
 # Input
 SOURCES += \
     mjpegstreamerclient.cpp \
-    $$PROTOGEN/package.pb.cc \
     plugin.cpp
 
 HEADERS += \
     mjpegstreamerclient.h \
-    $$PROTOGEN/package.pb.h \
     plugin.h
-
-INCLUDEPATH += \
-    $$PROTOGEN
 
 QML_INFRA_FILES = \
     qmldir
@@ -36,5 +31,4 @@ QML_INFRA_FILES = \
 QML_DESIGNER_FILES = \
     designer
 
-#include(../protobuf.pri)
 include(../deployment.pri)

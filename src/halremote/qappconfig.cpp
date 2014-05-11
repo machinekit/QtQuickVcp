@@ -28,7 +28,6 @@ QAppConfig::QAppConfig(QQuickItem *parent) :
     m_uri = "";
     m_ready = false;
     m_timeout = 3000;
-    m_selectedConfig = NULL;
 
     m_context = createDefaultContext(this);
 
@@ -40,6 +39,8 @@ QAppConfig::QAppConfig(QQuickItem *parent) :
     m_timeoutTimer = new QTimer(this);
     connect(m_timeoutTimer, SIGNAL(timeout()),
             this, SLOT(timeoutTimerTick()));
+
+    m_selectedConfig = new QAppConfigItem(this);
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
@@ -82,6 +83,36 @@ int QAppConfig::filterCount() const
 QAppConfigFilter *QAppConfig::filter(int index) const
 {
     return m_filters.at(index);
+}
+
+QQmlListProperty<QService> QAppConfig::services()
+{
+    return QQmlListProperty<QService>(this, m_services);
+}
+
+int QAppConfig::serviceCount() const
+{
+    return m_services.count();
+}
+
+QService *QAppConfig::service(int index) const
+{
+    return m_services.at(index);
+}
+
+QQmlListProperty<QService> QAppConfig::receivedServices()
+{
+    return QQmlListProperty<QService>(this, m_receivedServices);
+}
+
+int QAppConfig::replieCount() const
+{
+    return m_receivedServices.count();
+}
+
+QService *QAppConfig::replie(int index) const
+{
+    return m_receivedServices.at(index);
 }
 
 /** If the ready property has a rising edge we try to connect
@@ -266,12 +297,45 @@ void QAppConfig::configMessageReceived(QList<QByteArray> messageList)
 #endif
                     }
 
+                    QString mainFileName;
+
+                    // The name of the main QML file must be the application name, if only one file is present it can be anything
+                    if (fileList.size() == 1)
+                    {
+                        mainFileName = fileList.at(0);
+                    }
+                    else
+                    {
+                        mainFileName = baseFilePath + m_selectedConfig->name() + ".qml";
+                    }
+
                     m_selectedConfig->setFiles(fileList);
-                    m_selectedConfig->setMainFile(QUrl("file:///" + baseFilePath + "main.qml"));  //TODO: this should not be hardcoded
+                    m_selectedConfig->setMainFile(QUrl("file:///" + mainFileName));
                     m_selectedConfig->setLoaded(true);
                 }
             }
         }
+
+        m_receivedServices.clear();
+
+        for (int i = 0; i < m_rx.service_announcement_size(); ++i)
+        {
+            pb::ServiceAnnouncement announcement;
+            QService *receivedService = new QService(this);
+
+            announcement = m_rx.service_announcement(i);
+            receivedService->setData(QString::fromStdString(announcement.uri()),        // URI
+                                    announcement.version(),                             // version
+                                    (QService::ServiceApi)announcement.api(),           // API
+                                    QString::fromStdString(announcement.description()), // Description
+                                    true);                                              // found
+            receivedService->setType((QService::ServiceType)announcement.stype());
+
+            m_receivedServices.append(receivedService);
+        }
+
+        emit receivedServicesChanged(receivedServices());
+        updateServices();
     }
 }
 
@@ -291,6 +355,8 @@ void QAppConfig::request(pb::ContainerType type)
 
 void QAppConfig::selectAppConfig(QString name)
 {
+    m_selectedConfig->setLoaded(false);
+
     pb::Application *app = m_tx.add_app();
 
     app->set_name(name.toStdString());
@@ -309,4 +375,32 @@ void QAppConfig::unselectAppConfig()
     m_selectedConfig->setFiles(QStringList());
     m_selectedConfig->setMainFile(QUrl(""));
     m_selectedConfig->setLoaded(false);
+}
+
+void QAppConfig::updateServices()
+{
+    // Iterate through all serives and update all services suitable for the announcement
+    foreach(QService *service, m_services)
+    {
+        bool found = false;
+        foreach(QService *receivedService, m_receivedServices)
+        {
+            if ((service->type() == receivedService->type())
+                && (receivedService->version() >= service->minVersion()))
+            {
+                // last wins
+                service->setData(receivedService->uri(),
+                                 receivedService->version(),
+                                 receivedService->api(),
+                                 receivedService->description(),
+                                 true);
+                found = true;
+            }
+        }
+
+        if (!found)
+        {
+            service->setReady(false);
+        }
+    }
 }

@@ -15,32 +15,45 @@
 # paths specify the PROTOPATH variable
 #
 
+PROTOSCRIPTPATH = $$PWD/../3rdparty/scripts
+
+PROTOGEN = generated
+
 PROTOPATH += .
-PROTOPATH += ../Protocol
 PROTOPATHS =
 for(p, PROTOPATH):PROTOPATHS += --proto_path=$${p}
 
+PROTODEPPATHS =
+for (p, PROTOPATH):PROTODEPPATHS += --vpath=$${p}
+
 message("Generating protocol buffer classes from .proto files.")
 
-protobuf_cp.name = protobuf files
-protobuf_cp.input = PROTOS_IN
-protobuf_cp.output = $$PWD/${QMAKE_FILE_BASE}.proto
-protobuf_cp.commands = cp ${QMAKE_FILE_NAME} $$PWD/${QMAKE_FILE_BASE}.proto
-protobuf_cp.variable_out = PROTOS
-QMAKE_EXTRA_COMPILERS += protobuf_cp
+#protobuf_cp.name = protobuf files
+#protobuf_cp.input = PROTOS_IN
+#protobuf_cp.output = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.proto
+#protobuf_cp.commands = cp ${QMAKE_FILE_NAME} $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.proto
+#protobuf_cp.variable_out = PROTOS
+#QMAKE_EXTRA_COMPILERS += protobuf_cp
 
 protobuf_decl.name = protobuf headers
-protobuf_decl.input = PROTOS
-protobuf_decl.output = ${QMAKE_FILE_IN_PATH}/${QMAKE_FILE_BASE}.pb.h
-protobuf_decl.depends = $$PWD/${QMAKE_FILE_BASE}.proto
-protobuf_decl.commands = protoc --cpp_out=${QMAKE_FILE_IN_PATH} --proto_path=${QMAKE_FILE_IN_PATH} ${QMAKE_FILE_NAME}
+#protobuf_decl.input = PROTOS
+protobuf_decl.input = PROTOS_IN
+protobuf_decl.output = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.pb.h
+#protobuf_decl.depends = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.proto
+#protobuf_decl.dependcy_type = TYPE_C
+#protobuf_decl.depend_command = python $$PROTOSCRIPTPATH/protoc-gen-depends-wrapper.py $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.d protoc --plugin=protoc-gen-depends=$$PROTOSCRIPTPATH/protoc-gen-depends --proto_path=${QMAKE_FILE_IN_PATH} $$PROTOPATHS --depends_out=\"--cgen=$$OUT_PWD/$$PROTOGEN $$PROTODEPPATHS\":$$OUT_PWD/$$PROTOGEN/ ${QMAKE_FILE_NAME}
+protobuf_decl.commands = protoc --cpp_out=$$OUT_PWD/$$PROTOGEN/ --proto_path=${QMAKE_FILE_IN_PATH} $$PROTOPATHS ${QMAKE_FILE_NAME}
 protobuf_decl.variable_out = HEADERS
 QMAKE_EXTRA_COMPILERS += protobuf_decl
 
 protobuf_impl.name = protobuf sources
-protobuf_impl.input = PROTOS
-protobuf_impl.output = ${QMAKE_FILE_IN_PATH}/${QMAKE_FILE_BASE}.pb.cc
-protobuf_impl.depends = ${QMAKE_FILE_IN_PATH}/${QMAKE_FILE_BASE}.pb.h
+protobuf_impl.input = PROTOS_IN
+protobuf_impl.output = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.pb.cc
+protobuf_impl.depends = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.pb.h
 protobuf_impl.commands = $$escape_expand(\n)
 protobuf_impl.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += protobuf_impl
+
+INCLUDEPATH += $$OUT_PWD/$$PROTOGEN
+
+LIBS += -lprotobuf

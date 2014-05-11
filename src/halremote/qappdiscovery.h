@@ -12,7 +12,6 @@ class QAppDiscovery : public QQuickItem
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString regType READ regType WRITE setRegType NOTIFY regTypeChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
-    Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged)
     Q_PROPERTY(QQmlListProperty<QAppDiscoveryItem> discoveredApps READ discoveredApps NOTIFY discoveredAppsChanged)
 
 public:
@@ -30,11 +29,6 @@ public:
         return m_running;
     }
 
-    int interval() const
-    {
-        return m_interval;
-    }
-
     QQmlListProperty<QAppDiscoveryItem> discoveredApps();
     int discoveredAppCount() const;
     QAppDiscoveryItem *discoveredApp(int index) const;
@@ -44,8 +38,17 @@ public slots:
     void setRegType(QString arg)
     {
         if (m_regType != arg) {
+
+            if (m_running && m_componentCompleted) {
+                stopQuery();
+            }
+
             m_regType = arg;
             emit regTypeChanged(arg);
+
+            if (m_running && m_componentCompleted) {
+                startQuery();
+            }
         }
     }
 
@@ -54,27 +57,29 @@ public slots:
         if (m_running != arg) {
             m_running = arg;
             emit runningChanged(arg);
-        }
-    }
 
-    void setInterval(int arg)
-    {
-        if (m_interval != arg) {
-            m_interval = arg;
-            emit intervalChanged(arg);
+            if (m_componentCompleted == false) {
+                return;
+            }
+
+            if (m_running) {
+                startQuery();
+            }
+            else
+            {
+                stopQuery();
+            }
         }
     }
 
 signals:
     void regTypeChanged(QString arg);
     void runningChanged(bool arg);
-    void intervalChanged(int arg);
     void discoveredAppsChanged(QQmlListProperty<QAppDiscoveryItem> arg);
 
 private:
     QString m_regType;
     bool m_running;
-    int m_interval;
     QList<QAppDiscoveryItem*> m_discoveredApps;
 
     QJDns *m_jdns;
@@ -82,8 +87,10 @@ private:
     QMap<int, QAppDiscoveryItem*> m_queryItemMap;
     bool m_componentCompleted;
     QTimer *m_expiryCheckTimer;
+    int m_queryId;
 
     void startQuery();
+    void stopQuery();
     QAppDiscoveryItem* addItem(QString name);
     QAppDiscoveryItem* getItem(QString name);
     void removeItem(QString name);

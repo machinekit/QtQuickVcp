@@ -29,7 +29,7 @@ QService::QService(QObject *parent) :
     m_minVersion = 0;
     m_api = SA_ZMQ_PROTOBUF;
     m_description = "";
-    m_found = false;
+    m_ready = false;
 }
 
 void QService::setData(QString uri, int version, QService::ServiceApi api, QString description, bool found)
@@ -38,17 +38,17 @@ void QService::setData(QString uri, int version, QService::ServiceApi api, QStri
     m_version = version;
     m_api = api;
     m_description = description;
-    m_found = found;
+    m_ready = found;
 
     emit uriChanged(m_uri);
     emit versionChanged(m_version);
     emit apiChanged(m_api);
     emit descriptionChanged(m_description);
-    emit foundChanged(m_found);
+    emit readyChanged(m_ready);
 }
 
 void QService::clearFound()
 {
-    m_found = false;
-    emit foundChanged(m_found);
+    m_ready = false;
+    emit readyChanged(m_ready);
 }

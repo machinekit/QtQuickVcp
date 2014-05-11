@@ -1,5 +1,7 @@
 # Modify these paths to your needs and then build the project
 
+GPBINCLUDE = /usr/local/include
+
 # Android paths
 ZEROMQ_ANDROID_DIR = /opt/zeromq-android
 PROTOBUF_ANDROID_DIR = /opt/protobuf-android
