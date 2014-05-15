@@ -4,6 +4,10 @@ PRE_TARGETDEPS += machinetalk-protobuf
 
 INCLUDEPATH += $$PWD/machinetalk-protobuf/generated
 
+android: {
+    LIBS += -L$$PROTOBUF_ANDROID_DIR/lib
+    INCLUDEPATH += $$PROTOBUF_ANDROID_DIR/include
+}
 LIBS += -lprotobuf
 
 HEADERS += \
@@ -56,5 +60,3 @@ OTHER_FILES += \
     $$PWD/machinetalk-protobuf/proto/test.proto \
     $$PWD/machinetalk-protobuf/proto/types.proto \
     $$PWD/machinetalk-protobuf/proto/value.proto
-
-

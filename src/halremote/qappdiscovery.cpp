@@ -118,8 +118,10 @@ void QAppDiscovery::resultsReady(int id, const QJDns::Response &results)
         {
             QString name = r.name.left(r.name.indexOf(r.owner)-1);
 
+#ifdef QT_DEBUG
             qDebug() << name;
             qDebug() << r.ttl;
+#endif
 
             if (r.ttl != 0)
             {
@@ -158,7 +160,9 @@ void QAppDiscovery::resultsReady(int id, const QJDns::Response &results)
                 }
             }
 
+#ifdef QT_DEBUG
             qDebug() << r.texts;
+#endif
         }
         else if (type == QJDns::Srv)
         {
@@ -174,7 +178,9 @@ void QAppDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_queryItemMap.insert(newId, item);
 
             item->setPort(r.port);
+#ifdef QT_DEBUG
             qDebug() << r.port;
+#endif
         }
         else if (type == QJDns::A)
         {
@@ -186,7 +192,9 @@ void QAppDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_queryItemMap.remove(id);
 
             item->setHostAddress(r.address);
+#ifdef QT_DEBUG
             qDebug() << r.address.toString();
+#endif
         }
     }
 }

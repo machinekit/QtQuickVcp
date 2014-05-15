@@ -37,10 +37,6 @@ Rectangle {
     */
     property variant remoteComponent
 
-    /*! This property holds the service discovery.
-    */
-    property variant serviceDiscovery
-
     /*! This property holds the HAL remote component service.
     */
     property variant halrcompService
@@ -93,19 +89,6 @@ Rectangle {
             Layout.fillWidth: true
             text: qsTr("ST_HAL_RCOMMAND command discovered")
             checked: rcommandService.ready
-        }
-
-        Button {
-            id: discoverButton
-
-            Layout.fillWidth: true
-            text: qsTr("Discover")
-            onClicked: {
-                if (serviceDiscovery.running === false)
-                {
-                    serviceDiscovery.startDiscovery()
-                }
-            }
         }
     }
 }

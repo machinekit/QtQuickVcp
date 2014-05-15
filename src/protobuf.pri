@@ -54,6 +54,11 @@ protobuf_impl.commands = $$escape_expand(\n)
 protobuf_impl.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += protobuf_impl
 
+android: {
+    LIBS += -L$$PROTOBUF_ANDROID_DIR/lib
+    INCLUDEPATH += $$PROTOBUF_ANDROID_DIR/include
+}
+
 INCLUDEPATH += $$OUT_PWD/$$PROTOGEN
 
 LIBS += -lprotobuf

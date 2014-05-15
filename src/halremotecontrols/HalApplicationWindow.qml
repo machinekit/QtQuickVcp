@@ -138,11 +138,11 @@ Rectangle {
     states: [
         State {
             name: "discovery"
-            PropertyChanges { target: discoveryPage; opacity: 1.0 }
+            PropertyChanges { target: discoveryPage; opacity: 1.0; enabled: true }
         },
         State {
             name: "connected"
-            PropertyChanges { target: discoveryPage; opacity: 0.0 }
+            PropertyChanges { target: discoveryPage; opacity: 0.0; enabled: false }
         }
     ]
 

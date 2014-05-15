@@ -22,29 +22,22 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
-import Hal 1.0 as HAL
-import Hal.Controls 1.0 as H
+import Machinekit.HalRemote.Controls 1.0
+import Machinekit.HalRemote 1.0
 
-H.ApplicationWindow {
+HalApplicationWindow {
     property double commandValue: 0.0
 
     id: main
 
     width: 600
     height: 400
-    viewPage: viewPage
     name: "ledctrl"
     title: qsTr("LED Control Demo")
 
-    Item {
-        id: viewPage
-
+    HalColorPicker {
+        name: "color"
         anchors.fill: parent
-
-        H.ColorPicker {
-            name: "color"
-            anchors.fill: parent
-            showAlpha: false
-        }
+        alphaVisible: false
     }
 }

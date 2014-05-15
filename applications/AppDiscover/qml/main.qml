@@ -30,7 +30,7 @@ ApplicationWindow {
     id: mainWindow
 
     visible: true
-    title: appLoader.active ? appLoader.item.title : qsTr("MachineKit App Discover")
+    title: (appLoader.active && (appLoader.item != null)) ? appLoader.item.title : qsTr("MachineKit App Discover")
     width: 500
     height: 700
 
@@ -159,16 +159,14 @@ ApplicationWindow {
                 source: appConfig.selectedConfig.mainFile
 
                 onSourceChanged: {
-                    console.log(source)
-                    console.log(active)
+                    console.log("Source changed: " + source + " " + active)
                 }
 
                 onLoaded: {
-                    console.log("loaded")
-                    console.log(appLoader.item.name)
+                    console.log("Window " + appLoader.item.name + " loaded")
                     if (appConfig.services !== undefined)
                     {
-                        appConfig.services = Qt.binding(function(){return appLoader.item.services})
+                        appConfig.services = Qt.binding(function(){return (appLoader.item != null ? appLoader.item.services : [])})
                         appConfig.updateServices()
                     }
                 }
@@ -180,21 +178,21 @@ ApplicationWindow {
         states: [
             State {
                 name: "discovery"
-                PropertyChanges { target: discoveryPage; opacity: 1.0; z: 1 }
-                PropertyChanges { target: appPage; opacity: 0.0; z: 0 }
-                PropertyChanges { target: viewPage; opacity: 0.0; z: 0 }
+                PropertyChanges { target: discoveryPage; opacity: 1.0; z: 1; enabled: true }
+                PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
             },
             State {
                 name: "config"
-                PropertyChanges { target: appPage; opacity: 1.0; z: 1 }
-                PropertyChanges { target: viewPage; opacity: 0.0; z: 0 }
-                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0 }
+                PropertyChanges { target: appPage; opacity: 1.0; z: 1; enabled: true }
+                PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
             },
             State {
                 name: "loaded"
-                PropertyChanges { target: appPage; opacity: 0.0; z: 0 }
-                PropertyChanges { target: viewPage; opacity: 1.0; z: 1 }
-                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0 }
+                PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: viewPage; opacity: 1.0; z: 1; enabled: true }
+                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
             }
         ]
 

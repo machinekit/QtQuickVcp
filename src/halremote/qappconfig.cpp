@@ -178,6 +178,8 @@ void QAppConfig::connectSocket()
 
 void QAppConfig::disconnectSocket()
 {
+    m_configSocket->close();
+
     disconnect(m_configSocket, SIGNAL(messageReceived(QList<QByteArray>)),
             this, SLOT(configMessageReceived(QList<QByteArray>)));
 }
@@ -273,7 +275,7 @@ void QAppConfig::configMessageReceived(QList<QByteArray> messageList)
                         if (file.encoding() == pb::ZLIB)
                         {
                             quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
-                            qDebug() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);
+                            qDebug() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
                             data = qUncompress(data);
                         }
                         else if (file.encoding() != pb::CLEARTEXT)
@@ -298,15 +300,37 @@ void QAppConfig::configMessageReceived(QList<QByteArray> messageList)
                     }
 
                     QString mainFileName;
+                    QString preferredName;
 
-                    // The name of the main QML file must be the application name, if only one file is present it can be anything
-                    if (fileList.size() == 1)
+                    // Number 1 priority main QML file is name main.qml
+                    preferredName = baseFilePath + "main.qml";
+                    foreach (QString fileName, fileList)
+                    {
+                        if (fileName == preferredName)
+                        {
+                            mainFileName = preferredName;
+                            break;
+                        }
+                    }
+
+                    // Number 2 priority main QML file is named like the config name
+                    if (mainFileName.isEmpty())
+                    {
+                        preferredName = baseFilePath + m_selectedConfig->name() + ".qml";
+                        foreach (QString fileName, fileList)
+                        {
+                            if (fileName == preferredName)
+                            {
+                                mainFileName = preferredName;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Number 3 priority main QML file is the one of the file list
+                    if (mainFileName.isEmpty() && (fileList.size() > 0))
                     {
                         mainFileName = fileList.at(0);
-                    }
-                    else
-                    {
-                        mainFileName = baseFilePath + m_selectedConfig->name() + ".qml";
                     }
 
                     m_selectedConfig->setFiles(fileList);
@@ -365,11 +389,6 @@ void QAppConfig::selectAppConfig(QString name)
 
 void QAppConfig::unselectAppConfig()
 {
-    if (m_selectedConfig == NULL)
-    {
-        return;
-    }
-
     m_selectedConfig->setName("");
     m_selectedConfig->setDescription("");
     m_selectedConfig->setFiles(QStringList());
