@@ -58,6 +58,10 @@ android: {
     LIBS += -L$$PROTOBUF_ANDROID_DIR/lib
     INCLUDEPATH += $$PROTOBUF_ANDROID_DIR/include
 }
+mac: {
+    LIBS += -L$$PROTOBUF_MAC_DIR/lib
+    INCLUDEPATH += $$PROTOBUF_MAC_DIR/include
+}
 
 INCLUDEPATH += $$OUT_PWD/$$PROTOGEN
 

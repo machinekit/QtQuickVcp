@@ -4,6 +4,16 @@
 ZEROMQ_ANDROID_DIR = /opt/zeromq-android
 PROTOBUF_ANDROID_DIR = /opt/protobuf-android
 
+# Mac paths
+ZEROMQ_MAC_DIR = /Users/strahlex/libzmq-ios/libzmq_dist
+PROTOBUF_MAC_DIR = /opt/local
+
+# Here should come the new better path management
+android: {
+    ZEROMQ_INCLUDE_PATH = /opt/zeromq-android/include
+    ZEROMQ_LIB_PATH = /opt/zeromq-android/lib
+}
+
 # Qt SDK directory - autodetected based on qmake path
 QTSDK_DIR=$$absolute_path($$[QT_INSTALL_PREFIX]/../..)
 

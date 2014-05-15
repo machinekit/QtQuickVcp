@@ -30,6 +30,7 @@
 #include <QNetworkReply>
 #include <QElapsedTimer>
 #include <QQueue>
+#include <QTime>
 #include <nzmqt/nzmqt.hpp>
 #include "package.pb.h"
 #include <google/protobuf/text_format.h>
