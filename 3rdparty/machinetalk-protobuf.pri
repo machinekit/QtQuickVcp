@@ -6,10 +6,10 @@
 
 INCLUDEPATH += $$PWD/machinetalk-protobuf/generated
 
-LIBS += -L$$PROTOBUF_LIB_PATH
-INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH
+!isEmpty(PROTOBUF_LIB_PATH): LIBS += -L$$PROTOBUF_LIB_PATH
+!isEmpty(PROTOBUF_INCLUDE_PATH): INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH
 
-LIBS += -lprotobuf
+LIBS += -Bstatic -lprotobuf
 
 HEADERS += \
     $$PWD/machinetalk-protobuf/generated/canon.pb.h \

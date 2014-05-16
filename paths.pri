@@ -5,9 +5,9 @@
 android: {
     ZEROMQ_INCLUDE_PATH = /opt/zeromq-android/include
     ZEROMQ_LIB_PATH = /opt/zeromq-android/lib
-    PROTOBUF_INCLUDE_PATH = /opt/protobuf-android/src/.libs
+    PROTOBUF_INCLUDE_PATH = /opt/protobuf-android/include
     PROTOBUF_LIB_PATH = /opt/protobuf-android/lib
-    PROTOBUF_PROTOC_PATH = /opt/protobuf-android/bin/
+    #PROTOBUF_PROTOC_PATH = /opt/protobuf-android/bin/
 }
 ios: {
     ZEROMQ_INCLUDE_PATH = /opt/zeromq-ios/include
