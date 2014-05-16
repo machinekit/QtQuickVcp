@@ -35,7 +35,11 @@
 #include "types.pb.h"
 #include <google/protobuf/text_format.h>
 
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
 namespace gpb = google::protobuf;
+#endif
 
 using namespace nzmqt;
 

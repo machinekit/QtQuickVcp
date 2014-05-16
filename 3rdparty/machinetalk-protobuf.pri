@@ -1,18 +1,13 @@
-machinetalk-protobuf.commands = make -C $$PWD/machinetalk-protobuf
-QMAKE_EXTRA_TARGETS += machinetalk-protobuf
-PRE_TARGETDEPS += machinetalk-protobuf
+!ios: {
+    machinetalk-protobuf.commands = make -C $$PWD/machinetalk-protobuf
+    QMAKE_EXTRA_TARGETS += machinetalk-protobuf
+    PRE_TARGETDEPS += machinetalk-protobuf
+}
 
 INCLUDEPATH += $$PWD/machinetalk-protobuf/generated
 
-android: {
-    LIBS += -L$$PROTOBUF_ANDROID_DIR/lib
-    INCLUDEPATH += $$PROTOBUF_ANDROID_DIR/include
-}
-
-mac: {
-    LIBS += -L$$PROTOBUF_MAC_DIR/lib
-    INCLUDEPATH += $$PROTOBUF_MAC_DIR/include
-}
+LIBS += -L$$PROTOBUF_LIB_PATH
+INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH
 
 LIBS += -lprotobuf
 

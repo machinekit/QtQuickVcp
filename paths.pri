@@ -1,17 +1,20 @@
 # Modify these paths to your needs and then build the project
 
-# Android paths
-ZEROMQ_ANDROID_DIR = /opt/zeromq-android
-PROTOBUF_ANDROID_DIR = /opt/protobuf-android
-
-# Mac paths
-ZEROMQ_MAC_DIR = /Users/strahlex/libzmq-ios/libzmq_dist
-PROTOBUF_MAC_DIR = /opt/local
-
-# Here should come the new better path management
+# Add here the paths that are not in the global PATH or INCLUDEPATH
+# environment variables usually for mobile OS
 android: {
     ZEROMQ_INCLUDE_PATH = /opt/zeromq-android/include
     ZEROMQ_LIB_PATH = /opt/zeromq-android/lib
+    PROTOBUF_INCLUDE_PATH = /opt/protobuf-android/src/.libs
+    PROTOBUF_LIB_PATH = /opt/protobuf-android/lib
+    PROTOBUF_PROTOC_PATH = /opt/protobuf-android/bin/
+}
+ios: {
+    ZEROMQ_INCLUDE_PATH = /opt/zeromq-ios/include
+    ZEROMQ_LIB_PATH = /opt/zeromq-ios/lib
+    PROTOBUF_INCLUDE_PATH = /opt/protobuf-ios/include
+    PROTOBUF_LIB_PATH = /opt/protobuf-ios/lib
+    PROTOBUF_PROTOC_PATH = /opt/protobuf-ios/bin/
 }
 
 # Qt SDK directory - autodetected based on qmake path

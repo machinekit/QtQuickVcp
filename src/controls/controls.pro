@@ -6,6 +6,7 @@ CONFIG += qt plugin
 
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.Controls
+QMAKE_MOC_OPTIONS += -Muri=$$uri
 
 # Input
 SOURCES += \

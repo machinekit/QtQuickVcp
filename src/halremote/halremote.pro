@@ -6,6 +6,7 @@ CONFIG += qt plugin
 
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.HalRemote
+QMAKE_MOC_OPTIONS += -Muri=$$uri
 
 include(../zeromq.pri)
 include(../../3rdparty/jdns/jdns.pri)

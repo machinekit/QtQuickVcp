@@ -12,10 +12,11 @@
 #
 # By default protoc looks for .proto files (including the imported ones) in
 # the current directory where protoc is run. If you need to include additional
-# paths specify the PROTOPATH variable
-#
+# paths specify the PROTOPATH variable    
 
-PROTOSCRIPTPATH = $$PWD/../3rdparty/scripts
+PROTOC = protoc
+
+#PROTOSCRIPTPATH = $$PWD/../3rdparty/scripts
 
 PROTOGEN = generated
 
@@ -42,7 +43,7 @@ protobuf_decl.output = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.pb.h
 #protobuf_decl.depends = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.proto
 #protobuf_decl.dependcy_type = TYPE_C
 #protobuf_decl.depend_command = python $$PROTOSCRIPTPATH/protoc-gen-depends-wrapper.py $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.d protoc --plugin=protoc-gen-depends=$$PROTOSCRIPTPATH/protoc-gen-depends --proto_path=${QMAKE_FILE_IN_PATH} $$PROTOPATHS --depends_out=\"--cgen=$$OUT_PWD/$$PROTOGEN $$PROTODEPPATHS\":$$OUT_PWD/$$PROTOGEN/ ${QMAKE_FILE_NAME}
-protobuf_decl.commands = protoc --cpp_out=$$OUT_PWD/$$PROTOGEN/ --proto_path=${QMAKE_FILE_IN_PATH} $$PROTOPATHS ${QMAKE_FILE_NAME}
+protobuf_decl.commands = $$PROTOBUF_PROTOC_PATH$$PROTOC --cpp_out=$$OUT_PWD/$$PROTOGEN/ --proto_path=${QMAKE_FILE_IN_PATH} $$PROTOPATHS ${QMAKE_FILE_NAME}
 protobuf_decl.variable_out = HEADERS
 QMAKE_EXTRA_COMPILERS += protobuf_decl
 
@@ -54,15 +55,9 @@ protobuf_impl.commands = $$escape_expand(\n)
 protobuf_impl.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += protobuf_impl
 
-android: {
-    LIBS += -L$$PROTOBUF_ANDROID_DIR/lib
-    INCLUDEPATH += $$PROTOBUF_ANDROID_DIR/include
-}
-mac: {
-    LIBS += -L$$PROTOBUF_MAC_DIR/lib
-    INCLUDEPATH += $$PROTOBUF_MAC_DIR/include
-}
-
 INCLUDEPATH += $$OUT_PWD/$$PROTOGEN
+
+LIBS += -L$$PROTOBUF_LIB_PATH
+INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH
 
 LIBS += -lprotobuf

@@ -7,7 +7,7 @@ CONFIG += qt plugin
 
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.VideoView
-
+QMAKE_MOC_OPTIONS += -Muri=$$uri
 
 include(../zeromq.pri)
 
