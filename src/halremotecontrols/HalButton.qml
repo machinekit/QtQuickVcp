@@ -66,6 +66,8 @@ Button {
         direction: HalPin.Out
     }
 
-    Binding { target: main; property: "pressed"; value: pin.value}
-    Binding { target: pin; property: "value"; value: main.pressed}
+    Binding { target: main; property: "pressed"; value: pin.value; when: !main.checkable}
+    Binding { target: pin; property: "value"; value: main.pressed; when: !main.checkable}
+    Binding { target: main; property: "checked"; value: pin.value; when: main.checkable}
+    Binding { target: pin; property: "value"; value: main.checked; when: main.checkable}
 }
