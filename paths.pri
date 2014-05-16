@@ -15,6 +15,7 @@ ios: {
     PROTOBUF_INCLUDE_PATH = /opt/protobuf-ios/include
     PROTOBUF_LIB_PATH = /opt/protobuf-ios/lib
     PROTOBUF_PROTOC_PATH = /opt/protobuf-ios/bin/
+    LIBSODIUM_LIB_PATH = /Users/strahlex/libzmq-ios/libsodium-ios/libsodium_dist/lib
 }
 
 # Qt SDK directory - autodetected based on qmake path
