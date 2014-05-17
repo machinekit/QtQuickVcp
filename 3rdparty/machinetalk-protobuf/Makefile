@@ -102,8 +102,9 @@ $(CXXGEN)/%.pb.cc $(CXXGEN)/%.pb.h: %.proto
 	@mkdir -p $(CXXGEN)
 	$(Q)$(PROTOC) $(PROTOCXX_FLAGS) \
 	--proto_path=$(PROTODIR)/ \
-	--proto_path=$(GPBINCLUDE)/ \\
-	--cpp_out=$(CXXGEN)/ $<\
+	--proto_path=$(GPBINCLUDE)/ \
+	--cpp_out=$(CXXGEN)/ \
+	$<
 
 # ------------- Python rules ------------
 #
@@ -117,7 +118,8 @@ $(PYGEN)/%_pb2.py: %.proto
 	$(Q)$(PROTOC) $(PROTOC_FLAGS) \
 	--proto_path=$(PROTODIR)/ \
 	--proto_path=$(GPBINCLUDE)/ \
-	--python_out=$(PYGEN)/ $<
+	--python_out=$(PYGEN)/ \
+	$<
 
 GENERATED += $(PROTO_PY_TARGETS) \
 	$(PROTO_CXX_SRCS)\
@@ -130,5 +132,5 @@ Makefile: $(GENERATED) $(PROTO_DEPS)
 
 all:  $(PROTO_DEPS) $(GENERATED)
 
-clean:\
-	rm -rf $(OBJDIR) $(CXXGEN) $(PYGEN)\
+clean:
+	rm -rf $(OBJDIR) $(CXXGEN) $(PYGEN)
