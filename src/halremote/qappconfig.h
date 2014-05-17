@@ -58,6 +58,7 @@ class QAppConfig : public QQuickItem
 
 public:
     explicit QAppConfig(QQuickItem *parent = 0);
+    ~QAppConfig();
 
     virtual void componentComplete();
 

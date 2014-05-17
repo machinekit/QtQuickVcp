@@ -47,9 +47,11 @@ MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
 
     m_context = createDefaultContext(this);
     m_context->start();
+}
 
-    m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
-    m_updateSocket->setLinger(0);
+MjpegStreamerClient::~MjpegStreamerClient()
+{
+    disconnectSocket();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
@@ -103,6 +105,8 @@ void MjpegStreamerClient::setRunning(bool arg)
 
 void MjpegStreamerClient::connectSocket()
 {
+     m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
+     m_updateSocket->setLinger(0);
      m_updateSocket->connectTo(m_url);
      m_updateSocket->subscribeTo("frames");
 
@@ -114,6 +118,9 @@ void MjpegStreamerClient::disconnectSocket()
 {
     disconnect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
                this, SLOT(updateMessageReceived(QList<QByteArray>)));
+
+    m_updateSocket->close();
+    m_updateSocket->deleteLater();
 }
 
 void MjpegStreamerClient::updateMessageReceived(QList<QByteArray> messageList)

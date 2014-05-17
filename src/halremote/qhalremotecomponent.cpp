@@ -50,14 +50,14 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
 
     m_context->start();
 
-    m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
-    m_cmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
-    m_updateSocket->setLinger(0);
-    m_cmdSocket->setLinger(0);
-
     m_heartbeatTimer = new QTimer(this);
     connect(m_heartbeatTimer, SIGNAL(timeout()),
             this, SLOT(hearbeatTimerTick()));
+}
+
+QHalRemoteComponent::~QHalRemoteComponent()
+{
+    stop();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
@@ -116,10 +116,15 @@ void QHalRemoteComponent::removePins()
 /** Connects the 0MQ sockets */
 void QHalRemoteComponent::connectSockets()
 {
-    m_cmdSocket->setIdentity(QString("%1-%2").arg(m_name).arg(QCoreApplication::applicationPid()).toLocal8Bit());
 
-    m_updateSocket->connectTo(m_updateUri);
+    m_cmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
+    m_cmdSocket->setLinger(0);
+    m_cmdSocket->setIdentity(QString("%1-%2").arg(m_name).arg(QCoreApplication::applicationPid()).toLocal8Bit());
     m_cmdSocket->connectTo(m_cmdUri);
+
+    m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
+    m_updateSocket->setLinger(0);
+    m_updateSocket->connectTo(m_updateUri);
 
     connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
             this, SLOT(updateMessageReceived(QList<QByteArray>)));
@@ -140,6 +145,11 @@ void QHalRemoteComponent::disconnectSockets()
                this, SLOT(updateMessageReceived(QList<QByteArray>)));
     disconnect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
                this, SLOT(cmdMessageReceived(QList<QByteArray>)));
+
+    m_cmdSocket->close();
+    m_cmdSocket->deleteLater();
+    m_updateSocket->close();
+    m_updateSocket->deleteLater();
 }
 
 /** Generates a Bind messages and sends it over the suitable 0MQ socket */

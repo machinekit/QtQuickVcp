@@ -55,6 +55,7 @@ class QHalRemoteComponent : public QQuickItem
 
 public:
     explicit QHalRemoteComponent(QQuickItem *parent = 0);
+    ~QHalRemoteComponent();
 
     enum State {
         STATE_DISCOVER = 0,

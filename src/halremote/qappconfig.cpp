@@ -33,14 +33,16 @@ QAppConfig::QAppConfig(QQuickItem *parent) :
 
     m_context->start();
 
-    m_configSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
-    m_configSocket->setLinger(0);
-
     m_timeoutTimer = new QTimer(this);
     connect(m_timeoutTimer, SIGNAL(timeout()),
             this, SLOT(timeoutTimerTick()));
 
     m_selectedConfig = new QAppConfigItem(this);
+}
+
+QAppConfig::~QAppConfig()
+{
+    stop();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
@@ -168,6 +170,8 @@ void QAppConfig::timeoutTimerTick()
 
 void QAppConfig::connectSocket()
 {
+    m_configSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
+    m_configSocket->setLinger(0);
     m_configSocket->setIdentity(QString("%1-%2").arg("appconfig").arg(QCoreApplication::applicationPid()).toLocal8Bit());
 
     m_configSocket->connectTo(m_uri);
@@ -178,10 +182,11 @@ void QAppConfig::connectSocket()
 
 void QAppConfig::disconnectSocket()
 {
-    m_configSocket->close();
-
     disconnect(m_configSocket, SIGNAL(messageReceived(QList<QByteArray>)),
             this, SLOT(configMessageReceived(QList<QByteArray>)));
+
+    m_configSocket->close();
+    m_configSocket->deleteLater();
 }
 
 void QAppConfig::configMessageReceived(QList<QByteArray> messageList)

@@ -59,6 +59,7 @@ public:
     } StreamBufferItem;
 
     explicit MjpegStreamerClient(QQuickPaintedItem *parent = 0);
+    ~MjpegStreamerClient();
     virtual void componentComplete();
     void paint(QPainter* painter);
 
