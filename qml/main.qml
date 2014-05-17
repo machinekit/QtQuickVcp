@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 import QtQuick 2.1
-import QtQuick.Controls 1.0
+import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
 import Machinekit.HalRemote 1.0
 
@@ -90,6 +90,14 @@ ApplicationWindow {
                         }
                     }
                 }
+            }
+
+            BusyIndicator {
+                anchors.centerIn: parent
+                running: true
+                visible: appDiscovery.discoveredApps.length === 0
+                height: parent.height * 0.15
+                width: height
             }
         }
 
@@ -230,7 +238,7 @@ ApplicationWindow {
 
         uri: selectedInstance !== undefined ? selectedInstance.dsname : ""
         timeout: 3000
-        ready: false
+        ready: false //(pageStack.state == "config") && (uri != "")
         filters: [ AppConfigFilter { type: AppConfigItem.QT5_QML },
                    AppConfigFilter { type: AppConfigItem.GLADEVCP } ]
     }
