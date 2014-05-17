@@ -7,14 +7,13 @@ android: {
     ZEROMQ_LIB_PATH = /opt/zeromq-android/lib
     PROTOBUF_INCLUDE_PATH = /opt/protobuf-android/include
     PROTOBUF_LIB_PATH = /opt/protobuf-android/lib
-    #PROTOBUF_PROTOC_PATH = /opt/protobuf-android/bin/
 }
 ios: {
     ZEROMQ_INCLUDE_PATH = /opt/zeromq-ios/include
     ZEROMQ_LIB_PATH = /opt/zeromq-ios/lib
     PROTOBUF_INCLUDE_PATH = /opt/protobuf-ios/include
     PROTOBUF_LIB_PATH = /opt/protobuf-ios/lib
-    PROTOBUF_PROTOC_PATH = /opt/protobuf-ios/bin/
+    PROTOBUF_PROTOC = /opt/protobuf-ios/bin/protoc
     LIBSODIUM_LIB_PATH = /Users/strahlex/libzmq-ios/libsodium-ios/libsodium_dist/lib
 }
 

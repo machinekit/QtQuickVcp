@@ -1,10 +1,12 @@
-!ios: {
-    machinetalk-protobuf.commands = make -C $$PWD/machinetalk-protobuf
-    QMAKE_EXTRA_TARGETS += machinetalk-protobuf
-    PRE_TARGETDEPS += machinetalk-protobuf
-}
+# Build machinetalk protobuf files with dependencies
+machinetalk-protobuf.commands = $(MAKE) -C $$PWD/machinetalk-protobuf CXXGEN=$$OUT_PWD/generated PYGEN=$$OUT_PWD/python OBJDIR=$$OUT_PWD/objects
+!isEmpty(PROTOBUF_INCLUDE_PATH): machinetalk-protobuf.commands += GPBINCLUDE=$$PROTOBUF_INCLUDE_PATH
+!isEmpty(PROTOBUF_PROTOC): machinetalk-protobuf.commands += PROTOC=$$PROTOBUF_PROTOC
+QMAKE_EXTRA_TARGETS += machinetalk-protobuf
+PRE_TARGETDEPS += machinetalk-protobuf
+QMAKE_CLEAN += -r $$OUT_PWD/generated/ $$OUT_PWD/objects/ $$OUT_PWD/python/
 
-INCLUDEPATH += $$PWD/machinetalk-protobuf/generated
+INCLUDEPATH += $$OUT_PWD/generated
 
 !isEmpty(PROTOBUF_LIB_PATH): LIBS += -L$$PROTOBUF_LIB_PATH
 !isEmpty(PROTOBUF_INCLUDE_PATH): INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH
@@ -12,38 +14,38 @@ INCLUDEPATH += $$PWD/machinetalk-protobuf/generated
 LIBS += -Bstatic -lprotobuf
 
 HEADERS += \
-    $$PWD/machinetalk-protobuf/generated/canon.pb.h \
-    $$PWD/machinetalk-protobuf/generated/config.pb.h \
-    $$PWD/machinetalk-protobuf/generated/emcclass.pb.h \
-    $$PWD/machinetalk-protobuf/generated/log.pb.h \
-    $$PWD/machinetalk-protobuf/generated/message.pb.h \
-    $$PWD/machinetalk-protobuf/generated/motcmds.pb.h \
-    $$PWD/machinetalk-protobuf/generated/nanopb.pb.h \
-    $$PWD/machinetalk-protobuf/generated/object.pb.h \
-    $$PWD/machinetalk-protobuf/generated/preview.pb.h \
-    $$PWD/machinetalk-protobuf/generated/rtapi_message.pb.h \
-    $$PWD/machinetalk-protobuf/generated/rtapicommand.pb.h \
-    $$PWD/machinetalk-protobuf/generated/task.pb.h \
-    $$PWD/machinetalk-protobuf/generated/test.pb.h \
-    $$PWD/machinetalk-protobuf/generated/types.pb.h \
-    $$PWD/machinetalk-protobuf/generated/value.pb.h
+    $$OUT_PWD/generated/canon.pb.h \
+    $$OUT_PWD/generated/config.pb.h \
+    $$OUT_PWD/generated/emcclass.pb.h \
+    $$OUT_PWD/generated/log.pb.h \
+    $$OUT_PWD/generated/message.pb.h \
+    $$OUT_PWD/generated/motcmds.pb.h \
+    $$OUT_PWD/generated/nanopb.pb.h \
+    $$OUT_PWD/generated/object.pb.h \
+    $$OUT_PWD/generated/preview.pb.h \
+    $$OUT_PWD/generated/rtapi_message.pb.h \
+    $$OUT_PWD/generated/rtapicommand.pb.h \
+    $$OUT_PWD/generated/task.pb.h \
+    $$OUT_PWD/generated/test.pb.h \
+    $$OUT_PWD/generated/types.pb.h \
+    $$OUT_PWD/generated/value.pb.h
 
 SOURCES += \
-    $$PWD/machinetalk-protobuf/generated/canon.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/config.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/emcclass.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/log.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/message.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/motcmds.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/nanopb.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/object.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/preview.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/rtapi_message.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/rtapicommand.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/task.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/test.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/types.pb.cc \
-    $$PWD/machinetalk-protobuf/generated/value.pb.cc
+    $$OUT_PWD/generated/canon.pb.cc \
+    $$OUT_PWD/generated/config.pb.cc \
+    $$OUT_PWD/generated/emcclass.pb.cc \
+    $$OUT_PWD/generated/log.pb.cc \
+    $$OUT_PWD/generated/message.pb.cc \
+    $$OUT_PWD/generated/motcmds.pb.cc \
+    $$OUT_PWD/generated/nanopb.pb.cc \
+    $$OUT_PWD/generated/object.pb.cc \
+    $$OUT_PWD/generated/preview.pb.cc \
+    $$OUT_PWD/generated/rtapi_message.pb.cc \
+    $$OUT_PWD/generated/rtapicommand.pb.cc \
+    $$OUT_PWD/generated/task.pb.cc \
+    $$OUT_PWD/generated/test.pb.cc \
+    $$OUT_PWD/generated/types.pb.cc \
+    $$OUT_PWD/generated/value.pb.cc
 
 OTHER_FILES += \
     $$PWD/machinetalk-protobuf/proto/canon.proto \
