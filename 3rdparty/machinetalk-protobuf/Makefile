@@ -89,8 +89,8 @@ $(OBJDIR)/$(PROTODIR)/%.d: $(PROTODIR)/%.proto
 	$(Q)$(PROTOC) \
 	--plugin=protoc-gen-depends=scripts/protoc-gen-depends \
 	--proto_path=$(PROTODIR)/ \
-	--proto_path=$(GPBINCLUDE) \
-	--depends_out="$(PBDEP_OPT)":$(OBJDIR)/$(PROTODIR) \
+	--proto_path=$(GPBINCLUDE)/ \
+	--depends_out="$(PBDEP_OPT)":$(OBJDIR)/$(PROTODIR)/ \
 	 $<
 
 #---------- C++ rules -----------
@@ -102,8 +102,8 @@ $(CXXGEN)/%.pb.cc $(CXXGEN)/%.pb.h: %.proto
 	@mkdir -p $(CXXGEN)
 	$(Q)$(PROTOC) $(PROTOCXX_FLAGS) \
 	--proto_path=$(PROTODIR)/ \
-	--proto_path=$(GPBINCLUDE)/ \
-	--cpp_out=$(CXXGEN)/ $<
+	--proto_path=$(GPBINCLUDE)/ \\
+	--cpp_out=$(CXXGEN)/ $<\
 
 # ------------- Python rules ------------
 #
@@ -130,5 +130,5 @@ Makefile: $(GENERATED) $(PROTO_DEPS)
 
 all:  $(PROTO_DEPS) $(GENERATED)
 
-clean:
-	rm -rf $(OBJDIR) $(CXXGEN) $(PYGEN)
+clean:\
+	rm -rf $(OBJDIR) $(CXXGEN) $(PYGEN)\
