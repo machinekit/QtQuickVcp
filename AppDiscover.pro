@@ -17,6 +17,6 @@ include(../../paths.pri)
 ios: {
     LIBS += -L$$PROTOBUF_LIB_PATH
     LIBS += -L$$ZEROMQ_LIB_PATH
-    LIBS += -L$LIBSODIUM_LIB_PATH
+    LIBS += -L$$LIBSODIUM_LIB_PATH
     LIBS += -lsodium -lzmq -lprotobuf
 }
