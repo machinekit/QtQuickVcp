@@ -35,70 +35,48 @@ public:
 
 public slots:
 
-    void setRegType(QString arg)
-    {
-        if (m_regType != arg) {
-
-            if (m_running && m_componentCompleted) {
-                stopQuery();
-            }
-
-            m_regType = arg;
-            emit regTypeChanged(arg);
-
-            if (m_running && m_componentCompleted) {
-                startQuery();
-            }
-        }
-    }
-
-    void setRunning(bool arg)
-    {
-        if (m_running != arg) {
-            m_running = arg;
-            emit runningChanged(arg);
-
-            if (m_componentCompleted == false) {
-                return;
-            }
-
-            if (m_running) {
-                startQuery();
-            }
-            else
-            {
-                stopQuery();
-            }
-        }
-    }
+    void setRegType(QString arg);
+    void setRunning(bool arg);
 
 signals:
     void regTypeChanged(QString arg);
     void runningChanged(bool arg);
     void discoveredAppsChanged(QQmlListProperty<QAppDiscoveryItem> arg);
+    void networkOpened();
+    void networkClosed();
 
 private:
     QString m_regType;
     bool m_running;
     QList<QAppDiscoveryItem*> m_discoveredApps;
 
+    QNetworkSession *m_networkSession;
+    QNetworkConfigurationManager *m_networkConfigManager;
     QJDns *m_jdns;
     QMap<int, int> m_queryTypeMap;
     QMap<int, QAppDiscoveryItem*> m_queryItemMap;
     bool m_componentCompleted;
     QTimer *m_expiryCheckTimer;
+    QTimer *m_networkConfigTimer; // Timer for refreshing the network status
     int m_queryId;
 
+    void initializeNetworkSession();
     void startQuery();
     void stopQuery();
     QAppDiscoveryItem* addItem(QString name);
     QAppDiscoveryItem* getItem(QString name);
     void removeItem(QString name);
+    void clearItems();
 
 private slots:
     void resultsReady(int id, const QJDns::Response &results);
     void error(int id, QJDns::Error e);
     void expiryCheck();
+    void openNetworkSession();
+    void updateNetConfig();
+    void initializeMdns();
+    void deinitializeMdns();
+    void delayedInit();
 };
 
 #endif // QAPPDISCOVERY_H

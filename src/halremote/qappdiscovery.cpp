@@ -4,7 +4,45 @@ QAppDiscovery::QAppDiscovery(QQuickItem *parent) :
     QQuickItem(parent)
 {
     m_componentCompleted = false;
+    m_jdns = NULL;
+    m_networkSession = NULL;
 
+    m_expiryCheckTimer = new QTimer(this);
+    connect(m_expiryCheckTimer, SIGNAL(timeout()),
+            this, SLOT(expiryCheck()));
+    m_expiryCheckTimer->setInterval(60000); // check every 60s
+}
+
+/** componentComplete is executed when the QML component is fully loaded */
+void QAppDiscovery::componentComplete()
+{
+    m_componentCompleted = true;
+
+    initializeNetworkSession();
+
+    QQuickItem::componentComplete();
+}
+
+void QAppDiscovery::initializeNetworkSession()
+{
+    // now begin the process of opening the network link
+    m_networkConfigManager = new QNetworkConfigurationManager;
+    connect(m_networkConfigManager, SIGNAL(updateCompleted()),
+            this, SLOT(openNetworkSession()));
+    m_networkConfigManager->updateConfigurations();
+    // update the connections cyclically
+    m_networkConfigTimer = new QTimer(this);
+    m_networkConfigTimer->setInterval(5000);
+    connect(m_networkConfigTimer, SIGNAL(timeout()),
+            this, SLOT(updateNetConfig()));
+    m_networkConfigTimer->start();
+}
+
+void QAppDiscovery::initializeMdns()
+{
+#ifdef QT_DEBUG
+            qDebug() << "Initializing MDNS";
+#endif
     m_jdns = new QJDns(this);
 
     connect(m_jdns, SIGNAL(resultsReady(int,QJDns::Response)),
@@ -14,23 +52,39 @@ QAppDiscovery::QAppDiscovery(QQuickItem *parent) :
 
     m_jdns->init(QJDns::Multicast, QHostAddress::Any);
 
-    m_expiryCheckTimer = new QTimer(this);
-    connect(m_expiryCheckTimer, SIGNAL(timeout()),
-            this, SLOT(expiryCheck()));
-    m_expiryCheckTimer->start(60000);   // check every 60s
-}
-
-/** componentComplete is executed when the QML component is fully loaded */
-void QAppDiscovery::componentComplete()
-{
-    m_componentCompleted = true;
-
     if (m_running == true)
     {
         startQuery();
     }
 
-    QQuickItem::componentComplete();
+    m_expiryCheckTimer->start();
+
+    emit networkOpened();
+}
+
+void QAppDiscovery::deinitializeMdns()
+{
+#ifdef QT_DEBUG
+            qDebug() << "Deinitializing MDNS";
+#endif
+    if (m_running)
+    {
+        m_queryTypeMap.remove(m_queryId);
+    }
+
+    m_jdns->deleteLater();
+    m_jdns = NULL;
+
+    m_expiryCheckTimer->stop();
+    clearItems();
+
+    emit networkClosed();
+}
+
+void QAppDiscovery::delayedInit()
+{
+    // for some reason there needs to be a delay if the network is initialized after the app was started
+    QTimer::singleShot(1000,this, SLOT(initializeMdns()));
 }
 
 QQmlListProperty<QAppDiscoveryItem> QAppDiscovery::discoveredApps()
@@ -46,6 +100,43 @@ int QAppDiscovery::discoveredAppCount() const
 QAppDiscoveryItem *QAppDiscovery::discoveredApp(int index) const
 {
     return m_discoveredApps.at(index);
+}
+
+void QAppDiscovery::setRegType(QString arg)
+{
+    if (m_regType != arg) {
+
+        if (m_running && (m_networkSession != NULL) && m_networkSession->isOpen()) {
+            stopQuery();
+        }
+
+        m_regType = arg;
+        emit regTypeChanged(arg);
+
+        if (m_running && (m_networkSession != NULL) && m_networkSession->isOpen()) {
+            startQuery();
+        }
+    }
+}
+
+void QAppDiscovery::setRunning(bool arg)
+{
+    if (m_running != arg) {
+        m_running = arg;
+        emit runningChanged(arg);
+
+        if ((m_networkSession == NULL) || (!m_networkSession->isOpen())) {
+            return;
+        }
+
+        if (m_running) {
+            startQuery();
+        }
+        else
+        {
+            stopQuery();
+        }
+    }
 }
 
 void QAppDiscovery::startQuery()
@@ -102,6 +193,12 @@ void QAppDiscovery::removeItem(QString name)
             return;
         }
     }
+}
+
+void QAppDiscovery::clearItems()
+{
+    m_discoveredApps.clear();
+    emit discoveredAppsChanged(discoveredApps());
 }
 
 void QAppDiscovery::resultsReady(int id, const QJDns::Response &results)
@@ -212,5 +309,58 @@ void QAppDiscovery::expiryCheck()
         {
             removeItem(item->name());
         }
+    }
+}
+
+void QAppDiscovery::openNetworkSession()
+{
+    // use the default network configuration and make sure that
+    // the link is open
+    QNetworkConfiguration networkConfig;
+
+    if ((m_networkConfigManager->defaultConfiguration().bearerType() == QNetworkConfiguration::BearerEthernet)
+            || (m_networkConfigManager->defaultConfiguration().bearerType() == QNetworkConfiguration::BearerWLAN))
+    {
+        networkConfig = m_networkConfigManager->defaultConfiguration();
+    }
+    else
+    foreach (QNetworkConfiguration config, m_networkConfigManager->allConfigurations(QNetworkConfiguration::Discovered))
+    {
+        if ((config.bearerType() == QNetworkConfiguration::BearerEthernet) ||
+                (config.bearerType() == QNetworkConfiguration::BearerWLAN))
+        {
+            networkConfig = config;
+#ifdef QT_DEBUG
+            qDebug() << "network configs: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name();
+#endif
+        }
+    }
+
+    if (networkConfig.isValid())
+    {
+#ifdef QT_DEBUG
+            qDebug() << "network config: " << networkConfig.bearerTypeName() << networkConfig.bearerTypeFamily() << networkConfig.name();
+#endif
+        if (m_networkSession != NULL)
+        {
+            m_networkSession->deleteLater();
+        }
+
+        m_networkSession = new QNetworkSession(networkConfig);
+
+        connect(m_networkSession, SIGNAL(opened()),
+                this, SLOT(delayedInit()));
+        connect(m_networkSession, SIGNAL(closed()),
+                this, SLOT(deinitializeMdns()));
+
+        m_networkSession->open();
+    }
+}
+
+void QAppDiscovery::updateNetConfig()
+{
+    if ((m_networkSession == NULL) || (!m_networkSession->isOpen()))
+    {
+        m_networkConfigManager->updateConfigurations();
     }
 }
