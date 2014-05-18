@@ -26,6 +26,7 @@ import Machinekit.HalRemote 1.0
 
 ApplicationWindow {
     property var selectedInstance
+    property bool networkAvailable: false
 
     id: mainWindow
 
@@ -42,6 +43,23 @@ ApplicationWindow {
         id: pageStack
 
         anchors.fill: parent
+
+        Item {
+            id: networkPage
+
+            anchors.fill: parent
+
+            Label {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.margins: Screen.logicalPixelDensity * 2
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                font.pixelSize: dummyText.font.pixelSize * 1.5
+                text: qsTr("Warning!<br>No network connection found, local service discovery unavailable. Check your network connection or use advanced options.")
+            }
+        }
 
         Item {
             id: discoveryPage
@@ -181,26 +199,36 @@ ApplicationWindow {
             }
         }
 
-        state: (appConfig.ready) ? ((appLoader.active) ?"loaded":"config") :"discovery"
+        state: networkAvailable ? ((appConfig.ready) ? ((appLoader.active) ?"loaded":"config") :"discovery") : "network"
 
         states: [
+            State {
+                name: "network"
+                PropertyChanges { target: networkPage; opacity: 1.0; z: 1; enabled: true }
+                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+            },
             State {
                 name: "discovery"
                 PropertyChanges { target: discoveryPage; opacity: 1.0; z: 1; enabled: true }
                 PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             },
             State {
                 name: "config"
                 PropertyChanges { target: appPage; opacity: 1.0; z: 1; enabled: true }
                 PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             },
             State {
                 name: "loaded"
                 PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: viewPage; opacity: 1.0; z: 1; enabled: true }
                 PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             }
         ]
 
@@ -246,6 +274,8 @@ ApplicationWindow {
     AppDiscovery {
         id: appDiscovery
         regType: "_machinekit._tcp.local"
-        running: pageStack.state == "discovery"
+        running: (pageStack.state == "discovery") || (pageStack.state == "network")
+        onNetworkOpened: networkAvailable = true
+        onNetworkClosed: networkAvailable = false
     }
 }
