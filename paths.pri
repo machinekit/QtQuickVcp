@@ -5,16 +5,26 @@
 android: {
     ZEROMQ_INCLUDE_PATH = /opt/zeromq-android/include
     ZEROMQ_LIB_PATH = /opt/zeromq-android/lib
+    ZEROMQ_LIB_FLAGS = -Bstatic
     PROTOBUF_INCLUDE_PATH = /opt/protobuf-android/include
     PROTOBUF_LIB_PATH = /opt/protobuf-android/lib
+    PROTOBUF_LIB_FLAGS = -Bstatic
 }
 ios: {
     ZEROMQ_INCLUDE_PATH = /opt/zeromq-ios/include
     ZEROMQ_LIB_PATH = /opt/zeromq-ios/lib
+    ZEROMQ_LIB_FLAGS = -Bstatic
     PROTOBUF_INCLUDE_PATH = /opt/protobuf-ios/include
     PROTOBUF_LIB_PATH = /opt/protobuf-ios/lib
+    PROTOBUF_LIB_FLAGS = -Bstatic
     PROTOBUF_PROTOC = /opt/protobuf-ios/bin/protoc
     LIBSODIUM_LIB_PATH = /Users/strahlex/libzmq-ios/libsodium-ios/libsodium_dist/lib
+}
+macx: {
+    ZEROMQ_INCLUDE_PATH = /opt/local/include
+    ZEROMQ_LIB_PATH = /opt/local/lib
+    PROTOBUF_INCLUDE_PATH = /opt/local/include
+    PROTOBUF_LIB_PATH = /opt/local/lib
 }
 
 # Qt SDK directory - autodetected based on qmake path

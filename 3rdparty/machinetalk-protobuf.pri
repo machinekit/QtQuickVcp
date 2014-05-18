@@ -8,10 +8,10 @@ QMAKE_CLEAN += -r $$OUT_PWD/generated/ $$OUT_PWD/objects/ $$OUT_PWD/python/
 
 INCLUDEPATH += $$OUT_PWD/generated
 
-!isEmpty(PROTOBUF_LIB_PATH): LIBS += -L$$PROTOBUF_LIB_PATH
 !isEmpty(PROTOBUF_INCLUDE_PATH): INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH
-
-LIBS += -Bstatic -lprotobuf
+!isEmpty(PROTOBUF_LIB_PATH): LIBS += -L$$PROTOBUF_LIB_PATH
+!isEmpty(PROTOBUF_LIB_FLAGS): LIBS += $$PROTOBUF_LIB_FLAGS
+LIBS += -lprotobuf
 
 HEADERS += \
     $$OUT_PWD/generated/canon.pb.h \
