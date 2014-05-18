@@ -66,50 +66,30 @@ Rectangle {
 
     /*! This property holds joystick position in x direction
     */
-    readonly property double xValue: 0
+    property double xValue: 0
 
     /*! This property holds joystick position in y direction
     */
-    readonly property double yValue: 0
+    property double yValue: 0
 
     /*! \internal */
-    function centeredX()
-    {
-        return main.width/2 - control.width/2
-    }
+    readonly property double _centeredX: main.width/2 - control.width/2
 
     /*! \internal */
-    function centeredY()
-    {
-        return main.height/2 - control.height/2
-    }
+    readonly property double _centeredY: main.height/2 - control.height/2
 
     /*! \internal */
-    function maxX()
-    {
-        //var maxRadius = main.width/2
-
-        //return Math.sqrt(Math.pow(maxRadius, 2)-Math.pow(y, 2))
-        return main.width - control.width
-    }
+    // Math.sqrt(Math.pow(maxRadius, 2)-Math.pow(y, 2))
+    readonly property double _maxX: main.width - control.width
 
     /*! \internal */
-    function maxY()
-    {
-        return main.height - control.height
-    }
+    readonly property double _maxY: main.height - control.height
 
     /*! \internal */
-    function maxControlX()
-    {
-        return control.width/2 - main.width/2
-    }
+    readonly property double _maxControlX: control.width/2 - main.width/2
 
     /*! \internal */
-    function maxControlY()
-    {
-        return control.height/2 - main.height/2
-    }
+    readonly property double _maxControlY: control.height/2 - main.height/2
 
     /*! \internal */
     function calculateNewX()
@@ -117,9 +97,9 @@ Rectangle {
         var newControlX = 0
 
         newControlX = controlArea.mouseX - control.width/2
-        if (newControlX > maxX())
+        if (newControlX > _maxX)
         {
-            newControlX = maxX()
+            newControlX = _maxX
         }
         else if (newControlX < 0)
         {
@@ -135,9 +115,9 @@ Rectangle {
         var newControlY = 0
 
         newControlY = controlArea.mouseY - control.height/2
-        if (newControlY > maxY())
+        if (newControlY > _maxY)
         {
-            newControlY = maxY()
+            newControlY = _maxY
         }
         else if (newControlY < 0)
         {
@@ -152,10 +132,30 @@ Rectangle {
     width: 150; height: 150
     color: "#00000000"
 
-    Binding { target: main; property: "xValue"; value: (Math.floor(((control.x + maxControlX()) / Math.abs(maxControlX()) * maximumValue) / stepSize) * stepSize)}
-    //Binding { target: control; property: "x"; value: Math.pow(main.xVelocity/stepSize,2) * stepSize / maxVelocity * Math.abs(maxControlX()) - maxControlX()}
-
-    Binding { target: main; property: "yValue"; value: (Math.floor(((control.y + maxControlY()) / Math.abs(maxControlY()) * maximumValue) / stepSize) * stepSize)}
+    Binding {
+        target: main
+        property: "xValue";
+        value: (Math.floor(((control.x + _maxControlX) / Math.abs(_maxControlX) * maximumValue) / stepSize) * stepSize);
+        when: controlArea.pressed
+    }
+    Binding {
+        target: control;
+        property: "x";
+        value: xValue / maximumValue * Math.abs(_maxControlX) - _maxControlX;
+        when: !controlArea.pressed
+    }
+    Binding {
+        target: main;
+        property: "yValue";
+        value: (Math.floor(((control.y + _maxControlY) / Math.abs(_maxControlY) * maximumValue) / stepSize) * stepSize);
+        when: controlArea.pressed
+    }
+    Binding {
+        target: control;
+        property: "y";
+        value: main.yValue / main.maximumValue * Math.abs(_maxControlY) - _maxControlY;
+        when: !controlArea.pressed
+    }
 
     SystemPalette {
         id: systemPalette;
@@ -198,7 +198,7 @@ Rectangle {
         property bool movable: false
 
         width: main.width * 0.3; height: main.width * 0.3
-        x: centeredX(); y: centeredY(); z: 1
+        x: _centeredX; y: _centeredY; z: 1
         radius: width / 2
         clip: true
         color: {
@@ -221,8 +221,8 @@ Rectangle {
             control.movable = false
             if (main.autoCenter)
             {
-                control.x = centeredX()
-                control.y = centeredY()
+                control.x = _centeredX
+                control.y = _centeredY
             }
         }
         onMouseXChanged: {

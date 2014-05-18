@@ -32,7 +32,6 @@ import Machinekit.Controls 1.0
 Rectangle {
     id: line
 
-
     /*! \qmlproperty real x1
 
         This property holds x1 coordinate of the line.

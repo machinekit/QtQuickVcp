@@ -83,4 +83,6 @@ VirtualJoystick {
 
     Binding { target: pinX; property: "value"; value: main.xValue}
     Binding { target: pinY; property: "value"; value: main.yValue}
+    Binding { target: main; property: "xValue"; value: pinX.value}
+    Binding { target: main; property: "yValue"; value: pinY.value}
 }

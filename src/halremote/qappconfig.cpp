@@ -28,9 +28,9 @@ QAppConfig::QAppConfig(QQuickItem *parent) :
     m_uri = "";
     m_ready = false;
     m_timeout = 3000;
+    m_configSocket = NULL;
 
     m_context = createDefaultContext(this);
-
     m_context->start();
 
     m_timeoutTimer = new QTimer(this);
@@ -42,7 +42,7 @@ QAppConfig::QAppConfig(QQuickItem *parent) :
 
 QAppConfig::~QAppConfig()
 {
-    stop();
+    disconnectSocket();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
@@ -182,11 +182,12 @@ void QAppConfig::connectSocket()
 
 void QAppConfig::disconnectSocket()
 {
-    disconnect(m_configSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(configMessageReceived(QList<QByteArray>)));
-
-    m_configSocket->close();
-    m_configSocket->deleteLater();
+    if (m_configSocket != NULL)
+    {
+        m_configSocket->close();
+        m_configSocket->deleteLater();
+        m_configSocket = NULL;
+    }
 }
 
 void QAppConfig::configMessageReceived(QList<QByteArray> messageList)

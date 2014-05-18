@@ -45,9 +45,10 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
     m_cState = STATE_DOWN;
     m_ready = false;
     m_containerItem = NULL;
+    m_cmdSocket = NULL;
+    m_updateSocket = NULL;
 
     m_context = createDefaultContext(this);
-
     m_context->start();
 
     m_heartbeatTimer = new QTimer(this);
@@ -57,7 +58,7 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
 
 QHalRemoteComponent::~QHalRemoteComponent()
 {
-    stop();
+    disconnectSockets();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
@@ -141,15 +142,19 @@ void QHalRemoteComponent::connectSockets()
 /** Disconnects the 0MQ sockets */
 void QHalRemoteComponent::disconnectSockets()
 {
-    disconnect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-               this, SLOT(updateMessageReceived(QList<QByteArray>)));
-    disconnect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-               this, SLOT(cmdMessageReceived(QList<QByteArray>)));
+    if (m_cmdSocket != NULL)
+    {
+        m_cmdSocket->close();
+        m_cmdSocket->deleteLater();
+        m_cmdSocket = NULL;
+    }
 
-    m_cmdSocket->close();
-    m_cmdSocket->deleteLater();
-    m_updateSocket->close();
-    m_updateSocket->deleteLater();
+    if (m_updateSocket != NULL)
+    {
+        m_updateSocket->close();
+        m_updateSocket->deleteLater();
+        m_updateSocket = NULL;
+    }
 }
 
 /** Generates a Bind messages and sends it over the suitable 0MQ socket */

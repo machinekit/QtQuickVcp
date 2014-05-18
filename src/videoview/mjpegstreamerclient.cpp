@@ -34,6 +34,7 @@ MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
     m_frameCount = 0;
     m_timestamp = 0.0;
     m_componentCompleted = false;
+    m_updateSocket = NULL;
 
     m_framerateTimer = new QTimer(this);
     connect(m_framerateTimer, SIGNAL(timeout()),
@@ -116,11 +117,12 @@ void MjpegStreamerClient::connectSocket()
 
 void MjpegStreamerClient::disconnectSocket()
 {
-    disconnect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-               this, SLOT(updateMessageReceived(QList<QByteArray>)));
-
-    m_updateSocket->close();
-    m_updateSocket->deleteLater();
+    if (m_updateSocket != NULL)
+    {
+        m_updateSocket->close();
+        m_updateSocket->deleteLater();
+        m_updateSocket = NULL;
+    }
 }
 
 void MjpegStreamerClient::updateMessageReceived(QList<QByteArray> messageList)
