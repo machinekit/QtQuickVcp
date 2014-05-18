@@ -18,7 +18,7 @@ ios: {
     PROTOBUF_LIB_PATH = /opt/protobuf-ios/lib
     PROTOBUF_LIB_FLAGS = -Bstatic
     PROTOBUF_PROTOC = /opt/protobuf-ios/bin/protoc
-    LIBSODIUM_LIB_PATH = /Users/strahlex/libzmq-ios/libsodium-ios/libsodium_dist/lib
+    LIBSODIUM_LIB_PATH = /opt/libsodium-ios/lib
 }
 macx: {
     ZEROMQ_INCLUDE_PATH = /opt/local/include
