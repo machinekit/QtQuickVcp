@@ -13,6 +13,7 @@ class QAppDiscovery : public QQuickItem
     Q_PROPERTY(QString regType READ regType WRITE setRegType NOTIFY regTypeChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(QQmlListProperty<QAppDiscoveryItem> discoveredApps READ discoveredApps NOTIFY discoveredAppsChanged)
+    Q_PROPERTY(bool networkOpen READ isNetworkOpen NOTIFY networkOpenChanged)
 
 public:
     explicit QAppDiscovery(QQuickItem *parent = 0);
@@ -27,6 +28,11 @@ public:
     bool running() const
     {
         return m_running;
+    }
+
+    bool isNetworkOpen() const
+    {
+        return m_networkOpen;
     }
 
     QQmlListProperty<QAppDiscoveryItem> discoveredApps();
@@ -44,11 +50,13 @@ signals:
     void discoveredAppsChanged(QQmlListProperty<QAppDiscoveryItem> arg);
     void networkOpened();
     void networkClosed();
+    void networkOpenChanged(bool arg);
 
 private:
     QString m_regType;
     bool m_running;
     QList<QAppDiscoveryItem*> m_discoveredApps;
+    bool m_networkOpen;
 
     QNetworkSession *m_networkSession;
     QNetworkConfigurationManager *m_networkConfigManager;
@@ -59,6 +67,7 @@ private:
     QTimer *m_expiryCheckTimer;
     QTimer *m_networkConfigTimer; // Timer for refreshing the network status
     int m_queryId;
+    QElapsedTimer m_elapsedTimer;
 
     void initializeNetworkSession();
     void startQuery();

@@ -4,8 +4,12 @@ QAppDiscovery::QAppDiscovery(QQuickItem *parent) :
     QQuickItem(parent)
 {
     m_componentCompleted = false;
+    m_networkOpen = false;
     m_jdns = NULL;
     m_networkSession = NULL;
+
+    m_elapsedTimer = QElapsedTimer();
+    m_elapsedTimer.start();
 
     m_expiryCheckTimer = new QTimer(this);
     connect(m_expiryCheckTimer, SIGNAL(timeout()),
@@ -57,9 +61,10 @@ void QAppDiscovery::initializeMdns()
         startQuery();
     }
 
-    m_expiryCheckTimer->start();
+    m_networkOpen = true;
+    emit networkOpenChanged(m_networkOpen);
 
-    emit networkOpened();
+    m_expiryCheckTimer->start();
 }
 
 void QAppDiscovery::deinitializeMdns()
@@ -67,6 +72,9 @@ void QAppDiscovery::deinitializeMdns()
 #ifdef QT_DEBUG
             qDebug() << "Deinitializing MDNS";
 #endif
+    m_networkOpen = false;
+    emit networkOpenChanged(m_networkOpen);
+
     if (m_running)
     {
         m_queryTypeMap.remove(m_queryId);
@@ -77,14 +85,20 @@ void QAppDiscovery::deinitializeMdns()
 
     m_expiryCheckTimer->stop();
     clearItems();
-
-    emit networkClosed();
 }
 
 void QAppDiscovery::delayedInit()
 {
     // for some reason there needs to be a delay if the network is initialized after the app was started
-    QTimer::singleShot(1000,this, SLOT(initializeMdns()));
+    // if the network comes up 500 msecs or less after the application has started skip the delay
+    if (m_elapsedTimer.elapsed() > 500)
+    {
+        QTimer::singleShot(1000,this, SLOT(initializeMdns()));
+    }
+    else
+    {
+        initializeMdns();
+    }
 }
 
 QQmlListProperty<QAppDiscoveryItem> QAppDiscovery::discoveredApps()
@@ -324,15 +338,17 @@ void QAppDiscovery::openNetworkSession()
         networkConfig = m_networkConfigManager->defaultConfiguration();
     }
     else
-    foreach (QNetworkConfiguration config, m_networkConfigManager->allConfigurations(QNetworkConfiguration::Discovered))
     {
-        if ((config.bearerType() == QNetworkConfiguration::BearerEthernet) ||
-                (config.bearerType() == QNetworkConfiguration::BearerWLAN))
+        foreach (QNetworkConfiguration config, m_networkConfigManager->allConfigurations(QNetworkConfiguration::Discovered))
         {
-            networkConfig = config;
+            if ((config.bearerType() == QNetworkConfiguration::BearerEthernet) ||
+                    (config.bearerType() == QNetworkConfiguration::BearerWLAN))
+            {
+                networkConfig = config;
 #ifdef QT_DEBUG
-            qDebug() << "network configs: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name();
+                qDebug() << "network configs: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name();
 #endif
+            }
         }
     }
 

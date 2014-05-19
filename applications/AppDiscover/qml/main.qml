@@ -26,7 +26,6 @@ import Machinekit.HalRemote 1.0
 
 ApplicationWindow {
     property var selectedInstance
-    property bool networkAvailable: false
 
     id: mainWindow
 
@@ -199,7 +198,7 @@ ApplicationWindow {
             }
         }
 
-        state: networkAvailable ? ((appConfig.ready) ? ((appLoader.active) ?"loaded":"config") :"discovery") : "network"
+        state: (appDiscovery.networkOpen) ? ((appConfig.ready) ? ((appLoader.active) ?"loaded":"config") :"discovery") : "network"
 
         states: [
             State {
@@ -275,7 +274,5 @@ ApplicationWindow {
         id: appDiscovery
         regType: "_machinekit._tcp.local"
         running: (pageStack.state == "discovery") || (pageStack.state == "network")
-        onNetworkOpened: networkAvailable = true
-        onNetworkClosed: networkAvailable = false
     }
 }
