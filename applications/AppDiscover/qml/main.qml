@@ -84,7 +84,7 @@ ApplicationWindow {
                 anchors.margins: Screen.logicalPixelDensity*3
                 spacing: Screen.logicalPixelDensity*3
 
-                model: appDiscovery.discoveredApps
+                model: configService.serviceDiscoveryItems
                 delegate: Button {
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -100,10 +100,12 @@ ApplicationWindow {
                     }
 
                     onClicked: {
-                        if (appDiscovery.discoveredApps[index].dsname !== "")
+                        if (configService.serviceDiscoveryItems[index].uri !== "")
                         {
-                            selectedInstance = appDiscovery.discoveredApps[index]
+                            appConfig.uri = configService.serviceDiscoveryItems[index].uri
                             appConfig.ready = true
+                            serviceDiscoveryFilter.txtRecords = ["uuid=" + configService.serviceDiscoveryItems[index].uuid]
+                            serviceDiscovery.updateFilter()
                         }
                     }
                 }
@@ -112,7 +114,7 @@ ApplicationWindow {
             BusyIndicator {
                 anchors.centerIn: parent
                 running: true
-                visible: appDiscovery.discoveredApps.length === 0
+                visible: configService.serviceDiscoveryItems.length === 0
                 height: parent.height * 0.15
                 width: height
             }
@@ -129,7 +131,7 @@ ApplicationWindow {
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.topMargin: Screen.logicalPixelDensity*3
-                text: selectedInstance !== undefined ? selectedInstance.name : ""
+                text: configService.name
                 font.pointSize: dummyText.font.pointSize * 1.6
                 font.bold: true
             }
@@ -189,16 +191,14 @@ ApplicationWindow {
 
                 onLoaded: {
                     console.log("Window " + appLoader.item.name + " loaded")
-                    if (appConfig.services !== undefined)
-                    {
-                        appConfig.services = Qt.binding(function(){return (appLoader.item != null ? appLoader.item.services : [])})
-                        appConfig.updateServices()
-                    }
+                    applicationServiceList.services = Qt.binding(function(){return (appLoader.item != null ? appLoader.item.services : [])})
+                    applicationInternalServiceList.services = Qt.binding(function(){return (appLoader.item != null ? appLoader.item.internalServices : [])})
+                    serviceDiscovery.updateServices()
                 }
             }
         }
 
-        state: (appDiscovery.networkOpen) ? ((appConfig.ready) ? ((appLoader.active) ?"loaded":"config") :"discovery") : "network"
+        state: (serviceDiscovery.networkOpen) ? ((appConfig.ready) ? ((appLoader.active) ?"loaded":"config") :"discovery") : "network"
 
         states: [
             State {
@@ -249,10 +249,15 @@ ApplicationWindow {
                 else if (pageStack.state == "config")
                 {
                     appConfig.ready = false
+                    serviceDiscoveryFilter.txtRecords = []
+                    serviceDiscovery.updateFilter()
                 }
                 else if (pageStack.state == "loaded")
                 {
                     appConfig.unselectAppConfig()
+                    applicationServiceList.services = []
+                    applicationInternalServiceList.services = []
+                    serviceDiscovery.updateServices()
                 }
 
                 event.accepted = true
@@ -262,17 +267,36 @@ ApplicationWindow {
 
     AppConfig {
         id: appConfig
-
-        uri: selectedInstance !== undefined ? selectedInstance.dsname : ""
-        timeout: 3000
-        ready: false //(pageStack.state == "config") && (uri != "")
+        ready: false
         filters: [ AppConfigFilter { type: AppConfigItem.QT5_QML },
                    AppConfigFilter { type: AppConfigItem.GLADEVCP } ]
     }
 
-    AppDiscovery {
-        id: appDiscovery
-        regType: "_machinekit._tcp.local"
-        running: (pageStack.state == "discovery") || (pageStack.state == "network")
+    ServiceDiscovery {
+        id: serviceDiscovery
+        regType: "machinekit"
+        domain: "local"
+        running: true
+        filter: ServiceDiscoveryFilter {
+            id: serviceDiscoveryFilter
+            name: ""
+        }
+
+        serviceLists: [
+            ServiceList {
+                services: [
+                    Service {
+                        id: configService
+                        type: "config"
+                    }
+                ]
+            },
+            ServiceList {
+                id: applicationInternalServiceList
+            },
+            ServiceList {
+                id: applicationServiceList
+            }
+        ]
     }
 }

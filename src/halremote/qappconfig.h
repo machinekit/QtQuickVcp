@@ -30,7 +30,6 @@
 #include <nzmqt/nzmqt.hpp>
 #include "qappconfigitem.h"
 #include "qappconfigfilter.h"
-#include "qservicediscovery.h"
 #include "message.pb.h"
 #include "types.pb.h"
 #include <google/protobuf/text_format.h>
@@ -48,14 +47,10 @@ class QAppConfig : public QQuickItem
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
-    Q_PROPERTY(int timeout READ timeout WRITE setTimeout NOTIFY timeoutChanged)
     Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(QAppConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
     Q_PROPERTY(QQmlListProperty<QAppConfigItem> appConfigs READ appConfigs NOTIFY appConfigsChanged)
     Q_PROPERTY(QQmlListProperty<QAppConfigFilter> filters READ filters)
-    Q_PROPERTY(QQmlListProperty<QService> services READ services)
-    Q_PROPERTY(QQmlListProperty<QService> receivedServices READ receivedServices NOTIFY receivedServicesChanged)
-
 public:
     explicit QAppConfig(QQuickItem *parent = 0);
     ~QAppConfig();
@@ -65,11 +60,6 @@ public:
     QString uri() const
     {
         return m_uri;
-    }
-
-    int timeout() const
-    {
-        return m_timeout;
     }
 
     bool isReady() const
@@ -90,14 +80,6 @@ public:
     int filterCount() const;
     QAppConfigFilter* filter(int index) const;
 
-    QQmlListProperty<QService> services();
-    int serviceCount() const;
-    QService *service(int index) const;
-
-    QQmlListProperty<QService> receivedServices();
-    int replieCount() const;
-    QService *replie(int index) const;
-
 public slots:
 
     void selectAppConfig(QString name);
@@ -109,14 +91,6 @@ public slots:
         if (m_uri != arg) {
             m_uri = arg;
             emit uriChanged(arg);
-        }
-    }
-
-    void setTimeout(int arg)
-    {
-        if (m_timeout != arg) {
-            m_timeout = arg;
-            emit timeoutChanged(arg);
         }
     }
 
@@ -132,13 +106,10 @@ public slots:
 
 private:
     QString m_uri;
-    int m_timeout;
     bool m_ready;
     QAppConfigItem * m_selectedConfig;
     QList<QAppConfigItem*> m_appConfigs;
     QList<QAppConfigFilter*> m_filters;
-    QList<QService*> m_services;
-    QList<QService*> m_receivedServices;
 
     ZMQContext *m_context;
     ZMQSocket *m_configSocket;
@@ -146,14 +117,12 @@ private:
     pb::Container m_rx;
     pb::Container m_tx;
 
-    QTimer *m_timeoutTimer;
     bool m_componentCompleted;
 
     void start();
     void stop();
 
 private slots:
-    void timeoutTimerTick();
     void connectSocket();
     void disconnectSocket();
     void configMessageReceived(QList<QByteArray> messageList);
@@ -161,11 +130,9 @@ private slots:
 
 signals:
     void uriChanged(QString arg);
-    void timeoutChanged(int arg);
     void readyChanged(bool arg);
     void selectedConfigChanged(QAppConfigItem * arg);
     void appConfigsChanged(QQmlListProperty<QAppConfigItem> arg);
-    void receivedServicesChanged(QQmlListProperty<QService> arg);
 };
 
 #endif // QAPPCONFIG_H

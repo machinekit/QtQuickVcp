@@ -23,48 +23,30 @@
 #define QSERVICE_H
 
 #include <QObject>
-#include "message.pb.h"
+#include <QQmlListProperty>
+#include "qservicediscoveryitem.h"
+#include "qservicediscoveryfilter.h"
 
 class QService : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(QString uri READ uri NOTIFY uriChanged)
+    Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged)
     Q_PROPERTY(int version READ version NOTIFY versionChanged)
-    Q_PROPERTY(ServiceApi api READ api NOTIFY apiChanged)
-    Q_PROPERTY(QString description READ description NOTIFY descriptionChanged)
     Q_PROPERTY(bool ready READ isReady NOTIFY readyChanged)
     Q_PROPERTY(int minVersion READ minVersion WRITE setMinVersion NOTIFY minVersionChanged)
-    Q_PROPERTY(ServiceType type READ type WRITE setType NOTIFY typeChanged)
-    Q_ENUMS(ServiceApi)
-    Q_ENUMS(ServiceType)
+    Q_PROPERTY(QServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
+    Q_PROPERTY(QQmlListProperty<QServiceDiscoveryItem> serviceDiscoveryItems READ serviceDiscoveryItems NOTIFY serviceDiscoveryItemsChanged)
 
 public:
     explicit QService(QObject *parent = 0);
 
-    enum ServiceApi {
-        SA_ZMQ_PROTOBUF = pb::SA_ZMQ_PROTOBUF,
-        SA_WS_JSON = pb::SA_WS_JSON
-    };
-
-    enum ServiceType {
-        ST_LOGGING = pb::ST_LOGGING,
-        ST_CONFIG = pb::ST_CONFIG,
-        ST_REDIS = pb::ST_REDIS,
-        ST_HTTP = pb::ST_HTTP,
-        ST_HTTPS = pb::ST_HTTPS,
-        ST_WEBSOCKET = pb::ST_WEBSOCKET,
-        ST_WEBSOCKETS = pb::ST_WEBSOCKETS,
-        ST_RTAPI_COMMAND = pb::ST_RTAPI_COMMAND,
-        ST_STP_HALGROUP = pb::ST_STP_HALGROUP,
-        ST_STP_HALRCOMP = pb::ST_STP_HALRCOMP,
-        ST_STP_INTERP = pb::ST_STP_INTERP,
-        ST_STP_TASK = pb::ST_STP_TASK,
-        ST_HAL_RCOMMAND = pb::ST_HAL_RCOMMAND,
-        ST_TASK_COMMAND = pb::ST_TASK_COMMAND,
-        ST_INTERP_COMMAND = pb::ST_INTERP_COMMAND,
-        ST_MESSAGEBUS_COMMAND = pb::ST_MESSAGEBUS_COMMAND,
-        ST_MESSAGEBUS_RESPONSE = pb::ST_MESSAGEBUS_RESPONSE
-    };
+    QQmlListProperty<QServiceDiscoveryItem> serviceDiscoveryItems();
+    int serviceDiscoveryItemCount() const;
+    QServiceDiscoveryItem *serviceDiscoveryItem(int index) const;
+    void setServiceDiscoveryItems(QList<QServiceDiscoveryItem*> newServiceDiscoveryItems);
 
     QString uri() const
     {
@@ -74,16 +56,6 @@ public:
     int version() const
     {
         return m_version;
-    }
-
-    ServiceApi api() const
-    {
-        return m_api;
-    }
-
-    QString description() const
-    {
-        return m_description;
     }
 
     bool isReady() const
@@ -96,16 +68,27 @@ public:
         return m_minVersion;
     }
 
-    ServiceType type() const
+    QString type() const
     {
         return m_type;
     }
 
+    QString name() const
+    {
+        return m_name;
+    }
+
+    QServiceDiscoveryFilter *filter() const
+    {
+        return m_filter;
+    }
+
+    QString uuid() const
+    {
+        return m_uuid;
+    }
+
 public slots:
-
-    void setData(QString uri, int version, ServiceApi api, QString description, bool ready);
-    void clearFound();
-
     void setMinVersion(int arg)
     {
         if (m_minVersion != arg) {
@@ -114,7 +97,7 @@ public slots:
         }
     }
 
-    void setType(ServiceType arg)
+    void setType(QString arg)
     {
         if (m_type != arg) {
             m_type = arg;
@@ -122,32 +105,38 @@ public slots:
         }
     }
 
-    void setReady(bool arg)
+    void setFilter(QServiceDiscoveryFilter *arg)
     {
-        if (m_ready != arg) {
-            m_ready = arg;
-            emit readyChanged(arg);
+        if (m_filter != arg) {
+            m_filter = arg;
+            emit filterChanged(arg);
         }
     }
 
 private:
     QString m_uri;
     int m_version;
-    ServiceApi m_api;
-    QString m_description;
     bool m_ready;
     int m_minVersion;
-    ServiceType m_type;
+    QString m_type;
+    QString m_name;
+    QServiceDiscoveryFilter *m_filter;
+    QList<QServiceDiscoveryItem*> m_serviceDiscoveryItems;
+
+
+
+    QString m_uuid;
 
 signals:
-
     void uriChanged(QString arg);
     void versionChanged(int arg);
-    void apiChanged(ServiceApi arg);
-    void descriptionChanged(QString arg);
     void readyChanged(bool arg);
     void minVersionChanged(int arg);
-    void typeChanged(ServiceType arg);
+    void typeChanged(QString arg);
+    void nameChanged(QString arg);
+    void serviceDiscoveryItemsChanged(QQmlListProperty<QServiceDiscoveryItem> arg);
+    void filterChanged(QServiceDiscoveryFilter *arg);
+    void uuidChanged(QString arg);
 };
 
 #endif // QSERVICE_H

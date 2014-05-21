@@ -19,159 +19,128 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#ifndef QSERVICEDISCOVERY_H
-#define QSERVICEDISCOVERY_H
+#ifndef QAPPDISCOVERY_H
+#define QAPPDISCOVERY_H
 
 #include <QQuickItem>
-#include <QUdpSocket>
-#include <QTimer>
-#include <QTime>
-#include <QQmlListProperty>
-#include "message.pb.h"
+#include <qjdns.h>
+#include <qjdnsshared.h>
+#include "qservicediscoveryitem.h"
 #include "qservice.h"
+#include "qservicelist.h"
+#include "qservicediscoveryfilter.h"
 
 class QServiceDiscovery : public QQuickItem
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
-    Q_PROPERTY(int instance READ instance WRITE setInstance NOTIFY instanceChanged)
-    Q_PROPERTY(int retryTime READ retryTime WRITE setRetryTime NOTIFY retryTimeChanged)
-    Q_PROPERTY(int maxWait READ maxWait WRITE setMaxWait NOTIFY maxWaitChanged)
-    Q_PROPERTY(bool trace READ trace WRITE setTrace NOTIFY traceChanged)
-    Q_PROPERTY(bool running READ isRunning WRITE setRunning NOTIFY runningChanged)
-    Q_PROPERTY(bool repeat READ repeat WRITE setRepeat NOTIFY repeatChanged)
-    Q_PROPERTY(QQmlListProperty<QService> services READ services)
-    Q_PROPERTY(QQmlListProperty<QService> replies READ replies)
-
+    Q_PROPERTY(QString regType READ regType WRITE setRegType NOTIFY regTypeChanged)
+    Q_PROPERTY(QString domain READ domain WRITE setDomain NOTIFY domainChanged)
+    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(bool networkOpen READ isNetworkOpen NOTIFY networkOpenChanged)
+    Q_PROPERTY(QServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
+    Q_PROPERTY(QQmlListProperty<QServiceList> serviceLists READ serviceLists)
 
 public:
     explicit QServiceDiscovery(QQuickItem *parent = 0);
 
     virtual void componentComplete();
 
-    int port() const
+    QString regType() const
     {
-        return m_port;
+        return m_regType;
     }
 
-    int instance() const
-    {
-        return m_instance;
-    }
-
-    int retryTime() const
-    {
-        return m_retryTime;
-    }
-
-    int maxWait() const
-    {
-        return m_maxWait;
-    }
-
-    bool trace() const
-    {
-        return m_trace;
-    }
-
-    bool isRunning() const
+    bool running() const
     {
         return m_running;
     }
 
-    bool repeat() const
+    bool isNetworkOpen() const
     {
-        return m_repeat;
+        return m_networkOpen;
     }
 
-    QQmlListProperty<QService> services();
-    int serviceCount() const;
-    QService *service(int index) const;
+    QString domain() const
+    {
+        return m_domain;
+    }
 
-    QQmlListProperty<QService> replies();
-    int replieCount() const;
-    QService *replie(int index) const;
+    QServiceDiscoveryFilter *filter() const
+    {
+        return m_filter;
+    }
+
+    QQmlListProperty<QServiceList> serviceLists();
+    int serviceListCount() const;
+    QServiceList *serviceList(int index) const;
 
 public slots:
-
-    void startDiscovery();
-    void stopDiscovery();
-    void sendBroadcast();
-
-    void setPort(int arg)
-    {
-        if (m_port != arg) {
-            m_port = arg;
-            emit portChanged(arg);
-        }
-    }
-    void setInstance(int arg)
-    {
-        if (m_instance != arg) {
-            m_instance = arg;
-            emit instanceChanged(arg);
-        }
-    }
-    void setRetryTime(int arg)
-    {
-        if (m_retryTime != arg) {
-            m_retryTime = arg;
-            emit retryTimeChanged(arg);
-        }
-    }
-    void setMaxWait(int arg)
-    {
-        if (m_maxWait != arg) {
-            m_maxWait = arg;
-            emit maxWaitChanged(arg);
-        }
-    }
-    void setTrace(bool arg);
-
+    void setRegType(QString arg);
+    void setDomain(QString arg);
     void setRunning(bool arg);
-
-    void setRepeat(bool arg)
-    {
-        if (m_repeat != arg) {
-            m_repeat = arg;
-            emit repeatChanged(arg);
-        }
-    }
-
-private:
-    int m_currentWanted;
-    int m_port;
-    int m_instance;
-    int m_retryTime;
-    int m_maxWait;
-    bool m_trace;
-    bool m_running;
-    bool m_repeat;
-
-    QByteArray m_probe;
-    QUdpSocket *m_udpSocket;
-    QTimer *m_timeoutTimer;
-    QTime *m_waitTime;
-
-    QList<QService*> m_services;
-    QList<QService*> m_replies;
-
-private slots:
-    void udpReadyRead();
-    void timeout();
+    void setFilter(QServiceDiscoveryFilter *arg);
+    void updateServices();
+    void updateFilter();
 
 signals:
-    void discoveryTimeout();
-    void discoverySucceded();
-
-    void portChanged(int arg);
-    void instanceChanged(int arg);
-    void retryTimeChanged(int arg);
-    void maxWaitChanged(int arg);
-    void traceChanged(bool arg);
+    void regTypeChanged(QString arg);
     void runningChanged(bool arg);
-    void repeatChanged(bool arg);
+    void networkOpenChanged(bool arg);
+    void domainChanged(QString arg);
+    void filterChanged(QServiceDiscoveryFilter *arg);
+
+private:
+    QString m_regType;
+    bool m_running;
+    bool m_networkOpen;
+    QString m_domain;
+    QServiceDiscoveryFilter *m_filter;
+    QList<QServiceList*> m_serviceLists;
+
+    QNetworkSession *m_networkSession;
+    QNetworkConfigurationManager *m_networkConfigManager;
+    QTimer *m_networkConfigTimer; // Timer for refreshing the network status
+    QElapsedTimer m_elapsedTimer;
+
+    QJDns *m_jdns;
+    QMap<int, int> m_queryTypeMap;
+    QMap<int, QServiceDiscoveryItem*> m_queryItemMap;
+    QMap<QString, QList<QServiceDiscoveryItem*> > m_serviceTypeMap;
+    QMap<int, QString> m_queryServiceMap;
+    QTimer *m_expiryCheckTimer;
+
+    bool m_componentCompleted;
+
+    void initializeNetworkSession();
+    void startQueries();
+    void stopQueries();
+    void startQuery(QString type);
+    void stopQuery(QString type);
+    void addServiceType(QString type);
+    void removeServiceType(QString type);
+    void updateServiceType(QString type);
+    void removeAllServiceTypes();
+    void updateAllServiceTypes();
+    static bool filterServiceDiscoveryItem(QServiceDiscoveryItem *item, QServiceDiscoveryFilter *serviceDiscoveryFilter);
+    static QList<QServiceDiscoveryItem *> filterServiceDiscoveryItems(QList<QServiceDiscoveryItem *> serviceDiscoveryItems, QServiceDiscoveryFilter *primaryFilter, QServiceDiscoveryFilter *secondaryFilter);
+    QServiceDiscoveryItem *addItem(QString name, QString type);
+    QServiceDiscoveryItem *getItem(QString name, QString type);
+    void updateItem(QString name, QString type);
+    void removeItem(QString name, QString type);
+    void clearItems(QString type);
+    static QString composeSdString(QString type, QString domain);
+    static QString composeSdString(QString subType, QString type, QString domain);
+
+    private slots:
+    void resultsReady(int id, const QJDns::Response &results);
+    void error(int id, QJDns::Error e);
+    void expiryCheck();
+    void openNetworkSession();
+    void updateNetConfig();
+    void initializeMdns();
+    void deinitializeMdns();
+    void delayedInit();
 };
 
-#endif // QSERVICEDISCOVERY_H
+#endif // QAPPDISCOVERY_H

@@ -23,12 +23,13 @@
 #include "qhalpin.h"
 #include "qhalremotecomponent.h"
 #include "qservice.h"
-#include "qservicediscovery.h"
+#include "qservicelist.h"
 #include "qappconfig.h"
 #include "qappconfigitem.h"
 #include "qappconfigfilter.h"
-#include "qappdiscovery.h"
-#include "qappdiscoveryitem.h"
+#include "qservicediscovery.h"
+#include "qservicediscoveryitem.h"
+#include "qservicediscoveryfilter.h"
 
 #include <qqml.h>
 
@@ -40,13 +41,14 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
 
     // @uri Machinekit.HalRemote
     qmlRegisterType<QService>(uri, 1, 0, "Service");
+    qmlRegisterType<QServiceList>(uri, 1, 0, "ServiceList");
     qmlRegisterType<QServiceDiscovery>(uri, 1, 0, "ServiceDiscovery");
-    qmlRegisterType<QHalRemoteComponent>(uri, 1, 0, "HalRemoteComponent");
+    qmlRegisterType<QServiceDiscoveryItem>(uri, 1, 0, "ServiceDiscoveryItem");
+    qmlRegisterType<QServiceDiscoveryFilter>(uri, 1, 0, "ServiceDiscoveryFilter");
     qmlRegisterType<QAppConfig>(uri, 1, 0, "AppConfig");
     qmlRegisterType<QAppConfigItem>(uri, 1, 0, "AppConfigItem");
     qmlRegisterType<QAppConfigFilter>(uri, 1, 0, "AppConfigFilter");
-    qmlRegisterType<QAppDiscovery>(uri, 1, 0, "AppDiscovery");
-    qmlRegisterType<QAppDiscoveryItem>(uri, 1, 0, "AppDiscoveryItem");
+    qmlRegisterType<QHalRemoteComponent>(uri, 1, 0, "HalRemoteComponent");
     qmlRegisterType<QHalPin>(uri, 1, 0, "HalPin");
 }
 

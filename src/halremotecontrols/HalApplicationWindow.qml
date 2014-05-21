@@ -90,15 +90,19 @@ Rectangle {
 
     /*! This property holds the services used by the application.
     */
-    property list<Service> services: [
+    property list<Service> services
+
+    /*! This property holds the services used internally by the HalApplicationWindow.
+    */
+    property list<Service> internalServices: [
         Service {
             id: halrcompService
-            type: Service.ST_STP_HALRCOMP
+            type: "halrcomp"
             minVersion: 0
         },
         Service {
             id: rcommandService
-            type: Service.ST_HAL_RCOMMAND
+            type: "halrcmd"
             minVersion: 0
         }
     ]

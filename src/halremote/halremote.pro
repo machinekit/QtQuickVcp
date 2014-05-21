@@ -19,11 +19,12 @@ SOURCES += \
     qappconfigfilter.cpp \
     qappconfigitem.cpp \
     qservice.cpp \
-    qservicediscovery.cpp \
     qhalpin.cpp \
     qhalremotecomponent.cpp \
-    qappdiscovery.cpp \
-    qappdiscoveryitem.cpp
+    qservicelist.cpp \
+    qservicediscoveryfilter.cpp \
+    qservicediscovery.cpp \
+    qservicediscoveryitem.cpp
 
 HEADERS += \
     plugin.h \
@@ -31,11 +32,12 @@ HEADERS += \
     qappconfigfilter.h \
     qappconfigitem.h \
     qservice.h \
-    qservicediscovery.h \
     qhalpin.h \
     qhalremotecomponent.h \
-    qappdiscovery.h \
-    qappdiscoveryitem.h
+    qservicelist.h \
+    qservicediscoveryfilter.h \
+    qservicediscovery.h \
+    qservicediscoveryitem.h
 
 QML_INFRA_FILES = \
     qmldir

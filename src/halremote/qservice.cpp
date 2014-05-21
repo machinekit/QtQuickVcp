@@ -25,30 +25,48 @@ QService::QService(QObject *parent) :
     QObject(parent)
 {
     m_uri = "";
+    m_uuid = "";
     m_version = 0;
     m_minVersion = 0;
-    m_api = SA_ZMQ_PROTOBUF;
-    m_description = "";
     m_ready = false;
+    m_filter = new QServiceDiscoveryFilter(this);
 }
 
-void QService::setData(QString uri, int version, QService::ServiceApi api, QString description, bool found)
+QQmlListProperty<QServiceDiscoveryItem> QService::serviceDiscoveryItems()
 {
-    m_uri = uri;
-    m_version = version;
-    m_api = api;
-    m_description = description;
-    m_ready = found;
+    return QQmlListProperty<QServiceDiscoveryItem>(this, m_serviceDiscoveryItems);
+}
+
+int QService::serviceDiscoveryItemCount() const
+{
+    return m_serviceDiscoveryItems.count();
+}
+
+QServiceDiscoveryItem *QService::serviceDiscoveryItem(int index) const
+{
+    return m_serviceDiscoveryItems.at(index);
+}
+
+void QService::setServiceDiscoveryItems(QList<QServiceDiscoveryItem *> newServiceDiscoveryItems)
+{
+    m_serviceDiscoveryItems = newServiceDiscoveryItems;
+
+    if (m_serviceDiscoveryItems.count() > 0)
+    {
+        m_uri = m_serviceDiscoveryItems.at(0)->uri();
+        m_uuid = m_serviceDiscoveryItems.at(0)->uuid();
+        m_name = m_serviceDiscoveryItems.at(0)->name();
+        m_ready = true;
+    }
+    else
+    {
+        m_ready = false;
+    }
 
     emit uriChanged(m_uri);
-    emit versionChanged(m_version);
-    emit apiChanged(m_api);
-    emit descriptionChanged(m_description);
+    emit uuidChanged(m_uuid);
+    emit nameChanged(m_name);
+    //emit versionChanged(m_version);
     emit readyChanged(m_ready);
-}
-
-void QService::clearFound()
-{
-    m_ready = false;
-    emit readyChanged(m_ready);
+    emit serviceDiscoveryItemsChanged(serviceDiscoveryItems());
 }
