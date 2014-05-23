@@ -575,6 +575,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
                 QServiceDiscoveryItem * item;
 
                 item = addItem(name, serviceType);
+                item->setExpiryDate(QDateTime::currentDateTime().addSecs(r.ttl));
                 id = m_jdns->queryStart(r.name, QJDns::Txt);
                 m_queryTypeMap.insert(id, QJDns::Txt);
                 m_queryItemMap.insert(id, item);

@@ -47,7 +47,6 @@ MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
     m_streamBufferTimer->setSingleShot(true);
 
     m_context = createDefaultContext(this);
-    m_context->start();
 }
 
 MjpegStreamerClient::~MjpegStreamerClient()
@@ -118,6 +117,8 @@ void MjpegStreamerClient::stop()
 
 void MjpegStreamerClient::connectSocket()
 {
+     m_context->start();
+
      m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
      m_updateSocket->setLinger(0);
      m_updateSocket->connectTo(m_url);
@@ -135,6 +136,8 @@ void MjpegStreamerClient::disconnectSocket()
         m_updateSocket->deleteLater();
         m_updateSocket = NULL;
     }
+
+    m_context->stop();
 }
 
 void MjpegStreamerClient::updateMessageReceived(QList<QByteArray> messageList)

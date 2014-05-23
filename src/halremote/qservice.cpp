@@ -61,12 +61,14 @@ void QService::setServiceDiscoveryItems(QList<QServiceDiscoveryItem *> newServic
     else
     {
         m_ready = false;
+        m_name = "";
+        m_uri = "";
+        m_name = "";
     }
 
     emit uriChanged(m_uri);
     emit uuidChanged(m_uuid);
     emit nameChanged(m_name);
-    //emit versionChanged(m_version);
     emit readyChanged(m_ready);
     emit serviceDiscoveryItemsChanged(serviceDiscoveryItems());
 }

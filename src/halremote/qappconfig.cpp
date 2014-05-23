@@ -30,7 +30,6 @@ QAppConfig::QAppConfig(QQuickItem *parent) :
     m_configSocket = NULL;
 
     m_context = createDefaultContext(this);
-    m_context->start();
 
     m_selectedConfig = new QAppConfigItem(this);
 }
@@ -131,6 +130,8 @@ void QAppConfig::stop()
 
 void QAppConfig::connectSocket()
 {
+    m_context->start();
+
     m_configSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
     m_configSocket->setLinger(0);
     m_configSocket->setIdentity(QString("%1-%2").arg("appconfig").arg(QCoreApplication::applicationPid()).toLocal8Bit());
@@ -149,6 +150,8 @@ void QAppConfig::disconnectSocket()
         m_configSocket->deleteLater();
         m_configSocket = NULL;
     }
+
+    m_context->stop();
 }
 
 void QAppConfig::configMessageReceived(QList<QByteArray> messageList)

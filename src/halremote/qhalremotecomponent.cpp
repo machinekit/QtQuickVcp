@@ -49,7 +49,6 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
     m_updateSocket = NULL;
 
     m_context = createDefaultContext(this);
-    m_context->start();
 
     m_heartbeatTimer = new QTimer(this);
     connect(m_heartbeatTimer, SIGNAL(timeout()),
@@ -117,6 +116,7 @@ void QHalRemoteComponent::removePins()
 /** Connects the 0MQ sockets */
 void QHalRemoteComponent::connectSockets()
 {
+    m_context->start();
 
     m_cmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
     m_cmdSocket->setLinger(0);
@@ -155,6 +155,8 @@ void QHalRemoteComponent::disconnectSockets()
         m_updateSocket->deleteLater();
         m_updateSocket = NULL;
     }
+
+    m_context->stop();
 }
 
 /** Generates a Bind messages and sends it over the suitable 0MQ socket */
@@ -307,6 +309,7 @@ void QHalRemoteComponent::stop()
     if (m_instanceCount == 0)
     {
         // cleanup here
+        m_heartbeatTimer->stop();
         disconnectSockets();
         removePins();
     }
