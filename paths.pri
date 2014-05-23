@@ -38,4 +38,5 @@ QTCREATOR_INSTALL_DIR=$$QTSDK_DIR/Tools/QtCreator
 
 # Qt documentation directory containing Qt documentation with .index files
 # -> somehow only the Android toolchain comes with .index files
-QT_DOC_DIR = $$[QT_INSTALL_PREFIX]/../android_armv7/doc
+# install one of the Android toolchains to work properly
+QT_DOC_DIR = $$[QT_INSTALL_DOCS]
