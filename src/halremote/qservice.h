@@ -34,9 +34,7 @@ class QService : public QObject
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(QString uri READ uri NOTIFY uriChanged)
     Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged)
-    Q_PROPERTY(int version READ version NOTIFY versionChanged)
     Q_PROPERTY(bool ready READ isReady NOTIFY readyChanged)
-    Q_PROPERTY(int minVersion READ minVersion WRITE setMinVersion NOTIFY minVersionChanged)
     Q_PROPERTY(QServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
     Q_PROPERTY(QQmlListProperty<QServiceDiscoveryItem> serviceDiscoveryItems READ serviceDiscoveryItems NOTIFY serviceDiscoveryItemsChanged)
 
@@ -48,24 +46,9 @@ public:
     QServiceDiscoveryItem *serviceDiscoveryItem(int index) const;
     void setServiceDiscoveryItems(QList<QServiceDiscoveryItem*> newServiceDiscoveryItems);
 
-    QString uri() const
-    {
-        return m_uri;
-    }
-
-    int version() const
-    {
-        return m_version;
-    }
-
     bool isReady() const
     {
         return m_ready;
-    }
-
-    int minVersion() const
-    {
-        return m_minVersion;
     }
 
     QString type() const
@@ -88,14 +71,12 @@ public:
         return m_uuid;
     }
 
-public slots:
-    void setMinVersion(int arg)
+    QString uri() const
     {
-        if (m_minVersion != arg) {
-            m_minVersion = arg;
-            emit minVersionChanged(arg);
-        }
+        return m_uri;
     }
+
+public slots:
 
     void setType(QString arg)
     {
@@ -114,29 +95,23 @@ public slots:
     }
 
 private:
-    QString m_uri;
-    int m_version;
     bool m_ready;
-    int m_minVersion;
     QString m_type;
     QString m_name;
+    QString m_uuid;
+    QString m_uri;
     QServiceDiscoveryFilter *m_filter;
     QList<QServiceDiscoveryItem*> m_serviceDiscoveryItems;
 
 
-
-    QString m_uuid;
-
 signals:
-    void uriChanged(QString arg);
-    void versionChanged(int arg);
     void readyChanged(bool arg);
-    void minVersionChanged(int arg);
     void typeChanged(QString arg);
     void nameChanged(QString arg);
     void serviceDiscoveryItemsChanged(QQmlListProperty<QServiceDiscoveryItem> arg);
     void filterChanged(QServiceDiscoveryFilter *arg);
     void uuidChanged(QString arg);
+    void uriChanged(QString arg);
 };
 
 #endif // QSERVICE_H

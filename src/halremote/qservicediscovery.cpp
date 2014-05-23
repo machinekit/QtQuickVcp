@@ -599,18 +599,6 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
             foreach (QString string, r.texts)
             {
-                QStringList keyValue;
-                keyValue = string.split("=");
-
-                if (keyValue.at(0) == "dsn")
-                {
-                    item->setUri(keyValue.at(1));
-                }
-                else if (keyValue.at(0) == "uuid")
-                {
-                    item->setUuid(keyValue.at(1));
-                }
-
                 txtRecords.append(string);
             }
 

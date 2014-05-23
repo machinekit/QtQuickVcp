@@ -22,14 +22,12 @@
 #include "qservice.h"
 
 QService::QService(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_ready(false),
+    m_type(""),
+    m_name(""),
+    m_filter(new QServiceDiscoveryFilter(this))
 {
-    m_uri = "";
-    m_uuid = "";
-    m_version = 0;
-    m_minVersion = 0;
-    m_ready = false;
-    m_filter = new QServiceDiscoveryFilter(this);
 }
 
 QQmlListProperty<QServiceDiscoveryItem> QService::serviceDiscoveryItems()
@@ -49,24 +47,53 @@ QServiceDiscoveryItem *QService::serviceDiscoveryItem(int index) const
 
 void QService::setServiceDiscoveryItems(QList<QServiceDiscoveryItem *> newServiceDiscoveryItems)
 {
+    QList<QByteArray> registeredProperties; // used to keep tracked of nonexistent properties that where previusly register
+    registeredProperties = this->dynamicPropertyNames();
+
     m_serviceDiscoveryItems = newServiceDiscoveryItems;
 
     if (m_serviceDiscoveryItems.count() > 0)
     {
-        m_uri = m_serviceDiscoveryItems.at(0)->uri();
-        m_uuid = m_serviceDiscoveryItems.at(0)->uuid();
         m_name = m_serviceDiscoveryItems.at(0)->name();
         m_ready = true;
+
+        // Register all text records as properties
+        foreach (QString record, m_serviceDiscoveryItems.at(0)->txtRecords())
+        {
+            QStringList keyValue;
+            QByteArray propertyName;
+
+            keyValue = record.split('=');
+
+            if (keyValue.count() < 2) // record without = is a wrong record -> skip
+            {
+                continue;
+            }
+
+            propertyName = keyValue.at(0).toLocal8Bit();
+            this->setProperty(propertyName, keyValue.at(1));
+
+            for (int i = 0; i < registeredProperties.count(); ++i)
+            {
+                if (registeredProperties.at(i) == propertyName)
+                {
+                    registeredProperties.removeAt(i);   // remove set property from list
+                }
+            }
+        }
     }
     else
     {
+        m_name = "";
         m_ready = false;
     }
 
-    emit uriChanged(m_uri);
-    emit uuidChanged(m_uuid);
+    for (int i = 0; i < registeredProperties.size(); ++i)
+    {
+        this->setProperty(registeredProperties.at(i), QVariant());  // delete by setting an invalid variant
+    }
+
     emit nameChanged(m_name);
-    //emit versionChanged(m_version);
     emit readyChanged(m_ready);
     emit serviceDiscoveryItemsChanged(serviceDiscoveryItems());
 }
