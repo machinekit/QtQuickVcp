@@ -39,7 +39,7 @@ MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
     m_framerateTimer = new QTimer(this);
     connect(m_framerateTimer, SIGNAL(timeout()),
             this, SLOT(updateFramerate()));
-    m_framerateTimer->start(1000);
+    m_framerateTimer->setInterval(1000);
 
     m_streamBufferTimer = new QTimer(this);
     connect(m_streamBufferTimer, SIGNAL(timeout()),
@@ -62,7 +62,7 @@ void MjpegStreamerClient::componentComplete()
 
     if (m_running == true)    // the component was set to ready before it was completed
     {
-        connectSocket();
+        start();
     }
 
     QQuickItem::componentComplete();
@@ -82,11 +82,11 @@ void MjpegStreamerClient::paint(QPainter *painter)
 /** If the running property has a rising edge we try to connect
  *  if it is has a falling edge we disconnect and cleanup
  */
-void MjpegStreamerClient::setRunning(bool arg)
+void MjpegStreamerClient::setReady(bool arg)
 {
     if (m_running != arg) {
         m_running = arg;
-        emit runningChanged(arg);
+        emit readyChanged(arg);
 
         if (m_componentCompleted == false)
         {
@@ -95,13 +95,25 @@ void MjpegStreamerClient::setRunning(bool arg)
 
         if (m_running)
         {
-            connectSocket();
+            start();
         }
         else
         {
-            disconnectSocket();
+            stop();
         }
     }
+}
+
+void MjpegStreamerClient::start()
+{
+    m_framerateTimer->start();
+    connectSocket();
+}
+
+void MjpegStreamerClient::stop()
+{
+    m_framerateTimer->stop();
+    disconnectSocket();
 }
 
 void MjpegStreamerClient::connectSocket()

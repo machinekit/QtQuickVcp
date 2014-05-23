@@ -46,9 +46,9 @@ using namespace nzmqt;
 class MjpegStreamerClient : public QQuickPaintedItem
 {
     Q_OBJECT
-    Q_PROPERTY(QString url READ url WRITE setUrl NOTIFY urlChanged)
+    Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
     Q_PROPERTY(int fps READ fps NOTIFY fpsChanged)
-    Q_PROPERTY(bool running READ isRunning WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(double timestamp READ timestamp NOTIFY timestampChanged)
     Q_PROPERTY(QTime time READ time NOTIFY timeChanged)
 public:
@@ -63,12 +63,12 @@ public:
     virtual void componentComplete();
     void paint(QPainter* painter);
 
-    QString url() const
+    QString uri() const
     {
         return m_url;
     }
 
-    bool isRunning() const
+    bool isReady() const
     {
         return m_running;
     }
@@ -89,28 +89,23 @@ public:
     }
 
 signals:
-
-    void urlChanged(QString arg);
-
-    void runningChanged(bool arg);
-
+    void uriChanged(QString arg);
+    void readyChanged(bool arg);
     void fpsChanged(double arg);
-
     void timestampChanged(double arg);
-
     void timeChanged(QTime arg);
 
 public slots:
 
-void setUrl(QString arg)
+void setUri(QString arg)
 {
     if (m_url != arg) {
         m_url = arg;
-        emit urlChanged(arg);
+        emit uriChanged(arg);
     }
 }
 
-void setRunning(bool arg);
+void setReady(bool arg);
 
 private:
     StreamBufferItem m_currentStreamBufferItem;
@@ -132,6 +127,8 @@ private:
     QTime m_time;
 
 private slots:
+    void start();
+    void stop();
     void connectSocket();
     void disconnectSocket();
     void updateMessageReceived(QList<QByteArray> messageList);
