@@ -553,12 +553,15 @@ QString QServiceDiscovery::composeSdString(QString subType, QString type, QStrin
 void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 {
     int type;
+    QServiceDiscoveryItem * item;
 
     type = m_queryTypeMap.value(id);
 
     foreach(QJDns::Record r, results.answerRecords)
     {
         int newId;
+
+        item = NULL;
 
         if (type == QJDns::Ptr)
         {
@@ -572,16 +575,15 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
             if (r.ttl != 0)
             {
-                QServiceDiscoveryItem * item;
-
                 item = addItem(name, serviceType);
                 item->setExpiryDate(QDateTime::currentDateTime().addSecs(r.ttl));
-                id = m_jdns->queryStart(r.name, QJDns::Txt);
-                m_queryTypeMap.insert(id, QJDns::Txt);
-                m_queryItemMap.insert(id, item);
-                id = m_jdns->queryStart(r.name, QJDns::Srv);
-                m_queryTypeMap.insert(id, QJDns::Srv);
-                m_queryItemMap.insert(id, item);
+                item->setOutstandingRequests(3);     // We have to do 3 requests before the item is fully resolved
+                newId = m_jdns->queryStart(r.name, QJDns::Txt);
+                m_queryTypeMap.insert(newId, QJDns::Txt);
+                m_queryItemMap.insert(newId, item);
+                newId = m_jdns->queryStart(r.name, QJDns::Srv);
+                m_queryTypeMap.insert(newId, QJDns::Srv);
+                m_queryItemMap.insert(newId, item);
             }
             else
             {
@@ -590,7 +592,6 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         }
         else if (type == QJDns::Txt)
         {
-            QServiceDiscoveryItem * item;
             QStringList txtRecords;
 
             item = m_queryItemMap.value(id);
@@ -623,8 +624,6 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         }
         else if (type == QJDns::Srv)
         {
-            QServiceDiscoveryItem * item;
-
             item = m_queryItemMap.value(id);
             m_jdns->queryCancel(id);    // we have our results
             m_queryTypeMap.remove(id);
@@ -641,8 +640,6 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         }
         else if (type == QJDns::A)
         {
-            QServiceDiscoveryItem * item;
-
             item = m_queryItemMap.value(id);
             m_jdns->queryCancel(id);    // we have our results
             m_queryTypeMap.remove(id);
@@ -652,7 +649,15 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             qDebug() << item->type() << item->name() << "Address:" << r.address.toString();
 #endif
             item->setHostAddress(r.address);
-            updateItem(item->name(), item->type());
+        }
+
+        if (item != NULL)   // we got a answer to a request
+        {
+            item->setOutstandingRequests(item->outstandingRequests() - 1);
+            if (item->outstandingRequests() == 0)   // item is fully resolved
+            {
+                updateItem(item->name(), item->type());
+            }
         }
     }
 }

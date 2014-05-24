@@ -29,14 +29,14 @@
 class QServiceDiscoveryItem : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
-    Q_PROPERTY(QString uuid READ uuid WRITE setUuid NOTIFY uuidChanged)
-    Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
-    Q_PROPERTY(QHostAddress hostAddress READ hostAddress WRITE setHostAddress NOTIFY hostAddressChanged)
-    Q_PROPERTY(QDateTime expiryDate READ expiryDate WRITE setExpiryDate NOTIFY expiryDateChanged)
-    Q_PROPERTY(QStringList txtRecords READ txtRecords WRITE setTxtRecords NOTIFY txtRecordsChanged)
+    Q_PROPERTY(QString type READ type NOTIFY typeChanged)
+    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
+    Q_PROPERTY(QString uri READ uri NOTIFY uriChanged)
+    Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged)
+    Q_PROPERTY(int port READ port NOTIFY portChanged)
+    Q_PROPERTY(QHostAddress hostAddress READ hostAddress NOTIFY hostAddressChanged)
+    Q_PROPERTY(QDateTime expiryDate READ expiryDate NOTIFY expiryDateChanged)
+    Q_PROPERTY(QStringList txtRecords READ txtRecords NOTIFY txtRecordsChanged)
 
 public:
     explicit QServiceDiscoveryItem(QQuickItem *parent = 0);
@@ -80,6 +80,11 @@ QStringList txtRecords() const
 QString uuid() const
 {
     return m_uuid;
+}
+
+int outstandingRequests() const
+{
+    return m_outstandingRequests;
 }
 
 public slots:
@@ -146,16 +151,21 @@ void setUuid(QString arg)
     }
 }
 
+void setOutstandingRequests(int arg)
+{
+    m_outstandingRequests = arg;
+}
+
 private:
+    QString m_name;
+    QString m_type;
     QString m_uri;
+    QString m_uuid;
     int m_port;
     QHostAddress m_hostAddress;
-    QString m_name;
     QDateTime m_expiryDate;
-    QString m_type;
     QStringList m_txtRecords;
-
-    QString m_uuid;
+    int m_outstandingRequests;
 
 signals:
 

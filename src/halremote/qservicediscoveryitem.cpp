@@ -22,11 +22,13 @@
 #include "qservicediscoveryitem.h"
 
 QServiceDiscoveryItem::QServiceDiscoveryItem(QQuickItem *parent) :
-    QQuickItem(parent)
+    QQuickItem(parent),
+    m_name(""),
+    m_type(""),
+    m_uri(""),
+    m_uuid(""),
+    m_port(0),
+    m_hostAddress(QHostAddress()),
+    m_outstandingRequests(0)
 {
-    m_type = "";
-    m_name = "";
-    m_uri = "";
-    m_port = 0;
-    m_hostAddress = QHostAddress();
 }
