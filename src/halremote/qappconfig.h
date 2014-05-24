@@ -84,7 +84,6 @@ public slots:
 
     void selectAppConfig(QString name);
     void unselectAppConfig();
-    void updateServices();
 
     void setUri(QString arg)
     {
