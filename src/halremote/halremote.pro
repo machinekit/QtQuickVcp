@@ -42,7 +42,4 @@ HEADERS += \
 QML_INFRA_FILES = \
     qmldir
 
-QML_PLUGINDUMP_DUMMY = \
-    qmldir
-
 include(../deployment.pri)

@@ -1,6 +1,7 @@
 module Machinekit.HalRemote.Controls
 plugin machinekithalremotecontrolsplugin
 classname MachinekitHalRemoteControlsPlugin
+typeinfo plugins.qmltypes
 
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work

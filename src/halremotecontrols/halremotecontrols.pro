@@ -42,9 +42,6 @@ QML_INFRA_FILES = \
     $$QML_FILES \
     qmldir
 
-QML_PLUGINDUMP_DUMMY = \
-    qmldir
-
 QML_DESIGNER_FILES = \
     designer
 

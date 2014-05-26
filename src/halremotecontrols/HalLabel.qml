@@ -75,7 +75,7 @@ Label {
 
     id: main
 
-    text: main.prefix + pin.value.toFixed(main.decimals) + main.suffix
+    text: main.prefix + (typeof pin.value === "number" ? pin.value.toFixed(main.decimals) : pin.value ) + main.suffix
 
     HalPin {
         id: pin

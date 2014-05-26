@@ -20,14 +20,25 @@
 **
 ****************************************************************************/
 import QtQuick 2.0
+import QtQuick.Controls 1.1
 import Machinekit.HalRemote 1.0
 import Machinekit.HalRemote.Controls 1.0
 
-ConnectionWindow {
-    id: connectionWindow
+ApplicationWindow {
+    id: applicationWindow
 
-    autoSelectInstance: false
-    applicationSource: "qrc:/qml/MotorctrlDemo.qml"
-    instanceFilter: ServiceDiscoveryFilter{ name: "" }
+    visible: true
+    width: 500
+    height: 700
+    title: connectionWindow.title
+
+    ConnectionWindow {
+        id: connectionWindow
+
+        anchors.fill: parent
+        autoSelectInstance: false
+        applicationSource: "qrc:/qml/MotorctrlDemo.qml"
+        instanceFilter: ServiceDiscoveryFilter{ name: "" }
+    }
 }
 

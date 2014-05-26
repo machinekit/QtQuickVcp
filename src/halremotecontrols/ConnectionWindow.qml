@@ -24,21 +24,24 @@ import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
 import Machinekit.HalRemote 1.0
 
-ApplicationWindow {
+Rectangle {
     property bool autoSelectInstance: false
     property alias instanceFilter: configService.filter
     property string applicationSource: ""
 
+    readonly property string title: (applicationLoader.active && (applicationLoader.item != null))
+                           ? ((applicationLoader.item.title !== undefined) ? applicationLoader.item.title : "")
+                           : qsTr("MachineKit App Discover")
     readonly property bool localMode: applicationSource != ""
 
     id: mainWindow
 
-    visible: true
-    title: (applicationLoader.active && (applicationLoader.item != null))
-           ? ((applicationLoader.item.title !== undefined) ? applicationLoader.item.title : "")
-           : qsTr("MachineKit App Discover")
+
+    color: systemPalette.window
     width: 500
     height: 700
+
+
 
     function selectInstance(index)
     {
@@ -117,6 +120,11 @@ ApplicationWindow {
                 serviceDiscovery.updateServices()
             }
         }
+    }
+
+    SystemPalette {
+        id: systemPalette;
+        colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
     }
 
     Text {

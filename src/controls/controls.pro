@@ -41,9 +41,6 @@ QML_INFRA_FILES = \
 QML_DESIGNER_FILES = \
     designer
 
-QML_PLUGINDUMP_DUMMY = \
-    qmldir
-
 QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/GaugeSpecifics.qml \
     propertyEditorQmlSources/GaugeSection.qml \

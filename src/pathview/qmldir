@@ -1,4 +1,4 @@
 module Machinekit.PathView
 plugin machinekitpathviewplugin
 classname MachinekitPathViewPlugin
-#typeinfo plugins.qmltypes
+typeinfo plugins.qmltypes

@@ -31,7 +31,4 @@ QML_INFRA_FILES = \
 QML_DESIGNER_FILES = \
     designer
 
-QML_PLUGINDUMP_DUMMY = \
-    qmldir
-
 include(../deployment.pri)
