@@ -49,6 +49,7 @@ void MachinekitControlsPlugin::registerTypes(const char *uri)
     initResources();
 
     // @uri Machinekit.Controls
+    Q_ASSERT(uri == QLatin1String("Machinekit.Controls"));
     qmlRegisterType<Dummy>(uri, 1, 0, "Dummy");
 
     const QString filesLocation = fileLocation();

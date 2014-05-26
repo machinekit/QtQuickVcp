@@ -6,7 +6,9 @@ CONFIG += qt plugin
 
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.Controls
-QMAKE_MOC_OPTIONS += -Muri=$$uri
+#ios: {
+    QMAKE_MOC_OPTIONS += -Muri=$$uri
+#}
 
 # Input
 SOURCES += \
@@ -38,6 +40,9 @@ QML_INFRA_FILES = \
 
 QML_DESIGNER_FILES = \
     designer
+
+QML_PLUGINDUMP_DUMMY = \
+    qmldir
 
 QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/GaugeSpecifics.qml \

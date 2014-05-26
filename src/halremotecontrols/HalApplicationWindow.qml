@@ -128,7 +128,7 @@ Rectangle {
         id: discoveryPage
 
         anchors.fill: parent
-        opacity: 0.0
+        visible: false
         z: 100
         color: systemPalette.window
 
@@ -216,7 +216,7 @@ Rectangle {
         repeat: false
         running: true
         onTriggered: {
-            discoveryPage.opacity = 1.0
+            discoveryPage.visible = true
             discoveryPage.enabled = true
         }
     }

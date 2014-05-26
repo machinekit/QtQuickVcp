@@ -314,13 +314,18 @@ Item {
 
                 // current color/alpha display rectangle
                 Item {
+                    id: currentColorRect
                     Layout.fillWidth: true
                     Layout.preferredHeight: colorPicker.height*0.15
                     Loader {
                         id: colorBoard
                         sourceComponent: checkerBoard
                         anchors.fill: parent
-                        Binding { target: colorBoard.item; property: "cellSide"; value: parent.width * 0.0040; when: (colorBoard.state === Loader.Ready)}
+                        Binding {
+                            target: colorBoard.item
+                            property: "cellSide"
+                            value: currentColorRect.width * 0.0040
+                        }
                     }
                     Rectangle {
                         anchors.fill: parent

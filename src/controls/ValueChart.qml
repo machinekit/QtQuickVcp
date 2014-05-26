@@ -260,7 +260,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: parent.width * 0.02
         anchors.top: parent.top
-        text: qsTr("Value: <br>") + "<b>" + chart.prefix + valueModel.currentValue.toFixed(chart.decimals) + chart.suffix + "</b>"
+        text: qsTr("Value: <br>") + "<b>" + chart.prefix + ((valueModel != null) ? valueModel.currentValue.toFixed(chart.decimals) : 0) + chart.suffix + "</b>"
     }
 
     Text {
@@ -269,7 +269,7 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: leftText.anchors.leftMargin
         anchors.top: parent.top
-        text: qsTr("Target: <br>") + "<b>" + chart.prefix + valueModel.targetValue.toFixed(chart.decimals) + chart.suffix + "</b>"
+        text: qsTr("Target: <br>") + "<b>" + chart.prefix + ((valueModel != null) ? valueModel.targetValue.toFixed(chart.decimals) : 0) + chart.suffix + "</b>"
     }
 
     Text {
