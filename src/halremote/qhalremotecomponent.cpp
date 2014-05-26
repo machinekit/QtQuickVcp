@@ -42,6 +42,9 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
     m_synced = false;
     m_sState = Down;
     m_cState = Down;
+    m_connectionState = Disconnected;
+    m_error = NoError;
+    m_errorString = "";
     m_ready = false;
     m_containerItem = NULL;
     m_cmdSocket = NULL;

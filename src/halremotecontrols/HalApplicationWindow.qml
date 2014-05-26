@@ -128,7 +128,7 @@ Rectangle {
         id: discoveryPage
 
         anchors.fill: parent
-        visible: false
+        opacity: 0.0
         z: 100
         color: systemPalette.window
 
@@ -139,6 +139,7 @@ Rectangle {
             visible: connectingIndicator.visible
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: connectingIndicator.top
+            anchors.bottomMargin: Screen.logicalPixelDensity
             font.pixelSize: dummyText.font.pixelSize * 1.5
             text: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
                 ? qsTr("Waiting for services to appear...")
@@ -161,6 +162,7 @@ Rectangle {
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: connectingIndicator.bottom
+            anchors.topMargin: Screen.logicalPixelDensity
             enabled: false
             visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
             text: qsTr("RComp service available")
@@ -172,6 +174,7 @@ Rectangle {
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: rcompCheck.bottom
+            anchors.topMargin: Screen.logicalPixelDensity
             enabled: false
             visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
             text: qsTr("RCommand service available")
@@ -212,10 +215,13 @@ Rectangle {
         interval: 10
         repeat: false
         running: true
-        onTriggered: discoveryPage.visible = true
+        onTriggered: {
+            discoveryPage.opacity = 1.0
+            discoveryPage.enabled = true
+        }
     }
 
-    state: (remoteComponent.connectionState === HalRemoteComponent.Connected) ?"connected":"discovery"
+    state: (remoteComponent.connectionState === HalRemoteComponent.Connected) ? "connected" : "discovery"
 
     states: [
         State {
@@ -229,7 +235,7 @@ Rectangle {
     ]
 
     transitions: Transition {
-            PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic }
+            PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic}
         }
 
     HalRemoteComponent {
@@ -241,5 +247,7 @@ Rectangle {
         heartbeatPeriod: 3000
         ready: main.autoDiscover ? (rcompService.ready && rcommandService.ready) : main.ready
         containerItem: parent
+
+        onConnectionStateChanged: console.log(connectionState)
     }
 }
