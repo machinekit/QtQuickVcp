@@ -247,7 +247,5 @@ Rectangle {
         heartbeatPeriod: 3000
         ready: main.autoDiscover ? (rcompService.ready && rcommandService.ready) : main.ready
         containerItem: parent
-
-        onConnectionStateChanged: console.log(connectionState)
     }
 }
