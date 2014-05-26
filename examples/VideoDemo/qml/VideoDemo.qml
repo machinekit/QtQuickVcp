@@ -22,6 +22,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
+import QtQuick.Window 2.0
 import Machinekit.HalRemote.Controls 1.0
 import Machinekit.HalRemote 1.0
 import Machinekit.VideoView 1.0
@@ -52,8 +53,34 @@ HalApplicationWindow {
 
             Layout.fillHeight: true
             Layout.fillWidth: true
+            visible: ready
             uri: webcamService.uri
             ready: webcamService.ready
+
+            Label {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: Screen.logicalPixelDensity
+                text: parent.fps
+            }
+
+            Label {
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                anchors.margins: Screen.logicalPixelDensity
+                text: parent.time
+            }
+        }
+
+        Label {
+            id: infoLabel
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            visible: !webcamService.ready
+            text: qsTr("Webcam not available")
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
     }
 
