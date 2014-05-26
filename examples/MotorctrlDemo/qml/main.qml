@@ -19,17 +19,15 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-import QtQuick 2.1
-import QtQuick.Controls 1.1
+import QtQuick 2.0
+import Machinekit.HalRemote 1.0
+import Machinekit.HalRemote.Controls 1.0
 
-ApplicationWindow {
-    visible: true
-    title: application.title
-    width: 600
-    height: 800
+ConnectionWindow {
+    id: connectionWindow
 
-    MotorctrlDemo {
-        id: application
-        anchors.fill: parent
-    }
+    autoSelectInstance: false
+    applicationSource: "qrc:/qml/MotorctrlDemo.qml"
+    instanceFilter: ServiceDiscoveryFilter{ name: "" }
 }
+
