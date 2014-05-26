@@ -1,6 +1,8 @@
 include(../paths.pri)
 DESTDIR = $$OUT_PWD/../../imports/$$TARGETPATH
 
+isEmpty(PLUGIN_VERSION): PLUGIN_VERSION = 1.0
+
 # ========== copy additional files ==========
 
 copyqmlinfra.input = QML_INFRA_FILES
@@ -24,16 +26,14 @@ copyqmlpropertyeditor.CONFIG += no_link no_clean
 copyqmlpropertyeditor.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmlpropertyeditor
 
-QMAKE_POST_LINK += $$dirname(QMAKE_QMAKE)/qmlplugindump "$$uri 1.0 $$OUT_PWD/../../imports/ > $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes"
-QML_PLUGINQMLTYPES_FILES = \
-    $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes
+QMAKE_POST_LINK += $$dirname(QMAKE_QMAKE)/qmlplugindump "$$uri $$PLUGIN_VERSION $$OUT_PWD/../../imports/ > $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes"
 
 QMAKE_CLEAN += -r $$OUT_PWD/../../imports/$$TARGETPATH/
 
 # ========== install additional files ==========
 
-copypluginqmltypes.files = $$QML_PLUGINQMLTYPES_FILES
-copypluginqmltypes.path = $$[QT_INSTALL_QML]/$$TARGETPATH
+copypluginqmltypes.CONFIG = no_files no_path
+copypluginqmltypes.extra = $$QMAKE_COPY $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes $$[QT_INSTALL_QML]/$$TARGETPATH/plugins.qmltypes
 
 copyqmlinfra_install.files = $$QML_INFRA_FILES
 copyqmlinfra_install.path = $$[QT_INSTALL_QML]/$$TARGETPATH
