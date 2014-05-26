@@ -134,23 +134,22 @@ Rectangle {
 
 
         Label {
-            id: disconnectedLabel
+            id: connectingLabel
 
-            visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.margins: Screen.logicalPixelDensity * 2
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
+            visible: connectingIndicator.visible
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: connectingIndicator.top
             font.pixelSize: dummyText.font.pixelSize * 1.5
-            text: qsTr("Application not connected.")
+            text: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
+                ? qsTr("Waiting for services to appear...")
+                : qsTr("Connecting...")
         }
 
         BusyIndicator {
             id: connectingIndicator
 
-            visible: (remoteComponent.connectionState === HalRemoteComponent.Connecting)
+            visible: ((remoteComponent.connectionState === HalRemoteComponent.Disconnected)
+                      || (remoteComponent.connectionState === HalRemoteComponent.Connecting))
             anchors.centerIn: parent
             running: true
             height: parent.height * 0.15
@@ -163,8 +162,8 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: connectingIndicator.bottom
             enabled: false
-            visible: connectingIndicator.visible
-            text: qsTr("RComp service connected")
+            visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
+            text: qsTr("RComp service available")
             checked: rcompService.ready
         }
 
@@ -174,8 +173,8 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: rcompCheck.bottom
             enabled: false
-            visible: connectingIndicator.visible
-            text: qsTr("RCommand service connected")
+            visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
+            text: qsTr("RCommand service available")
             checked: rcommandService.ready
         }
 
