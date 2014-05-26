@@ -28,8 +28,8 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <nzmqt/nzmqt.hpp>
-#include "qappconfigitem.h"
-#include "qappconfigfilter.h"
+#include "qapplicationconfigitem.h"
+#include "qapplicationconfigfilter.h"
 #include "message.pb.h"
 #include "types.pb.h"
 #include <google/protobuf/text_format.h>
@@ -42,18 +42,18 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QAppConfig : public QQuickItem
+class QApplicationConfig : public QQuickItem
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
     Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
-    Q_PROPERTY(QAppConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
-    Q_PROPERTY(QQmlListProperty<QAppConfigItem> appConfigs READ appConfigs NOTIFY appConfigsChanged)
-    Q_PROPERTY(QQmlListProperty<QAppConfigFilter> filters READ filters)
+    Q_PROPERTY(QApplicationConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
+    Q_PROPERTY(QQmlListProperty<QApplicationConfigItem> appConfigs READ appConfigs NOTIFY appConfigsChanged)
+    Q_PROPERTY(QQmlListProperty<QApplicationConfigFilter> filters READ filters)
 public:
-    explicit QAppConfig(QQuickItem *parent = 0);
-    ~QAppConfig();
+    explicit QApplicationConfig(QQuickItem *parent = 0);
+    ~QApplicationConfig();
 
     virtual void componentComplete();
 
@@ -67,23 +67,23 @@ public:
         return m_ready;
     }
 
-    QAppConfigItem * selectedConfig() const
+    QApplicationConfigItem * selectedConfig() const
     {
         return m_selectedConfig;
     }
 
-    QQmlListProperty<QAppConfigItem> appConfigs();
+    QQmlListProperty<QApplicationConfigItem> appConfigs();
     int appConfigCount() const;
-    QAppConfigItem *appConfig(int index) const;
+    QApplicationConfigItem *appConfig(int index) const;
 
-    QQmlListProperty<QAppConfigFilter> filters();
+    QQmlListProperty<QApplicationConfigFilter> filters();
     int filterCount() const;
-    QAppConfigFilter* filter(int index) const;
+    QApplicationConfigFilter* filter(int index) const;
 
 public slots:
 
-    void selectAppConfig(QString name);
-    void unselectAppConfig();
+    void selectApplicationConfig(QString name);
+    void unselectApplicationConfig();
 
     void setUri(QString arg)
     {
@@ -95,7 +95,7 @@ public slots:
 
     void setReady(bool arg);
 
-    void setSelectedConfig(QAppConfigItem * arg)
+    void setSelectedConfig(QApplicationConfigItem * arg)
     {
         if (m_selectedConfig != arg) {
             m_selectedConfig = arg;
@@ -106,9 +106,9 @@ public slots:
 private:
     QString m_uri;
     bool m_ready;
-    QAppConfigItem * m_selectedConfig;
-    QList<QAppConfigItem*> m_appConfigs;
-    QList<QAppConfigFilter*> m_filters;
+    QApplicationConfigItem * m_selectedConfig;
+    QList<QApplicationConfigItem*> m_appConfigs;
+    QList<QApplicationConfigFilter*> m_filters;
 
     ZMQContext *m_context;
     ZMQSocket *m_configSocket;
@@ -130,8 +130,8 @@ private slots:
 signals:
     void uriChanged(QString arg);
     void readyChanged(bool arg);
-    void selectedConfigChanged(QAppConfigItem * arg);
-    void appConfigsChanged(QQmlListProperty<QAppConfigItem> arg);
+    void selectedConfigChanged(QApplicationConfigItem * arg);
+    void appConfigsChanged(QQmlListProperty<QApplicationConfigItem> arg);
 };
 
 #endif // QAPPCONFIG_H

@@ -19,9 +19,15 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qappconfigfilter.h"
+#include "qapplicationconfigitem.h"
 
-QAppConfigFilter::QAppConfigFilter(QObject *parent) :
+QApplicationConfigItem::QApplicationConfigItem(QObject *parent) :
     QObject(parent)
 {
+    m_name = "";
+    m_description = "";
+    m_type = QT5_QML;
+    m_webUri = "";
+    m_loaded = false;
+    m_mainFile = "";
 }

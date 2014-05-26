@@ -35,6 +35,7 @@ MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
     m_timestamp = 0.0;
     m_componentCompleted = false;
     m_updateSocket = NULL;
+    m_context = NULL;
 
     m_framerateTimer = new QTimer(this);
     connect(m_framerateTimer, SIGNAL(timeout()),
@@ -45,8 +46,6 @@ MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
     connect(m_streamBufferTimer, SIGNAL(timeout()),
             this, SLOT(updateStreamBuffer()));
     m_streamBufferTimer->setSingleShot(true);
-
-    m_context = createDefaultContext(this);
 }
 
 MjpegStreamerClient::~MjpegStreamerClient()
@@ -117,15 +116,16 @@ void MjpegStreamerClient::stop()
 
 void MjpegStreamerClient::connectSocket()
 {
-     m_context->start();
+    m_context = createDefaultContext(this);
+    m_context->start();
 
-     m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
-     m_updateSocket->setLinger(0);
-     m_updateSocket->connectTo(m_url);
-     m_updateSocket->subscribeTo("frames");
+    m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
+    m_updateSocket->setLinger(0);
+    m_updateSocket->connectTo(m_url);
+    m_updateSocket->subscribeTo("frames");
 
-     connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-             this, SLOT(updateMessageReceived(QList<QByteArray>)));
+    connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
+         this, SLOT(updateMessageReceived(QList<QByteArray>)));
 }
 
 void MjpegStreamerClient::disconnectSocket()
@@ -137,7 +137,12 @@ void MjpegStreamerClient::disconnectSocket()
         m_updateSocket = NULL;
     }
 
-    m_context->stop();
+    if (m_context != NULL)
+    {
+        m_context->stop();
+        m_context->deleteLater();
+        m_context = NULL;
+    }
 }
 
 void MjpegStreamerClient::updateMessageReceived(QList<QByteArray> messageList)

@@ -15,29 +15,29 @@ include(../../3rdparty/machinetalk-protobuf.pri)
 # Input
 SOURCES += \
     plugin.cpp \
-    qappconfig.cpp \
-    qappconfigfilter.cpp \
-    qappconfigitem.cpp \
     qservice.cpp \
     qhalpin.cpp \
     qhalremotecomponent.cpp \
     qservicelist.cpp \
     qservicediscoveryfilter.cpp \
     qservicediscovery.cpp \
-    qservicediscoveryitem.cpp
+    qservicediscoveryitem.cpp \
+    qapplicationconfig.cpp \
+    qapplicationconfigitem.cpp \
+    qapplicationconfigfilter.cpp
 
 HEADERS += \
     plugin.h \
-    qappconfig.h \
-    qappconfigfilter.h \
-    qappconfigitem.h \
     qservice.h \
     qhalpin.h \
     qhalremotecomponent.h \
     qservicelist.h \
     qservicediscoveryfilter.h \
     qservicediscovery.h \
-    qservicediscoveryitem.h
+    qservicediscoveryitem.h \
+    qapplicationconfig.h \
+    qapplicationconfigitem.h \
+    qapplicationconfigfilter.h
 
 QML_INFRA_FILES = \
     qmldir

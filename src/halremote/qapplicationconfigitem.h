@@ -29,7 +29,7 @@
 #include "types.pb.h"
 #include "config.pb.h"
 
-class QAppConfigItem : public QObject
+class QApplicationConfigItem : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
@@ -42,7 +42,7 @@ class QAppConfigItem : public QObject
     Q_ENUMS(ApplicationType)
 
 public:
-    explicit QAppConfigItem(QObject *parent = 0);
+    explicit QApplicationConfigItem(QObject *parent = 0);
 
     enum ApplicationType {
         QT5_QML = pb::QT5_QML,

@@ -47,21 +47,39 @@ class QHalRemoteComponent : public QQuickItem
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
-    Q_PROPERTY(State sState READ sState NOTIFY sStateChanged)
-    Q_PROPERTY(State cState READ cState NOTIFY cStateChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
+    Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
+    Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
+    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QQuickItem *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
+    Q_ENUMS(SocketState)
     Q_ENUMS(State)
+    Q_ENUMS(ConnectionError)
 
 public:
     explicit QHalRemoteComponent(QQuickItem *parent = 0);
     ~QHalRemoteComponent();
 
+    enum SocketState {
+        Down = 1,
+        Trying = 2,
+        Up = 3
+    };
+
     enum State {
-        STATE_DISCOVER = 0,
-        STATE_DOWN = 1,
-        STATE_TRYING = 2,
-        STATE_UP = 3
+        Disconnected = 0,
+        Connecting = 1,
+        Connected = 2,
+        Error = 3
+    };
+
+    enum ConnectionError {
+        NoError = 0,
+        BindError = 1,
+        PinChangeError = 2,
+        CommandError = 3,
+        TimeoutError = 4,
+        SocketError = 5
     };
 
     virtual void componentComplete();
@@ -91,16 +109,6 @@ public:
         return m_synced;
     }
 
-    State sState() const
-    {
-        return m_sState;
-    }
-
-    State cState() const
-    {
-        return m_cState;
-    }
-
     bool ready() const
     {
         return m_ready;
@@ -109,6 +117,21 @@ public:
     QQuickItem *containerItem() const
     {
         return m_containerItem;
+    }
+
+    State connectionState() const
+    {
+        return m_connectionState;
+    }
+
+    ConnectionError error() const
+    {
+        return m_error;
+    }
+
+    QString errorString() const
+    {
+        return m_errorString;
     }
 
 public slots:
@@ -158,32 +181,39 @@ public slots:
     }
 
 private:
-    QString m_cmdUri;
-    QString m_updateUri;
-    QString m_name;
-    int m_heartbeatPeriod;
-    bool m_synced;
-    State m_sState;
-    State m_cState;
-    bool m_ready;
-    QQuickItem *m_containerItem;
+    QString     m_cmdUri;
+    QString     m_updateUri;
+    QString     m_name;
+    int         m_heartbeatPeriod;
+    bool        m_synced;
+    SocketState m_sState;
+    SocketState m_cState;
+    State       m_connectionState;
+    ConnectionError       m_error;
+    QString     m_errorString;
+    bool        m_ready;
+    QQuickItem  *m_containerItem;
+    bool        m_componentCompleted;
 
     ZMQContext *m_context;
     ZMQSocket  *m_updateSocket;
     ZMQSocket  *m_cmdSocket;
-    int         m_instanceCount;
+    QTimer      *m_heartbeatTimer;
     int         m_pingOutstanding;
     // more efficient to reuse a protobuf Message
-    pb::Container m_rx;
-    pb::Container m_tx;
+    pb::Container   m_rx;
+    pb::Container   m_tx;
     QMap<QString, QHalPin*> m_pinsByName;
-    QHash<int, QHalPin*> m_pinsByHandle;
-    QTimer      *m_heartbeatTimer;
-    bool m_componentCompleted;
+    QHash<int, QHalPin*>    m_pinsByHandle;
+
 
     QObjectList recurseObjects(const QObjectList &list);
     void start();
     void stop();
+    void startHeartbeat();
+    void stopHeartbeat();
+    void updateState(State state);
+    void updateError(ConnectionError error, QString errorString);
 
 private slots:
     void updateMessageReceived(QList<QByteArray> messageList);
@@ -197,16 +227,16 @@ private slots:
     void bind();
 
 signals:
-void cmdUriChanged(QString arg);
-void updateUriChanged(QString arg);
-void nameChanged(QString arg);
-void heartbeatPeriodChanged(int arg);
-void syncedChanged(bool arg);
-void protocolError(QStringList notes);
-void sStateChanged(State arg);
-void cStateChanged(State arg);
-void readyChanged(bool arg);
-void containerItemChanged(QQuickItem *arg);
+    void cmdUriChanged(QString arg);
+    void updateUriChanged(QString arg);
+    void nameChanged(QString arg);
+    void heartbeatPeriodChanged(int arg);
+    void syncedChanged(bool arg);
+    void readyChanged(bool arg);
+    void containerItemChanged(QQuickItem *arg);
+    void connectionStateChanged(State arg);
+    void errorChanged(ConnectionError arg);
+    void errorStringChanged(QString arg);
 };
 
 #endif // QCOMPONENT_H

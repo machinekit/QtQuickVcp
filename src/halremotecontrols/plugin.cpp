@@ -31,13 +31,13 @@ static const struct {
     const char *type;
     int major, minor;
 } qmldir [] = {
+    { "ConnectionWindow", 1, 0 },
     { "HalApplicationWindow", 1, 0 },
     { "HalButton", 1, 0 },
     { "HalCheckBox", 1, 0 },
     { "HalColorPicker", 1, 0 },
     { "HalComboBox", 1, 0 },
     { "HalContainer", 1, 0 },
-    { "HalDiscoveryPage", 1, 0 },
     { "HalGauge", 1, 0 },
     { "HalLabel", 1, 0 },
     { "HalLed", 1, 0 },

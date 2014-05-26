@@ -19,28 +19,27 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qappconfig.h"
+#include "qapplicationconfig.h"
 
-QAppConfig::QAppConfig(QQuickItem *parent) :
+QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
     QQuickItem(parent)
 {
     m_componentCompleted = false;
     m_uri = "";
     m_ready = false;
     m_configSocket = NULL;
+    m_context = NULL;
 
-    m_context = createDefaultContext(this);
-
-    m_selectedConfig = new QAppConfigItem(this);
+    m_selectedConfig = new QApplicationConfigItem(this);
 }
 
-QAppConfig::~QAppConfig()
+QApplicationConfig::~QApplicationConfig()
 {
     disconnectSocket();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
-void QAppConfig::componentComplete()
+void QApplicationConfig::componentComplete()
 {
     m_componentCompleted = true;
 
@@ -51,32 +50,32 @@ void QAppConfig::componentComplete()
     QQuickItem::componentComplete();
 }
 
-QQmlListProperty<QAppConfigItem> QAppConfig::appConfigs()
+QQmlListProperty<QApplicationConfigItem> QApplicationConfig::appConfigs()
 {
-    return QQmlListProperty<QAppConfigItem>(this, m_appConfigs);
+    return QQmlListProperty<QApplicationConfigItem>(this, m_appConfigs);
 }
 
-int QAppConfig::appConfigCount() const
+int QApplicationConfig::appConfigCount() const
 {
     return m_appConfigs.count();
 }
 
-QAppConfigItem *QAppConfig::appConfig(int index) const
+QApplicationConfigItem *QApplicationConfig::appConfig(int index) const
 {
     return m_appConfigs.at(index);
 }
 
-QQmlListProperty<QAppConfigFilter> QAppConfig::filters()
+QQmlListProperty<QApplicationConfigFilter> QApplicationConfig::filters()
 {
-    return QQmlListProperty<QAppConfigFilter>(this, m_filters);
+    return QQmlListProperty<QApplicationConfigFilter>(this, m_filters);
 }
 
-int QAppConfig::filterCount() const
+int QApplicationConfig::filterCount() const
 {
     return m_filters.count();
 }
 
-QAppConfigFilter *QAppConfig::filter(int index) const
+QApplicationConfigFilter *QApplicationConfig::filter(int index) const
 {
     return m_filters.at(index);
 }
@@ -84,7 +83,7 @@ QAppConfigFilter *QAppConfig::filter(int index) const
 /** If the ready property has a rising edge we try to connect
  *  if it is has a falling edge we disconnect and cleanup
  */
-void QAppConfig::setReady(bool arg)
+void QApplicationConfig::setReady(bool arg)
 {
     if (m_ready != arg) {
         m_ready = arg;
@@ -106,11 +105,11 @@ void QAppConfig::setReady(bool arg)
     }
 }
 
-void QAppConfig::start()
+void QApplicationConfig::start()
 {
 #ifdef QT_DEBUG
     qDebug() << "app config uri:" << m_uri;
-    foreach (QAppConfigFilter* filter, m_filters)
+    foreach (QApplicationConfigFilter* filter, m_filters)
     {
         qDebug() << "filter:" << filter->type();
     }
@@ -118,18 +117,19 @@ void QAppConfig::start()
 
     connectSocket();
     m_appConfigs.clear();
-    emit appConfigsChanged(QQmlListProperty<QAppConfigItem>(this, m_appConfigs));
+    emit appConfigsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_appConfigs));
     request(pb::MT_LIST_APPLICATIONS);
 }
 
-void QAppConfig::stop()
+void QApplicationConfig::stop()
 {
     // cleanup here
     disconnectSocket();
 }
 
-void QAppConfig::connectSocket()
+void QApplicationConfig::connectSocket()
 {
+    m_context = createDefaultContext(this);
     m_context->start();
 
     m_configSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -142,7 +142,7 @@ void QAppConfig::connectSocket()
             this, SLOT(configMessageReceived(QList<QByteArray>)));
 }
 
-void QAppConfig::disconnectSocket()
+void QApplicationConfig::disconnectSocket()
 {
     if (m_configSocket != NULL)
     {
@@ -151,10 +151,15 @@ void QAppConfig::disconnectSocket()
         m_configSocket = NULL;
     }
 
-    m_context->stop();
+    if (m_context != NULL)
+    {
+        m_context->stop();
+        m_context->deleteLater();
+        m_context = NULL;
+    }
 }
 
-void QAppConfig::configMessageReceived(QList<QByteArray> messageList)
+void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
 {
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
@@ -172,18 +177,18 @@ void QAppConfig::configMessageReceived(QList<QByteArray> messageList)
 
             app = m_rx.app(i);
 
-            foreach (QAppConfigFilter *filter, m_filters)
+            foreach (QApplicationConfigFilter *filter, m_filters)
             {
                 if ((pb::ApplicationType)filter->type() == app.type())
                 {
-                    QAppConfigItem *appConfigItem;
+                    QApplicationConfigItem *appConfigItem;
 
-                    appConfigItem = new QAppConfigItem(this);
+                    appConfigItem = new QApplicationConfigItem(this);
                     appConfigItem->setName(QString::fromStdString(app.name()));
                     appConfigItem->setDescription(QString::fromStdString(app.description()));
-                    appConfigItem->setType((QAppConfigItem::ApplicationType)app.type());
+                    appConfigItem->setType((QApplicationConfigItem::ApplicationType)app.type());
                     m_appConfigs.append(appConfigItem);
-                    emit appConfigsChanged(QQmlListProperty<QAppConfigItem>(this, m_appConfigs));
+                    emit appConfigsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_appConfigs));
 
                     break;
                 }
@@ -198,7 +203,7 @@ void QAppConfig::configMessageReceived(QList<QByteArray> messageList)
 
             app = m_rx.app(i);
 
-            foreach (QAppConfigFilter *filter, m_filters)
+            foreach (QApplicationConfigFilter *filter, m_filters)
             {
                 if ((pb::ApplicationType)filter->type() == app.type())
                 {
@@ -213,7 +218,7 @@ void QAppConfig::configMessageReceived(QList<QByteArray> messageList)
 
                     m_selectedConfig->setName(QString::fromStdString(app.name()));
                     m_selectedConfig->setDescription(QString::fromStdString(app.description()));
-                    m_selectedConfig->setType((QAppConfigItem::ApplicationType)app.type());
+                    m_selectedConfig->setType((QApplicationConfigItem::ApplicationType)app.type());
 
                     baseFilePath = QDir::tempPath() + "/machinekit/" + m_selectedConfig->name() + "/";
                     if (!dir.mkpath(baseFilePath))
@@ -312,7 +317,7 @@ void QAppConfig::configMessageReceived(QList<QByteArray> messageList)
     }
 }
 
-void QAppConfig::request(pb::ContainerType type)
+void QApplicationConfig::request(pb::ContainerType type)
 {
     m_tx.set_type(type);
 
@@ -326,7 +331,7 @@ void QAppConfig::request(pb::ContainerType type)
     m_tx.Clear();
 }
 
-void QAppConfig::selectAppConfig(QString name)
+void QApplicationConfig::selectApplicationConfig(QString name)
 {
     m_selectedConfig->setLoaded(false);
 
@@ -336,7 +341,7 @@ void QAppConfig::selectAppConfig(QString name)
     request(pb::MT_RETRIEVE_APPLICATION);
 }
 
-void QAppConfig::unselectAppConfig()
+void QApplicationConfig::unselectApplicationConfig()
 {
     m_selectedConfig->setName("");
     m_selectedConfig->setDescription("");

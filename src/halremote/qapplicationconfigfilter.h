@@ -19,15 +19,42 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qappconfigitem.h"
+#ifndef QAPPCONFIGFILTER_H
+#define QAPPCONFIGFILTER_H
 
-QAppConfigItem::QAppConfigItem(QObject *parent) :
-    QObject(parent)
+#include <QObject>
+#include "qapplicationconfigitem.h"
+
+class QApplicationConfigFilter : public QObject
 {
-    m_name = "";
-    m_description = "";
-    m_type = QT5_QML;
-    m_webUri = "";
-    m_loaded = false;
-    m_mainFile = "";
-}
+    Q_OBJECT
+    Q_PROPERTY(QApplicationConfigItem::ApplicationType type READ type WRITE setType NOTIFY typeChanged)
+
+
+public:
+    explicit QApplicationConfigFilter(QObject *parent = 0);
+
+    QApplicationConfigItem::ApplicationType type() const
+    {
+        return m_type;
+    }
+
+public slots:
+
+    void setType(QApplicationConfigItem::ApplicationType arg)
+    {
+        if (m_type != arg) {
+            m_type = arg;
+            emit typeChanged(arg);
+        }
+    }
+
+private:
+    QApplicationConfigItem::ApplicationType m_type;
+
+signals:
+
+    void typeChanged(QApplicationConfigItem::ApplicationType arg);
+};
+
+#endif // QAPPCONFIGFILTER_H

@@ -21,13 +21,13 @@ RESOURCES += \
     halremotecontrols.qrc
 
 QML_FILES = \
+    ConnectionWindow.qml \
     HalApplicationWindow.qml \
     HalButton.qml \
     HalCheckBox.qml \
     HalColorPicker.qml \
     HalComboBox.qml \
     HalContainer.qml \
-    HalDiscoveryPage.qml \
     HalGauge.qml \
     HalLabel.qml \
     HalLed.qml \
@@ -71,3 +71,6 @@ QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/HalVirtualJoystickSpecifics.qml
 
 include(../deployment.pri)
+
+OTHER_FILES += \
+    ConnectionWindow.qml

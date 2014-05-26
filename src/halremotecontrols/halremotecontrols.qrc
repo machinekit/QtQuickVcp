@@ -3,7 +3,6 @@
         <file>HalApplicationWindow.qml</file>
         <file>HalButton.qml</file>
         <file>HalColorPicker.qml</file>
-        <file>HalDiscoveryPage.qml</file>
         <file>HalGauge.qml</file>
         <file>HalLed.qml</file>
         <file>HalLogChart.qml</file>
@@ -16,5 +15,6 @@
         <file>HalSpinBox.qml</file>
         <file>HalLabel.qml</file>
         <file>HalContainer.qml</file>
+        <file>ConnectionWindow.qml</file>
     </qresource>
 </RCC>

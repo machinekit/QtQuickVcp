@@ -20,6 +20,8 @@
 **
 ****************************************************************************/
 import QtQuick 2.0
+import QtQuick.Controls 1.1
+import QtQuick.Window 2.0
 import Machinekit.HalRemote 1.0
 import Machinekit.HalRemote.Controls 1.0
 
@@ -96,7 +98,7 @@ Rectangle {
     */
     property list<Service> internalServices: [
         Service {
-            id: halrcompService
+            id: rcompService
             type: "halrcomp"
             minVersion: 0
         },
@@ -118,15 +120,92 @@ Rectangle {
         colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
     }
 
-    HalDiscoveryPage {
+    Text {
+        id: dummyText
+    }
+
+    Rectangle {
         id: discoveryPage
 
         anchors.fill: parent
         visible: false
         z: 100
-        remoteComponent: remoteComponent
-        halrcompService: halrcompService
-        rcommandService: rcommandService
+        color: systemPalette.window
+
+
+        Label {
+            id: disconnectedLabel
+
+            visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: Screen.logicalPixelDensity * 2
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            font.pixelSize: dummyText.font.pixelSize * 1.5
+            text: qsTr("Application not connected.")
+        }
+
+        BusyIndicator {
+            id: connectingIndicator
+
+            visible: (remoteComponent.connectionState === HalRemoteComponent.Connecting)
+            anchors.centerIn: parent
+            running: true
+            height: parent.height * 0.15
+            width: height
+        }
+
+        CheckBox {
+            id: rcompCheck
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: connectingIndicator.bottom
+            enabled: false
+            visible: connectingIndicator.visible
+            text: qsTr("RComp service connected")
+            checked: rcompService.ready
+        }
+
+        CheckBox {
+            id: rcommandCheck
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: rcompCheck.bottom
+            enabled: false
+            visible: connectingIndicator.visible
+            text: qsTr("RCommand service connected")
+            checked: rcommandService.ready
+        }
+
+        Label {
+            id: errorLabel
+
+            visible: (remoteComponent.connectionState === HalRemoteComponent.Error)
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: Screen.logicalPixelDensity * 2
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            font.pixelSize: dummyText.font.pixelSize * 1.5
+            text: {
+                var headerText
+
+                switch (remoteComponent.error)
+                {
+                case HalRemoteComponent.BindError: headerText = qsTr("Bind rejected error:"); break;
+                case HalRemoteComponent.PinChange: headerText = qsTr("Pin change rejected error:"); break;
+                case HalRemoteComponent.CommandError: headerText = qsTr("Command error:"); break;
+                case HalRemoteComponent.TimeoutError: headerText = qsTr("Timeout error:"); break;
+                case HalRemoteComponent.SocketError: headerText = qsTr("Socket error:"); break;
+                default: headerText = qsTr("No error")
+                }
+
+                return headerText + "\n" + remoteComponent.errorString
+            }
+        }
     }
 
     /* This timer is a workaround to make the discoveryPage invisible in QML designer */
@@ -137,7 +216,7 @@ Rectangle {
         onTriggered: discoveryPage.visible = true
     }
 
-    state: remoteComponent.ready?"connected":"discovery"
+    state: (remoteComponent.connectionState === HalRemoteComponent.Connected) ?"connected":"discovery"
 
     states: [
         State {
@@ -159,9 +238,9 @@ Rectangle {
 
         name: main.name
         cmdUri: rcommandService.uri
-        updateUri: halrcompService.uri
+        updateUri: rcompService.uri
         heartbeatPeriod: 3000
-        ready: main.autoDiscover?(halrcompService.ready && rcommandService.ready):main.ready
+        ready: main.autoDiscover ? (rcompService.ready && rcommandService.ready) : main.ready
         containerItem: parent
     }
 }
