@@ -1,5 +1,6 @@
 # Build machinetalk protobuf files with dependencies
 machinetalk-protobuf.commands = $(MAKE) all -C $$PWD/machinetalk-protobuf CXXGEN=$$OUT_PWD/generated PYGEN=$$OUT_PWD/python OBJDIR=$$OUT_PWD/objects
+machinetalk-protobuf.CONFIG += no_link no_clean
 !isEmpty(PROTOBUF_INCLUDE_PATH): machinetalk-protobuf.commands += GPBINCLUDE=$$PROTOBUF_INCLUDE_PATH
 !isEmpty(PROTOBUF_PROTOC): machinetalk-protobuf.commands += PROTOC=$$PROTOBUF_PROTOC
 ios: machinetalk-protobuf.commands += ios_replace
