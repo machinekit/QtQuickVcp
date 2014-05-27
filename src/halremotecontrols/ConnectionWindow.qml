@@ -372,7 +372,7 @@ Rectangle {
         id: applicationConfig
         ready: false
         uri: configService.uri
-        filters: [ ApplicationConfigFilter { type: ApplicationConfigItem.QT5_QML } ]
+        filters: [ ApplicationConfigFilter { type: ApplicationConfigItem.Qt5QmlApplication } ]
     }
 
     ServiceDiscovery {
