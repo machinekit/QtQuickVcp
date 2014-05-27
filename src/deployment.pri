@@ -26,29 +26,34 @@ copyqmlpropertyeditor.CONFIG += no_link no_clean
 copyqmlpropertyeditor.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmlpropertyeditor
 
-QMAKE_POST_LINK += $$dirname(QMAKE_QMAKE)/qmlplugindump "$$uri $$PLUGIN_VERSION $$OUT_PWD/../../imports/ > $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes"
+!android: !ios: {
+    QMAKE_POST_LINK += $$dirname(QMAKE_QMAKE)/qmlplugindump "$$uri $$PLUGIN_VERSION $$OUT_PWD/../../imports/ > $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes"
+}
 
 QMAKE_CLEAN += -r $$OUT_PWD/../../imports/$$TARGETPATH/
 
 # ========== install additional files ==========
-
-copypluginqmltypes.CONFIG = no_files no_path
-copypluginqmltypes.extra = $$QMAKE_COPY $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes $$[QT_INSTALL_QML]/$$TARGETPATH/plugins.qmltypes
+!android: !ios: {
+    copypluginqmltypes.CONFIG = no_files no_path
+    copypluginqmltypes.extra = $$QMAKE_COPY $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes $$[QT_INSTALL_QML]/$$TARGETPATH/plugins.qmltypes
+    INSTALLS += copypluginqmltypes
+}
 
 copyqmlinfra_install.files = $$QML_INFRA_FILES
 copyqmlinfra_install.path = $$[QT_INSTALL_QML]/$$TARGETPATH
+INSTALLS += copyqmlinfra_install
 
 copyqmldesigner_install.files = $$QML_DESIGNER_FILES
 copyqmldesigner_install.path = $$[QT_INSTALL_QML]/$$TARGETPATH
+INSTALLS += copyqmldesigner_install
 
 copyqmlpropertyeditor_install.files = $$QML_PROPERTY_EDITOR_FILES
 copyqmlpropertyeditor_install.path = $$QTCREATOR_INSTALL_DIR/share/qtcreator/qmldesigner/propertyEditorQmlSources/$$TARGETPATH
+INSTALLS += copyqmlpropertyeditor_install
 
 target.path = $$[QT_INSTALL_QML]/$$TARGETPATH
 
-INSTALLS += copypluginqmltypes copyqmlinfra_install copyqmldesigner_install copyqmlpropertyeditor_install target
+INSTALLS += target
 
 
-OTHER_FILES += $$QML_PLUGINQMLTYPES_FILES $$QML_INFRA_FILES $$QML_DESIGNER_FILES $$QML_PROPERTY_EDITOR_FILES
-
-
+OTHER_FILES += $$QML_INFRA_FILES $$QML_DESIGNER_FILES $$QML_PROPERTY_EDITOR_FILES
