@@ -108,6 +108,7 @@ void setUri(QString arg)
 void setReady(bool arg);
 
 private:
+    bool        m_componentCompleted;
     StreamBufferItem m_currentStreamBufferItem;
     QQueue<StreamBufferItem> m_streamBuffer;
     QImage      m_frameImg;
@@ -116,15 +117,14 @@ private:
     ZMQContext *m_context;
     ZMQSocket  *m_updateSocket;
     pb::Package m_rx; // more efficient to reuse a protobuf Message
-    bool        m_componentCompleted;
+
 
     QString m_url;
-    bool m_running;
-    int m_fps;
-    int m_frameCount;
-    double m_timestamp;
-
-    QTime m_time;
+    bool    m_running;
+    int     m_fps;
+    int     m_frameCount;
+    double  m_timestamp;
+    QTime   m_time;
 
 private slots:
     void start();

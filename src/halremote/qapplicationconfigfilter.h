@@ -30,7 +30,6 @@ class QApplicationConfigFilter : public QObject
     Q_OBJECT
     Q_PROPERTY(QApplicationConfigItem::ApplicationType type READ type WRITE setType NOTIFY typeChanged)
 
-
 public:
     explicit QApplicationConfigFilter(QObject *parent = 0);
 

@@ -22,6 +22,7 @@
 #include "qapplicationconfigfilter.h"
 
 QApplicationConfigFilter::QApplicationConfigFilter(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_type(QApplicationConfigItem::Qt5QmlApplication)
 {
 }

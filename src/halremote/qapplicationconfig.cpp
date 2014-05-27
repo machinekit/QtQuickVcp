@@ -22,15 +22,14 @@
 #include "qapplicationconfig.h"
 
 QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
-    QQuickItem(parent)
+    QQuickItem(parent),
+     m_componentCompleted(false),
+     m_uri(""),
+     m_ready(false),
+     m_selectedConfig(new QApplicationConfigItem(this)),
+     m_context(NULL),
+     m_configSocket(NULL)
 {
-    m_componentCompleted = false;
-    m_uri = "";
-    m_ready = false;
-    m_configSocket = NULL;
-    m_context = NULL;
-
-    m_selectedConfig = new QApplicationConfigItem(this);
 }
 
 QApplicationConfig::~QApplicationConfig()

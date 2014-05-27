@@ -32,26 +32,25 @@
 */
 /** Remote HAL Component implementation for use with C++ and QML */
 QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
-    QQuickItem(parent)
+    QQuickItem(parent),
+    m_cmdUri(""),
+    m_updateUri(""),
+    m_name("default"),
+    m_heartbeatPeriod(3000),
+    m_synced(false),
+    m_sState(Down),
+    m_cState(Down),
+    m_connectionState(Disconnected),
+    m_error(NoError),
+    m_errorString(""),
+    m_ready(false),
+    m_containerItem(NULL),
+    m_componentCompleted(false),
+    m_context(NULL),
+    m_updateSocket(NULL),
+    m_cmdSocket(NULL),
+    m_heartbeatTimer(new QTimer(this))
 {
-    m_componentCompleted = false;
-    m_updateSocket = NULL;
-    m_cmdSocket = NULL;
-    m_heartbeatPeriod = 3000;
-    m_name = "Default";
-    m_synced = false;
-    m_sState = Down;
-    m_cState = Down;
-    m_connectionState = Disconnected;
-    m_error = NoError;
-    m_errorString = "";
-    m_ready = false;
-    m_containerItem = NULL;
-    m_cmdSocket = NULL;
-    m_updateSocket = NULL;
-    m_context = NULL;
-
-    m_heartbeatTimer = new QTimer(this);
     connect(m_heartbeatTimer, SIGNAL(timeout()),
             this, SLOT(hearbeatTimerTick()));
 }

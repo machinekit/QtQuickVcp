@@ -22,12 +22,14 @@
 #include "qapplicationconfigitem.h"
 
 QApplicationConfigItem::QApplicationConfigItem(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_name(""),
+    m_description(""),
+    m_type(Qt5QmlApplication),
+    m_webUri(""),
+    m_loaded(false),
+    m_files(QStringList()),
+    m_mainFile("")
 {
-    m_name = "";
-    m_description = "";
-    m_type = QT5_QML;
-    m_webUri = "";
-    m_loaded = false;
-    m_mainFile = "";
+
 }

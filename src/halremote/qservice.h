@@ -115,6 +115,7 @@ public slots:
 
 private:
     QString m_uri;
+    QString m_uuid;
     int m_version;
     bool m_ready;
     int m_minVersion;
@@ -122,10 +123,6 @@ private:
     QString m_name;
     QServiceDiscoveryFilter *m_filter;
     QList<QServiceDiscoveryItem*> m_serviceDiscoveryItems;
-
-
-
-    QString m_uuid;
 
 signals:
     void uriChanged(QString arg);

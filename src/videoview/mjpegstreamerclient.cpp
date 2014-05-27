@@ -22,27 +22,27 @@
 #include "mjpegstreamerclient.h"
 
 MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
-    QQuickPaintedItem(parent)
+    QQuickPaintedItem(parent),
+    m_componentCompleted(false),
+    m_framerateTimer(new QTimer(this)),
+    m_streamBufferTimer(new QTimer(this)),
+    m_context(NULL),
+    m_updateSocket(NULL),
+    m_url(""),
+    m_running(false),
+    m_fps(0.0),
+    m_frameCount(0),
+    m_timestamp(0.0),
+    m_time(QTime())
 {
     this->setRenderTarget(QQuickPaintedItem::FramebufferObject);
     this->setPerformanceHint(QQuickPaintedItem::FastFBOResizing, true);
     this->setAntialiasing(false);
 
-    m_url = "";
-    m_fps = 0.0;
-    m_running = false;
-    m_frameCount = 0;
-    m_timestamp = 0.0;
-    m_componentCompleted = false;
-    m_updateSocket = NULL;
-    m_context = NULL;
-
-    m_framerateTimer = new QTimer(this);
     connect(m_framerateTimer, SIGNAL(timeout()),
             this, SLOT(updateFramerate()));
     m_framerateTimer->setInterval(1000);
 
-    m_streamBufferTimer = new QTimer(this);
     connect(m_streamBufferTimer, SIGNAL(timeout()),
             this, SLOT(updateStreamBuffer()));
     m_streamBufferTimer->setSingleShot(true);

@@ -22,7 +22,7 @@
 #include "qservicediscoveryfilter.h"
 
 QServiceDiscoveryFilter::QServiceDiscoveryFilter(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_name("")
 {
-    m_name = "";
 }

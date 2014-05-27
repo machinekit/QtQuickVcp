@@ -22,14 +22,16 @@
 #include "qservice.h"
 
 QService::QService(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_uri(""),
+    m_uuid(""),
+    m_version(0),
+    m_ready(false),
+    m_minVersion(0),
+    m_type(""),
+    m_name(""),
+    m_filter(new QServiceDiscoveryFilter(this))
 {
-    m_uri = "";
-    m_uuid = "";
-    m_version = 0;
-    m_minVersion = 0;
-    m_ready = false;
-    m_filter = new QServiceDiscoveryFilter(this);
 }
 
 QQmlListProperty<QServiceDiscoveryItem> QService::serviceDiscoveryItems()

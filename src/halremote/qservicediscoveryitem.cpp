@@ -29,6 +29,8 @@ QServiceDiscoveryItem::QServiceDiscoveryItem(QQuickItem *parent) :
     m_uuid(""),
     m_port(0),
     m_hostAddress(QHostAddress()),
+    m_expiryDate(QDateTime()),
+    m_txtRecords(QStringList()),
     m_outstandingRequests(0)
 {
 }

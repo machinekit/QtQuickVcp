@@ -91,10 +91,11 @@ signals:
     void filterChanged(QServiceDiscoveryFilter *arg);
 
 private:
+    bool m_componentCompleted;
     QString m_regType;
+    QString m_domain;
     bool m_running;
     bool m_networkOpen;
-    QString m_domain;
     QServiceDiscoveryFilter *m_filter;
     QList<QServiceList*> m_serviceLists;
 
@@ -109,8 +110,6 @@ private:
     QMap<QString, QList<QServiceDiscoveryItem*> > m_serviceTypeMap;
     QMap<int, QString> m_queryServiceMap;
     QTimer *m_expiryCheckTimer;
-
-    bool m_componentCompleted;
 
     void initializeNetworkSession();
     void startQueries();

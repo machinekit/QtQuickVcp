@@ -104,9 +104,11 @@ public slots:
     }
 
 private:
+    bool    m_componentCompleted;
     QString m_uri;
-    bool m_ready;
-    QApplicationConfigItem * m_selectedConfig;
+    bool    m_ready;
+
+    QApplicationConfigItem *m_selectedConfig;
     QList<QApplicationConfigItem*> m_appConfigs;
     QList<QApplicationConfigFilter*> m_filters;
 
@@ -115,8 +117,6 @@ private:
     // more efficient to reuse a protobuf Message
     pb::Container m_rx;
     pb::Container m_tx;
-
-    bool m_componentCompleted;
 
     void start();
     void stop();

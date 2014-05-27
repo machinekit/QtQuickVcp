@@ -22,20 +22,20 @@
 #include "qservicediscovery.h"
 
 QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
-    QQuickItem(parent)
+    QQuickItem(parent),
+    m_componentCompleted(false),
+    m_regType("machinekit"),
+    m_domain("local"),
+    m_running(false),
+    m_networkOpen(false),
+    m_filter(new QServiceDiscoveryFilter(this)),
+    m_networkSession(NULL),
+    m_networkConfigManager(NULL),
+    m_networkConfigTimer(new QTimer(this)),
+    m_elapsedTimer(QElapsedTimer()),
+    m_jdns(NULL),
+    m_expiryCheckTimer(new QTimer(this))
 {
-    m_componentCompleted = false;
-    m_networkOpen = false;
-    m_regType = "machinekit";
-    m_domain = "local";
-    m_filter = new QServiceDiscoveryFilter(this);
-    m_jdns = NULL;
-    m_networkSession = NULL;
-
-    m_elapsedTimer = QElapsedTimer();
-    m_elapsedTimer.start();
-
-    m_expiryCheckTimer = new QTimer(this);
     connect(m_expiryCheckTimer, SIGNAL(timeout()),
             this, SLOT(expiryCheck()));
     m_expiryCheckTimer->setInterval(60000); // check every 60s
@@ -59,7 +59,6 @@ void QServiceDiscovery::initializeNetworkSession()
             this, SLOT(openNetworkSession()));
     m_networkConfigManager->updateConfigurations();
     // update the connections cyclically
-    m_networkConfigTimer = new QTimer(this);
     m_networkConfigTimer->setInterval(5000);
     connect(m_networkConfigTimer, SIGNAL(timeout()),
             this, SLOT(updateNetConfig()));

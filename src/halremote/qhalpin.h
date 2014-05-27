@@ -141,13 +141,12 @@ void setEnabled(bool arg)
 }
 
 private:
-    QString m_name;
-    ValueType m_type;
+    QString         m_name;
+    ValueType       m_type;
     HalPinDirection m_direction;
-    QVariant m_value;
-
-    int m_handle;
-    bool m_enabled;
+    QVariant        m_value;
+    int             m_handle;
+    bool            m_enabled;
 };
 
 
