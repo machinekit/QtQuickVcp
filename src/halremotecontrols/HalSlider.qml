@@ -131,8 +131,8 @@ Slider {
     Text {
         id: valueText
 
-        x: (main.orientation === Qt.Horizontal) ? (parent.width - width) * (main.value/main.maximumValue) : ((main.textInverted == false) ? -width - Screen.pixelDensity : parent.width)
-        y: (main.orientation === Qt.Horizontal) ? ((main.textInverted == false) ? parent.height : -height) : (parent.height - height) * (1 - main.value/main.maximumValue)
+        x: (main.orientation === Qt.Horizontal) ? (parent.width - width) * ((main.value - main.minimumValue)/(main.maximumValue - main.minimumValue)) : ((main.textInverted == false) ? -width - Screen.logicalPixelDensity : parent.width)
+        y: (main.orientation === Qt.Horizontal) ? ((main.textInverted == false) ? parent.height : -height) : (parent.height - height) * (1 - ((main.value - main.minimumValue)/(main.maximumValue - main.minimumValue)))
         horizontalAlignment: Text.AlignLeft
         text: main.prefix + main.value.toFixed(main.decimals) + main.suffix
     }
@@ -140,7 +140,7 @@ Slider {
     Text {
         id: minimumValueText
 
-        x: (main.orientation == Qt.Horizontal) ? 0 : ((main.textInverted == false) ? parent.width : -width - Screen.pixelDensity)
+        x: (main.orientation == Qt.Horizontal) ? 0 : ((main.textInverted == false) ? parent.width : -width - Screen.logicalPixelDensity)
         y: (main.orientation == Qt.Horizontal) ? ((main.textInverted == false) ? -height : parent.height) : main.height-height
         text: main.prefix + main.minimumValue.toFixed(main.decimals) + main.suffix
     }
@@ -148,7 +148,7 @@ Slider {
     Text {
         id: maximumValueText
 
-        x: (main.orientation == Qt.Horizontal) ? parent.width-width : ((main.textInverted == false) ? parent.width : -width - Screen.pixelDensity)
+        x: (main.orientation == Qt.Horizontal) ? parent.width-width : ((main.textInverted == false) ? parent.width : -width - Screen.logicalPixelDensity)
         y: (main.orientation == Qt.Horizontal) ? ((main.textInverted == false) ? -height : main.height) : 0
         text: main.prefix + main.maximumValue.toFixed(main.decimals) + main.suffix
     }
