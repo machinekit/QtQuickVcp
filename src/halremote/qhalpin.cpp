@@ -113,6 +113,12 @@
     The default value is \c{true}.
 */
 
+/*! \qmlproperty bool HalPin::synced
+
+    This property holds whether the pin is synced or not. The value is
+    updated with the setValue function.
+*/
+
 QHalPin::QHalPin(QObject *parent) :
     QObject(parent),
     m_name("default"),
@@ -120,6 +126,7 @@ QHalPin::QHalPin(QObject *parent) :
     m_direction(Out),
     m_value(false),
     m_handle(0),
-    m_enabled(true)
+    m_enabled(true),
+    m_synced(false)
 {
 }

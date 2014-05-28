@@ -35,6 +35,7 @@ class QHalPin : public QObject
     Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(int handle READ handle WRITE setHandle NOTIFY handleChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
     Q_ENUMS(ValueType)
     Q_ENUMS(HalPinDirection)
 
@@ -84,6 +85,11 @@ public:
         return m_enabled;
     }
 
+    bool synced() const
+    {
+        return m_synced;
+    }
+
 signals:
 
     void nameChanged(QString arg);
@@ -92,6 +98,7 @@ signals:
     void valueChanged(QVariant arg);
     void handleChanged(int arg);
     void enabledChanged(bool arg);
+    void syncedChanged(bool arg);
 
 public slots:
 
@@ -116,11 +123,16 @@ void setDirection(HalPinDirection arg)
         emit directionChanged(arg);
     }
 }
-void setValue(QVariant arg)
+void setValue(QVariant arg, bool synced = false)
 {
     if (m_value != arg) {
         m_value = arg;
         emit valueChanged(arg);
+    }
+
+    if (m_synced != synced) {
+        m_synced = synced;
+        emit syncedChanged(synced);
     }
 }
 
@@ -147,6 +159,7 @@ private:
     QVariant        m_value;
     int             m_handle;
     bool            m_enabled;
+    bool m_synced;
 };
 
 

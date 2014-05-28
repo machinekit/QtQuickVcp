@@ -214,19 +214,19 @@ void QHalRemoteComponent::pinUpdate(pb::Pin remotePin, QHalPin *localPin)
 
     if (remotePin.has_halfloat())
     {
-        localPin->setValue(QVariant(remotePin.halfloat()));
+        localPin->setValue(QVariant(remotePin.halfloat()), true);
     }
     else if (remotePin.has_halbit())
     {
-        localPin->setValue(QVariant(remotePin.halbit()));
+        localPin->setValue(QVariant(remotePin.halbit()), true);
     }
     else if (remotePin.has_hals32())
     {
-        localPin->setValue(QVariant(remotePin.hals32()));
+        localPin->setValue(QVariant(remotePin.hals32()), true);
     }
     else if (remotePin.has_halu32())
     {
-        localPin->setValue(QVariant(remotePin.halu32()));
+        localPin->setValue(QVariant(remotePin.halu32()), true);
     }
 }
 
