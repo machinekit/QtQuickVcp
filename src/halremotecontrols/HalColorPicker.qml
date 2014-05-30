@@ -20,7 +20,9 @@
 **
 ****************************************************************************/
 import QtQuick 2.0
-import Machinekit.Controls 1.0
+import QtQuick.Controls 1.1
+import QtQuick.Window 2.0
+import Machinekit.Controls 1.1
 import Machinekit.HalRemote 1.0
 import Machinekit.HalRemote.Controls 1.0
 
@@ -145,6 +147,22 @@ ColorPicker {
         name: main.name + ".v"
         type: HalPin.Float
         direction: HalPin.Out
+    }
+
+    BusyIndicator {
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: Screen.logicalPixelDensity
+        height: Screen.logicalPixelDensity * 4
+        width: height
+        running: true
+        visible: !(pinR.synced
+                 && pinG.synced
+                 && pinB.synced
+                 && pinA.synced
+                 && pinH.synced
+                 && pinS.synced
+                 && pinV.synced)
     }
 
     Binding { target: pinR; property: "value"; value: parseInt(main.colorValue.toString().substr(1, 2), 16)}

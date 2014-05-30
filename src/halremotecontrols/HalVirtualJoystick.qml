@@ -20,6 +20,8 @@
 **
 ****************************************************************************/
 import QtQuick 2.1
+import QtQuick.Controls 1.1
+import QtQuick.Window 2.0
 import Machinekit.HalRemote 1.0
 import Machinekit.Controls 1.0
 import Machinekit.HalRemote.Controls 1.0
@@ -79,6 +81,16 @@ VirtualJoystick {
         name: main.name + ".y"
         type: HalPin.Float
         direction: HalPin.Out
+    }
+
+    BusyIndicator {
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: Screen.logicalPixelDensity
+        height: Screen.logicalPixelDensity * 4
+        width: height
+        running: true
+        visible: !pinX.synced || !pinY.synced
     }
 
     Binding { target: pinX; property: "value"; value: main.xValue}

@@ -21,6 +21,7 @@
 ****************************************************************************/
 import QtQuick 2.0
 import QtQuick.Controls 1.1
+import QtQuick.Window 2.0
 import Machinekit.HalRemote 1.0
 import Machinekit.HalRemote.Controls 1.0
 
@@ -72,6 +73,16 @@ SpinBox {
         name: main.name
         type: HalPin.Float
         direction: HalPin.Out
+    }
+
+    BusyIndicator {
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: Screen.logicalPixelDensity
+        height: Screen.logicalPixelDensity * 4
+        width: height
+        running: true
+        visible: !pin.synced
     }
 
     Binding { target: main; property: "currentIndex"; value: pin.value}

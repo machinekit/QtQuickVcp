@@ -21,6 +21,7 @@
 ****************************************************************************/
 import QtQuick 2.1
 import QtQuick.Controls 1.1
+import QtQuick.Window 2.0
 import Machinekit.HalRemote 1.0
 import Machinekit.HalRemote.Controls 1.0
 
@@ -65,6 +66,16 @@ RadioButton {
         name: main.name
         type: HalPin.Bit
         direction: HalPin.In
+    }
+
+    BusyIndicator {
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: Screen.logicalPixelDensity
+        height: Screen.logicalPixelDensity * 4
+        width: height
+        running: true
+        visible: !pin.synced
     }
 
     Binding { target: main; property: "checked"; value: pin.value}
