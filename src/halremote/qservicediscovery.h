@@ -110,6 +110,7 @@ private:
     QMap<QString, QList<QServiceDiscoveryItem*> > m_serviceTypeMap;
     QMap<int, QString> m_queryServiceMap;
     QTimer *m_expiryCheckTimer;
+    bool m_delayedInitRunning;
 
     void initializeNetworkSession();
     void startQueries();

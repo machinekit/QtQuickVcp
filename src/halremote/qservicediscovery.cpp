@@ -34,7 +34,8 @@ QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     m_networkConfigTimer(new QTimer(this)),
     m_elapsedTimer(QElapsedTimer()),
     m_jdns(NULL),
-    m_expiryCheckTimer(new QTimer(this))
+    m_expiryCheckTimer(new QTimer(this)),
+    m_delayedInitRunning(false)
 {
     connect(m_expiryCheckTimer, SIGNAL(timeout()),
             this, SLOT(expiryCheck()));
@@ -45,6 +46,7 @@ QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
 void QServiceDiscovery::componentComplete()
 {
     m_componentCompleted = true;
+    m_elapsedTimer.start();
 
     initializeNetworkSession();
 
@@ -77,6 +79,7 @@ void QServiceDiscovery::initializeMdns()
 #endif
     m_jdns = new QJDns(this);
 
+
     connect(m_jdns, SIGNAL(resultsReady(int,QJDns::Response)),
             this, SLOT(resultsReady(int,QJDns::Response)));
     connect(m_jdns, SIGNAL(error(int,QJDns::Error)),
@@ -92,6 +95,8 @@ void QServiceDiscovery::initializeMdns()
 
     emit networkOpenChanged(m_networkOpen);
     m_expiryCheckTimer->start();
+
+    m_delayedInitRunning = false;
 }
 
 void QServiceDiscovery::deinitializeMdns()
@@ -118,9 +123,15 @@ void QServiceDiscovery::deinitializeMdns()
 
 void QServiceDiscovery::delayedInit()
 {
+    if (m_delayedInitRunning)
+    {
+        return;
+    }
+    m_delayedInitRunning = true;
+
     // for some reason there needs to be a delay if the network is initialized after the app was started
     // if the network comes up 500 msecs or less after the application has started skip the delay
-    if (m_elapsedTimer.elapsed() > 500)
+    if (m_elapsedTimer.hasExpired(1000))
     {
         QTimer::singleShot(2000, this, SLOT(initializeMdns()));
     }
@@ -522,14 +533,15 @@ void QServiceDiscovery::clearItems(QString type)
         return;
     }
 
+    // delete all service discovery items
     for (int i = (serviceDiscoveryItems.count()-1); i >= 0; i--)
     {
         serviceDiscoveryItems.at(i)->deleteLater();
         serviceDiscoveryItems.removeAt(i);
     }
 
-    m_serviceTypeMap.insert(type, serviceDiscoveryItems);
-    //TODO update services
+    m_serviceTypeMap.insert(type, serviceDiscoveryItems);   // insert the empty list
+    updateServiceType(type);
 }
 
 QString QServiceDiscovery::composeSdString(QString type, QString domain)
