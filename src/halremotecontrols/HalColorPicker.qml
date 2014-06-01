@@ -22,7 +22,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
-import Machinekit.Controls 1.1
+import Machinekit.Controls 1.0
 import Machinekit.HalRemote 1.0
 import Machinekit.HalRemote.Controls 1.0
 
