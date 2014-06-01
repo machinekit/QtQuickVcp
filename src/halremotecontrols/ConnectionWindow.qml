@@ -58,6 +58,7 @@ Rectangle {
             else
             {
                 console.log("selecting instance failed: check uri and uuid")
+                setError(qsTr("Instance Error:"), qsTr("Check uri and uuid"))
             }
         }
         else
@@ -71,6 +72,7 @@ Rectangle {
             else
             {
                 console.log("selecting instance failed: check uuid")
+                setError(qsTr("Instance Error:"), qsTr("Check uri and uuid"))
             }
         }
     }
@@ -120,6 +122,25 @@ Rectangle {
                 serviceDiscovery.updateServices()
             }
         }
+        else if (pageStack.state == "error")
+        {
+            clearError()
+            applicationConfig.ready = false
+            serviceDiscoveryFilter.txtRecords = []
+            serviceDiscovery.updateFilter()
+        }
+    }
+
+    function setError(errorType, errorText)
+    {
+        errorPage.errorType = errorType
+        errorPage.errorText = errorText
+        discoveryPage.errorActive = true
+    }
+
+    function clearError()
+    {
+        discoveryPage.errorActive = false
     }
 
     SystemPalette {
@@ -155,6 +176,7 @@ Rectangle {
 
         Item {
             property bool instanceSelected: false
+            property bool errorActive: false
 
             id: discoveryPage
 
@@ -300,19 +322,53 @@ Rectangle {
             }
         }
 
+        Item {
+            property string errorType: ""
+            property string errorText: ""
+
+            id: errorPage
+
+            anchors.fill: parent
+
+            Label {
+                id: errorLabel
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.margins: Screen.logicalPixelDensity * 2
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                font.pixelSize: dummyText.font.pixelSize * 1.5
+                text: errorPage.errorType + "\n" + errorPage.errorText
+            }
+        }
+
         state: {
             if (serviceDiscovery.networkOpen)
             {
-                if (localMode && discoveryPage.instanceSelected)
+                if (discoveryPage.errorActive)
+                {
+                    return "error"
+                }
+                else if (localMode && discoveryPage.instanceSelected)
                 {
                     return "loaded"
                 }
                 else if (applicationConfig.ready)
                 {
-                    return ((applicationLoader.active) ?"loaded":"config")
+                    if (applicationLoader.active)
+                    {
+                        return "loaded";
+                    }
+                    else
+                    {
+                        return "config"
+                    }
                 }
-
-                return "discovery"
+                else {
+                    return "discovery"
+                }
             }
             else
             {
@@ -327,6 +383,7 @@ Rectangle {
                 PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
             },
             State {
                 name: "discovery"
@@ -334,6 +391,7 @@ Rectangle {
                 PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
             },
             State {
                 name: "config"
@@ -341,6 +399,7 @@ Rectangle {
                 PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
             },
             State {
                 name: "loaded"
@@ -348,6 +407,15 @@ Rectangle {
                 PropertyChanges { target: viewPage; opacity: 1.0; z: 1; enabled: true }
                 PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
                 PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+            },
+            State {
+                name: "error"
+                PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+                PropertyChanges { target: errorPage; opacity: 1.0; z: 1; enabled: true }
             }
         ]
 
@@ -370,13 +438,21 @@ Rectangle {
 
     ApplicationConfig {
         id: applicationConfig
+
         ready: false
         uri: configService.uri
         filters: [ ApplicationConfigFilter { type: ApplicationConfigItem.Qt5QmlApplication } ]
+        onConnectionStateChanged: {
+            if (applicationConfig.connectionState === ApplicationConfig.Error)
+            {
+                setError(qsTr("Application Config Error:"), applicationConfig.errorString)
+            }
+        }
     }
 
     ServiceDiscovery {
         id: serviceDiscovery
+
         regType: "machinekit"
         domain: "local"
         running: true
