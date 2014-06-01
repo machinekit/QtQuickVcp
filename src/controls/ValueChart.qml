@@ -295,8 +295,8 @@ Item {
         width: parent.width
         anchors.top: rightText.bottom
         anchors.bottom: parent.bottom
-        renderTarget: Canvas.FramebufferObject
         antialiasing: true
+
         property int frames: first
         property int mouseX: 0
         property int mouseY: 0
@@ -448,8 +448,10 @@ Item {
             ctx.lineWidth = 1;
 
             drawBackground(ctx);
-            if (!valueModel.ready)
+
+            if (!valueModel.ready) {
                 return;
+            }
 
             last = valueModel.indexOf(chart.endTimestamp)
             first = valueModel.indexOf(chart.startTimestamp)
@@ -472,7 +474,6 @@ Item {
                 drawChange(ctx, first, last, positiveChangeColor, negativeChangeColor, points)
             drawHLine(ctx, canvas.height-(valueModel.targetValue-minimumValue)/(maximumValue-minimumValue)*canvas.height, hLineColor)
             drawValue(ctx, first, last, signalColor, points)
-
         }
     }
 }
