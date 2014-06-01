@@ -48,12 +48,28 @@ class QApplicationConfig : public QQuickItem
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
     Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
+    Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
+    Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
+    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QApplicationConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
     Q_PROPERTY(QQmlListProperty<QApplicationConfigItem> appConfigs READ appConfigs NOTIFY appConfigsChanged)
     Q_PROPERTY(QQmlListProperty<QApplicationConfigFilter> filters READ filters)
+    Q_ENUMS(State)
+    Q_ENUMS(ConnectionError)
 public:
     explicit QApplicationConfig(QQuickItem *parent = 0);
     ~QApplicationConfig();
+
+    enum State {
+        Disconnected = 0,
+        Connected = 1,
+        Error = 2
+    };
+
+    enum ConnectionError {
+        NoError = 0,
+        SocketError = 1
+    };
 
     virtual void componentComplete();
 
@@ -70,6 +86,21 @@ public:
     QApplicationConfigItem * selectedConfig() const
     {
         return m_selectedConfig;
+    }
+
+    State connectionState() const
+    {
+        return m_connectionState;
+    }
+
+    ConnectionError error() const
+    {
+        return m_error;
+    }
+
+    QString errorString() const
+    {
+        return m_errorString;
     }
 
     QQmlListProperty<QApplicationConfigItem> appConfigs();
@@ -107,6 +138,9 @@ private:
     bool    m_componentCompleted;
     QString m_uri;
     bool    m_ready;
+    State   m_connectionState;
+    ConnectionError m_error;
+    QString m_errorString;
 
     QApplicationConfigItem *m_selectedConfig;
     QList<QApplicationConfigItem*> m_appConfigs;
@@ -120,9 +154,11 @@ private:
 
     void start();
     void stop();
+    void updateState(State state);
+    void updateError(ConnectionError error, QString errorString);
 
 private slots:
-    void connectSocket();
+    bool connectSocket();
     void disconnectSocket();
     void configMessageReceived(QList<QByteArray> messageList);
     void request(pb::ContainerType type);
@@ -132,6 +168,9 @@ signals:
     void readyChanged(bool arg);
     void selectedConfigChanged(QApplicationConfigItem * arg);
     void appConfigsChanged(QQmlListProperty<QApplicationConfigItem> arg);
+    void connectionStateChanged(State arg);
+    void errorChanged(ConnectionError arg);
+    void errorStringChanged(QString arg);
 };
 
 #endif // QAPPCONFIG_H

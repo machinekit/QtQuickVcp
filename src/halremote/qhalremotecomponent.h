@@ -222,7 +222,7 @@ private slots:
 
     void addPins();
     void removePins();
-    void connectSockets();
+    bool connectSockets();
     void disconnectSockets();
     void bind();
 

@@ -114,7 +114,7 @@ void QHalRemoteComponent::removePins()
 }
 
 /** Connects the 0MQ sockets */
-void QHalRemoteComponent::connectSockets()
+bool QHalRemoteComponent::connectSockets()
 {
     m_context = createDefaultContext(this);
     m_context->start();
@@ -122,11 +122,22 @@ void QHalRemoteComponent::connectSockets()
     m_cmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
     m_cmdSocket->setLinger(0);
     m_cmdSocket->setIdentity(QString("%1-%2").arg(m_name).arg(QCoreApplication::applicationPid()).toLocal8Bit());
-    m_cmdSocket->connectTo(m_cmdUri);
+
 
     m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
     m_updateSocket->setLinger(0);
-    m_updateSocket->connectTo(m_updateUri);
+
+    try {
+        m_cmdSocket->connectTo(m_cmdUri);
+        m_updateSocket->connectTo(m_updateUri);
+    }
+    catch (zmq::error_t e) {
+        QString errorString;
+        errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
+        updateError(SocketError, errorString);
+        updateState(Error);
+        return false;
+    }
 
     connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
             this, SLOT(updateMessageReceived(QList<QByteArray>)));
@@ -136,6 +147,8 @@ void QHalRemoteComponent::connectSockets()
 #ifdef QT_DEBUG
     qDebug() << "sockets connected" << m_updateUri << m_cmdUri;
 #endif
+
+    return true;
 }
 
 /** Disconnects the 0MQ sockets */
@@ -295,9 +308,12 @@ void QHalRemoteComponent::start()
     m_cState = Trying;
     updateState(Connecting);
 
-    addPins();
-    connectSockets();
-    bind();
+
+    if (connectSockets())
+    {
+        addPins();
+        bind();
+    }
 }
 
 void QHalRemoteComponent::stop()

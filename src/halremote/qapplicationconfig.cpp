@@ -26,6 +26,9 @@ QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
      m_componentCompleted(false),
      m_uri(""),
      m_ready(false),
+     m_connectionState(Disconnected),
+     m_error(NoError),
+     m_errorString(""),
      m_selectedConfig(new QApplicationConfigItem(this)),
      m_context(NULL),
      m_configSocket(NULL)
@@ -114,19 +117,43 @@ void QApplicationConfig::start()
     }
 #endif
 
-    connectSocket();
     m_appConfigs.clear();
     emit appConfigsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_appConfigs));
-    request(pb::MT_LIST_APPLICATIONS);
+
+    if (connectSocket())
+    {
+        request(pb::MT_LIST_APPLICATIONS);
+    }
 }
 
 void QApplicationConfig::stop()
 {
     // cleanup here
     disconnectSocket();
+
+    updateState(Disconnected);
+    updateError(NoError, "");   // clear the error here
 }
 
-void QApplicationConfig::connectSocket()
+void QApplicationConfig::updateState(QApplicationConfig::State state)
+{
+    if (state != m_connectionState)
+    {
+        m_connectionState = state;
+        emit connectionStateChanged(m_connectionState);
+    }
+}
+
+void QApplicationConfig::updateError(QApplicationConfig::ConnectionError error, QString errorString)
+{
+    m_error = error;
+    m_errorString = errorString;
+
+    emit errorStringChanged(m_errorString);
+    emit errorChanged(m_error);
+}
+
+bool QApplicationConfig::connectSocket()
 {
     m_context = createDefaultContext(this);
     m_context->start();
@@ -135,10 +162,23 @@ void QApplicationConfig::connectSocket()
     m_configSocket->setLinger(0);
     m_configSocket->setIdentity(QString("%1-%2").arg("appconfig").arg(QCoreApplication::applicationPid()).toLocal8Bit());
 
-    m_configSocket->connectTo(m_uri);
+    try {
+        m_configSocket->connectTo(m_uri);
+    }
+    catch (zmq::error_t e) {
+        QString errorString;
+        errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
+        updateError(SocketError, errorString);
+        updateState(Error);
+        return false;
+    }
 
     connect(m_configSocket, SIGNAL(messageReceived(QList<QByteArray>)),
             this, SLOT(configMessageReceived(QList<QByteArray>)));
+
+    updateState(Connected);
+
+    return true;
 }
 
 void QApplicationConfig::disconnectSocket()
