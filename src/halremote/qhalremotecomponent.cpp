@@ -261,7 +261,7 @@ bool QHalRemoteComponent::connectSockets()
             this, SLOT(cmdMessageReceived(QList<QByteArray>)));
 
 #ifdef QT_DEBUG
-    qDebug() << "sockets connected" << m_updateUri << m_cmdUri;
+    qDebug() << "sockets connected" << m_halrcompUri << m_halrcmdUri;
 #endif
 
     return true;

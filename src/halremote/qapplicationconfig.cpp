@@ -241,7 +241,7 @@ void QApplicationConfig::setReady(bool arg)
 void QApplicationConfig::start()
 {
 #ifdef QT_DEBUG
-    qDebug() << "app config uri:" << m_uri;
+    qDebug() << "app config uri:" << m_configUri;
     foreach (QApplicationConfigFilter* filter, m_filters)
     {
         qDebug() << "filter:" << filter->type();
