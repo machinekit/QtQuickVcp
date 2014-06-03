@@ -33,7 +33,7 @@ class QHalPin : public QObject
     Q_PROPERTY(ValueType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(HalPinDirection direction READ direction WRITE setDirection NOTIFY directionChanged)
     Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
-    Q_PROPERTY(int handle READ handle WRITE setHandle NOTIFY handleChanged)
+    Q_PROPERTY(int handle READ handle NOTIFY handleChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
     Q_ENUMS(ValueType)

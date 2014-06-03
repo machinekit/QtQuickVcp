@@ -42,11 +42,10 @@ class QHalRemoteComponent : public QQuickItem
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(QString cmdUri READ cmdUri WRITE setCmdUri NOTIFY cmdUriChanged)
-    Q_PROPERTY(QString updateUri READ updateUri WRITE setUpdateUri NOTIFY updateUriChanged)
+    Q_PROPERTY(QString halrcmdUri READ halrcmdUri WRITE setHalrcmdUri NOTIFY halrcmdUriChanged)
+    Q_PROPERTY(QString halrcompUri READ halrcompUri WRITE setHalrcompUri NOTIFY halrcompUriChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
-    Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
@@ -84,14 +83,14 @@ public:
 
     virtual void componentComplete();
 
-    QString cmdUri() const
+    QString halrcmdUri() const
     {
-        return m_cmdUri;
+        return m_halrcmdUri;
     }
 
-    QString updateUri() const
+    QString halrcompUri() const
     {
-        return m_updateUri;
+        return m_halrcompUri;
     }
 
     QString name() const
@@ -102,11 +101,6 @@ public:
     int heartbeatPeriod() const
     {
         return m_heartbeatPeriod;
-    }
-
-    bool isSynced() const
-    {
-        return m_synced;
     }
 
     bool ready() const
@@ -138,19 +132,19 @@ public slots:
     void pinUpdate(pb::Pin remotePin, QHalPin *localPin);
     void pinChange(QVariant value);
 
-    void setCmdUri(QString arg)
+    void setHalrcmdUri(QString arg)
     {
-        if (m_cmdUri != arg) {
-            m_cmdUri = arg;
-            emit cmdUriChanged(arg);
+        if (m_halrcmdUri != arg) {
+            m_halrcmdUri = arg;
+            emit halrcmdUriChanged(arg);
         }
     }
 
-    void setUpdateUri(QString arg)
+    void setHalrcompUri(QString arg)
     {
-        if (m_updateUri != arg) {
-            m_updateUri = arg;
-            emit updateUriChanged(arg);
+        if (m_halrcompUri != arg) {
+            m_halrcompUri = arg;
+            emit halrcompUriChanged(arg);
         }
     }
 
@@ -181,11 +175,10 @@ public slots:
     }
 
 private:
-    QString     m_cmdUri;
-    QString     m_updateUri;
+    QString     m_halrcmdUri;
+    QString     m_halrcompUri;
     QString     m_name;
     int         m_heartbeatPeriod;
-    bool        m_synced;
     SocketState m_sState;
     SocketState m_cState;
     State       m_connectionState;
@@ -196,9 +189,9 @@ private:
     bool        m_componentCompleted;
 
     ZMQContext *m_context;
-    ZMQSocket  *m_updateSocket;
-    ZMQSocket  *m_cmdSocket;
-    QTimer      *m_heartbeatTimer;
+    ZMQSocket  *m_halrcompSocket;
+    ZMQSocket  *m_halrcmdSocket;
+    QTimer     *m_heartbeatTimer;
     int         m_pingOutstanding;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
@@ -227,11 +220,10 @@ private slots:
     void bind();
 
 signals:
-    void cmdUriChanged(QString arg);
-    void updateUriChanged(QString arg);
+    void halrcmdUriChanged(QString arg);
+    void halrcompUriChanged(QString arg);
     void nameChanged(QString arg);
     void heartbeatPeriodChanged(int arg);
-    void syncedChanged(bool arg);
     void readyChanged(bool arg);
     void containerItemChanged(QQuickItem *arg);
     void connectionStateChanged(State arg);

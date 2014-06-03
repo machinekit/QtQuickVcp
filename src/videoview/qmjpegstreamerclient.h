@@ -43,14 +43,15 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class MjpegStreamerClient : public QQuickPaintedItem
+class QMjpegStreamerClient : public QQuickPaintedItem
 {
     Q_OBJECT
-    Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
+    Q_PROPERTY(QString videoUri READ videoUri WRITE setVideoUri NOTIFY videoUriChanged)
     Q_PROPERTY(int fps READ fps NOTIFY fpsChanged)
     Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(double timestamp READ timestamp NOTIFY timestampChanged)
     Q_PROPERTY(QTime time READ time NOTIFY timeChanged)
+
 public:
     typedef struct {
         QImage image;
@@ -58,14 +59,14 @@ public:
         QTime  time;
     } StreamBufferItem;
 
-    explicit MjpegStreamerClient(QQuickPaintedItem *parent = 0);
-    ~MjpegStreamerClient();
+    explicit QMjpegStreamerClient(QQuickPaintedItem *parent = 0);
+    ~QMjpegStreamerClient();
     virtual void componentComplete();
     void paint(QPainter* painter);
 
-    QString uri() const
+    QString videoUri() const
     {
-        return m_url;
+        return m_videoUri;
     }
 
     bool isReady() const
@@ -89,7 +90,7 @@ public:
     }
 
 signals:
-    void uriChanged(QString arg);
+    void videoUriChanged(QString arg);
     void readyChanged(bool arg);
     void fpsChanged(double arg);
     void timestampChanged(double arg);
@@ -97,11 +98,11 @@ signals:
 
 public slots:
 
-void setUri(QString arg)
+void setVideoUri(QString arg)
 {
-    if (m_url != arg) {
-        m_url = arg;
-        emit uriChanged(arg);
+    if (m_videoUri != arg) {
+        m_videoUri = arg;
+        emit videoUriChanged(arg);
     }
 }
 
@@ -119,7 +120,7 @@ private:
     pb::Package m_rx; // more efficient to reuse a protobuf Message
 
 
-    QString m_url;
+    QString m_videoUri;
     bool    m_running;
     int     m_fps;
     int     m_frameCount;

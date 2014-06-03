@@ -21,6 +21,31 @@
 ****************************************************************************/
 #include "qapplicationconfigfilter.h"
 
+/*!
+    \qmltype ApplicationConfigFilter
+    \instantiates QApplicationConfigFilter
+    \inqmlmodule Machinekit.HalRemote
+    \brief Application configuration filter
+    \ingroup halremote
+
+    This component can be used to filter the results of
+    an application configuration query for the configuration
+    type.
+
+    \sa ApplicationConfig
+*/
+
+/*! \qmlproperty enumeration ApplicationConfigFilter::type
+
+    This property holds the configuration type that should be filtered.
+
+    \list
+    \li ApplicationConfigItem.Qt5QmlApplication - Qt5 QML application, can be loaded (default).
+    \li ApplicationConfigItem.GladeVcpApplication - GladeVCP application.
+    \li ApplicationConfigItem.JavaScriptApplication - JavaScript web application.
+    \endlist
+*/
+
 QApplicationConfigFilter::QApplicationConfigFilter(QObject *parent) :
     QObject(parent),
     m_type(QApplicationConfigItem::Qt5QmlApplication)

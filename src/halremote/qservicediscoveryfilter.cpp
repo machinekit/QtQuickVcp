@@ -21,6 +21,44 @@
 ****************************************************************************/
 #include "qservicediscoveryfilter.h"
 
+/*!
+    \qmltype ServiceDiscoveryFilter
+    \instantiates QServiceDiscoveryFilter
+    \inqmlmodule Machinekit.HalRemote
+    \brief Service discovery filter
+    \ingroup halremote
+
+    This component can be used to filter the results of the
+    \l ServiceDiscovery component. All filter arguments are AND
+    connected during the filter process. All filter arguments can
+    contain Unix wildcards.
+
+    The following example demonstrates how to use the filter for
+    name and uuid.
+
+    \qml
+    ServiceDiscoveryFilter {
+        id: filter
+
+        name: "3D Printer"
+        txtRecords: ["uuid=a7005ade-ea37-4f04-bf8a-7f45436beaca"]
+    }
+    \endqml
+
+
+    \sa ServiceDiscovery, Service
+*/
+
+/*! \qmlproperty string ServiceDiscoveryFilter::name
+
+    This property holds the name to filter the results for.
+*/
+
+/*! \qmlproperty list<string> ServiceDiscoveryFilter::txtRecords
+
+    This property holds the TXT records to filter the results for.
+*/
+
 QServiceDiscoveryFilter::QServiceDiscoveryFilter(QObject *parent) :
     QObject(parent),
     m_name("")

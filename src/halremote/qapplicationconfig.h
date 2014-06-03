@@ -46,13 +46,13 @@ class QApplicationConfig : public QQuickItem
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
+    Q_PROPERTY(QString configUri READ configUri WRITE setConfigUri NOTIFY configUriChanged)
     Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QApplicationConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
-    Q_PROPERTY(QQmlListProperty<QApplicationConfigItem> appConfigs READ appConfigs NOTIFY appConfigsChanged)
+    Q_PROPERTY(QQmlListProperty<QApplicationConfigItem> configs READ configs NOTIFY configsChanged)
     Q_PROPERTY(QQmlListProperty<QApplicationConfigFilter> filters READ filters)
     Q_ENUMS(State)
     Q_ENUMS(ConnectionError)
@@ -73,9 +73,9 @@ public:
 
     virtual void componentComplete();
 
-    QString uri() const
+    QString configUri() const
     {
-        return m_uri;
+        return m_configUri;
     }
 
     bool isReady() const
@@ -103,7 +103,7 @@ public:
         return m_errorString;
     }
 
-    QQmlListProperty<QApplicationConfigItem> appConfigs();
+    QQmlListProperty<QApplicationConfigItem> configs();
     int appConfigCount() const;
     QApplicationConfigItem *appConfig(int index) const;
 
@@ -113,14 +113,14 @@ public:
 
 public slots:
 
-    void selectApplicationConfig(QString name);
-    void unselectApplicationConfig();
+    void selectConfig(QString name);
+    void unselectConfig();
 
-    void setUri(QString arg)
+    void setConfigUri(QString arg)
     {
-        if (m_uri != arg) {
-            m_uri = arg;
-            emit uriChanged(arg);
+        if (m_configUri != arg) {
+            m_configUri = arg;
+            emit configUriChanged(arg);
         }
     }
 
@@ -136,14 +136,14 @@ public slots:
 
 private:
     bool    m_componentCompleted;
-    QString m_uri;
+    QString m_configUri;
     bool    m_ready;
     State   m_connectionState;
     ConnectionError m_error;
     QString m_errorString;
 
     QApplicationConfigItem *m_selectedConfig;
-    QList<QApplicationConfigItem*> m_appConfigs;
+    QList<QApplicationConfigItem*> m_configs;
     QList<QApplicationConfigFilter*> m_filters;
 
     ZMQContext *m_context;
@@ -164,10 +164,10 @@ private slots:
     void request(pb::ContainerType type);
 
 signals:
-    void uriChanged(QString arg);
+    void configUriChanged(QString arg);
     void readyChanged(bool arg);
     void selectedConfigChanged(QApplicationConfigItem * arg);
-    void appConfigsChanged(QQmlListProperty<QApplicationConfigItem> arg);
+    void configsChanged(QQmlListProperty<QApplicationConfigItem> arg);
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);

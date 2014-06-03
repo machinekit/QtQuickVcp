@@ -33,6 +33,7 @@ class QServiceDiscoveryItem : public QQuickItem
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(QString uri READ uri NOTIFY uriChanged)
     Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged)
+    Q_PROPERTY(int version READ version NOTIFY versionChanged)
     Q_PROPERTY(int port READ port NOTIFY portChanged)
     Q_PROPERTY(QHostAddress hostAddress READ hostAddress NOTIFY hostAddressChanged)
     Q_PROPERTY(QDateTime expiryDate READ expiryDate NOTIFY expiryDateChanged)
@@ -87,6 +88,11 @@ int outstandingRequests() const
     return m_outstandingRequests;
 }
 
+int version() const
+{
+    return m_version;
+}
+
 public slots:
 
 void setUri(QString arg)
@@ -135,13 +141,7 @@ void setType(QString arg)
     }
 }
 
-void setTxtRecords(QStringList arg)
-{
-    if (m_txtRecords != arg) {
-        m_txtRecords = arg;
-        emit txtRecordsChanged(arg);
-    }
-}
+void setTxtRecords(QStringList arg);
 
 void setUuid(QString arg)
 {
@@ -156,6 +156,14 @@ void setOutstandingRequests(int arg)
     m_outstandingRequests = arg;
 }
 
+void setVersion(int arg)
+{
+    if (m_version != arg) {
+        m_version = arg;
+        emit versionChanged(arg);
+    }
+}
+
 private:
     QString m_name;
     QString m_type;
@@ -167,6 +175,8 @@ private:
     QStringList m_txtRecords;
     int m_outstandingRequests;
 
+    int m_version;
+
 signals:
 
 void uriChanged(QString arg);
@@ -177,6 +187,7 @@ void expiryDateChanged(QDateTime arg);
 void typeChanged(QString arg);
 void txtRecordsChanged(QStringList arg);
 void uuidChanged(QString arg);
+void versionChanged(int arg);
 };
 
 #endif // QAPPDISCOVERYITEM_H

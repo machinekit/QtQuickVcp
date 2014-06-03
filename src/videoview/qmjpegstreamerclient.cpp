@@ -19,16 +19,82 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "mjpegstreamerclient.h"
+#include "qmjpegstreamerclient.h"
 
-MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
+/*!
+    \qmltype MjpegStreamerClient
+    \instantiates QMjpegStreamerClient
+    \inqmlmodule Machinekit.HalRemote
+    \brief Client for a MJPEG video stream
+    \ingroup videoview
+
+    The MjpegStreamerClient component can display MJPG video streams captured
+    by the application mjpeg-streamer. For that purpose mjpeg-streamer needs
+    to be run with the ZeroMQ output plugin.
+
+    \qml
+    import Machinekit.HalRemote 1.0
+    import Machinekit.HalRemote.Controls 1.0
+
+    HalApplicationWindow {
+        services: [
+            Service {
+                id: videoService
+                type: "video"
+                filter: ServiceDiscoveryFilter {
+                    name: "Webcam1"
+                }
+            }
+        ]
+
+        MjpegStreamerClient {
+            id: mjpegStreamerClient
+
+            anchors.fill: parent
+            videoUri: videoService.uri
+            ready: videoService.ready
+        }
+    }
+    \endqml
+*/
+
+/*! \qmlproperty string MjpegStreamerClient::videoUri
+
+     This property holds the video service uri.
+*/
+
+/*! \qmlproperty bool MjpegStreamerClient::ready
+
+    This property holds whether the component is ready or not.
+    If the property is set to \c true the component will try to connect. If the
+    property is set to \c false all connections will be closed.
+
+    The default value is \c{false}.
+*/
+
+/*! \qmlproperty int MjpegStreamerClient::fps
+
+    This property holds the current framerate of the video in fps.
+*/
+
+/*! \qmlproperty double MjpegStreamerClient::timestamp
+
+    This property holds the timestamp in ms of the current displayed video frame.
+*/
+
+/*! \qmlproperty time MjpegStreamerClient::time
+
+    This property holds the time the current displayed video frame was taken.
+*/
+
+QMjpegStreamerClient::QMjpegStreamerClient(QQuickPaintedItem *parent) :
     QQuickPaintedItem(parent),
     m_componentCompleted(false),
     m_framerateTimer(new QTimer(this)),
     m_streamBufferTimer(new QTimer(this)),
     m_context(NULL),
     m_updateSocket(NULL),
-    m_url(""),
+    m_videoUri(""),
     m_running(false),
     m_fps(0.0),
     m_frameCount(0),
@@ -48,13 +114,13 @@ MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
     m_streamBufferTimer->setSingleShot(true);
 }
 
-MjpegStreamerClient::~MjpegStreamerClient()
+QMjpegStreamerClient::~QMjpegStreamerClient()
 {
     disconnectSocket();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
-void MjpegStreamerClient::componentComplete()
+void QMjpegStreamerClient::componentComplete()
 {
     m_componentCompleted = true;
 
@@ -66,7 +132,7 @@ void MjpegStreamerClient::componentComplete()
     QQuickItem::componentComplete();
 }
 
-void MjpegStreamerClient::paint(QPainter *painter)
+void QMjpegStreamerClient::paint(QPainter *painter)
 {
     QRect r = this->boundingRect().toRect();
 
@@ -80,7 +146,7 @@ void MjpegStreamerClient::paint(QPainter *painter)
 /** If the running property has a rising edge we try to connect
  *  if it is has a falling edge we disconnect and cleanup
  */
-void MjpegStreamerClient::setReady(bool arg)
+void QMjpegStreamerClient::setReady(bool arg)
 {
     if (m_running != arg) {
         m_running = arg;
@@ -102,33 +168,33 @@ void MjpegStreamerClient::setReady(bool arg)
     }
 }
 
-void MjpegStreamerClient::start()
+void QMjpegStreamerClient::start()
 {
     m_framerateTimer->start();
     connectSocket();
 }
 
-void MjpegStreamerClient::stop()
+void QMjpegStreamerClient::stop()
 {
     m_framerateTimer->stop();
     disconnectSocket();
 }
 
-void MjpegStreamerClient::connectSocket()
+void QMjpegStreamerClient::connectSocket()
 {
     m_context = createDefaultContext(this);
     m_context->start();
 
     m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
     m_updateSocket->setLinger(0);
-    m_updateSocket->connectTo(m_url);
+    m_updateSocket->connectTo(m_videoUri);
     m_updateSocket->subscribeTo("frames");
 
     connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
          this, SLOT(updateMessageReceived(QList<QByteArray>)));
 }
 
-void MjpegStreamerClient::disconnectSocket()
+void QMjpegStreamerClient::disconnectSocket()
 {
     if (m_updateSocket != NULL)
     {
@@ -145,7 +211,7 @@ void MjpegStreamerClient::disconnectSocket()
     }
 }
 
-void MjpegStreamerClient::updateMessageReceived(QList<QByteArray> messageList)
+void QMjpegStreamerClient::updateMessageReceived(QList<QByteArray> messageList)
 {
     QByteArray topic;
 
@@ -189,7 +255,7 @@ void MjpegStreamerClient::updateMessageReceived(QList<QByteArray> messageList)
     updateStreamBuffer();
 }
 
-void MjpegStreamerClient::updateFramerate()
+void QMjpegStreamerClient::updateFramerate()
 {
     m_fps = m_frameCount;
     m_frameCount = 0;
@@ -200,7 +266,7 @@ void MjpegStreamerClient::updateFramerate()
 #endif
 }
 
-void MjpegStreamerClient::updateStreamBuffer()
+void QMjpegStreamerClient::updateStreamBuffer()
 {
     updateStreamBufferItem();
 
@@ -218,7 +284,7 @@ void MjpegStreamerClient::updateStreamBuffer()
 
 }
 
-void MjpegStreamerClient::updateStreamBufferItem()
+void QMjpegStreamerClient::updateStreamBufferItem()
 {
     m_frameCount++;
     m_frameImg = m_currentStreamBufferItem.image;

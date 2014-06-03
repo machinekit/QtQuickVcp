@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "mjpegstreamerclient.h"
+#include "qmjpegstreamerclient.h"
 #include <qqml.h>
 
 void MachinekitVideoViewPlugin::registerTypes(const char *uri)
@@ -30,5 +30,5 @@ void MachinekitVideoViewPlugin::registerTypes(const char *uri)
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     // @uri Machinekit.VideoView
-    qmlRegisterType<MjpegStreamerClient>(uri, 1, 0, "MjpegStreamerClient");
+    qmlRegisterType<QMjpegStreamerClient>(uri, 1, 0, "MjpegStreamerClient");
 }

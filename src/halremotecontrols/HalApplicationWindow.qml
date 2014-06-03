@@ -55,20 +55,6 @@ Rectangle {
     */
     property alias name: remoteComponent.name
 
-    /*! \qmlproperty string cmdUri
-
-        This property holds the ZeroMQ command uri. It needs to be set in
-        case \l autoDiscover is disabled.
-    */
-    property alias cmdUri: remoteComponent.cmdUri
-
-    /*! \qmlproperty string updateUri
-
-        This property holds the ZeroMQ update uri. It needs to be set in
-        case \l autoDiscover is disabled.
-    */
-    property alias updateUri: remoteComponent.updateUri
-
     /*! \qmlproperty int heartbeadPeriod
 
         This property holds the period time of the heartbeat timer in ms.
@@ -77,35 +63,46 @@ Rectangle {
     */
     property alias heartbeatPeriod: remoteComponent.heartbeatPeriod
 
-    /*! This property holds wether auto discovery of the ZeroMQ uri should be enabled or not.
+    /*! \qmlproperty string halrcmdUri
 
-        The default value is \c{true}.
+        This property holds the halrcmd service uri. It needs to be set in
+        case the internal services are not used.
     */
-    property bool autoDiscover: true
+    property alias halrcmdUri: remoteComponent.halrcmdUri
 
-    /*! This property holds wheter the application window is ready or not. If the
-        property is set to true auto discovery and will automaticall start.
+    /*! \qmlproperty string halrcompUri
 
-        The default value is \c{true}.
+        This property holds the halrcomp service uri. It needs to be set in
+        case the internal services are not used.
     */
-    property bool ready: true
+    property alias halrcompUri: remoteComponent.halrcompUri
 
-    /*! This property holds the services used by the application.
+    /*! \qmlproperty bool ready
+
+        This property holds wheter the application window is ready or not.
+        Per default this property is set using the internal services
+        if you want to overwrite the services set this property to \c true.
+    */
+    property alias ready: remoteComponent.ready
+
+    /*! \qmlproperty list<Service> services
+
+        This property holds the services used by the application.
     */
     property list<Service> services
 
-    /*! This property holds the services used internally by the HalApplicationWindow.
+    /*! \qmlproperty list<Service> internalServices
+
+        This property holds the services used internally by the HalApplicationWindow.
     */
     property list<Service> internalServices: [
         Service {
-            id: rcompService
+            id: halrcompService
             type: "halrcomp"
-            minVersion: 0
         },
         Service {
-            id: rcommandService
+            id: halrcmdService
             type: "halrcmd"
-            minVersion: 0
         }
     ]
 
@@ -165,8 +162,8 @@ Rectangle {
             anchors.topMargin: Screen.logicalPixelDensity
             enabled: false
             visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
-            text: qsTr("RComp service available")
-            checked: rcompService.ready
+            text: qsTr("halrcomp service available")
+            checked: halrcompService.ready
         }
 
         CheckBox {
@@ -177,8 +174,8 @@ Rectangle {
             anchors.topMargin: Screen.logicalPixelDensity
             enabled: false
             visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
-            text: qsTr("RCommand service available")
-            checked: rcommandService.ready
+            text: qsTr("halrcmd service available")
+            checked: halrcmdService.ready
         }
 
         Label {
@@ -242,10 +239,10 @@ Rectangle {
         id: remoteComponent
 
         name: main.name
-        cmdUri: rcommandService.uri
-        updateUri: rcompService.uri
+        halrcmdUri: halrcmdService.uri
+        halrcompUri: halrcompService.uri
         heartbeatPeriod: 3000
-        ready: main.autoDiscover ? (rcompService.ready && rcommandService.ready) : main.ready
+        ready: halrcompService.ready && halrcmdService.ready
         containerItem: parent
     }
 }

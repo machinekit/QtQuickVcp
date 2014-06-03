@@ -26,7 +26,6 @@ import Machinekit.Controls 1.0
     \qmltype Line
     \inqmlmodule Machinekit.Controls
     \brief Provides a component for drawing a line in QML.
-
 */
 
 Rectangle {

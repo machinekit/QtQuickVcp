@@ -47,7 +47,7 @@ public:
     enum ApplicationType {
         Qt5QmlApplication = pb::QT5_QML,
         GladeVcpApplication = pb::GLADEVCP,
-        JavascriptApplication = pb::JAVASCRIPT
+        JavaScriptApplication = pb::JAVASCRIPT
     };
 
     QString name() const

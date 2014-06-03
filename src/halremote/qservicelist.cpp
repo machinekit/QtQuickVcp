@@ -21,6 +21,45 @@
 ****************************************************************************/
 #include "qservicelist.h"
 
+/*!
+    \qmltype ServiceList
+    \instantiates QServiceList
+    \inqmlmodule Machinekit.HalRemote
+    \brief A list of services
+    \ingroup halremote
+
+    This component is used to represent a list of \l{Service}s for the
+    use with the \l ServiceDiscovery component. Use QML bindings to
+    add and remove services at runtime.
+
+    \qml
+    Item {
+        property list<Service> services: [
+            Service {
+                id: halrcompService
+                type: "halrcomp"
+            }
+            ]
+
+        id: root
+
+        ServiceList {
+            id: serviceList
+        }
+
+        function bindServices() {
+            serviceList.services = Qt.binding( function() { return root.services } )
+        }
+
+        function unbindServices() {
+            serviceList.services = []
+        }
+    }
+    \endqml
+
+    \sa Service, ServiceDiscovery
+*/
+
 QServiceList::QServiceList(QObject *parent) :
     QObject(parent)
 {

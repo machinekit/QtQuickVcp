@@ -21,10 +21,139 @@
 ****************************************************************************/
 #include "qservicediscovery.h"
 
+/*!
+    \qmltype ServiceDiscovery
+    \instantiates QServiceDiscovery
+    \inqmlmodule Machinekit.HalRemote
+    \brief Service discovery component
+    \ingroup halremote
+
+    This component can be used to discover and resolve available services
+    on the network. The technology behind the service discovery
+    is Multicast DNS (mDNS) in combination with DNS Service Discovery (DNS-SD),
+    therefore, service discovery should work on any local network.
+
+    mDNS names are generated using the \l serviceType and \l domain properties
+    as well as the \l Service::type property from the service. This results in
+    the following scheme:
+    _\l{Service::type}._sub._\l{serviceType}._tcp.\l{domain}
+
+    The following example demonstrates how the service discovery can be used
+    to resolve and display available config services.
+
+    \qml
+    Item {
+        ListView {
+            id: listView
+
+            anchors.fill: parent
+            model: configService.items
+            delegate: Label {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        text: name
+                    }
+        }
+
+        ServiceDiscovery {
+            id: serviceDiscovery
+
+            serviceType: "machinekit"
+            domain:      "local"
+            running:     true
+
+            serviceLists: [
+                ServiceList {
+                    services: [
+                        Service {
+                            id: configService
+
+                            type: "config"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    \endqml
+
+    \note To change services and filter at runtime it is necessary to
+    run the update functions for these properties.
+
+    \sa Service, ServiceList, ServiceDiscoveryFilter, ServiceDiscoveryItem
+*/
+
+/*! \qmlproperty string ServiceDiscovery::serviceType
+
+    This property holds the DNS SRV service type that the service discovery
+    should browse.
+
+    The default value is \c{"machinekit"}.
+*/
+
+/*! \qmlproperty string ServiceDiscovery::domain
+
+    This property holds the domain name that the service discovery should
+    browse for services.
+
+    The default value is \c{"local"}.
+*/
+
+/*! \qmlproperty bool ServiceDiscovery::running
+
+    This property holds whether the service discovery is running or not.
+    If the service discovery is set to not running the list of discovered
+    services will be cleared.
+
+    The default value is \c{false}.
+*/
+
+/*! \qmlproperty bool ServiceDiscovery::networkOpen
+
+    This property holds whether a suitable network connection is
+    available or not. The \l running property will have no effect
+    until a network connection is available
+
+    The default value is \c{false}.
+*/
+
+/*! \qmlproperty ServiceDiscoveryFilter ServiceDiscovery::filter
+
+    This property holds the filter applied to all discovered services.
+    Filter criterias listed within a filter are AND connected during
+    the filter process.
+
+    This property can be used to filter all services for a specific uuid.
+
+    \note It is necessary to run \l updateFilter after modifying the filter.
+*/
+
+/*! \qmlproperty list<ServiceList> ServiceDiscovery::serviceLists
+
+    This property holds a list of service lists. Typically the service
+    lists are provided by other components such as application windows
+    and connected via bindings at run-time.
+
+    \note It is necessary to run \l updateServices after modifying the services.
+*/
+
+/*! \qmlmethod void ServiceDiscovery::updateServices()
+
+    Updates the \l{serviceLists}. Needs to be executed after modifying
+    the \l serviceLists property.
+*/
+
+/*! \qmlmethod void ServiceDiscovery::updateFilter()
+
+    Updates the \l{filter}. Needs to be executed after modifying
+    the \l filter property.
+*/
+
+
 QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     QQuickItem(parent),
     m_componentCompleted(false),
-    m_regType("machinekit"),
+    m_serviceType("machinekit"),
     m_domain("local"),
     m_running(false),
     m_networkOpen(false),
@@ -156,16 +285,16 @@ QServiceList *QServiceDiscovery::serviceList(int index) const
     return m_serviceLists.at(index);
 }
 
-void QServiceDiscovery::setRegType(QString arg)
+void QServiceDiscovery::setServiceType(QString arg)
 {
-    if (m_regType != arg) {
+    if (m_serviceType != arg) {
 
         if (m_running && m_networkOpen) {
             stopQueries();
         }
 
-        m_regType = arg;
-        emit regTypeChanged(arg);
+        m_serviceType = arg;
+        emit serviceTypeChanged(arg);
 
         if (m_running && m_networkOpen) {
             startQueries();
@@ -292,7 +421,7 @@ void QServiceDiscovery::startQuery(QString type)
         }
     }
 
-    queryId = m_jdns->queryStart(composeSdString(type, m_regType, m_domain).toLocal8Bit(), QJDns::Ptr);
+    queryId = m_jdns->queryStart(composeSdString(type, m_serviceType, m_domain).toLocal8Bit(), QJDns::Ptr);
     m_queryTypeMap.insert(queryId, QJDns::Ptr);
     m_queryServiceMap.insert(queryId, type);
 }
@@ -371,7 +500,7 @@ void QServiceDiscovery::updateServiceType(QString type)
 
             if (service->type() == type)
             {
-                service->setServiceDiscoveryItems(filterServiceDiscoveryItems(serviceDiscoveryItems, m_filter, service->filter()));
+                service->setItems(filterServiceDiscoveryItems(serviceDiscoveryItems, m_filter, service->filter()));
             }
         }
     }
@@ -578,7 +707,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         {
 
             QString serviceType = m_queryServiceMap.value(id);
-            QString name = r.name.left(r.name.indexOf(composeSdString(m_regType, m_domain)) - 1);
+            QString name = r.name.left(r.name.indexOf(composeSdString(m_serviceType, m_domain)) - 1);
 
 #ifdef QT_DEBUG
             qDebug() << "Found mDNS/DNS-SD:" << r.owner << r.name << serviceType << name << "TTL:" << r.ttl;
@@ -612,18 +741,6 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
             foreach (QString string, r.texts)
             {
-                QStringList keyValue;
-                keyValue = string.split("=");
-
-                if (keyValue.at(0) == "dsn")
-                {
-                    item->setUri(keyValue.at(1));
-                }
-                else if (keyValue.at(0) == "uuid")
-                {
-                    item->setUuid(keyValue.at(1));
-                }
-
                 txtRecords.append(string);
             }
 

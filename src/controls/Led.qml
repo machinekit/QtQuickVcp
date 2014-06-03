@@ -37,7 +37,7 @@ import Machinekit.Controls 1.0
     }
     \endqml
 
-    It easily possible to change the color and shape of the led. Set the
+    It is easily possible to change the color and shape of the led. Set the
     \l Rectangle::radius of the led to \c 0 to get a square led.
 
     \qml
@@ -91,7 +91,7 @@ Rectangle {
     */
     property int blinkInterval: 500
 
-    /*! This property holds whether the led should have small "shine" or not.
+    /*! This property holds whether the led should have a small "shine" or not.
 
         The default value is \c{true}.
     */

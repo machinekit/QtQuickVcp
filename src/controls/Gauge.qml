@@ -39,7 +39,7 @@ import Machinekit.Controls 1.0
     }
     \endqml
 
-    Note that if you want to disable the visibility of the minimum and maxium value
+    Note that if you want to disable the visibility of the minimum and maximum value
     you need to set the \l minimumValueVisible and \l maximumValueVisible properties.
 
     \qml
@@ -229,7 +229,7 @@ Item {
     */
     property alias maximumValueVisible: maximumValueText.visible
 
-    /*! This property holds e´whether the the gauge should be styled fancy
+    /*! This property holds whether the the gauge should be styled fancy
         or not. Fancy means that the value zones and colors are used for
         coloring the bar. If fancy is set to false the bar will be colored
         and styled in native system colors.

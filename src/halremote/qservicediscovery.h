@@ -34,7 +34,7 @@ class QServiceDiscovery : public QQuickItem
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(QString regType READ regType WRITE setRegType NOTIFY regTypeChanged)
+    Q_PROPERTY(QString serviceType READ serviceType WRITE setServiceType NOTIFY serviceTypeChanged)
     Q_PROPERTY(QString domain READ domain WRITE setDomain NOTIFY domainChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(bool networkOpen READ isNetworkOpen NOTIFY networkOpenChanged)
@@ -46,9 +46,9 @@ public:
 
     virtual void componentComplete();
 
-    QString regType() const
+    QString serviceType() const
     {
-        return m_regType;
+        return m_serviceType;
     }
 
     bool running() const
@@ -76,7 +76,7 @@ public:
     QServiceList *serviceList(int index) const;
 
 public slots:
-    void setRegType(QString arg);
+    void setServiceType(QString arg);
     void setDomain(QString arg);
     void setRunning(bool arg);
     void setFilter(QServiceDiscoveryFilter *arg);
@@ -84,7 +84,7 @@ public slots:
     void updateFilter();
 
 signals:
-    void regTypeChanged(QString arg);
+    void serviceTypeChanged(QString arg);
     void runningChanged(bool arg);
     void networkOpenChanged(bool arg);
     void domainChanged(QString arg);
@@ -92,7 +92,7 @@ signals:
 
 private:
     bool m_componentCompleted;
-    QString m_regType;
+    QString m_serviceType;
     QString m_domain;
     bool m_running;
     bool m_networkOpen;

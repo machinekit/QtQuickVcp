@@ -28,8 +28,9 @@
     \brief A HAL pin.
     \ingroup halremote
 
-    This component provides a button combined with a HAL pin. By default
-    the type of the HAL pin is \c Bit and the direction \c Out.
+    This component provides a the counterpart of one pin of
+    a HAL remote component. The HalPin component works in combination
+    with the \l HalRemoteComponent.
 
     \qml
     HalPin {
@@ -40,7 +41,7 @@
     }
     \endqml
 
-    Adding a HAL pin to a custom QML item is can be done using using bindings.
+    Adding a HAL pin to a custom QML item can be done using using bindings.
 
     \note In order to visualize changes from other UI instances HAL pins
     with the \l direction \c Out must use a bidirectional binding.
@@ -116,7 +117,9 @@
 /*! \qmlproperty bool HalPin::synced
 
     This property holds whether the pin is synced or not. The value is
-    updated with the setValue function.
+    updated with the \l value property. When the \l value is set from
+    QML the synced property changes to \c{false}. The property changes
+    to \c true when the echo from the \l HalRemoteComponent is received.
 */
 
 QHalPin::QHalPin(QObject *parent) :

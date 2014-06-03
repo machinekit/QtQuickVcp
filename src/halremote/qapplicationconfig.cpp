@@ -21,10 +21,141 @@
 ****************************************************************************/
 #include "qapplicationconfig.h"
 
+/*!
+    \qmltype ApplicationConfig
+    \instantiates QApplicationConfig
+    \inqmlmodule Machinekit.HalRemote
+    \brief Application configuration client
+    \ingroup halremote
+
+    This component acts as client for a config-server providing
+    application configurations. The ApplicationConfig component
+    provides a interface for gathering available configurations
+    as well as fetching QML files from the remote server.
+
+    The following example demonstrates a basic configuration for
+    displaying and selecting available application configurations
+    in a list view.
+
+    \qml
+    Item {
+        ListView {
+            id: listView
+
+            anchors.fill: parent
+            model: applicationConfig.configs
+            delegate: Button {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        text: name
+
+                        onClicked: applicationConfig.selectConfig(name)
+                    }
+        }
+
+        ApplicationConfig {
+            id: applicationConfig
+
+            configUri: "tcp://192.168.1.2:4999"
+            ready: true
+            filters: [ ApplicationConfigFilter { type: ApplicationConfigItem.Qt5QmlApplication } ]
+        }
+    }
+    \endqml
+
+    The above example can be extended with a \l Loader component to load the
+    loaded QML files.
+
+    \qml
+    Loader {
+        id: applicationLoader
+
+        anchors.fill: parent
+        active: applicationConfig.selectedConfig.loaded
+        source: applicationConfig.selectedConfig.mainFile
+    }
+    \endqml
+
+    \sa ApplicationConfigItem, ApplicationConfigFilter
+*/
+
+/*! \qmlproperty string ApplicationConfig::configUri
+
+    This property holds the config service uri.
+*/
+
+/*! \qmlproperty bool ApplicationConfig::ready
+
+    This property holds whether the application config is ready or not.
+    If the property is set to \c true the component will try to connect. If the
+    property is set to \c false all connections will be closed.
+
+    The default value is \c{false}.
+*/
+
+/*! \qmlproperty enumeration ApplicationConfig::connectionState
+
+    This property holds the connection state of the application config.
+
+    \list
+    \li ApplicationConfig.Disconnected - The component is not connected.
+    \li ApplicationConfig.Connected - The component is connected.
+    \li ApplicationConfig.Error - An error has happened. See \l error and \l errorString for details about the error.
+    \endlist
+*/
+
+/*! \qmlproperty enumeration ApplicationConfig::error
+
+    This property holds the currently active error. See \l errorString
+    for a description of the active error.
+
+    \list
+    \li ApplicationConfig.NoError - No error happened.
+    \li ApplicationConfig.SocketError - An error related to the socket happened.
+    \endlist
+
+    \sa errorString
+*/
+
+/*! \qmlproperty string ApplicationConfig::errorString
+
+    This property holds a text description of the last error that occured.
+    If \l error holds a error value check this property for the description.
+
+    \sa error
+*/
+
+/*! \qmlproperty ApplicationConfigItem ApplicationConfig::selectedConfig
+
+    This property holds the selected configuration. This property can be
+    used to get the files and description of an application.
+*/
+
+/*! \qmlproperty list<ApplicationConfigItem> ApplicationConfig::configs
+
+    This property holds a list of all available configurations.
+*/
+
+/*! \qmlproperty list<ApplicationConfigFilter> ApplicationConfig::filters
+
+    This property holds a list of filters applied to the available configurations.
+    The filters are OR connected.
+*/
+
+/*! \qmlmethod void QApplicationConfig::selectConfig(QString name)
+
+    Selects the configuration with the given name and updates \l{selectedConfig}.
+*/
+
+/*! \qmlmethod void QApplicationConfig::unselectConfig()
+
+    Unselects the configuration with the given name and updates \l{selectedConfig}.
+*/
+
 QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
     QQuickItem(parent),
      m_componentCompleted(false),
-     m_uri(""),
+     m_configUri(""),
      m_ready(false),
      m_connectionState(Disconnected),
      m_error(NoError),
@@ -52,19 +183,19 @@ void QApplicationConfig::componentComplete()
     QQuickItem::componentComplete();
 }
 
-QQmlListProperty<QApplicationConfigItem> QApplicationConfig::appConfigs()
+QQmlListProperty<QApplicationConfigItem> QApplicationConfig::configs()
 {
-    return QQmlListProperty<QApplicationConfigItem>(this, m_appConfigs);
+    return QQmlListProperty<QApplicationConfigItem>(this, m_configs);
 }
 
 int QApplicationConfig::appConfigCount() const
 {
-    return m_appConfigs.count();
+    return m_configs.count();
 }
 
 QApplicationConfigItem *QApplicationConfig::appConfig(int index) const
 {
-    return m_appConfigs.at(index);
+    return m_configs.at(index);
 }
 
 QQmlListProperty<QApplicationConfigFilter> QApplicationConfig::filters()
@@ -117,8 +248,8 @@ void QApplicationConfig::start()
     }
 #endif
 
-    m_appConfigs.clear();
-    emit appConfigsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_appConfigs));
+    m_configs.clear();
+    emit configsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_configs));
 
     if (connectSocket())
     {
@@ -163,7 +294,7 @@ bool QApplicationConfig::connectSocket()
     m_configSocket->setIdentity(QString("%1-%2").arg("appconfig").arg(QCoreApplication::applicationPid()).toLocal8Bit());
 
     try {
-        m_configSocket->connectTo(m_uri);
+        m_configSocket->connectTo(m_configUri);
     }
     catch (zmq::error_t e) {
         QString errorString;
@@ -226,8 +357,8 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                     appConfigItem->setName(QString::fromStdString(app.name()));
                     appConfigItem->setDescription(QString::fromStdString(app.description()));
                     appConfigItem->setType((QApplicationConfigItem::ApplicationType)app.type());
-                    m_appConfigs.append(appConfigItem);
-                    emit appConfigsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_appConfigs));
+                    m_configs.append(appConfigItem);
+                    emit configsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_configs));
 
                     break;
                 }
@@ -370,7 +501,7 @@ void QApplicationConfig::request(pb::ContainerType type)
     m_tx.Clear();
 }
 
-void QApplicationConfig::selectApplicationConfig(QString name)
+void QApplicationConfig::selectConfig(QString name)
 {
     m_selectedConfig->setLoaded(false);
 
@@ -380,7 +511,7 @@ void QApplicationConfig::selectApplicationConfig(QString name)
     request(pb::MT_RETRIEVE_APPLICATION);
 }
 
-void QApplicationConfig::unselectApplicationConfig()
+void QApplicationConfig::unselectConfig()
 {
     m_selectedConfig->setName("");
     m_selectedConfig->setDescription("");

@@ -24,14 +24,86 @@ import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
 import Machinekit.HalRemote 1.0
 
+/*!
+    \qmltype ConnectionWindow
+    \inqmlmodule Machinekit.HalRemote.Controls
+    \brief Provides an all in one container item to load and display Machinekit UIs.
+    \ingroup halremotecontrols
+
+    This component provides an all in container item to load and display Machinekit UIs.
+    It combines service discovery and instance selection for local as well as remote
+    deployed \l{HalApplicationWindow}.
+
+    The following example demonstrates how to use the ConnectionWindow as generic Machinekit
+    client.
+
+    \qml
+    ConnectionWindow {
+        id: connectionWindow
+
+        anchors.fill: parent
+        autoSelectInstance: false
+        applicationSource: ""
+        instanceFilter: ServiceDiscoveryFilter{ name: "" }
+    }
+    \endqml
+
+    It can also be used to load local UIs e.g. for development purposes.
+
+    \qml
+    ConnectionWindow {
+        id: connectionWindow
+
+        anchors.fill: parent
+        autoSelectInstance: false
+        applicationSource: "qrc:/qml/VideoDemo.qml"
+        instanceFilter: ServiceDiscoveryFilter{ name: "" }
+    }
+    \endqml
+
+    Use a combination of \l instanceFilter and \l autoSelectInstance to automatically
+    connect to a specific instance. This can be especially usefull during development
+    of new UIs.
+
+    \qml
+    ConnectionWindow {
+        id: connectionWindow
+
+        anchors.fill: parent
+        autoSelectInstance: true
+        applicationSource: "qrc:/qml/VideoDemo.qml"
+        instanceFilter: ServiceDiscoveryFilter{ name: "Development" }
+    }
+    \endqml
+*/
+
+
+
 Rectangle {
+    /*! This property holds whether an instance should be automatically selected or not.
+    */
     property bool autoSelectInstance: false
+
+    /*! \qmlproperty ServiceDiscoveryFilter instanceFilter
+
+        This property can be used to filter all available instances for a specific name or TXT record.
+    */
     property alias instanceFilter: configService.filter
+
+    /*! This property holds the source of the main application window. Leave this property empty to
+        to show a list of applications available on the remote config server.
+    */
     property string applicationSource: ""
 
+    /*! This property holds the title of the window.
+    */
     readonly property string title: (applicationLoader.active && (applicationLoader.item != null))
                            ? ((applicationLoader.item.title !== undefined) ? applicationLoader.item.title : "")
                            : qsTr("MachineKit App Discover")
+
+    /*! This property holds whether the a local or remote application should be loaded. Depends on the
+        \l{applicationSource}.
+    */
     readonly property bool localMode: applicationSource != ""
 
     id: mainWindow
@@ -41,16 +113,15 @@ Rectangle {
     width: 500
     height: 700
 
-
-
+    /*! \internal */
     function selectInstance(index)
     {
         if (!localMode)
         {
-            if ((configService.serviceDiscoveryItems[index].uri !== "") && (configService.serviceDiscoveryItems[index].uuid !== ""))
+            if ((configService.items[index].uri !== "") && (configService.items[index].uuid !== ""))
             {
                 var x = applicationConfig   // for some reason the appConfig variable goes away after settings the filter
-                serviceDiscoveryFilter.txtRecords = ["uuid=" + configService.serviceDiscoveryItems[index].uuid]
+                serviceDiscoveryFilter.txtRecords = ["uuid=" + configService.items[index].uuid]
                 serviceDiscovery.updateFilter()
                 x.ready = true
                 discoveryPage.instanceSelected = true
@@ -63,9 +134,9 @@ Rectangle {
         }
         else
         {
-            if (configService.serviceDiscoveryItems[index].uuid !== "")
+            if (configService.items[index].uuid !== "")
             {
-                serviceDiscoveryFilter.txtRecords = ["uuid=" + configService.serviceDiscoveryItems[index].uuid]
+                serviceDiscoveryFilter.txtRecords = ["uuid=" + configService.items[index].uuid]
                 serviceDiscovery.updateFilter()
                 discoveryPage.instanceSelected = true
             }
@@ -77,6 +148,7 @@ Rectangle {
         }
     }
 
+    /*! \internal */
     function goBack()
     {
         if (pageStack.state == "discovery")
@@ -116,7 +188,7 @@ Rectangle {
             }
             else
             {
-                applicationConfig.unselectApplicationConfig()
+                applicationConfig.unselectConfig()
                 applicationServiceList.services = []
                 applicationInternalServiceList.services = []
                 serviceDiscovery.updateServices()
@@ -131,6 +203,7 @@ Rectangle {
         }
     }
 
+    /*! \internal */
     function setError(errorType, errorText)
     {
         errorPage.errorType = errorType
@@ -138,6 +211,7 @@ Rectangle {
         discoveryPage.errorActive = true
     }
 
+    /*! \internal */
     function clearError()
     {
         discoveryPage.errorActive = false
@@ -201,7 +275,7 @@ Rectangle {
                 anchors.margins: Screen.logicalPixelDensity*3
                 spacing: Screen.logicalPixelDensity*3
 
-                model: configService.serviceDiscoveryItems
+                model: configService.items
                 delegate: Button {
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -230,7 +304,7 @@ Rectangle {
             BusyIndicator {
                 anchors.centerIn: parent
                 running: true
-                visible: configService.serviceDiscoveryItems.length === 0
+                visible: configService.items.length === 0
                 height: parent.height * 0.15
                 width: height
             }
@@ -260,7 +334,7 @@ Rectangle {
                 anchors.margins: Screen.logicalPixelDensity*3
                 spacing: Screen.logicalPixelDensity*3
 
-                model: applicationConfig.appConfigs
+                model: applicationConfig.configs
                 delegate: Button {
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -284,7 +358,7 @@ Rectangle {
                         text: description
                     }
 
-                    onClicked: applicationConfig.selectApplicationConfig(name)
+                    onClicked: applicationConfig.selectConfig(name)
                 }
             }
         }
@@ -440,7 +514,7 @@ Rectangle {
         id: applicationConfig
 
         ready: false
-        uri: configService.uri
+        configUri: configService.uri
         filters: [ ApplicationConfigFilter { type: ApplicationConfigItem.Qt5QmlApplication } ]
         onConnectionStateChanged: {
             if (applicationConfig.connectionState === ApplicationConfig.Error)
@@ -453,9 +527,9 @@ Rectangle {
     ServiceDiscovery {
         id: serviceDiscovery
 
-        regType: "machinekit"
-        domain: "local"
-        running: true
+        serviceType: "machinekit"
+        domain:      "local"
+        running:     true
         filter: ServiceDiscoveryFilter {
             id: serviceDiscoveryFilter
             name: ""
@@ -467,8 +541,7 @@ Rectangle {
                     Service {
                         id: configService
                         type: "config"
-
-                        filter: ServiceDiscoveryFilter { name: "Machinekit" }
+                        filter: ServiceDiscoveryFilter { name: "" }
                     }
                 ]
             },

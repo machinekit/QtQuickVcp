@@ -32,7 +32,7 @@ HalApplicationWindow {
 
     services: [
         Service {
-            id: webcamService
+            id: videoService
             type: "video"
             filter: ServiceDiscoveryFilter {
                 name: "Webcam1"
@@ -54,8 +54,8 @@ HalApplicationWindow {
             Layout.fillHeight: true
             Layout.fillWidth: true
             visible: ready
-            uri: webcamService.uri
-            ready: webcamService.ready
+            videoUri: videoService.uri
+            ready: videoService.ready
 
             Label {
                 anchors.right: parent.right
@@ -77,7 +77,7 @@ HalApplicationWindow {
 
             Layout.fillHeight: true
             Layout.fillWidth: true
-            visible: !webcamService.ready
+            visible: !videoService.ready
             text: qsTr("Webcam not available")
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

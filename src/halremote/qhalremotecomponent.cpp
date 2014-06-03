@@ -28,16 +28,132 @@
     \brief A HAL remote component.
     \ingroup halremote
 
+    This component provides the counterpart of a HAL
+    remote component in the HAL real-time environment.
+    The HalRemoteComponent connects to a remote HAL instance
+    using the halrcmd and halrcomp services provided by
+    a Haltalk instance running on the remote host.
 
+    A HalRemoteComponent needs the \l{halrcmdUri},
+    \l{halrcompUri} and \l containerItem set in order
+    to work.
+
+    The HalRemoteComponent scans the \l containerItem
+    and its children for \l{HalPin}s when \l ready is set
+    to \c true.
+
+    The following example creates a HAL remote component
+    \c myComponent with one pin \c myPin. The resulting
+    name for the pin inside HAL is \c myComponent.myPin.
+
+    \qml
+    Item {
+        Item {
+            id: container
+
+            HalPin {
+                name: "myPin"
+                type: HalPin.Float
+                direction: HalPin.Out
+            }
+        }
+
+        HalRemoteComponent {
+            id: halRemoteComponent
+
+            name: "myComponent"
+            halrcmdUri: "tcp://192.168.1.2:5001"
+            halrcompUri: "tcp://192.168.1.2:5002"
+            containerItem: container
+            ready: true
+        }
+    }
+    \endqml
 */
+
+/*! \qmlproperty string HalRemoteComponent::halrcmdUri
+
+    This property holds the halrcmd service uri.
+*/
+
+/*! \qmlproperty string HalRemoteComponent::halrcompUri
+
+    This property holds the halrcomp service uri.
+*/
+
+/*! \qmlproperty string HalRemoteComponent::name
+
+    This property holds the name of the remote component.
+*/
+
+/*! \qmlproperty int HalRemoteComponent::heartbeadPeriod
+
+    This property holds the period time of the heartbeat timer in ms.
+
+    The default value is \c{3000}.
+*/
+
+/*! \qmlproperty bool HalRemoteComponent::ready
+
+    This property holds whether the HalRemoteComponent is ready or not.
+    If the property is set to \c true the component will try to connect. If the
+    property is set to \c false all connections will be closed.
+
+    The default value is \c{false}.
+*/
+
+/*! \qmlproperty enumeration HalRemoteComponent::connectionState
+
+    This property holds the connection state of the HAL remote component.
+
+    \list
+    \li HalRemoteComponent.Disconnected - The component is not connected.
+    \li HalRemoteComponent.Connecting - The component is trying to connect to the remote component.
+    \li HalRemoteComponent.Connected - The component is connected and pin changes are accepted.
+    \li HalRemoteComponent.Error - An error has happened. See \l error and \l errorString for details about the error.
+    \endlist
+*/
+
+/*! \qmlproperty enumeration HalRemoteComponent::error
+
+    This property holds the currently active error. See \l errorString
+    for a description of the active error.
+
+    \list
+    \li HalRemoteComponent.NoError - No error happened.
+    \li HalRemoteComponent.BindError - Binding the remote component failed.
+    \li HalRemoteComponent.PinChangeError - A pin change was rejected.
+    \li HalRemoteComponent.CommandError - A command was rejected.
+    \li HalRemoteComponent.TimeoutError - The connection timed out.
+    \li HalRemoteComponent.SocketError - An error related to the sockets happened.
+    \endlist
+
+    \sa errorString
+*/
+
+/*! \qmlproperty string HalRemoteComponent::errorString
+
+    This property holds a text description of the last error that occured.
+    If \l error holds a error value check this property for the description.
+
+    \sa error
+*/
+
+/*! \qmlproperty Item HalRemoteComponent::containerItem
+
+    This property holds the item that should be scanned for
+    \l{HalPin}s.
+
+    The default value is \c{NULL}.
+*/
+
 /** Remote HAL Component implementation for use with C++ and QML */
 QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
     QQuickItem(parent),
-    m_cmdUri(""),
-    m_updateUri(""),
+    m_halrcmdUri(""),
+    m_halrcompUri(""),
     m_name("default"),
     m_heartbeatPeriod(3000),
-    m_synced(false),
     m_sState(Down),
     m_cState(Down),
     m_connectionState(Disconnected),
@@ -47,8 +163,8 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
     m_containerItem(NULL),
     m_componentCompleted(false),
     m_context(NULL),
-    m_updateSocket(NULL),
-    m_cmdSocket(NULL),
+    m_halrcompSocket(NULL),
+    m_halrcmdSocket(NULL),
     m_heartbeatTimer(new QTimer(this))
 {
     connect(m_heartbeatTimer, SIGNAL(timeout()),
@@ -119,17 +235,17 @@ bool QHalRemoteComponent::connectSockets()
     m_context = createDefaultContext(this);
     m_context->start();
 
-    m_cmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
-    m_cmdSocket->setLinger(0);
-    m_cmdSocket->setIdentity(QString("%1-%2").arg(m_name).arg(QCoreApplication::applicationPid()).toLocal8Bit());
+    m_halrcmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
+    m_halrcmdSocket->setLinger(0);
+    m_halrcmdSocket->setIdentity(QString("%1-%2").arg(m_name).arg(QCoreApplication::applicationPid()).toLocal8Bit());
 
 
-    m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
-    m_updateSocket->setLinger(0);
+    m_halrcompSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
+    m_halrcompSocket->setLinger(0);
 
     try {
-        m_cmdSocket->connectTo(m_cmdUri);
-        m_updateSocket->connectTo(m_updateUri);
+        m_halrcmdSocket->connectTo(m_halrcmdUri);
+        m_halrcompSocket->connectTo(m_halrcompUri);
     }
     catch (zmq::error_t e) {
         QString errorString;
@@ -139,9 +255,9 @@ bool QHalRemoteComponent::connectSockets()
         return false;
     }
 
-    connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
+    connect(m_halrcompSocket, SIGNAL(messageReceived(QList<QByteArray>)),
             this, SLOT(updateMessageReceived(QList<QByteArray>)));
-    connect(m_cmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
+    connect(m_halrcmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
             this, SLOT(cmdMessageReceived(QList<QByteArray>)));
 
 #ifdef QT_DEBUG
@@ -154,18 +270,18 @@ bool QHalRemoteComponent::connectSockets()
 /** Disconnects the 0MQ sockets */
 void QHalRemoteComponent::disconnectSockets()
 {
-    if (m_cmdSocket != NULL)
+    if (m_halrcmdSocket != NULL)
     {
-        m_cmdSocket->close();
-        m_cmdSocket->deleteLater();
-        m_cmdSocket = NULL;
+        m_halrcmdSocket->close();
+        m_halrcmdSocket->deleteLater();
+        m_halrcmdSocket = NULL;
     }
 
-    if (m_updateSocket != NULL)
+    if (m_halrcompSocket != NULL)
     {
-        m_updateSocket->close();
-        m_updateSocket->deleteLater();
-        m_updateSocket = NULL;
+        m_halrcompSocket->close();
+        m_halrcompSocket->deleteLater();
+        m_halrcompSocket = NULL;
     }
 
     if (m_context != NULL)
@@ -214,7 +330,7 @@ void QHalRemoteComponent::bind()
     qDebug() << "bind:" << QString::fromStdString(s);
 #endif
 
-    m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
+    m_halrcmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
 }
 
@@ -251,10 +367,10 @@ void QHalRemoteComponent::pinChange(QVariant value)
     pb::Pin *halPin;
 
 #ifdef QT_DEBUG
-    qDebug() << "pinchange" << m_synced;
+    qDebug() << "pinchange" << (m_connectionState == Connected);
 #endif
 
-    if (!m_synced)
+    if (m_connectionState != Connected) // only accept pin changes if we are connected
     {
         return;
     }
@@ -296,7 +412,7 @@ void QHalRemoteComponent::pinChange(QVariant value)
         halPin->set_halu32(pin->value().toUInt());
     }
 
-    m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
+    m_halrcmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
 }
 
@@ -463,8 +579,6 @@ void QHalRemoteComponent::updateMessageReceived(QList<QByteArray> messageList)
                 m_pinsByHandle[remotePin.handle()] = localPin;
                 pinUpdate(remotePin, localPin);
             }
-            m_synced = true;
-            emit syncedChanged(m_synced);
 
             if (m_sState != Up)
             {
@@ -532,7 +646,7 @@ void QHalRemoteComponent::cmdMessageReceived(QList<QByteArray> messageList)
 #endif
         m_cState = Up;
         m_sState = Trying;
-        m_updateSocket->subscribeTo(m_name.toLocal8Bit());
+        m_halrcompSocket->subscribeTo(m_name.toLocal8Bit());
 
         return;
     }
@@ -592,7 +706,7 @@ void QHalRemoteComponent::hearbeatTimerTick()
 
     m_tx.set_type(pb::MT_PING);
 
-    m_cmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
+    m_halrcmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
 
     m_pingOutstanding = true;

@@ -18,12 +18,12 @@ include(../protobuf.pri)
 
 # Input
 SOURCES += \
-    mjpegstreamerclient.cpp \
-    plugin.cpp
+    plugin.cpp \
+    qmjpegstreamerclient.cpp
 
 HEADERS += \
-    mjpegstreamerclient.h \
-    plugin.h
+    plugin.h \
+    qmjpegstreamerclient.h
 
 QML_INFRA_FILES = \
     qmldir
