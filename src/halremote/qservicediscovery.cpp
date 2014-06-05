@@ -219,7 +219,6 @@ void QServiceDiscovery::initializeMdns()
     }
 
     emit networkOpenChanged(m_networkOpen);
-    m_expiryCheckTimer->start();
 
     m_delayedInitRunning = false;
 }
@@ -242,8 +241,6 @@ void QServiceDiscovery::deinitializeMdns()
 
     m_jdns->deleteLater();
     m_jdns = NULL;
-
-    m_expiryCheckTimer->stop();
 }
 
 void QServiceDiscovery::delayedInit()
