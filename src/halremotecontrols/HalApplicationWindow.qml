@@ -133,7 +133,6 @@ Rectangle {
         Label {
             id: connectingLabel
 
-            visible: connectingIndicator.visible
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: connectingIndicator.top
             anchors.bottomMargin: Screen.logicalPixelDensity
@@ -146,8 +145,6 @@ Rectangle {
         BusyIndicator {
             id: connectingIndicator
 
-            visible: ((remoteComponent.connectionState === HalRemoteComponent.Disconnected)
-                      || (remoteComponent.connectionState === HalRemoteComponent.Connecting))
             anchors.centerIn: parent
             running: true
             height: parent.height * 0.15
@@ -155,25 +152,23 @@ Rectangle {
         }
 
         CheckBox {
-            id: rcompCheck
+            id: halrcompCheck
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: connectingIndicator.bottom
             anchors.topMargin: Screen.logicalPixelDensity
             enabled: false
-            visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
             text: qsTr("halrcomp service available")
             checked: halrcompService.ready
         }
 
         CheckBox {
-            id: rcommandCheck
+            id: halrcmdCheck
 
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: rcompCheck.bottom
+            anchors.top: halrcompCheck.bottom
             anchors.topMargin: Screen.logicalPixelDensity
             enabled: false
-            visible: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
             text: qsTr("halrcmd service available")
             checked: halrcmdService.ready
         }
@@ -181,7 +176,6 @@ Rectangle {
         Label {
             id: errorLabel
 
-            visible: (remoteComponent.connectionState === HalRemoteComponent.Error)
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
@@ -207,34 +201,6 @@ Rectangle {
         }
     }
 
-    /* This timer is a workaround to make the discoveryPage invisible in QML designer */
-    Timer {
-        interval: 10
-        repeat: false
-        running: true
-        onTriggered: {
-            discoveryPage.visible = true
-            discoveryPage.enabled = true
-        }
-    }
-
-    state: (remoteComponent.connectionState === HalRemoteComponent.Connected) ? "connected" : "discovery"
-
-    states: [
-        State {
-            name: "discovery"
-            PropertyChanges { target: discoveryPage; opacity: 1.0; enabled: true }
-        },
-        State {
-            name: "connected"
-            PropertyChanges { target: discoveryPage; opacity: 0.0; enabled: false }
-        }
-    ]
-
-    transitions: Transition {
-            PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic}
-        }
-
     HalRemoteComponent {
         id: remoteComponent
 
@@ -245,4 +211,54 @@ Rectangle {
         ready: halrcompService.ready && halrcmdService.ready
         containerItem: parent
     }
+
+    /* This timer is a workaround to make the discoveryPage invisible in QML designer */
+    Timer {
+        interval: 10
+        repeat: false
+        running: true
+        onTriggered: {
+            discoveryPage.visible = true
+        }
+    }
+
+    state: {
+        switch (remoteComponent.connectionState) {
+        case HalRemoteComponent.Connected:
+            return "connected"
+        case HalRemoteComponent.Error:
+            return "error"
+        default:
+            return "disconnected"
+        }
+    }
+
+    states: [
+        State {
+            name: "disconnected"
+            PropertyChanges { target: discoveryPage; opacity: 1.0; enabled: true }
+            PropertyChanges { target: connectingLabel; visible: true }
+            PropertyChanges { target: connectingIndicator; visible: true }
+            PropertyChanges { target: halrcompCheck; visible: true }
+            PropertyChanges { target: halrcmdCheck; visible: true }
+            PropertyChanges { target: errorLabel; visible: false }
+        },
+        State {
+            name: "error"
+            PropertyChanges { target: discoveryPage; opacity: 1.0; enabled: true }
+            PropertyChanges { target: connectingLabel; visible: false }
+            PropertyChanges { target: connectingIndicator; visible: false }
+            PropertyChanges { target: halrcompCheck; visible: false }
+            PropertyChanges { target: halrcmdCheck; visible: false }
+            PropertyChanges { target: errorLabel; visible: true }
+        },
+        State {
+            name: "connected"
+            PropertyChanges { target: discoveryPage; opacity: 0.0; enabled: false }
+        }
+    ]
+
+    transitions: Transition {
+            PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic}
+        }
 }

@@ -151,11 +151,11 @@ Rectangle {
     /*! \internal */
     function goBack()
     {
-        if (pageStack.state == "discovery")
+        if (mainWindow.state == "discovery")
         {
             Qt.quit()
         }
-        else if (pageStack.state == "config")
+        else if (mainWindow.state == "config")
         {
             if (autoSelectInstance == false)
             {
@@ -168,7 +168,7 @@ Rectangle {
                 Qt.quit()
             }
         }
-        else if (pageStack.state == "loaded")
+        else if (mainWindow.state == "loaded")
         {
             if (localMode)
             {
@@ -194,7 +194,7 @@ Rectangle {
                 serviceDiscovery.updateServices()
             }
         }
-        else if (pageStack.state == "error")
+        else if (mainWindow.state == "error")
         {
             clearError()
             applicationConfig.ready = false
@@ -217,6 +217,18 @@ Rectangle {
         discoveryPage.errorActive = false
     }
 
+    // Capture the Android Back key and backspace key
+    // on the desktop tp go back in the application
+    // focus needs to be true to capture key events
+    focus: true
+    Keys.onReleased: {
+        if ((event.key === Qt.Key_Back) ||
+                (event.key === Qt.Key_Backspace)) {
+            goBack()
+            event.accepted = true
+        }
+    }
+
     SystemPalette {
         id: systemPalette;
         colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
@@ -227,286 +239,189 @@ Rectangle {
     }
 
     Item {
-        id: pageStack
+        id: networkPage
 
         anchors.fill: parent
 
-        Item {
-            id: networkPage
+        Label {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: Screen.logicalPixelDensity * 2
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            font.pixelSize: dummyText.font.pixelSize * 1.5
+            text: qsTr("Warning!<br>No network connection found, service discovery unavailable. Please check your network connection.")
+        }
+    }
 
-            anchors.fill: parent
+    Item {
+        property bool instanceSelected: false
+        property bool errorActive: false
 
-            Label {
+        id: discoveryPage
+
+        anchors.fill: parent
+
+        Text {
+            id: pageTitleText2
+
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: Screen.logicalPixelDensity*3
+            text: qsTr("Available Instances:")
+            font.pointSize: dummyText.font.pointSize * 1.6
+            font.bold: true
+        }
+
+        ListView {
+            anchors.top: pageTitleText2.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: Screen.logicalPixelDensity*3
+            spacing: Screen.logicalPixelDensity*3
+
+            model: configService.items
+            delegate: Button {
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.margins: Screen.logicalPixelDensity * 2
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-                font.pixelSize: dummyText.font.pixelSize * 1.5
-                text: qsTr("Warning!<br>No network connection found, service discovery unavailable. Please check your network connection.")
-            }
-        }
+                height: mainWindow.height*0.1
 
-        Item {
-            property bool instanceSelected: false
-            property bool errorActive: false
+                Text {
+                    id: titleText2
 
-            id: discoveryPage
-
-            anchors.fill: parent
-
-            Text {
-                id: pageTitleText2
-
-                anchors.top: parent.top
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.topMargin: Screen.logicalPixelDensity*3
-                text: qsTr("Available Instances:")
-                font.pointSize: dummyText.font.pointSize * 1.6
-                font.bold: true
-            }
-
-            ListView {
-                anchors.top: pageTitleText2.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.margins: Screen.logicalPixelDensity*3
-                spacing: Screen.logicalPixelDensity*3
-
-                model: configService.items
-                delegate: Button {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: mainWindow.height*0.1
-
-                    Text {
-                        id: titleText2
-
-                        anchors.centerIn: parent
-                        font.pointSize: dummyText.font.pointSize*1.6
-                        font.bold: true
-                        text: name
-                    }
-
-                    onClicked: selectInstance(index)
+                    anchors.centerIn: parent
+                    font.pointSize: dummyText.font.pointSize*1.6
+                    font.bold: true
+                    text: name
                 }
 
-                onCountChanged: {
-                    if ((pageStack.state == "discovery") && (autoSelectInstance == true) && (count > 0))
-                    {
-                        selectInstance(0)
-                    }
-                }
+                onClicked: selectInstance(index)
             }
 
-            BusyIndicator {
-                anchors.centerIn: parent
-                running: true
-                visible: configService.items.length === 0
-                height: parent.height * 0.15
-                width: height
-            }
-        }
-
-        Item {
-            id: appPage
-
-            anchors.fill: parent
-
-            Text {
-                id: pageTitleText
-
-                anchors.top: parent.top
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.topMargin: Screen.logicalPixelDensity*3
-                text: configService.name
-                font.pointSize: dummyText.font.pointSize * 1.6
-                font.bold: true
-            }
-
-            ListView {
-                anchors.top: pageTitleText.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.margins: Screen.logicalPixelDensity*3
-                spacing: Screen.logicalPixelDensity*3
-
-                model: applicationConfig.configs
-                delegate: Button {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: mainWindow.height*0.1
-
-                    Text {
-                        id: titleText
-
-                        anchors.centerIn: parent
-                        anchors.verticalCenterOffset: -Screen.logicalPixelDensity*2
-                        font.pointSize: descriptionText.font.pointSize*1.6
-                        font.bold: true
-                        text: name
-                    }
-                    Text {
-                        id: descriptionText
-
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: titleText.bottom
-                        anchors.margins: Screen.logicalPixelDensity*1
-                        text: description
-                    }
-
-                    onClicked: applicationConfig.selectConfig(name)
-                }
-            }
-        }
-
-        Item {
-            id: viewPage
-
-            anchors.fill: parent
-
-            Loader {
-                id: applicationLoader
-
-                anchors.fill: parent
-                active: localMode ? discoveryPage.instanceSelected : applicationConfig.selectedConfig.loaded
-                source: localMode ? applicationSource : applicationConfig.selectedConfig.mainFile
-
-                onSourceChanged: {
-                    console.log("Source changed: " + source + " " + active)
-                }
-
-                onLoaded: {
-                    console.log("Window " + applicationLoader.item.name + " loaded")
-                    applicationServiceList.services = Qt.binding(
-                                function()
-                                {
-                                    return (((applicationLoader.item != null) && (applicationLoader.item.services !== undefined)) ? applicationLoader.item.services : [])
-                                })
-                    applicationInternalServiceList.services = Qt.binding(
-                                function()
-                                {
-                                    return (((applicationLoader.item != null) && (applicationLoader.item.internalServices !== undefined)) ? applicationLoader.item.internalServices : [])
-                                })
-                    serviceDiscovery.updateServices()
-                }
-            }
-        }
-
-        Item {
-            property string errorType: ""
-            property string errorText: ""
-
-            id: errorPage
-
-            anchors.fill: parent
-
-            Label {
-                id: errorLabel
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.margins: Screen.logicalPixelDensity * 2
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-                font.pixelSize: dummyText.font.pixelSize * 1.5
-                text: errorPage.errorType + "\n" + errorPage.errorText
-            }
-        }
-
-        state: {
-            if (serviceDiscovery.networkOpen)
-            {
-                if (discoveryPage.errorActive)
+            onCountChanged: {
+                if ((mainWindow.state == "discovery") && (autoSelectInstance == true) && (count > 0))
                 {
-                    return "error"
+                    selectInstance(0)
                 }
-                else if (localMode && discoveryPage.instanceSelected)
-                {
-                    return "loaded"
-                }
-                else if (applicationConfig.ready)
-                {
-                    if (applicationLoader.active)
-                    {
-                        return "loaded";
-                    }
-                    else
-                    {
-                        return "config"
-                    }
-                }
-                else {
-                    return "discovery"
-                }
-            }
-            else
-            {
-                return "network"
             }
         }
 
-        states: [
-            State {
-                name: "network"
-                PropertyChanges { target: networkPage; opacity: 1.0; z: 1; enabled: true }
-                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            },
-            State {
-                name: "discovery"
-                PropertyChanges { target: discoveryPage; opacity: 1.0; z: 1; enabled: true }
-                PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            },
-            State {
-                name: "config"
-                PropertyChanges { target: appPage; opacity: 1.0; z: 1; enabled: true }
-                PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            },
-            State {
-                name: "loaded"
-                PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: viewPage; opacity: 1.0; z: 1; enabled: true }
-                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            },
-            State {
-                name: "error"
-                PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-                PropertyChanges { target: errorPage; opacity: 1.0; z: 1; enabled: true }
-            }
-        ]
+        BusyIndicator {
+            anchors.centerIn: parent
+            running: true
+            visible: configService.items.length === 0
+            height: parent.height * 0.15
+            width: height
+        }
+    }
 
-        transitions: Transition {
-                PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic }
+    Item {
+        id: appPage
+
+        anchors.fill: parent
+
+        Text {
+            id: pageTitleText
+
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: Screen.logicalPixelDensity*3
+            text: configService.name
+            font.pointSize: dummyText.font.pointSize * 1.6
+            font.bold: true
+        }
+
+        ListView {
+            anchors.top: pageTitleText.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: Screen.logicalPixelDensity*3
+            spacing: Screen.logicalPixelDensity*3
+
+            model: applicationConfig.configs
+            delegate: Button {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: mainWindow.height*0.1
+
+                Text {
+                    id: titleText
+
+                    anchors.centerIn: parent
+                    anchors.verticalCenterOffset: -Screen.logicalPixelDensity*2
+                    font.pointSize: descriptionText.font.pointSize*1.6
+                    font.bold: true
+                    text: name
+                }
+                Text {
+                    id: descriptionText
+
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: titleText.bottom
+                    anchors.margins: Screen.logicalPixelDensity*1
+                    text: description
+                }
+
+                onClicked: applicationConfig.selectConfig(name)
+            }
+        }
+    }
+
+    Item {
+        id: viewPage
+
+        anchors.fill: parent
+
+        Loader {
+            id: applicationLoader
+
+            anchors.fill: parent
+            active: localMode ? discoveryPage.instanceSelected : applicationConfig.selectedConfig.loaded
+            source: localMode ? applicationSource : applicationConfig.selectedConfig.mainFile
+
+            onSourceChanged: {
+                console.log("Source changed: " + source + " " + active)
             }
 
-        // Capture the Android Back key and backspace key
-        // on the desktop tp go back in the application
-        // focus needs to be true to capture key events
-        focus: true
-        Keys.onReleased: {
-            if ((event.key === Qt.Key_Back) ||
-                    (event.key === Qt.Key_Backspace)) {
-                goBack()
-                event.accepted = true
+            onLoaded: {
+                console.log("Window " + applicationLoader.item.name + " loaded")
+                applicationServiceList.services = Qt.binding(
+                            function()
+                            {
+                                return (((applicationLoader.item != null) && (applicationLoader.item.services !== undefined)) ? applicationLoader.item.services : [])
+                            })
+                applicationInternalServiceList.services = Qt.binding(
+                            function()
+                            {
+                                return (((applicationLoader.item != null) && (applicationLoader.item.internalServices !== undefined)) ? applicationLoader.item.internalServices : [])
+                            })
+                serviceDiscovery.updateServices()
             }
+        }
+    }
+
+    Item {
+        property string errorType: ""
+        property string errorText: ""
+
+        id: errorPage
+
+        anchors.fill: parent
+
+        Label {
+            id: errorLabel
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: Screen.logicalPixelDensity * 2
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            font.pixelSize: dummyText.font.pixelSize * 1.5
+            text: errorPage.errorType + "\n" + errorPage.errorText
         }
     }
 
@@ -553,4 +468,83 @@ Rectangle {
             }
         ]
     }
+
+    state: {
+        if (serviceDiscovery.networkOpen)
+        {
+            if (discoveryPage.errorActive)
+            {
+                return "error"
+            }
+            else if (localMode && discoveryPage.instanceSelected)
+            {
+                return "loaded"
+            }
+            else if (applicationConfig.ready)
+            {
+                if (applicationLoader.active)
+                {
+                    return "loaded";
+                }
+                else
+                {
+                    return "config"
+                }
+            }
+            else {
+                return "discovery"
+            }
+        }
+        else
+        {
+            return "network"
+        }
+    }
+
+    states: [
+        State {
+            name: "network"
+            PropertyChanges { target: networkPage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+        },
+        State {
+            name: "discovery"
+            PropertyChanges { target: discoveryPage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+        },
+        State {
+            name: "config"
+            PropertyChanges { target: appPage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+        },
+        State {
+            name: "loaded"
+            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: viewPage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+        },
+        State {
+            name: "error"
+            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: errorPage; opacity: 1.0; z: 1; enabled: true }
+        }
+    ]
+
+    transitions: Transition {
+            PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic }
+        }
 }
