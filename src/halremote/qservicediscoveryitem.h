@@ -36,7 +36,6 @@ class QServiceDiscoveryItem : public QQuickItem
     Q_PROPERTY(int version READ version NOTIFY versionChanged)
     Q_PROPERTY(int port READ port NOTIFY portChanged)
     Q_PROPERTY(QHostAddress hostAddress READ hostAddress NOTIFY hostAddressChanged)
-    Q_PROPERTY(QDateTime expiryDate READ expiryDate NOTIFY expiryDateChanged)
     Q_PROPERTY(QStringList txtRecords READ txtRecords NOTIFY txtRecordsChanged)
 
 public:
@@ -61,11 +60,6 @@ QHostAddress hostAddress() const
 QString name() const
 {
     return m_name;
-}
-
-QDateTime expiryDate() const
-{
-    return m_expiryDate;
 }
 
 QString type() const
@@ -125,14 +119,6 @@ void setName(QString arg)
     }
 }
 
-void setExpiryDate(QDateTime arg)
-{
-    if (m_expiryDate != arg) {
-        m_expiryDate = arg;
-        emit expiryDateChanged(arg);
-    }
-}
-
 void setType(QString arg)
 {
     if (m_type != arg) {
@@ -171,7 +157,6 @@ private:
     QString m_uuid;
     int m_port;
     QHostAddress m_hostAddress;
-    QDateTime m_expiryDate;
     QStringList m_txtRecords;
     int m_outstandingRequests;
 
@@ -183,7 +168,6 @@ void uriChanged(QString arg);
 void portChanged(int arg);
 void hostAddressChanged(QHostAddress arg);
 void nameChanged(QString arg);
-void expiryDateChanged(QDateTime arg);
 void typeChanged(QString arg);
 void txtRecordsChanged(QStringList arg);
 void uuidChanged(QString arg);

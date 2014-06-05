@@ -182,7 +182,7 @@ void QMjpegStreamerClient::stop()
 
 void QMjpegStreamerClient::connectSocket()
 {
-    m_context = createDefaultContext(this);
+    m_context = createDefaultContext(this, 1);
     m_context->start();
 
     m_updateSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);

@@ -73,11 +73,6 @@
     This property holds the host address of the service.
 */
 
-/*! \qmlproperty date ServiceDiscoveryItem::expiryDate
-
-    This property holds the date when the record expires.
-*/
-
 /*! \qmlproperty list<string> ServiceDiscoveryItem::txtRecords
 
     This property holds the TXT records of the service.
@@ -91,7 +86,6 @@ QServiceDiscoveryItem::QServiceDiscoveryItem(QQuickItem *parent) :
     m_uuid(""),
     m_port(0),
     m_hostAddress(QHostAddress()),
-    m_expiryDate(QDateTime()),
     m_txtRecords(QStringList()),
     m_outstandingRequests(0)
 {

@@ -286,7 +286,7 @@ void QApplicationConfig::updateError(QApplicationConfig::ConnectionError error, 
 
 bool QApplicationConfig::connectSocket()
 {
-    m_context = createDefaultContext(this);
+    m_context = createDefaultContext(this, 1);
     m_context->start();
 
     m_configSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);

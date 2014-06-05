@@ -163,12 +163,8 @@ QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     m_networkConfigTimer(new QTimer(this)),
     m_elapsedTimer(QElapsedTimer()),
     m_jdns(NULL),
-    m_expiryCheckTimer(new QTimer(this)),
     m_delayedInitRunning(false)
 {
-    connect(m_expiryCheckTimer, SIGNAL(timeout()),
-            this, SLOT(expiryCheck()));
-    m_expiryCheckTimer->setInterval(60000); // check every 60s
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
@@ -716,7 +712,6 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             if (r.ttl != 0)
             {
                 item = addItem(name, serviceType);
-                item->setExpiryDate(QDateTime::currentDateTime().addSecs(r.ttl));
                 item->setOutstandingRequests(3);     // We have to do 3 requests before the item is fully resolved
                 newId = m_jdns->queryStart(r.name, QJDns::Txt);
                 m_queryTypeMap.insert(newId, QJDns::Txt);
@@ -794,22 +789,6 @@ void QServiceDiscovery::error(int id, QJDns::Error e)
 {
     qDebug() << "==================== error ====================";
     qDebug() << id << e;
-}
-
-void QServiceDiscovery::expiryCheck()
-{
-    QMapIterator<QString, QList<QServiceDiscoveryItem*> > i(m_serviceTypeMap);
-    while (i.hasNext()) {
-        i.next();
-        foreach (QServiceDiscoveryItem *item, i.value())
-        {
-            if (item->expiryDate() < QDateTime::currentDateTime())  // item is expired
-            {
-                removeItem(item->name(), i.key());
-            }
-        }
-    }
-
 }
 
 void QServiceDiscovery::openNetworkSession()

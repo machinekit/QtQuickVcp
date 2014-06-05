@@ -135,7 +135,6 @@ private:
     private slots:
     void resultsReady(int id, const QJDns::Response &results);
     void error(int id, QJDns::Error e);
-    void expiryCheck();
     void openNetworkSession();
     void updateNetConfig();
     void initializeMdns();
