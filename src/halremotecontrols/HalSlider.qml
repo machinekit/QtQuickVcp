@@ -28,7 +28,7 @@ import Machinekit.HalRemote.Controls 1.0
 /*!
     \qmltype HalSlider
     \inqmlmodule Machinekit.HalRemote.Controls
-    \brief A progress indicator.
+    \brief Provides a vertical or horizontal slider control.
     \ingroup halremotecontrols
 
     This component provides a slider combined with a HAL pin. By default
