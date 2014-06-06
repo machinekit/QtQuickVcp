@@ -284,9 +284,19 @@ void QApplicationConfig::updateError(QApplicationConfig::ConnectionError error, 
     emit errorChanged(m_error);
 }
 
+void QApplicationConfig::pollError(int errorNum, const QString &errorMsg)
+{
+    QString errorString;
+    errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
+    updateError(SocketError, errorString);
+    updateState(Error);
+}
+
 bool QApplicationConfig::connectSocket()
 {
-    m_context = createDefaultContext(this, 1);
+    m_context = new PollingZMQContext(this, 1);
+    connect(m_context, SIGNAL(pollError(int,QString)),
+            this, SLOT(pollError(int,QString)));
     m_context->start();
 
     m_configSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -487,6 +497,19 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
     }
 }
 
+void QApplicationConfig::sendConfigMessage(const QByteArray &data)
+{
+    try {
+        m_configSocket->sendMessage(data);
+    }
+    catch (zmq::error_t e) {
+        QString errorString;
+        errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
+        updateError(SocketError, errorString);
+        updateState(Error);
+    }
+}
+
 void QApplicationConfig::request(pb::ContainerType type)
 {
     m_tx.set_type(type);
@@ -497,7 +520,7 @@ void QApplicationConfig::request(pb::ContainerType type)
     qDebug() << "request:" << QString::fromStdString(s);
 #endif
 
-    m_configSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
+    sendConfigMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
 }
 

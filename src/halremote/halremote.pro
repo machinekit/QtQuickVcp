@@ -37,7 +37,8 @@ HEADERS += \
     qservicediscoveryitem.h \
     qapplicationconfig.h \
     qapplicationconfigitem.h \
-    qapplicationconfigfilter.h
+    qapplicationconfigfilter.h \
+    debughelper.h
 
 QML_INFRA_FILES = \
     qmldir

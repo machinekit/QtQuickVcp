@@ -150,6 +150,9 @@ public slots:
 
     void setName(QString arg)
     {
+        if (m_connectionState != Disconnected)
+            return;
+
         if (m_name != arg) {
             m_name = arg;
             emit nameChanged(arg);
@@ -188,7 +191,7 @@ private:
     QQuickItem  *m_containerItem;
     bool        m_componentCompleted;
 
-    ZMQContext *m_context;
+    PollingZMQContext *m_context;
     ZMQSocket  *m_halrcompSocket;
     ZMQSocket  *m_halrcmdSocket;
     QTimer     *m_heartbeatTimer;
@@ -207,10 +210,12 @@ private:
     void stopHeartbeat();
     void updateState(State state);
     void updateError(ConnectionError error, QString errorString);
+    void sendHalrcmdMessage(const QByteArray &data);
 
 private slots:
-    void updateMessageReceived(QList<QByteArray> messageList);
-    void cmdMessageReceived(QList<QByteArray> messageList);
+    void halrcompMessageReceived(QList<QByteArray> messageList);
+    void halrcmdMessageReceived(QList<QByteArray> messageList);
+    void pollError(int errorNum, const QString& errorMsg);
     void hearbeatTimerTick();
 
     void addPins();
