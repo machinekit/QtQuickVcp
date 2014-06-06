@@ -208,7 +208,7 @@ Rectangle {
         halrcmdUri: halrcmdService.uri
         halrcompUri: halrcompService.uri
         heartbeatPeriod: 3000
-        ready: halrcompService.ready && halrcmdService.ready
+        ready: (halrcompService.ready && halrcmdService.ready) || (remoteComponent.state === HalRemoteComponent.Connected)
         containerItem: parent
     }
 
