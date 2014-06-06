@@ -227,7 +227,10 @@ Rectangle {
         case HalRemoteComponent.Connected:
             return "connected"
         case HalRemoteComponent.Error:
-            return "error"
+            if (remoteComponent.error == HalRemoteComponent.TimeoutError) {
+                return "timeout"
+            } else
+                return "error"
         default:
             return "disconnected"
         }
@@ -253,8 +256,14 @@ Rectangle {
             PropertyChanges { target: errorLabel; visible: true }
         },
         State {
+            name: "timeout"
+            PropertyChanges { target: discoveryPage; opacity: 0.0; enabled: false }
+            PropertyChanges { target: main; enabled: false }
+        },
+        State {
             name: "connected"
             PropertyChanges { target: discoveryPage; opacity: 0.0; enabled: false }
+            PropertyChanges { target: main; enabled: true }
         }
     ]
 
