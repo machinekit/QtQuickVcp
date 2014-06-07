@@ -16,5 +16,6 @@
         <file>HalLabel.qml</file>
         <file>HalContainer.qml</file>
         <file>ConnectionWindow.qml</file>
+        <file>HalApplication.qml</file>
     </qresource>
 </RCC>

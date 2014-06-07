@@ -37,7 +37,13 @@ ApplicationWindow {
 
         anchors.fill: parent
         autoSelectInstance: false
-        applicationSource: "qrc:/qml/VideoDemo.qml"
+        applications: [
+            HalApplication {
+                source: "qrc:/qml/VideoDemo.qml"
+                name: "VideoDemo"
+                description: qsTr("A demo demonstrating the video service.")
+            }
+        ]
         instanceFilter: ServiceDiscoveryFilter{ name: "" }
     }
 }

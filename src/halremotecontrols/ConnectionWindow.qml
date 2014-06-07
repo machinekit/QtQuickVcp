@@ -21,6 +21,7 @@
 ****************************************************************************/
 import QtQuick 2.1
 import QtQuick.Controls 1.1
+import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
 import Machinekit.HalRemote 1.0
 
@@ -43,7 +44,7 @@ import Machinekit.HalRemote 1.0
 
         anchors.fill: parent
         autoSelectInstance: false
-        applicationSource: ""
+        remoteVisible: true
         instanceFilter: ServiceDiscoveryFilter{ name: "" }
     }
     \endqml
@@ -56,8 +57,13 @@ import Machinekit.HalRemote 1.0
 
         anchors.fill: parent
         autoSelectInstance: false
-        applicationSource: "qrc:/qml/VideoDemo.qml"
-        instanceFilter: ServiceDiscoveryFilter{ name: "" }
+        applications: [
+            HalApplication {
+                source: "qrc:/qml/VideoDemo.qml"
+                name: "VideoDemo"
+                description: qsTr("A demo demonstrating the video service.")
+            }
+        ]
     }
     \endqml
 
@@ -71,18 +77,60 @@ import Machinekit.HalRemote 1.0
 
         anchors.fill: parent
         autoSelectInstance: true
-        applicationSource: "qrc:/qml/VideoDemo.qml"
         instanceFilter: ServiceDiscoveryFilter{ name: "Development" }
-    }
+        applications: [
+            HalApplication {
+                source: "qrc:/qml/VideoDemo.qml"
+                name: "VideoDemo"
+                description: qsTr("A demo demonstrating the video service.")
+            }
+        ]
+        }
+    \endqml
+
+    It is also possible to use a combination of both local and remote \l{mode}.
+    This can be used to ship tools within the client application.
+
+    \qml
+    ConnectionWindow {
+        id: connectionWindow
+
+        anchors.fill: parent
+        autoSelectInstance: false
+        remoteVisible: true
+        localVisible: true
+        mode: "remote"
+        applications: [
+            HalApplication {
+                source: "qrc:/qml/VideoDemo.qml"
+                name: "VideoDemo"
+                description: qsTr("A demo demonstrating the video service.")
+            }
+        ]
+        }
     \endqml
 */
-
-
 
 Rectangle {
     /*! This property holds whether an instance should be automatically selected or not.
     */
     property bool autoSelectInstance: false
+
+    /*! This property holds whether an application should be automatically selected or not.
+    */
+    property bool autoSelectApplication: !remoteVisible && (applications.length === 1)
+
+    /*! This property holds whether the local application selection should be visible or not.
+    */
+    property bool localVisible: applications.length > 0
+
+    /*! This property holds whether the remote application selection should be visible or not.
+    */
+    property bool remoteVisible: !localVisible
+
+    /*! This property holds the currently selected application mode. Legal value are \c{"local"} and \c{"remote"}.
+    */
+    property string mode: localVisible ? "local" : "remote"
 
     /*! \qmlproperty ServiceDiscoveryFilter instanceFilter
 
@@ -90,24 +138,18 @@ Rectangle {
     */
     property alias instanceFilter: configService.filter
 
-    /*! This property holds the source of the main application window. Leave this property empty to
-        to show a list of applications available on the remote config server.
-    */
-    property string applicationSource: ""
-
     /*! This property holds the title of the window.
     */
     readonly property string title: (applicationLoader.active && (applicationLoader.item != null))
                            ? ((applicationLoader.item.title !== undefined) ? applicationLoader.item.title : "")
                            : qsTr("MachineKit App Discover")
 
-    /*! This property holds whether the a local or remote application should be loaded. Depends on the
-        \l{applicationSource}.
+    /*! This property holds the list of local applications.
     */
-    readonly property bool localMode: applicationSource != ""
+    property list<HalApplication> applications
+
 
     id: mainWindow
-
 
     color: systemPalette.window
     width: 500
@@ -116,36 +158,35 @@ Rectangle {
     /*! \internal */
     function selectInstance(index)
     {
-        if (!localMode)
+        if (!(remoteVisible || localVisible))
+            return
+
+        if ((configService.items[index].uuid !== "")
+                && (!remoteVisible || configService.items[index].uri !== ""))
         {
-            if ((configService.items[index].uri !== "") && (configService.items[index].uuid !== ""))
-            {
-                var x = applicationConfig   // for some reason the appConfig variable goes away after settings the filter
-                serviceDiscoveryFilter.txtRecords = ["uuid=" + configService.items[index].uuid]
-                serviceDiscovery.updateFilter()
+            var x = applicationConfig   // for some reason the appConfig variable goes away after settings the filter
+            serviceDiscoveryFilter.txtRecords = ["uuid=" + configService.items[index].uuid]
+            serviceDiscovery.updateFilter()
+            if (remoteVisible)
                 x.ready = true
-                discoveryPage.instanceSelected = true
-            }
-            else
-            {
-                console.log("selecting instance failed: check uri and uuid")
-                setError(qsTr("Instance Error:"), qsTr("Check uri and uuid"))
-            }
+            discoveryPage.instanceSelected = true
+
+            if ((mainWindow.mode == "local") && mainWindow.autoSelectApplication)
+                selectApplication(0)
         }
         else
         {
-            if (configService.items[index].uuid !== "")
-            {
-                serviceDiscoveryFilter.txtRecords = ["uuid=" + configService.items[index].uuid]
-                serviceDiscovery.updateFilter()
-                discoveryPage.instanceSelected = true
-            }
-            else
-            {
-                console.log("selecting instance failed: check uuid")
-                setError(qsTr("Instance Error:"), qsTr("Check uri and uuid"))
-            }
+            console.log("selecting instance failed: check uri and uuid")
+            setError(qsTr("Instance Error:"), qsTr("Check uri and uuid"))
         }
+    }
+
+    function selectApplication(index)
+    {
+        if (mode == "local")
+            appPage.applicationSource = applications[index].source
+        else
+            applicationConfig.selectConfig(applicationConfig.configs[index].name)
     }
 
     /*! \internal */
@@ -162,6 +203,7 @@ Rectangle {
                 applicationConfig.ready = false
                 serviceDiscoveryFilter.txtRecords = []
                 serviceDiscovery.updateFilter()
+                discoveryPage.instanceSelected = false
             }
             else
             {
@@ -170,28 +212,23 @@ Rectangle {
         }
         else if (mainWindow.state == "loaded")
         {
-            if (localMode)
-            {
-                if (autoSelectInstance == false)
-                {
-                    applicationServiceList.services = []
-                    applicationInternalServiceList.services = []
-                    serviceDiscovery.updateServices()
-                    serviceDiscoveryFilter.txtRecords = []
-                    serviceDiscovery.updateFilter()
-                    discoveryPage.instanceSelected = false
-                }
-                else
-                {
-                    Qt.quit()
-                }
-            }
-            else
-            {
+            if ((autoSelectApplication) && (autoSelectInstance))
+                Qt.quit()
+
+            if (appPage.applicationSource == "")    // remote application
                 applicationConfig.unselectConfig()
-                applicationServiceList.services = []
-                applicationInternalServiceList.services = []
-                serviceDiscovery.updateServices()
+            else
+                appPage.applicationSource = ""
+
+            applicationServiceList.services = []
+            applicationInternalServiceList.services = []
+            serviceDiscovery.updateServices()
+
+            if (autoSelectApplication)  // go back to discovery page
+            {
+                serviceDiscoveryFilter.txtRecords = []
+                serviceDiscovery.updateFilter()
+                discoveryPage.instanceSelected = false
             }
         }
         else if (mainWindow.state == "error")
@@ -318,54 +355,79 @@ Rectangle {
     }
 
     Item {
+        property string applicationSource: ""   // indicates that a local app was selected
+
         id: appPage
 
         anchors.fill: parent
 
-        Text {
-            id: pageTitleText
-
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: Screen.logicalPixelDensity*3
-            text: configService.name
-            font.pointSize: dummyText.font.pointSize * 1.6
-            font.bold: true
-        }
-
-        ListView {
-            anchors.top: pageTitleText.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
+        ColumnLayout {
+            anchors.fill: parent
             anchors.margins: Screen.logicalPixelDensity*3
             spacing: Screen.logicalPixelDensity*3
 
-            model: applicationConfig.configs
-            delegate: Button {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: mainWindow.height*0.1
+            Text {
+                id: pageTitleText
 
-                Text {
-                    id: titleText
+                Layout.fillWidth: true
+                text: configService.name
+                font.pointSize: dummyText.font.pointSize * 1.6
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+            }
 
-                    anchors.centerIn: parent
-                    anchors.verticalCenterOffset: -Screen.logicalPixelDensity*2
-                    font.pointSize: descriptionText.font.pointSize*1.6
-                    font.bold: true
-                    text: name
+            ListView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                spacing: Screen.logicalPixelDensity*3
+
+                model: (mode == "local") ? applications : applicationConfig.configs
+                delegate: Button {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: mainWindow.height*0.1
+
+                    Text {
+                        id: titleText
+
+                        anchors.centerIn: parent
+                        anchors.verticalCenterOffset: -Screen.logicalPixelDensity*2
+                        font.pointSize: descriptionText.font.pointSize*1.6
+                        font.bold: true
+                        text: name
+                    }
+                    Text {
+                        id: descriptionText
+
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: titleText.bottom
+                        anchors.margins: Screen.logicalPixelDensity*1
+                        text: description
+                    }
+
+                    onClicked: selectApplication(index)
                 }
-                Text {
-                    id: descriptionText
 
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: titleText.bottom
-                    anchors.margins: Screen.logicalPixelDensity*1
-                    text: description
+                onCountChanged: {
+                    if ((mainWindow.state == "config") && (autoSelectApplication == true) && (count > 0))
+                    {
+                        selectApplication(0)
+                    }
                 }
+            }
 
-                onClicked: applicationConfig.selectConfig(name)
+            Button {
+                id: modeButton
+
+                Layout.fillWidth: true
+                text: (mode == "local") ? qsTr("Show Remote Applications") : qsTr("Show Local Applications")
+                visible: mainWindow.remoteVisible && mainWindow.localVisible
+                onClicked: {
+                    if (mainWindow.mode == "local")
+                        mainWindow.mode = "remote"
+                    else
+                        mainWindow.mode = "local"
+                }
             }
         }
     }
@@ -379,8 +441,8 @@ Rectangle {
             id: applicationLoader
 
             anchors.fill: parent
-            active: localMode ? discoveryPage.instanceSelected : applicationConfig.selectedConfig.loaded
-            source: localMode ? applicationSource : applicationConfig.selectedConfig.mainFile
+            active: (appPage.applicationSource != "") ? true : applicationConfig.selectedConfig.loaded
+            source: (appPage.applicationSource != "") ? appPage.applicationSource : applicationConfig.selectedConfig.mainFile
 
             onSourceChanged: {
                 console.log("Source changed: " + source + " " + active)
@@ -476,20 +538,13 @@ Rectangle {
             {
                 return "error"
             }
-            else if (localMode && discoveryPage.instanceSelected)
+            else if (applicationLoader.active)
             {
                 return "loaded"
             }
-            else if (applicationConfig.ready)
+            else if (discoveryPage.instanceSelected)
             {
-                if (applicationLoader.active)
-                {
-                    return "loaded";
-                }
-                else
-                {
-                    return "config"
-                }
+                return "config"
             }
             else {
                 return "discovery"

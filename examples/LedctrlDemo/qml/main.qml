@@ -37,7 +37,13 @@ ApplicationWindow {
 
         anchors.fill: parent
         autoSelectInstance: false
-        applicationSource: "qrc:/qml/LedctrlDemo.qml"
+        applications: [
+            HalApplication {
+                source: "qrc:/qml/LedctrlDemo.qml"
+                name: "LedctrlDemo"
+                description: qsTr("An awesome LED control demo.")
+            }
+        ]
         instanceFilter: ServiceDiscoveryFilter{ name: "" }
     }
 }
