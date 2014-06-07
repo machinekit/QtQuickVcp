@@ -84,6 +84,7 @@ QServiceDiscoveryItem::QServiceDiscoveryItem(QQuickItem *parent) :
     m_type(""),
     m_uri(""),
     m_uuid(""),
+    m_version(0),
     m_port(0),
     m_hostAddress(QHostAddress()),
     m_txtRecords(QStringList()),

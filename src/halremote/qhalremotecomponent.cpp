@@ -343,7 +343,7 @@ void QHalRemoteComponent::bind()
 void QHalRemoteComponent::pinUpdate(pb::Pin remotePin, QHalPin *localPin)
 {
 #ifdef QT_DEBUG
-    DEBUG_TAG(2, m_name,  "pinupdate" << localPin->name())
+    DEBUG_TAG(2, m_name,  "pin update" << localPin->name() << remotePin.halfloat() << remotePin.halbit() << remotePin.hals32() << remotePin.halu32())
 #endif
 
     if (remotePin.has_halfloat())
@@ -371,10 +371,6 @@ void QHalRemoteComponent::pinChange(QVariant value)
     QHalPin *pin;
     pb::Pin *halPin;
 
-#ifdef QT_DEBUG
-    DEBUG_TAG(2, m_name,  "pin change")
-#endif
-
     if (m_connectionState != Connected) // only accept pin changes if we are connected
     {
         return;
@@ -386,6 +382,10 @@ void QHalRemoteComponent::pinChange(QVariant value)
     {
         return;
     }
+
+#ifdef QT_DEBUG
+    DEBUG_TAG(2, m_name,  "pin change" << pin->name() << pin->value())
+#endif
 
     m_tx.set_type(pb::MT_HALRCOMP_SET);
 

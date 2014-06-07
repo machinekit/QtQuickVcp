@@ -155,12 +155,11 @@ private:
     QString m_type;
     QString m_uri;
     QString m_uuid;
+    int m_version;
     int m_port;
     QHostAddress m_hostAddress;
     QStringList m_txtRecords;
     int m_outstandingRequests;
-
-    int m_version;
 
 signals:
 

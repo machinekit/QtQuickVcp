@@ -130,6 +130,12 @@ void setValue(QVariant arg, bool synced = false)
         emit valueChanged(arg);
     }
 
+    if (synced == true) {
+        m_syncValue = arg;  // save the sync point
+    } else if (arg == m_syncValue) {
+        synced = true;  // if value is same as sync point synced is always true
+    }
+
     if (m_synced != synced) {
         m_synced = synced;
         emit syncedChanged(synced);
@@ -157,9 +163,10 @@ private:
     ValueType       m_type;
     HalPinDirection m_direction;
     QVariant        m_value;
+    QVariant        m_syncValue;
     int             m_handle;
     bool            m_enabled;
-    bool m_synced;
+    bool            m_synced;
 };
 
 

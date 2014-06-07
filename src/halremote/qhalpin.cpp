@@ -128,6 +128,7 @@ QHalPin::QHalPin(QObject *parent) :
     m_type(Bit),
     m_direction(Out),
     m_value(false),
+    m_syncValue(false),
     m_handle(0),
     m_enabled(true),
     m_synced(false)

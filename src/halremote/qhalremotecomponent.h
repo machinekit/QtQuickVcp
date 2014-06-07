@@ -195,7 +195,7 @@ private:
     ZMQSocket  *m_halrcompSocket;
     ZMQSocket  *m_halrcmdSocket;
     QTimer     *m_heartbeatTimer;
-    int         m_pingOutstanding;
+    bool        m_pingOutstanding;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;
