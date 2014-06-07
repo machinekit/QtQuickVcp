@@ -39,8 +39,17 @@ ApplicationWindow {
         id: connectionWindow
 
         anchors.fill: parent
+        remoteVisible: true
+        mode: "remote"
         autoSelectInstance: false
-        applicationSource: ""
         instanceFilter: ServiceDiscoveryFilter{ name: "" }
+        autoSelectApplication: false
+        applications: [
+            HalApplication {
+                source: "qrc:/qml/ServiceDisplay.qml"
+                name: "Service Display"
+                description: qsTr("Displays all services running on the Machinekit instance.")
+            }
+        ]
     }
 }
