@@ -7,7 +7,8 @@ isEmpty(PLUGIN_VERSION): PLUGIN_VERSION = 1.0
 
 copyqmlinfra.input = QML_INFRA_FILES
 copyqmlinfra.output = $$OUT_PWD/../../imports/$$TARGETPATH/${QMAKE_FILE_IN_BASE}${QMAKE_FILE_EXT}
-copyqmlinfra.commands = $$QMAKE_MKDIR $$dirname(copyqmlinfra.output) $$escape_expand(\n\t) $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+copyqmlinfra.commands = $$QMAKE_MKDIR $$dirname(copyqmlinfra.output) $$escape_expand(\n\t) \
+                        $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
 copyqmlinfra.CONFIG += no_link no_clean
 copyqmlinfra.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmlinfra
@@ -21,7 +22,8 @@ QMAKE_EXTRA_COMPILERS += copyqmldesigner
 
 copyqmlpropertyeditor.input = QML_PROPERTY_EDITOR_FILES
 copyqmlpropertyeditor.output = $$OUT_PWD/../../imports/$$TARGETPATH/propertyEditorQmlSources/${QMAKE_FILE_IN_BASE}${QMAKE_FILE_EXT}
-copyqmlpropertyeditor.commands = $$QMAKE_MKDIR $$dirname(copyqmlpropertyeditor.output) $$escape_expand(\n\t) $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+copyqmlpropertyeditor.commands = $$QMAKE_MKDIR $$dirname(copyqmlpropertyeditor.output) $$escape_expand(\n\t) \
+                                 $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
 copyqmlpropertyeditor.CONFIG += no_link no_clean
 copyqmlpropertyeditor.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmlpropertyeditor
@@ -35,7 +37,8 @@ QMAKE_CLEAN += -r $$OUT_PWD/../../imports/$$TARGETPATH/
 # ========== install additional files ==========
 !android: !ios: {
     copypluginqmltypes.CONFIG = no_files no_path
-    copypluginqmltypes.extra = $$QMAKE_COPY $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes $$[QT_INSTALL_QML]/$$TARGETPATH/plugins.qmltypes
+    copypluginqmltypes.extra = $$QMAKE_MKDIR $$[QT_INSTALL_QML]/$$TARGETPATH/ $$escape_expand(\n\t) \
+                               $$QMAKE_COPY $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes $$[QT_INSTALL_QML]/$$TARGETPATH/plugins.qmltypes
     INSTALLS += copypluginqmltypes
 }
 
