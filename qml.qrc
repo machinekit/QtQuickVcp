@@ -2,5 +2,9 @@
     <qresource prefix="/">
         <file>qml/main.qml</file>
         <file>qml/ServiceDisplay.qml</file>
+        <file>qml/SplashScreen.qml</file>
+        <file>qml/init.qml</file>
+        <file>images/logo.png</file>
+        <file>images/body_background_dark.png</file>
     </qresource>
 </RCC>

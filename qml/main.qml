@@ -27,13 +27,13 @@ import Machinekit.HalRemote.Controls 1.0
 import Machinekit.VideoView 1.0
 import Machinekit.PathView 1.0
 
-ApplicationWindow {
+Item {
     id: applicationWindow
 
     visible: true
     width: 500
     height: 700
-    title: connectionWindow.title
+    property string title: connectionWindow.title
 
     ConnectionWindow {
         id: connectionWindow
