@@ -273,6 +273,12 @@ Rectangle {
 
     Text {
         id: dummyText
+        visible: false
+    }
+
+    Button {
+        id: dummyButon
+        visible: false
     }
 
     Item {
@@ -300,47 +306,50 @@ Rectangle {
 
         anchors.fill: parent
 
-        Text {
-            id: pageTitleText2
-
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: Screen.logicalPixelDensity*3
-            text: qsTr("Available Instances:")
-            font.pointSize: dummyText.font.pointSize * 1.6
-            font.bold: true
-        }
-
-        ListView {
-            anchors.top: pageTitleText2.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
+        ColumnLayout {
+            anchors.fill: parent
             anchors.margins: Screen.logicalPixelDensity*3
             spacing: Screen.logicalPixelDensity*3
 
-            model: configService.items
-            delegate: Button {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: mainWindow.height*0.1
+            Text {
+                id: pageTitleText2
 
-                Text {
-                    id: titleText2
-
-                    anchors.centerIn: parent
-                    font.pointSize: dummyText.font.pointSize*1.6
-                    font.bold: true
-                    text: name
-                }
-
-                onClicked: selectInstance(index)
+                Layout.fillWidth: true
+                text: qsTr("Available Instances:")
+                font.pointSize: dummyText.font.pointSize * 1.6
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
             }
 
-            onCountChanged: {
-                if ((mainWindow.state == "discovery") && (autoSelectInstance == true) && (count > 0))
-                {
-                    selectInstance(0)
+            ListView {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                spacing: Screen.logicalPixelDensity*3
+                clip: true
+
+                model: configService.items
+                delegate: Button {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: dummyButon.height * 3
+
+                    Text {
+                        id: titleText2
+
+                        anchors.centerIn: parent
+                        font.pointSize: dummyText.font.pointSize*1.6
+                        font.bold: true
+                        text: name
+                    }
+
+                    onClicked: selectInstance(index)
+                }
+
+                onCountChanged: {
+                    if ((mainWindow.state == "discovery") && (autoSelectInstance == true) && (count > 0))
+                    {
+                        selectInstance(0)
+                    }
                 }
             }
         }
@@ -380,29 +389,36 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 spacing: Screen.logicalPixelDensity*3
+                clip: true
 
                 model: (mode == "local") ? applications : applicationConfig.configs
                 delegate: Button {
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: mainWindow.height*0.1
+                    height: dummyButon.height * 3
 
-                    Text {
-                        id: titleText
+                    ColumnLayout {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
 
-                        anchors.centerIn: parent
-                        anchors.verticalCenterOffset: -Screen.logicalPixelDensity*2
-                        font.pointSize: descriptionText.font.pointSize*1.6
-                        font.bold: true
-                        text: name
-                    }
-                    Text {
-                        id: descriptionText
+                        Text {
+                            id: titleText
 
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: titleText.bottom
-                        anchors.margins: Screen.logicalPixelDensity*1
-                        text: description
+                            Layout.fillWidth: true
+                            font.pointSize: descriptionText.font.pointSize*1.6
+                            font.bold: true
+                            text: name
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                        Text {
+                            id: descriptionText
+
+                            Layout.fillWidth: true
+                            anchors.margins: parent.height*0.1
+                            text: description
+                            horizontalAlignment: Text.AlignHCenter
+                        }
                     }
 
                     onClicked: selectApplication(index)
