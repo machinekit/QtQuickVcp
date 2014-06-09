@@ -81,6 +81,30 @@ set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE STRING "Directory where 
 set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Directory where library will install")
 set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "The directory the headers are installed in")
 
+# Normalize paths for comparsion
+get_filename_component(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} ABSOLUTE)
+get_filename_component(BIN_INSTALL_DIR ${BIN_INSTALL_DIR} ABSOLUTE)
+get_filename_component(LIB_INSTALL_DIR ${LIB_INSTALL_DIR} ABSOLUTE)
+get_filename_component(INCLUDE_INSTALL_DIR ${INCLUDE_INSTALL_DIR} ABSOLUTE)
+
+# if all paths are subdirs of CMAKE_INSTALL_PREFIX it is possible to use relative paths
+set(USE_RELATIVE_PATHS ON)
+foreach(PATH ${BIN_INSTALL_DIR} ${LIB_INSTALL_DIR} ${INCLUDE_INSTALL_DIR})
+  if(NOT "${PATH}/" MATCHES "^${CMAKE_INSTALL_PREFIX}/")
+    set(USE_RELATIVE_PATHS OFF)
+  endif()
+endforeach()
+
+message("${BIN_INSTALL_DIR} ${LIB_INSTALL_DIR} ${INCLUDE_INSTALL_DIR}")
+
+if(USE_RELATIVE_PATHS)
+  file(RELATIVE_PATH BIN_INSTALL_DIR ${CMAKE_INSTALL_PREFIX} ${BIN_INSTALL_DIR})
+  file(RELATIVE_PATH LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX} ${LIB_INSTALL_DIR})
+  file(RELATIVE_PATH INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX} ${INCLUDE_INSTALL_DIR})
+endif()
+
+message("${BIN_INSTALL_DIR} ${LIB_INSTALL_DIR} ${INCLUDE_INSTALL_DIR}")
+
 if(NOT MSVC)
   set(JDNS_CONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/jdns")
   set(QJDNS_CONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/qjdns")
@@ -133,13 +157,6 @@ configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
-
-# figure out the relative path from the installed Config.cmake file to the install prefix (which may be at
-# runtime different from the chosen CMAKE_INSTALL_PREFIX if under Windows the package was installed anywhere)
-# This relative path will be configured into the QJDNSConfig.cmake
-file(RELATIVE_PATH relInstallDir ${JDNS_CONFIG_INSTALL_DIR} ${CMAKE_INSTALL_PREFIX})
-file(RELATIVE_PATH JDNS_INCLUDEDIR_REL ${CMAKE_INSTALL_PREFIX} "${INCLUDE_INSTALL_DIR}/jdns")
-file(RELATIVE_PATH LIB_INSTALL_DIR_REL ${CMAKE_INSTALL_PREFIX} ${LIB_INSTALL_DIR})
 
 # cmake-modules
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/JDnsConfig.cmake.in
