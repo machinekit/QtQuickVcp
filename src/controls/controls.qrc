@@ -10,5 +10,6 @@
         <file>LogChart.qml</file>
         <file>Led.qml</file>
         <file>Gauge.qml</file>
+        <file>Dial.qml</file>
     </qresource>
 </RCC>

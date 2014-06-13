@@ -101,6 +101,8 @@ Rectangle {
 
     width: 30
     height: 30
+    implicitWidth: 30
+    implicitHeight: 30
     border.width: 2
     radius: width/2
     border.color: "black"

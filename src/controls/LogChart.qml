@@ -112,6 +112,8 @@ ValueChart {
     id: chart
     width: 320
     height: 320
+    implicitWidth: 320
+    implicitHeight: 320
 
     valueModel: ValueModel {
         id: valueModel

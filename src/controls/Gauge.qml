@@ -123,7 +123,7 @@ Item {
 
     /*! This property holds the text color.
     */
-    property color textColor: systemPalette.windowText
+    property color textColor: systemPalette.text
 
     /*! This property holds the background color.
     */
@@ -193,41 +193,41 @@ Item {
     */
     property int radius: Screen.pixelDensity*0.7
 
-    /*! \qmlproperty Text valueText
+    /*! \qmlproperty Label valueLabel
 
-        This property holds the \l Text used to display the value.
+        This property holds the \l Label used to display the value.
     */
-    property alias valueText: valueText
+    property alias valueLabel: valueLabel
 
-    /*! \qmlproperty Text minimumValueText
+    /*! \qmlproperty Label minimumValueLabel
 
-        This property holds the \l Text used to display the minimum value.
+        This property holds the \l Label used to display the minimum value.
     */
-    property alias minimumValueText: minimumValueText
+    property alias minimumValueLabel: minimumValueLabel
 
-    /*! \qmlproperty Text maximumValueText
+    /*! \qmlproperty Label maximumValueLabel
 
-        This property holds the \l Text used to display the maximum value.
+        This property holds the \l Label used to display the maximum value.
     */
-    property alias maximumValueText: maximumValueText
+    property alias maximumValueLabel: maximumValueLabel
 
     /*! \qmlproperty bool valueVisible
 
         This property holds whether the value should be visible or not.
     */
-    property alias valueVisible: valueText.visible
+    property alias valueVisible: valueLabel.visible
 
     /*! \qmlproperty bool minimumValueVisible
 
         This property holds whether the minimum value should be visible or not.
     */
-    property alias minimumValueVisible: minimumValueText.visible
+    property alias minimumValueVisible: minimumValueLabel.visible
 
     /*! \qmlproperty bool maximumValueVisible
 
         This property holds whether the maximum value should be visible or not.
     */
-    property alias maximumValueVisible: maximumValueText.visible
+    property alias maximumValueVisible: maximumValueLabel.visible
 
     /*! This property holds whether the the gauge should be styled fancy
         or not. Fancy means that the value zones and colors are used for
@@ -242,10 +242,12 @@ Item {
     id: main
     width: (orientation == Qt.Horizontal) ? 150 : 35
     height: (orientation == Qt.Horizontal) ? 20 : 150
+    implicitHeight: (orientation == Qt.Horizontal) ? progressBar.implicitHeight : progressBar.implicitWidth
+    implicitWidth: (orientation == Qt.Horizontal) ? progressBar.implicitWidth : progressBar.implicitHeight
 
     SystemPalette {
         id: systemPalette;
-        colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
+        colorGroup: main.enabled ? SystemPalette.Active : SystemPalette.Disabled
     }
 
     Component {
@@ -334,8 +336,8 @@ Item {
         }
     }
 
-    Text {
-        id: valueText
+    Label {
+        id: valueLabel
 
         anchors.fill: parent
         horizontalAlignment: Text.AlignHCenter
@@ -345,8 +347,8 @@ Item {
         visible: true
     }
 
-    Text {
-        id: minimumValueText
+    Label {
+        id: minimumValueLabel
 
         anchors.fill: parent
         anchors.rightMargin: ((main.orientation == Qt.Horizontal) && (main.invert != false)) ? Screen.pixelDensity*1 : 0
@@ -360,8 +362,8 @@ Item {
         visible: true
     }
 
-    Text {
-        id: maximumValueText
+    Label {
+        id: maximumValueLabel
 
         anchors.fill: parent
         anchors.rightMargin: ((main.orientation == Qt.Horizontal) && (main.invert == false)) ? Screen.pixelDensity*1 : 0

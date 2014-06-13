@@ -28,6 +28,7 @@ QML_FILES = \
     HalColorPicker.qml \
     HalComboBox.qml \
     HalContainer.qml \
+    HalDial.qml \
     HalGauge.qml \
     HalLabel.qml \
     HalLed.qml \
@@ -71,6 +72,3 @@ QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/HalVirtualJoystickSpecifics.qml
 
 include(../deployment.pri)
-
-OTHER_FILES += \
-    ConnectionWindow.qml

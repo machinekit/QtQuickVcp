@@ -32,7 +32,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalColorPicker"
-        icon: ":images/item-icon.png"
+        icon: "images/item-icon.png"
 
         ItemLibraryEntry {
             name: "Color Picker"
@@ -70,10 +70,23 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalContainer"
-        icon: ":images/item-icon.png"
+        icon: "images/item-icon.png"
 
         ItemLibraryEntry {
             name: "Container"
+            category: "Machinekit - HalRemote Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.HalRemote.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.HalRemote.Controls.HalDial"
+        icon: "images/item-icon.png"
+
+        ItemLibraryEntry {
+            name: "Dial"
             category: "Machinekit - HalRemote Controls"
             libraryIcon: "images/item-icon.png"
             version: "1.0"
@@ -120,7 +133,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalLed"
-        icon: ":images/item-icon.png"
+        icon: "images/item-icon.png"
 
         ItemLibraryEntry {
             name: "Led (Round)"
@@ -143,7 +156,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalLogChart"
-        icon: ":images/item-icon.png"
+        icon: "images/item-icon.png"
 
         ItemLibraryEntry {
             name: "Log Chart"
@@ -219,7 +232,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalVirtualJoystick"
-        icon: ":images/item-icon.png"
+        icon: "images/item-icon.png"
 
         ItemLibraryEntry {
             name: "Virtual Joystick"

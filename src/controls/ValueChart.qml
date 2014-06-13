@@ -20,6 +20,7 @@
 **
 ****************************************************************************/
 import QtQuick 2.0
+import QtQuick.Controls 1.0
 import Machinekit.Controls 1.0
 
 /*!
@@ -198,6 +199,8 @@ Item {
     id: chart
     width: 320
     height: 320
+    implicitWidth: 320
+    implicitHeight: 320
 
     /*! Updates and repaints the chart.
     */
@@ -254,7 +257,7 @@ Item {
             showMessage(qsTr("Timespan: ") + timeSpan + "ms")
         }
     }
-    Text {
+    Label {
         id: leftText
         color: chart.textColor
         anchors.left: parent.left
@@ -263,7 +266,7 @@ Item {
         text: qsTr("Value: <br>") + "<b>" + chart.prefix + ((valueModel != null) ? valueModel.currentValue.toFixed(chart.decimals) : 0) + chart.suffix + "</b>"
     }
 
-    Text {
+    Label {
         id: rightText
         color: chart.textColor
         anchors.right: parent.right
@@ -272,7 +275,7 @@ Item {
         text: qsTr("Target: <br>") + "<b>" + chart.prefix + ((valueModel != null) ? valueModel.targetValue.toFixed(chart.decimals) : 0) + chart.suffix + "</b>"
     }
 
-    Text {
+    Label {
         id: messageText
         color: chart.textColor
         anchors.horizontalCenter: parent.horizontalCenter

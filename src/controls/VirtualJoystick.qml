@@ -130,6 +130,7 @@ Rectangle {
     id: main
 
     width: 150; height: 150
+    implicitWidth: 150; implicitHeight: 150
     color: "#00000000"
 
     Binding {

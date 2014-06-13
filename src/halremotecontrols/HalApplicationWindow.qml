@@ -117,7 +117,7 @@ Rectangle {
         colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
     }
 
-    Text {
+    Label {
         id: dummyText
     }
 
@@ -136,7 +136,7 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: connectingIndicator.top
             anchors.bottomMargin: Screen.logicalPixelDensity
-            font.pixelSize: dummyText.font.pixelSize * 1.5
+            font.pointSize: dummyText.font.pointSize * 1.3
             text: (remoteComponent.connectionState === HalRemoteComponent.Disconnected)
                 ? qsTr("Waiting for services to appear...")
                 : qsTr("Connecting...")
@@ -182,7 +182,7 @@ Rectangle {
             anchors.margins: Screen.logicalPixelDensity * 2
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
-            font.pixelSize: dummyText.font.pixelSize * 1.5
+            font.pointSize: dummyText.font.pointSize * 1.1
             text: {
                 var headerText
 

@@ -181,6 +181,7 @@ Rectangle {
         }
     }
 
+    /*! \internal */
     function selectApplication(index)
     {
         if (mode == "local")
@@ -271,7 +272,7 @@ Rectangle {
         colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
     }
 
-    Text {
+    Label {
         id: dummyText
         visible: false
     }
@@ -293,7 +294,7 @@ Rectangle {
             anchors.margins: Screen.logicalPixelDensity * 2
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
-            font.pixelSize: dummyText.font.pixelSize * 1.5
+            font.pointSize: dummyText.font.pointSize * 1.1
             text: qsTr("Warning!<br>No network connection found, service discovery unavailable. Please check your network connection.")
         }
     }
@@ -311,14 +312,15 @@ Rectangle {
             anchors.margins: Screen.logicalPixelDensity*3
             spacing: Screen.logicalPixelDensity*3
 
-            Text {
+            Label {
                 id: pageTitleText2
 
                 Layout.fillWidth: true
                 text: qsTr("Available Instances:")
-                font.pointSize: dummyText.font.pointSize * 1.6
+                font.pointSize: dummyText.font.pointSize * 1.3
                 font.bold: true
                 horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
             }
 
             ListView {
@@ -333,13 +335,16 @@ Rectangle {
                     anchors.right: parent.right
                     height: dummyButon.height * 3
 
-                    Text {
+                    Label {
                         id: titleText2
 
-                        anchors.centerIn: parent
-                        font.pointSize: dummyText.font.pointSize*1.6
+                        anchors.fill: parent
+                        font.pointSize: dummyText.font.pointSize*1.3
                         font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                         text: name
+                        elide: Text.ElideRight
                     }
 
                     onClicked: selectInstance(index)
@@ -375,14 +380,15 @@ Rectangle {
             anchors.margins: Screen.logicalPixelDensity*3
             spacing: Screen.logicalPixelDensity*3
 
-            Text {
+            Label {
                 id: pageTitleText
 
                 Layout.fillWidth: true
                 text: configService.name
-                font.pointSize: dummyText.font.pointSize * 1.6
+                font.pointSize: dummyText.font.pointSize * 1.3
                 font.bold: true
                 horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
             }
 
             ListView {
@@ -402,22 +408,24 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
 
-                        Text {
+                        Label {
                             id: titleText
 
                             Layout.fillWidth: true
-                            font.pointSize: descriptionText.font.pointSize*1.6
+                            font.pointSize: dummyText.font.pointSize*1.3
                             font.bold: true
                             text: name
                             horizontalAlignment: Text.AlignHCenter
+                            elide: Text.ElideRight
                         }
-                        Text {
+                        Label {
                             id: descriptionText
 
                             Layout.fillWidth: true
-                            anchors.margins: parent.height*0.1
                             text: description
+                            color: systemPalette.dark
                             horizontalAlignment: Text.AlignHCenter
+                            wrapMode: Text.WordWrap
                         }
                     }
 
@@ -498,7 +506,7 @@ Rectangle {
             anchors.margins: Screen.logicalPixelDensity * 2
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
-            font.pixelSize: dummyText.font.pixelSize * 1.5
+            font.pointSize: dummyText.font.pointSize * 1.1
             text: errorPage.errorType + "\n" + errorPage.errorText
         }
     }

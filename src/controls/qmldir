@@ -5,6 +5,7 @@ typeinfo plugins.qmltypes
 
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work
+Dial 1.0 Dial.qml
 Gauge 1.0 Gauge.qml
 Led 1.0 Led.qml
 ColorPicker 1.0 ColorPicker.qml

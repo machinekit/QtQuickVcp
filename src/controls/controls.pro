@@ -23,6 +23,7 @@ RESOURCES += \
     controls.qrc
 
 QML_FILES = \
+    Dial.qml \
     Gauge.qml \
     ColorPicker.qml \
     Led.qml \
@@ -42,6 +43,8 @@ QML_DESIGNER_FILES = \
     designer
 
 QML_PROPERTY_EDITOR_FILES = \
+    propertyEditorQmlSources/DialSpecifics.qml \
+    propertyEditorQmlSources/DialSection.qml \
     propertyEditorQmlSources/GaugeSpecifics.qml \
     propertyEditorQmlSources/GaugeSection.qml \
     propertyEditorQmlSources/TextSection.qml \

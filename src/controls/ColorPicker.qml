@@ -92,6 +92,7 @@ Item {
 
     id: colorPicker
     width: 340; height: 250
+    implicitWidth: 340; implicitHeight: 250
 
     Component {
         id: checkerBoard
@@ -159,7 +160,7 @@ Item {
             width: 80;
             height: 15
             spacing: 5
-            Text {
+            Label {
                 id: captionBox
                 Layout.fillHeight: true
                 //color: "#AAAAAA"

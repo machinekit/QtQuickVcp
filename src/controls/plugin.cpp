@@ -31,6 +31,7 @@ static const struct {
     const char *type;
     int major, minor;
 } qmldir [] = {
+    { "Dial", 1, 0 },
     { "Gauge", 1, 0 },
     { "ColorPicker", 1, 0 },
     { "Led", 1, 0 },

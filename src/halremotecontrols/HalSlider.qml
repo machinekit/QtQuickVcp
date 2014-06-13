@@ -48,7 +48,7 @@ import Machinekit.HalRemote.Controls 1.0
     \sa Slider
 */
 
-Slider {
+Item {
     /*! This property holds the name of the default HAL pin.
     */
     property string name:               "slider"
@@ -74,41 +74,41 @@ Slider {
     */
     property bool   textInverted:       false
 
-    /*! \qmlproperty Text valueText
+    /*! \qmlproperty Label valueLabel
 
-        This property holds the \l Text used to display the value.
+        This property holds the \l Label used to display the value.
     */
-    property alias valueText: valueText
+    property alias valueLabel: valueLabel
 
-    /*! \qmlproperty Text minimumValueText
+    /*! \qmlproperty Label minimumValueLabel
 
-        This property holds the \l Text used to display the minimum value.
+        This property holds the \l Label used to display the minimum value.
     */
-    property alias minimumValueText: minimumValueText
+    property alias minimumValueLabel: minimumValueLabel
 
-    /*! \qmlproperty Text maximumValueText
+    /*! \qmlproperty Label maximumValueLabel
 
-        This property holds the \l Text used to display the maximum value.
+        This property holds the \l Label used to display the maximum value.
     */
-    property alias maximumValueText: maximumValueText
+    property alias maximumValueLabel: maximumValueLabel
 
     /*! \qmlproperty bool valueVisible
 
         This property holds whether the value should be visible or not.
     */
-    property alias valueVisible: valueText.visible
+    property alias valueVisible: valueLabel.visible
 
     /*! \qmlproperty bool minimumValueVisible
 
         This property holds whether the minimum value should be visible or not.
     */
-    property alias minimumValueVisible: minimumValueText.visible
+    property alias minimumValueVisible: minimumValueLabel.visible
 
     /*! \qmlproperty bool maximumValueVisible
 
         This property holds whether the maximum value should be visible or not.
     */
-    property alias maximumValueVisible: maximumValueText.visible
+    property alias maximumValueVisible: maximumValueLabel.visible
 
     /*! \qmlproperty HalPin halPin
 
@@ -116,9 +116,121 @@ Slider {
     */
     property alias  halPin:             pin
 
+    /*!
+        \qmlproperty bool activeFocusOnPress
+
+        This property indicates whether the Slider should receive active focus when
+        pressed.
+    */
+    property alias activeFocusOnPress: slider.activeFocusOnPress
+
+    /*!
+        \qmlproperty bool hovered
+
+        This property indicates whether the control is being hovered.
+    */
+    property alias hovered: slider.hovered
+
+    /*!
+        \qmlproperty real maximumValue
+
+        This property holds the maximum value of the Slider
+        The default value is \c{1.0}.
+    */
+    property alias maximumValue: slider.maximumValue
+
+    /*!
+        \qmlproperty real minimumValue
+
+        This property holds the minimum value of the Slider.
+        The default value is \c{0.0}.
+    */
+    property alias minimumValue: slider.minimumValue
+
+    /*!
+        \qmlproperty enumeration orientation
+
+        This property holds the layout orientation of the slider.
+        The default value is \c Qt.Horizontal.
+    */
+    property alias orientation: slider.orientation
+
+    /*!
+        \qmlproperty bool pressed
+
+        This property indicates whether the slider handle is being pressed.
+    */
+    property alias pressed: slider.pressed
+
+    /*!
+        \qmlproperty real stepSize
+
+        This property indicates the slider step size.
+
+        A value of 0 indicates that the value of the slider operates in a
+        continuous range between \l minimumValue and \l maximumValue.
+
+        Any non 0 value indicates a discrete stepSize. The following example
+        will generate a slider with integer values in the range [0-5].
+
+        \qml
+        HalSlider {
+            maximumValue: 5.0
+            stepSize: 1.0
+        }
+        \endqml
+
+        The default value is \c{0.0}.
+    */
+    property alias stepSize: slider.stepSize
+
+    /*! \qmlproperty Component style */
+    property alias style: slider.style
+
+    /*!
+        \qmlproperty bool tickmarksEnabled
+
+        This property indicates whether the Slider should display tickmarks
+        at step intervals.
+
+        The default value is \c false.
+    */
+    property alias tickmarksEnabled: slider.tickmarksEnabled
+
+    /*!
+        \qmlproperty bool updateValueWhileDragging
+
+        This property indicates whether the current \l value should be updated while
+        the user is moving the slider handle, or only when the button has been released.
+        This property could for instance be modified if changing the slider value would turn
+        out to be too time consuming.
+
+        The default value is \c true.
+    */
+    property alias updateValueWhileDragging: slider.updateValueWhileDragging
+
+    /*!
+        \qmlproperty real value
+
+        This property holds the current value of the Slider.
+        The default value is \c{0.0}.
+    */
+    property alias value: slider.value
+
+
+    /*! \internal */
+    property bool __horizontal: orientation === Qt.Horizontal
+
+    /*! \internal */
+    property bool __inverted: textInverted == true
+
+
     id: main
 
-    tickmarksEnabled: true
+    width: __horizontal ? 200 : 90
+    height: __horizontal ? 60 : 200
+    implicitWidth: slider.implicitWidth + (!__horizontal ? 0 : (valueVisible ? valueLabel.implicitWidth : 0) + ((minimumValueVisible || maximumValueVisible) ? minimumValueLabel.implicitWidth : 0))
+    implicitHeight: slider.implicitHeight + (__horizontal ? (valueVisible ? valueLabel.implicitHeight : 0) + ((minimumValueVisible || maximumValueVisible) ? minimumValueLabel.implicitHeight : 0) + valueLabel.implicitHeight * 0.7 : 0)
 
     HalPin {
         id: pin
@@ -128,29 +240,38 @@ Slider {
         direction: HalPin.Out
     }
 
-    Text {
-        id: valueText
+    Label {
+        id: valueLabel
 
-        x: (main.orientation === Qt.Horizontal) ? (parent.width - width) * ((main.value - main.minimumValue)/(main.maximumValue - main.minimumValue)) : ((main.textInverted == false) ? -width - Screen.logicalPixelDensity : parent.width)
-        y: (main.orientation === Qt.Horizontal) ? ((main.textInverted == false) ? parent.height : -height) : (parent.height - height) * (1 - ((main.value - main.minimumValue)/(main.maximumValue - main.minimumValue)))
+        x: __horizontal ? (main.width - width) * ((main.value - main.minimumValue)/(main.maximumValue - main.minimumValue)) : (!__inverted ? 0 : main.width - width)
+        y: __horizontal ? (!__inverted ? 0 : parent.height-height) : (main.height - height) * (1 - ((main.value - main.minimumValue)/(main.maximumValue - main.minimumValue)))
         horizontalAlignment: Text.AlignLeft
         text: main.prefix + main.value.toFixed(main.decimals) + main.suffix
     }
 
-    Text {
-        id: minimumValueText
+    Label {
+        id: minimumValueLabel
 
-        x: (main.orientation == Qt.Horizontal) ? 0 : ((main.textInverted == false) ? parent.width : -width - Screen.logicalPixelDensity)
-        y: (main.orientation == Qt.Horizontal) ? ((main.textInverted == false) ? -height : parent.height) : main.height-height
+        x: __horizontal ? 0 : (!__inverted ? main.width - width : 0)
+        y: __horizontal ? (!__inverted ? parent.height-height : 0) : main.height-height
         text: main.prefix + main.minimumValue.toFixed(main.decimals) + main.suffix
     }
 
-    Text {
-        id: maximumValueText
+    Label {
+        id: maximumValueLabel
 
-        x: (main.orientation == Qt.Horizontal) ? parent.width-width : ((main.textInverted == false) ? parent.width : -width - Screen.logicalPixelDensity)
-        y: (main.orientation == Qt.Horizontal) ? ((main.textInverted == false) ? -height : main.height) : 0
+        x: __horizontal ? main.width-width : (!__inverted ? main.width - width : 0)
+        y: __horizontal ? (!__inverted ? parent.height-height : 0) : 0
         text: main.prefix + main.maximumValue.toFixed(main.decimals) + main.suffix
+    }
+
+    Slider {
+        id: slider
+
+        width: __horizontal ? main.width : implicitWidth
+        height: !__horizontal ? main.height : implicitHeight
+        anchors.centerIn: main
+        tickmarksEnabled: true
     }
 
     BusyIndicator {
@@ -163,6 +284,6 @@ Slider {
         visible: !pin.synced
     }
 
-    Binding { target: main; property: "value"; value: pin.value}
-    Binding { target: pin; property: "value"; value: main.value}
+    Binding { target: slider; property: "value"; value: pin.value}
+    Binding { target: pin; property: "value"; value: slider.value}
 }
