@@ -1,5 +1,7 @@
 TEMPLATE = app
 
+TARGET = machinekit-client
+
 QT += qml quick widgets
 
 SOURCES += main.cpp
@@ -20,3 +22,8 @@ ios: {
     LIBS += -L$$LIBSODIUM_LIB_PATH
     LIBS += -lsodium -lzmq -lprotobuf
 }
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+OTHER_FILES += \
+    android/AndroidManifest.xml

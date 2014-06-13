@@ -4,47 +4,41 @@ Rectangle {
     id: splash
     z: 100
     property alias loadingProgress: progressRect.percent
+    readonly property int smallerSide: width < height ? width : height
 
     color: "#008080"
 
     Image {
-        source: "../images/body_background_dark.png"
+        source: "../images/background.png"
         fillMode: Image.Tile
+        sourceSize.width: parent.smallerSide * 0.3
         anchors.fill: parent
         smooth: true
         visible: true
-        opacity: 0.2
+        opacity: 0.1
     }
 
     Image {
         id: logoImg
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -parent.height*0.1
-        source: "../images/logo.png"
+        anchors.verticalCenterOffset: -parent.smallerSide*0.08
+        source: "../images/logo_text.png"
         smooth: true
-        width: parent.width*0.35
+        width: parent.smallerSide*0.55
         height: width
         sourceSize.width: width
         sourceSize.height: height
         fillMode: Image.PreserveAspectFit
     }
-    Text {
-        id: text
-        anchors.top: logoImg.bottom
-        anchors.topMargin: parent.height*0.04
-        anchors.horizontalCenter: parent.horizontalCenter
-        text: "machinekit"
-        color: "#FFD75E"
-        font.pixelSize: parent.width*0.08
-    }
+
     Rectangle {
         id:  barRect
-        anchors.top: text.bottom
-        anchors.topMargin: parent.height*0.04
+        anchors.top: logoImg.bottom
+        anchors.topMargin: parent.smallerSide*0.04
         anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width*0.6
-        height: parent.height*0.01
+        width: parent.smallerSide*0.6
+        height: parent.smallerSide*0.015
         smooth: true
         border.color: "white"; border.width: 0; radius: 8
         gradient: Gradient {
@@ -64,9 +58,6 @@ Rectangle {
             color: "#FFD75E"
         }
     }
-
-
-
 
     Behavior on opacity { NumberAnimation { duration: 200 } }
 } 
