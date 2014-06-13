@@ -22,6 +22,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
+import QtQuick.Window 2.0
 import Machinekit.HalRemote.Controls 1.0
 import Machinekit.HalRemote 1.0
 
@@ -31,211 +32,207 @@ HalApplicationWindow {
     name: "motorctrl"
     title: qsTr("Motor Control Demo")
 
-    ColumnLayout {
-        anchors.margins: 10
+    ScrollView  {
         anchors.fill: parent
-        spacing: 0
 
-        GroupBox {
-            Layout.fillWidth: true
-            Layout.preferredHeight: main.height * 0.3
-            title: qsTr("feedback")
+        ColumnLayout {
+            property int margins: Screen.logicalPixelDensity*3
+            width: main.width - margins*2
+            x: margins
+            y: margins
+            spacing: 0
 
-            ColumnLayout {
-                anchors.fill: parent
-                spacing: 5
+            GroupBox {
+                Layout.fillWidth: true
+                Layout.preferredHeight: main.height * 0.3
+                title: qsTr("feedback")
 
-                GroupBox {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    title: qsTr("position")
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 5
 
-                    HalProgressBar {
-                        name: "fb_pos"
+                    GroupBox {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        title: qsTr("position")
 
-                        anchors.fill: parent
-                        minimumValue: 0
-                        maximumValue: 100
+                        HalProgressBar {
+                            name: "fb_pos"
+
+                            anchors.fill: parent
+                            minimumValue: 0
+                            maximumValue: 100
+                        }
                     }
-                }
-                GroupBox {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    title: qsTr("velocity")
+                    GroupBox {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        title: qsTr("velocity")
 
-                    HalGauge {
-                        name: "fb_vel"
+                        HalGauge {
+                            name: "fb_vel"
 
-                        anchors.fill: parent
-                        minimumValue: -100
-                        maximumValue: 100
-                        zeroValue: 0
-                        fancy: false
+                            anchors.fill: parent
+                            minimumValue: -100
+                            maximumValue: 100
+                            zeroValue: 0
+                            fancy: false
+                        }
+
+                        HalPin {
+                            name: "fb_vel.scale"
+                            type: HalPin.Float
+                            direction: HalPin.In
+                        }
                     }
+                    GroupBox {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        title: qsTr("acceleration")
 
-                    HalPin {
-                        name: "fb_vel.scale"
-                        type: HalPin.Float
-                        direction: HalPin.In
-                    }
-                }
-                GroupBox {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    title: qsTr("acceleration")
+                        HalGauge {
+                            name: "fb_acc"
 
-                    HalGauge {
-                        name: "fb_acc"
+                            anchors.fill: parent
+                            minimumValue: -100
+                            maximumValue: 100
+                            zeroValue: 0
+                            fancy: false
+                        }
 
-                        anchors.fill: parent
-                        minimumValue: -100
-                        maximumValue: 100
-                        zeroValue: 0
-                        fancy: false
-                    }
-
-                    HalPin {
-                        name: "fb_acc.scale"
-                        type: HalPin.Float
-                        direction: HalPin.In
+                        HalPin {
+                            name: "fb_acc.scale"
+                            type: HalPin.Float
+                            direction: HalPin.In
+                        }
                     }
                 }
             }
-        }
 
-        GroupBox {
-            Layout.fillWidth: true
-            Layout.preferredHeight: main.height * 0.5
-            title: qsTr("control")
+            GroupBox {
+                Layout.fillWidth: true
+                Layout.preferredHeight: main.height * 0.5
+                title: qsTr("control")
 
-            ColumnLayout {
-                anchors.fill: parent
-                spacing: 5
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 5
 
-                GroupBox {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    title: qsTr("commanded position")
-
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("commanded position")
+                    }
                     HalSlider {
                         name: "cmd_pos"
 
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                        Layout.fillWidth: true
                         minimumValue: 0
                         maximumValue: 100
                         value: 0
                         tickmarksEnabled: false
                     }
-                }
-                GroupBox {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    title: qsTr("maximum velocity")
-
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("maximum velocity")
+                    }
                     HalSlider {
                         name: "cmd_maxvel"
 
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                        Layout.fillWidth: true
                         minimumValue: 0
                         maximumValue: 100
                         value: 20
                         tickmarksEnabled: false
+                        textInverted: true
                     }
-                }
-                GroupBox {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    title: qsTr("maximum acceleration")
-
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("maximum acceleration")
+                    }
                     HalSlider {
                         name: "cmd_maxacc"
 
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                        Layout.fillWidth: true
                         minimumValue: 0
                         maximumValue: 100
                         value: 10
                         tickmarksEnabled: false
+                        maximumValueVisible: false
+                        minimumValueVisible: false
                     }
-                }
-                GroupBox {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    title: qsTr("lowpass filter gain")
-
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("lowpass filter gain")
+                    }
                     HalSlider {
                         name: "lowpass_gain"
 
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                        Layout.fillWidth: true
                         minimumValue: 0
                         maximumValue: 0.9
                         value: 0.01
                         tickmarksEnabled: false
                     }
+                    Item {
+                        Layout.fillHeight: true
+                    }
                 }
             }
-        }
-        GroupBox {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            title: qsTr("misc")
+            GroupBox {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                title: qsTr("misc")
 
-            RowLayout {
-                id: row1
-                anchors.fill: parent
-                spacing: 5
-
-                ColumnLayout {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    //Layout.: 2
+                RowLayout {
+                    id: row1
+                    anchors.fill: parent
                     spacing: 5
 
-                    HalButton {
-                        name: "togglebutton1"
-
+                    ColumnLayout {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
-                        text: qsTr("togglebutton")
-                        checkable: true
+                        //Layout.: 2
+                        spacing: 5
 
-                        HalPin {
-                            name: "togglebutton1-not"
-                            type: HalPin.Bit
-                            direction: HalPin.Out
-                            value: !parent.value
+                        HalButton {
+                            name: "togglebutton1"
+
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            text: qsTr("togglebutton")
+                            checkable: true
+
+                            HalPin {
+                                name: "togglebutton1-not"
+                                type: HalPin.Bit
+                                direction: HalPin.Out
+                                value: !parent.value
+                            }
+                        }
+                        HalButton {
+                            name: "scope_trigger"
+
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            text: qsTr("trigger scope")
+                            checkable: true
                         }
                     }
-                    HalButton {
-                        name: "scope_trigger"
 
+                    ColumnLayout {
+                        Layout.preferredWidth: main.width *0.4
                         Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        text: qsTr("trigger scope")
-                        checkable: true
-                    }
-                }
+                        spacing: 5
 
-                ColumnLayout {
-                    Layout.preferredWidth: main.width *0.4
-                    Layout.fillHeight: true
-                    spacing: 5
+                        HalLed {
+                            name: "led1"
 
-                    HalLed {
-                        name: "led1"
-
-                        x: parent.width * 0.4
-                        y: parent.height * 0.3
-                        width: parent.width * 0.15
-                        height: width
-                        blink: false
+                            x: parent.width * 0.4
+                            y: parent.height * 0.3
+                            width: parent.width * 0.15
+                            height: width
+                            blink: false
+                        }
                     }
                 }
             }
