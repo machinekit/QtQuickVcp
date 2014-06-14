@@ -29,6 +29,7 @@ QML_FILES = \
     Led.qml \
     Line.qml \
     LogChart.qml \
+    RoundGauge.qml \
     TemperatureSelector.qml \
     TouchButton.qml \
     ValueChart.qml \

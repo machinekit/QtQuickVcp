@@ -11,6 +11,7 @@ Led 1.0 Led.qml
 ColorPicker 1.0 ColorPicker.qml
 Line 1.0 Line.qml
 LogChart 1.0 LogChart.qml
+RoundGauge 1.0 RoundGauge.qml
 TemperatureSelector 1.0 TemperatureSelector.qml
 TouchButton 1.0 TouchButton.qml
 ValueChart 1.0 ValueChart.qml

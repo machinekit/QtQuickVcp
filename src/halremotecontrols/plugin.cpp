@@ -46,6 +46,7 @@ static const struct {
     { "HalLogChart", 1, 0 },
     { "HalProgressBar", 1, 0 },
     { "HalRadioButton", 1, 0 },
+    { "HalRoundGauge", 1, 0 },
     { "HalSlider", 1, 0 },
     { "HalSpinBox", 1, 0 },
     { "HalVirtualJoystick", 1, 0 }

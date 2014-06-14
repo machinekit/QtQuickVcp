@@ -20,6 +20,7 @@ HalLed 1.0 HalLed.qml
 HalLogChart 1.0 HalLogChart.qml
 HalProgressBar 1.0 HalProgressBar.qml
 HalRadioButton 1.0 HalRadioButton.qml
+HalRoundGauge 1.0 HalRoundGauge.qml
 HalSlider 1.0 HalSlider.qml
 HalSpinBox 1.0 HalSpinBox.qml
 HalVirtualJoystick 1.0 HalVirtualJoystick.qml

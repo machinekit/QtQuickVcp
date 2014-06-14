@@ -35,6 +35,7 @@ QML_FILES = \
     HalLogChart.qml \
     HalProgressBar.qml \
     HalRadioButton.qml \
+    HalRoundGauge.qml \
     HalSlider.qml \
     HalSpinBox.qml \
     HalVirtualJoystick.qml

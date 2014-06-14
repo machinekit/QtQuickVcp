@@ -37,6 +37,7 @@ static const struct {
     { "Led", 1, 0 },
     { "Line", 1, 0 },
     { "LogChart", 1, 0 },
+    { "RoundGauge", 1, 0 },
     { "TemperatureSelector", 1, 0 },
     { "TouchButton", 1, 0 },
     { "VirtualJoystick", 1, 0 },

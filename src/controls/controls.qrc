@@ -11,5 +11,6 @@
         <file>Led.qml</file>
         <file>Gauge.qml</file>
         <file>Dial.qml</file>
+        <file>RoundGauge.qml</file>
     </qresource>
 </RCC>
