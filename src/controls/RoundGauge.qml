@@ -204,6 +204,11 @@ Item
     */
     property bool visualizerVisible: false
 
+    /*! This property holds whether the indicator displaying the current value
+        should be visible or not.
+    */
+    property bool indicatorVisible: true
+
     /*! This property holds whether the needle should be visible or not.
     */
     property bool needleVisible: true
@@ -242,7 +247,7 @@ Item
 
     /*! This property holds the width of the indicator displaying the gauge's value.
     */
-    property int   indicatorWidth : width * 0.07
+    property int   indicatorWidth : canvas.width * 0.07
 
     /*! This property holds the width of the visualizer displaying the color zones.
     */
@@ -258,6 +263,57 @@ Item
 
     id : main
 
+    implicitWidth: 100
+    implicitHeight: 100
+
+    onMinimumValueChanged: updateIndicatorAndCanvas()
+    onMaximumValueChanged: updateIndicatorAndCanvas()
+    onZeroValueChanged: updateIndicatorAndCanvas()
+    onZ0ColorChanged: updateIndicatorAndCanvas()
+    onZ1ColorChanged: updateIndicatorAndCanvas()
+    onZ2ColorChanged: updateIndicatorAndCanvas()
+    onZ0BorderValueChanged: updateIndicatorAndCanvas()
+    onZ1BorderValueChanged: updateIndicatorAndCanvas()
+    onFancyChanged: updateIndicatorAndCanvas()
+    onTickMarksEnabledChanged: updateIndicatorAndCanvas()
+    onStartAngleChanged: updateIndicatorAndCanvas()
+    onEndAngleChanged: updateIndicatorAndCanvas()
+    onWidthChanged: updateAll()
+    onHeightChanged: updateAll()
+    onIndicatorVisibleChanged: updateCanvasAndNeedle()
+    onVisualizerVisibleChanged: updateCanvas()
+    onBackgroundColorChanged: updateCanvas()
+    onGraduationColorChanged: updateCanvas()
+    onInnerCirclingColorChanged: updateCanvas()
+    onOuterCirclingColorChanged: updateCanvas()
+    onFullCircleChanged: updateCanvas()
+    onNeedleColorChanged: updateNeedle()
+
+    /*! \internal */
+    function updateCanvas() {
+        canvas.requestPaint()
+    }
+    /*! \internal */
+    function updateNeedle() {
+        needleCanvas.requestPaint()
+    }
+    /*! \internal */
+    function updateIndicatorAndCanvas() {
+        indicator.requestPaint()
+        canvas.requestPaint()
+    }
+    /*! \internal */
+    function updateCanvasAndNeedle() {
+        canvas.requestPaint()
+        needleCanvas.requestPaint()
+    }
+    /*! \internal */
+    function updateAll() {
+        indicator.requestPaint()
+        canvas.requestPaint()
+        needleCanvas.requestPaint()
+    }
+
     SystemPalette {
         id: systemPalette;
         colorGroup: main.enabled ? SystemPalette.Active : SystemPalette.Disabled
@@ -270,27 +326,33 @@ Item
     QtObject
     {
         id : d
+
+        property int lineWidth: 1
+        property int blurWidth: 8
+        property int indicatorWidth: (indicatorVisible) ? main.indicatorWidth : 0
+        property int smallSide: (main.width < main.height) ? main.width : main.height
         property double range : maximumValue - minimumValue;
         property double startAngle : Math.PI * (main.startAngle*2 + 0.5);
         property double endAngle : Math.PI * (main.endAngle*2 + 0.5);
         property double zeroAngle: startAngle + (endAngle - startAngle) * (main.zeroValue - main.minimumValue)/(main.maximumValue - main.minimumValue)
-        property double radius : Math.min(width * 0.5, height * 0.5) - 10
-        property point center : Qt.point(width * 0.5, height * 0.5)
+        property double radius : Math.min(canvas.width * 0.5, canvas.height * 0.5) - blurWidth
+        property point  center : Qt.point(canvas.width * 0.5, canvas.height * 0.5)
         property double wholeAngle : endAngle - startAngle;
-        property int animTimer;
         property double rangedValue: Math.max(Math.min(value, maximumValue), minimumValue)
         property double currentValueRatio : (rangedValue - minimumValue) / d.range;
         property double needleAngleRad : d.startAngle + currentValueRatio * d.wholeAngle
         property double needleAngle : needleAngleRad  * 180 / Math.PI;
+
         Behavior on needleAngleRad {SpringAnimation {spring: 1.5; damping: 0.5; } enabled: main.animated}
-        onNeedleAngleRadChanged: value_timer.requestPaint();
-        property int lineWidth: 1
-    }
+        onNeedleAngleRadChanged: indicator.requestPaint();
+        }
 
     Canvas {
         id: canvas
 
-        anchors.fill: parent
+        height: d.smallSide
+        width: height
+        anchors.centerIn: parent
         contextType: "2d"
         smooth: true
 
@@ -309,7 +371,7 @@ Item
             else
                 context.arc(d.center.x, d.center.y, d.radius - 0.001, Math.PI * 0.6666 , 2.3333 * Math.PI);
             context.fillStyle = fillGradiant;
-            context.shadowBlur = 10;
+            context.shadowBlur = d.blurWidth;
             context.shadowColor = outerCirclingColor;
             context.fill();
 
@@ -319,12 +381,14 @@ Item
             context.arc(d.center.x, d.center.y, d.radius - d.lineWidth*0.5, d.startAngle, d.endAngle);
             context.stroke();
 
-            // DRAW WHITE ARC CERCLING
-            context.beginPath();
-            context.lineWidth = d.lineWidth;
-            context.strokeStyle = innerCirclingColor;
-            context.arc(d.center.x, d.center.y, d.radius - (d.lineWidth*1.5 + indicatorWidth), d.startAngle, d.endAngle);
-            context.stroke();
+            if (indicatorVisible) {
+                // DRAW WHITE ARC CERCLING
+                context.beginPath();
+                context.lineWidth = d.lineWidth;
+                context.strokeStyle = innerCirclingColor;
+                context.arc(d.center.x, d.center.y, d.radius - (d.lineWidth*1.5 + d.indicatorWidth), d.startAngle, d.endAngle);
+                context.stroke();
+            }
 
             context.shadowBlur = 0;
             context.shadowColor = "transparent";
@@ -333,28 +397,28 @@ Item
                 context.beginPath();
                 context.lineWidth = d.lineWidth;
                 context.strokeStyle = innerCirclingColor;
-                context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth + d.lineWidth*2.5 + indicatorWidth), d.startAngle, d.endAngle);
+                context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth + d.lineWidth*2.5 + d.indicatorWidth), d.startAngle, d.endAngle);
                 context.stroke();
 
                 // DRAW Z0 ARC
                 context.beginPath();
                 context.lineWidth = visualizerWidth;
                 context.strokeStyle = z0Color;
-                context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + indicatorWidth), d.zeroAngle, d.startAngle + ((z0BorderValue - minimumValue) / d.range) * (d.wholeAngle));
+                context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + d.indicatorWidth), d.zeroAngle, d.startAngle + ((z0BorderValue - minimumValue) / d.range) * (d.wholeAngle));
                 context.stroke();
 
                 // DRAW Z1 ARC
                 context.beginPath();
                 context.lineWidth = visualizerWidth;
                 context.strokeStyle = z1Color;
-                context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + indicatorWidth), d.startAngle + ((z0BorderValue - minimumValue) / d.range) * (d.wholeAngle), d.endAngle - (((d.range  - (z1BorderValue - minimumValue)) / d.range) * (d.wholeAngle)));
+                context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + d.indicatorWidth), d.startAngle + ((z0BorderValue - minimumValue) / d.range) * (d.wholeAngle), d.endAngle - (((d.range  - (z1BorderValue - minimumValue)) / d.range) * (d.wholeAngle)));
                 context.stroke();
 
                 // DRAW Z2 ARC
                 context.beginPath();
                 context.lineWidth = visualizerWidth;
                 context.strokeStyle = z2Color;
-                context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + indicatorWidth), d.endAngle - (((d.range  - (z1BorderValue - minimumValue)) / d.range) * (d.wholeAngle)), d.endAngle);
+                context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + d.indicatorWidth), d.endAngle - (((d.range  - (z1BorderValue - minimumValue)) / d.range) * (d.wholeAngle)), d.endAngle);
                 context.stroke();
 
                 if (minimumValue != zeroValue) {
@@ -363,7 +427,7 @@ Item
                     context.lineWidth = visualizerWidth;
                     context.strokeStyle = z0Color;
                     context.arc(d.center.x, d.center.y,
-                                d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + indicatorWidth),
+                                d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + d.indicatorWidth),
                                 Math.max(d.startAngle, d.zeroAngle - ((z0BorderValue - zeroValue) / d.range) * (d.wholeAngle)),
                                 d.zeroAngle);
                     context.stroke();
@@ -373,7 +437,7 @@ Item
                     context.lineWidth = visualizerWidth;
                     context.strokeStyle = z1Color;
                     context.arc(d.center.x, d.center.y,
-                                d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + indicatorWidth),
+                                d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + d.indicatorWidth),
                                 Math.max(d.startAngle, d.zeroAngle - (((z1BorderValue - zeroValue) / d.range) * (d.wholeAngle))),
                                 Math.max(d.startAngle, d.zeroAngle - ((z0BorderValue - zeroValue) / d.range) * (d.wholeAngle)));
                     context.stroke();
@@ -383,7 +447,7 @@ Item
                     context.lineWidth = visualizerWidth;
                     context.strokeStyle = z2Color;
                     context.arc(d.center.x, d.center.y,
-                                d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + indicatorWidth),
+                                d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + d.indicatorWidth),
                                 d.startAngle,
                                 Math.max(d.startAngle, d.zeroAngle - (((z1BorderValue - zeroValue) / d.range) * (d.wholeAngle))));
                     context.stroke();
@@ -404,23 +468,25 @@ Item
                 if (tickMarksEnabled) {
                     var offset = 0.005//(subDivs % 2 !== 0) ? (i % 2 !== 0) ? 0.015 : 0.005 : 0.005
                     context.beginPath();
-                    context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + indicatorWidth), rotAngle - ((i === 0) ? 0 : offset), rotAngle + ((i === subDivs + 1) ? 0 : offset));
+                    context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + d.indicatorWidth), rotAngle - ((i === 0) ? 0 : offset), rotAngle + ((i === subDivs + 1) ? 0 : offset));
                     context.stroke();
                 }
 
                 var textVal = prefix + (((i * angleStep / d.wholeAngle) * d.range * 100) / 100 + minimumValue).toFixed(decimals) + suffix;
                 text_model.append({"text" : textVal,
-                                      "x" : d.center.x + ((d.radius - (((tickMarksEnabled ? visualizerWidth + d.lineWidth : 0) + indicatorWidth + d.lineWidth*2 + width * 0.03) + tickmarkLabelsFont.pixelSize * 0.5)) * Math.cos(rotAngle)),
-                                      "y" : d.center.y + (d.radius - (((tickMarksEnabled ? visualizerWidth + d.lineWidth : 0) + indicatorWidth + d.lineWidth*2 + width * 0.03) + tickmarkLabelsFont.pixelSize * 0.5)) * Math.sin(rotAngle)});
+                                      "x" : d.center.x + ((d.radius - (((tickMarksEnabled ? visualizerWidth + d.lineWidth : 0) + d.indicatorWidth + d.lineWidth*2 + width * 0.03) + tickmarkLabelsFont.pixelSize * 0.5)) * Math.cos(rotAngle)),
+                                      "y" : d.center.y + (d.radius - (((tickMarksEnabled ? visualizerWidth + d.lineWidth : 0) + d.indicatorWidth + d.lineWidth*2 + width * 0.03) + tickmarkLabelsFont.pixelSize * 0.5)) * Math.sin(rotAngle)});
             }
         }
 
         // REDRAWN WHEN GAUGE VALUE CHANGES
         Canvas
         {
-            id : value_timer
+            id : indicator
+
             anchors.fill: parent
             contextType: "2d"
+            visible: indicatorVisible
 
             function getCadranColor()
             {
@@ -442,12 +508,12 @@ Item
             {
                 context.reset();
                 context.beginPath();
-                context.lineWidth = indicatorWidth;
+                context.lineWidth = d.indicatorWidth;
                 context.strokeStyle = targetColor;
                 if (d.zeroAngle < d.needleAngleRad)
-                    context.arc(d.center.x, d.center.y, d.radius - d.lineWidth - indicatorWidth * 0.5, d.zeroAngle, d.needleAngleRad);
+                    context.arc(d.center.x, d.center.y, d.radius - d.lineWidth - d.indicatorWidth * 0.5, d.zeroAngle, d.needleAngleRad);
                 else
-                    context.arc(d.center.x, d.center.y, d.radius - d.lineWidth - indicatorWidth * 0.5, d.needleAngleRad, d.zeroAngle);
+                    context.arc(d.center.x, d.center.y, d.radius - d.lineWidth - d.indicatorWidth * 0.5, d.needleAngleRad, d.zeroAngle);
                 context.stroke();
             }
         }
@@ -455,7 +521,7 @@ Item
         // NEEDLE HOLDER
         Rectangle
         {
-            id : needle_holder
+            id : needleHolder
 
             visible: main.needleVisible
             width : d.radius * 0.4
@@ -474,18 +540,18 @@ Item
             id : needle
 
             visible: main.needleVisible
-            width : d.radius - d.lineWidth - indicatorWidth
-            height : needle_pic.height
+            width : d.radius - d.lineWidth - d.indicatorWidth
+            height : needleCanvas.height
             x : d.center.x
             y : d.center.y
 
             Canvas
             {
-                id : needle_pic
+                id : needleCanvas
 
-                width : parent.width + needle_holder.width * 0.7
-                height: needle_holder.width*0.2
-                x : -needle_holder.width *0.7
+                width : parent.width + needleHolder.width * 0.7
+                height: needleHolder.width*0.2
+                x : -needleHolder.width *0.7
                 y: -height/2
                 contextType: "2d"
 
@@ -533,15 +599,14 @@ Item
     // VALUES
     Repeater
     {
-        anchors.fill: parent
         model :  ListModel {id : text_model}
         delegate : Component {
             Label
             {
                 color : textColor
                 font : tickmarkLabelsFont
-                x : (invert ? parent.width -  (model.x + 0.5 * width) :  model.x - 0.5 * width)
-                y : model.y - 0.5 * height
+                x : canvas.x + (invert ? parent.width -  (model.x + 0.5 * width) :  model.x - 0.5 * width)
+                y : canvas.y + model.y - 0.5 * height
                 text : model.text
                 visible: main.tickmarkLabelsVisible
             }
@@ -553,9 +618,9 @@ Item
         id : valueLabel
         anchors
         {
-            bottom : parent.bottom
-            bottomMargin : parent.height * 0.15
-            horizontalCenter : parent.horizontalCenter
+            bottom : canvas.bottom
+            bottomMargin : canvas.height * 0.15
+            horizontalCenter : canvas.horizontalCenter
         }
         text : prefix + d.rangedValue.toFixed(decimals) + suffix;
         color : textColor

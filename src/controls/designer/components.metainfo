@@ -36,6 +36,19 @@ MetaInfo {
     }
 
     Type {
+        name: "Machinekit.Controls.RoundGauge"
+        icon: "images/progressbar16.png"
+
+        ItemLibraryEntry {
+            name: "Round Gauge"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/progressbar.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+        }
+    }
+
+    Type {
         name: "Machinekit.Controls.ColorPicker"
         icon: "images/item-icon.png"
 

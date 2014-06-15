@@ -55,6 +55,9 @@ QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/LedSection.qml \
     propertyEditorQmlSources/LogChartSection.qml \
     propertyEditorQmlSources/LogChartSpecifics.qml \
+    propertyEditorQmlSources/RoundGaugeSection.qml \
+    propertyEditorQmlSources/RoundGaugeSpecifics.qml \
+    propertyEditorQmlSources/SmallTextSection.qml \
     propertyEditorQmlSources/ValueChartSection.qml \
     propertyEditorQmlSources/ValueChartSpecifics.qml \
     propertyEditorQmlSources/VirtualJoystickSection.qml \

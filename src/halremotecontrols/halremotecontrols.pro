@@ -66,6 +66,7 @@ QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/HalProgressBarSpecifics.qml \
     propertyEditorQmlSources/RadioButtonSection.qml \
     propertyEditorQmlSources/HalRadioButtonSpecifics.qml \
+    propertyEditorQmlSources/HalRoundGaugeSpecifics.qml \
     propertyEditorQmlSources/SliderSection.qml \
     propertyEditorQmlSources/HalSliderSpecifics.qml \
     propertyEditorQmlSources/SpinBoxSection.qml \

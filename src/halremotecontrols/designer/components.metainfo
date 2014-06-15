@@ -196,6 +196,19 @@ MetaInfo {
     }
 
     Type {
+        name: "Machinekit.HalRemote.Controls.HalRoundGauge"
+        icon: "images/progressbar16.png"
+
+        ItemLibraryEntry {
+            name: "Round Gauge"
+            category: "Machinekit - HalRemote Controls"
+            libraryIcon: "images/progressbar.png"
+            version: "1.0"
+            requiredImport: "Machinekit.HalRemote.Controls"
+        }
+    }
+
+    Type {
         name: "Machinekit.HalRemote.Controls.HalSlider"
         icon: ":/componentsplugin/images/slider16.png"
 
