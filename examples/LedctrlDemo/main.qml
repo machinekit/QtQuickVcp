@@ -38,10 +38,8 @@ ApplicationWindow {
         anchors.fill: parent
         autoSelectInstance: false
         applications: [
-            HalApplication {
-                source: "qrc:/qml/PidctrlDemo.qml"
-                name: "LedctrlDemo"
-                description: qsTr("A PID loop tuning demo.")
+            ApplicationDescription {
+                sourceDir: "qrc:/Examples.LedctrlDemo/"
             }
         ]
         instanceFilter: ServiceDiscoveryFilter{ name: "" }

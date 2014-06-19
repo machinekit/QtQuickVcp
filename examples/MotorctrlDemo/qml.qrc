@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/main.qml</file>
-        <file>qml/MotorctrlDemo.qml</file>
+        <file>main.qml</file>
+        <file>Examples.MotorctrlDemo/MotorctrlDemo.qml</file>
+        <file>Examples.MotorctrlDemo/description.ini</file>
     </qresource>
 </RCC>

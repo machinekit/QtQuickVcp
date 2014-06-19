@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/main.qml</file>
-        <file>qml/VideoDemo.qml</file>
+        <file>main.qml</file>
+        <file>Examples.VideoDemo/VideoDemo.qml</file>
+        <file>Examples.VideoDemo/description.ini</file>
     </qresource>
 </RCC>

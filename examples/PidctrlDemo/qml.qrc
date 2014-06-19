@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/main.qml</file>
-        <file>qml/PidctrlDemo.qml</file>
+        <file>main.qml</file>
+        <file>Examples.PidctrlDemo/PidctrlDemo.qml</file>
+        <file>Examples.PidctrlDemo/description.ini</file>
     </qresource>
 </RCC>
