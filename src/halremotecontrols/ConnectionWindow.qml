@@ -146,7 +146,7 @@ Rectangle {
 
     /*! This property holds the list of local applications.
     */
-    property list<HalApplication> applications
+    property list<ApplicationDescription> applications
 
 
     id: mainWindow
@@ -185,7 +185,7 @@ Rectangle {
     function selectApplication(index)
     {
         if (mode == "local")
-            appPage.applicationSource = applications[index].source
+            appPage.applicationSource = applications[index].mainFile
         else
             applicationConfig.selectConfig(applicationConfig.configs[index].name)
     }

@@ -32,7 +32,6 @@ static const struct {
     int major, minor;
 } qmldir [] = {
     { "ConnectionWindow", 1, 0 },
-    { "HalApplication", 1, 0 },
     { "HalApplicationWindow", 1, 0 },
     { "HalButton", 1, 0 },
     { "HalCheckBox", 1, 0 },
