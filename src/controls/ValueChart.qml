@@ -252,7 +252,6 @@ Item {
 
         onWheel: {
             var sign = (wheel.angleDelta.y < 0) ? -1 : 1
-            console.log(sign)
             timeSpan *= (1-sign*scrollZoomFactor)
             showMessage(qsTr("Timespan: ") + timeSpan + "ms")
         }
@@ -295,7 +294,9 @@ Item {
 
     Canvas {
         id: canvas
-        width: parent.width
+
+        anchors.left: parent.left
+        anchors.right: parent.right
         anchors.top: rightText.bottom
         anchors.bottom: parent.bottom
         antialiasing: true
