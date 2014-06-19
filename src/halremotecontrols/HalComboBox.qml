@@ -114,5 +114,5 @@ ComboBox {
 
     Binding { target: main; property: "currentIndex"; value: pin.value; when: (main.mode == 0)}
     Binding { target: pin; property: "value"; value: main.currentIndex; when: (main.mode == 0)}
-    Binding { target: pin; property: "value"; value: main.model.get(main.currentIndex).value; when: (main.mode == 1)}
+    Binding { target: pin; property: "value"; value: (main.model.get === undefined) || main.model.get(main.currentIndex).value; when: (main.mode == 1)}
 }
