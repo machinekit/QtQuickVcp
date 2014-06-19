@@ -24,7 +24,8 @@ SOURCES += \
     qservicediscoveryitem.cpp \
     qapplicationconfig.cpp \
     qapplicationconfigitem.cpp \
-    qapplicationconfigfilter.cpp
+    qapplicationconfigfilter.cpp \
+    qapplicationdescription.cpp
 
 HEADERS += \
     plugin.h \
@@ -38,7 +39,8 @@ HEADERS += \
     qapplicationconfig.h \
     qapplicationconfigitem.h \
     qapplicationconfigfilter.h \
-    debughelper.h
+    debughelper.h \
+    qapplicationdescription.h
 
 QML_INFRA_FILES = \
     qmldir

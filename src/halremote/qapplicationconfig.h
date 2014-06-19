@@ -30,6 +30,7 @@
 #include <nzmqt/nzmqt.hpp>
 #include "qapplicationconfigitem.h"
 #include "qapplicationconfigfilter.h"
+#include "qapplicationdescription.h"
 #include "message.pb.h"
 #include "types.pb.h"
 #include <google/protobuf/text_format.h>

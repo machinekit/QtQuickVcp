@@ -454,42 +454,13 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
 #endif
                     }
 
-                    QString mainFileName;
-                    QString preferredName;
+                    QApplicationDescription applicationDescription;
 
-                    // Number 1 priority main QML file is name main.qml
-                    preferredName = baseFilePath + "main.qml";
-                    foreach (QString fileName, fileList)
-                    {
-                        if (fileName == preferredName)
-                        {
-                            mainFileName = preferredName;
-                            break;
-                        }
-                    }
-
-                    // Number 2 priority main QML file is named like the config name
-                    if (mainFileName.isEmpty())
-                    {
-                        preferredName = baseFilePath + m_selectedConfig->name() + ".qml";
-                        foreach (QString fileName, fileList)
-                        {
-                            if (fileName == preferredName)
-                            {
-                                mainFileName = preferredName;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Number 3 priority main QML file is the one of the file list
-                    if (mainFileName.isEmpty() && (fileList.size() > 0))
-                    {
-                        mainFileName = fileList.at(0);
-                    }
+                    applicationDescription.setSourceDir(QUrl("file:///" + baseFilePath));
+                    // TODO check validity
 
                     m_selectedConfig->setFiles(fileList);
-                    m_selectedConfig->setMainFile(QUrl("file:///" + mainFileName));
+                    m_selectedConfig->setMainFile(applicationDescription.mainFile());
                     m_selectedConfig->setLoaded(true);
                 }
             }
