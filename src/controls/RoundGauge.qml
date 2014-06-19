@@ -328,7 +328,7 @@ Item
         id : d
 
         property int lineWidth: 1
-        property int blurWidth: 8
+        property int blurWidth: 2
         property int indicatorWidth: (indicatorVisible) ? main.indicatorWidth : 0
         property int smallSide: (main.width < main.height) ? main.width : main.height
         property double range : maximumValue - minimumValue;
