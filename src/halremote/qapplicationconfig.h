@@ -158,6 +158,7 @@ private:
     void updateState(State state);
     void updateError(ConnectionError error, QString errorString);
     void sendConfigMessage(const QByteArray &data);
+    QString applicationFilePath(const QString &name);
 
 private slots:
     bool connectSocket();

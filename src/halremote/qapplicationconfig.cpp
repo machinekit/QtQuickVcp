@@ -400,7 +400,7 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                     m_selectedConfig->setDescription(QString::fromStdString(app.description()));
                     m_selectedConfig->setType((QApplicationConfigItem::ApplicationType)app.type());
 
-                    baseFilePath = QDir::tempPath() + "/machinekit/" + m_selectedConfig->name() + "/";
+                    baseFilePath = applicationFilePath(m_selectedConfig->name());
                     if (!dir.mkpath(baseFilePath))
                     {
                         qDebug() << "not able to create directory";
@@ -481,6 +481,13 @@ void QApplicationConfig::sendConfigMessage(const QByteArray &data)
     }
 }
 
+QString QApplicationConfig::applicationFilePath(const QString &name)
+{
+    return QString("%1/machinekit-%2/%3/").arg(QDir::tempPath())
+            .arg(QCoreApplication::applicationPid())
+            .arg(name);
+}
+
 void QApplicationConfig::request(pb::ContainerType type)
 {
     m_tx.set_type(type);
@@ -507,6 +514,9 @@ void QApplicationConfig::selectConfig(QString name)
 
 void QApplicationConfig::unselectConfig()
 {
+    QDir dir(applicationFilePath(m_selectedConfig->name()));
+    dir.removeRecursively();
+
     m_selectedConfig->setName("");
     m_selectedConfig->setDescription("");
     m_selectedConfig->setFiles(QStringList());
