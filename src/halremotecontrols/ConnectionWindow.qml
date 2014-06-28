@@ -169,7 +169,7 @@ Rectangle {
             serviceDiscovery.updateFilter()
             if (remoteVisible)
                 x.ready = true
-            discoveryPage.instanceSelected = true
+            d.instanceSelected = true
 
             if ((mainWindow.mode == "local") && mainWindow.autoSelectApplication)
                 selectApplication(0)
@@ -185,7 +185,7 @@ Rectangle {
     function selectApplication(index)
     {
         if (mode == "local")
-            appPage.applicationSource = applications[index].mainFile
+            d.applicationSource = applications[index].mainFile
         else
             applicationConfig.selectConfig(applicationConfig.configs[index].name)
     }
@@ -204,7 +204,7 @@ Rectangle {
                 applicationConfig.ready = false
                 serviceDiscoveryFilter.txtRecords = []
                 serviceDiscovery.updateFilter()
-                discoveryPage.instanceSelected = false
+                d.instanceSelected = false
             }
             else
             {
@@ -216,10 +216,10 @@ Rectangle {
             if ((autoSelectApplication) && (autoSelectInstance))
                 Qt.quit()
 
-            if (appPage.applicationSource == "")    // remote application
+            if (d.applicationSource == "")    // remote application
                 applicationConfig.unselectConfig()
             else
-                appPage.applicationSource = ""
+                d.applicationSource = ""
 
             applicationServiceList.services = []
             applicationInternalServiceList.services = []
@@ -229,30 +229,28 @@ Rectangle {
             {
                 serviceDiscoveryFilter.txtRecords = []
                 serviceDiscovery.updateFilter()
-                discoveryPage.instanceSelected = false
+                d.instanceSelected = false
             }
         }
         else if (mainWindow.state == "error")
         {
             clearError()
-            applicationConfig.ready = false
-            serviceDiscoveryFilter.txtRecords = []
-            serviceDiscovery.updateFilter()
+            goBack()
         }
     }
 
     /*! \internal */
     function setError(errorType, errorText)
     {
-        errorPage.errorType = errorType
-        errorPage.errorText = errorText
-        discoveryPage.errorActive = true
+        d.errorType = errorType
+        d.errorText = errorText
+        d.errorActive = true
     }
 
     /*! \internal */
     function clearError()
     {
-        discoveryPage.errorActive = false
+        d.errorActive = false
     }
 
     // Capture the Android Back key and backspace key
@@ -265,6 +263,17 @@ Rectangle {
             goBack()
             event.accepted = true
         }
+    }
+
+    /* Global Variables */
+    QtObject {
+        id: d
+        property bool instanceSelected: false   // indicates whether an instance was selected or not
+        property bool errorActive: false        // indicates whether an error is active or not
+        property string errorType: ""           // a string representing the type of the current error
+        property string errorText: ""           // a string representing the text of the current error
+        property string applicationSource: ""   // indicates that a local app was selected
+
     }
 
     SystemPalette {
@@ -300,9 +309,6 @@ Rectangle {
     }
 
     Item {
-        property bool instanceSelected: false
-        property bool errorActive: false
-
         id: discoveryPage
 
         anchors.fill: parent
@@ -369,8 +375,6 @@ Rectangle {
     }
 
     Item {
-        property string applicationSource: ""   // indicates that a local app was selected
-
         id: appPage
 
         anchors.fill: parent
@@ -465,11 +469,18 @@ Rectangle {
             id: applicationLoader
 
             anchors.fill: parent
-            active: (appPage.applicationSource != "") ? true : applicationConfig.selectedConfig.loaded
-            source: (appPage.applicationSource != "") ? appPage.applicationSource : applicationConfig.selectedConfig.mainFile
+            active: (d.applicationSource != "") ? true : applicationConfig.selectedConfig.loaded
+            source: (d.applicationSource != "") ? d.applicationSource : applicationConfig.selectedConfig.mainFile
 
             onSourceChanged: {
                 console.log("Source changed: " + source + " " + active)
+            }
+
+            onStatusChanged: {
+                if (applicationLoader.status === Loader.Error)
+                {
+                    setError(qsTr("QML Error:"), "Loading QML file failed")
+                }
             }
 
             onLoaded: {
@@ -490,9 +501,6 @@ Rectangle {
     }
 
     Item {
-        property string errorType: ""
-        property string errorText: ""
-
         id: errorPage
 
         anchors.fill: parent
@@ -507,7 +515,7 @@ Rectangle {
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
             font.pointSize: dummyText.font.pointSize * 1.1
-            text: errorPage.errorType + "\n" + errorPage.errorText
+            text: d.errorType + "\n" + d.errorText
         }
     }
 
@@ -558,7 +566,7 @@ Rectangle {
     state: {
         if (serviceDiscovery.networkOpen)
         {
-            if (discoveryPage.errorActive)
+            if (d.errorActive)
             {
                 return "error"
             }
@@ -566,7 +574,7 @@ Rectangle {
             {
                 return "loaded"
             }
-            else if (discoveryPage.instanceSelected)
+            else if (d.instanceSelected)
             {
                 return "config"
             }
