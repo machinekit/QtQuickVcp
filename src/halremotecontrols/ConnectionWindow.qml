@@ -142,7 +142,11 @@ Rectangle {
     */
     readonly property string title: (applicationLoader.active && (applicationLoader.item != null))
                            ? ((applicationLoader.item.title !== undefined) ? applicationLoader.item.title : "")
-                           : qsTr("MachineKit App Discover")
+                           : defaultTitle
+
+    /*! This property holds the title of the window displayed if no application is loaded.
+    */
+    property string defaultTitle: qsTr("Machinekit")
 
     /*! This property holds the list of local applications.
     */
