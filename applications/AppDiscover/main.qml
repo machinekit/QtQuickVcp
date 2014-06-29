@@ -39,6 +39,7 @@ Item {
         id: connectionWindow
 
         anchors.fill: parent
+        defaultTitle: qsTr("Machinekit App Discover")
         remoteVisible: true
         mode: "remote"
         autoSelectInstance: false
