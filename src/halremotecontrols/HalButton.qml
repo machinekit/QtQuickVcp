@@ -77,7 +77,7 @@ Button {
         visible: !pin.synced
     }
 
-    Binding { target: main; property: "pressed"; value: pin.value; when: !main.checkable}
+    //Binding { target: main; property: "pressed"; value: pin.value; when: !main.checkable} TODO: pressed is read-only
     Binding { target: pin; property: "value"; value: main.pressed; when: !main.checkable}
     Binding { target: main; property: "checked"; value: pin.value; when: main.checkable}
     Binding { target: pin; property: "value"; value: main.checked; when: main.checkable}
