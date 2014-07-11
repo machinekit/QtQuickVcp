@@ -244,6 +244,19 @@ MetaInfo {
     }
 
     Type {
+        name: "Machinekit.HalRemote.Controls.HalSwitch"
+        icon: "images/item-icon.png"
+
+        ItemLibraryEntry {
+            name: "Switch"
+            category: "Machinekit - HalRemote Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.HalRemote.Controls"
+        }
+    }
+
+    Type {
         name: "Machinekit.HalRemote.Controls.HalVirtualJoystick"
         icon: "images/item-icon.png"
 

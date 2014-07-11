@@ -38,6 +38,7 @@ QML_FILES = \
     HalRoundGauge.qml \
     HalSlider.qml \
     HalSpinBox.qml \
+    HalSwitch.qml \
     HalVirtualJoystick.qml
 
 QML_INFRA_FILES = \
@@ -69,6 +70,8 @@ QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/HalRoundGaugeSpecifics.qml \
     propertyEditorQmlSources/SliderSection.qml \
     propertyEditorQmlSources/HalSliderSpecifics.qml \
+    propertyEditorQmlSources/SwitchSection.qml \
+    propertyEditorQmlSources/HalSwitchSpecifics.qml \
     propertyEditorQmlSources/SpinBoxSection.qml \
     propertyEditorQmlSources/HalSpinBoxSpecifics.qml \
     propertyEditorQmlSources/HalVirtualJoystickSpecifics.qml

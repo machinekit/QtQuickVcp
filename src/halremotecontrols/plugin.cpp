@@ -48,6 +48,7 @@ static const struct {
     { "HalRoundGauge", 1, 0 },
     { "HalSlider", 1, 0 },
     { "HalSpinBox", 1, 0 },
+    { "HalSwitch", 1, 0 },
     { "HalVirtualJoystick", 1, 0 }
 };
 

@@ -22,4 +22,5 @@ HalRadioButton 1.0 HalRadioButton.qml
 HalRoundGauge 1.0 HalRoundGauge.qml
 HalSlider 1.0 HalSlider.qml
 HalSpinBox 1.0 HalSpinBox.qml
+HalSwitch 1.0 HalSwitch.qml
 HalVirtualJoystick 1.0 HalVirtualJoystick.qml

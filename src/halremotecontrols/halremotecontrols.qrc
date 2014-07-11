@@ -18,5 +18,6 @@
         <file>ConnectionWindow.qml</file>
         <file>HalDial.qml</file>
         <file>HalRoundGauge.qml</file>
+        <file>HalSwitch.qml</file>
     </qresource>
 </RCC>
