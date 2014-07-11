@@ -31,6 +31,7 @@
 #include "qservicediscovery.h"
 #include "qservicediscoveryitem.h"
 #include "qservicediscoveryfilter.h"
+#include "qnameserver.h"
 
 #include <qqml.h>
 
@@ -43,6 +44,7 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
     // @uri Machinekit.HalRemote
     qmlRegisterType<QService>(uri, 1, 0, "Service");
     qmlRegisterType<QServiceList>(uri, 1, 0, "ServiceList");
+    qmlRegisterType<QNameServer>(uri, 1, 0, "NameServer");
     qmlRegisterType<QServiceDiscovery>(uri, 1, 0, "ServiceDiscovery");
     qmlRegisterType<QServiceDiscoveryItem>(uri, 1, 0, "ServiceDiscoveryItem");
     qmlRegisterType<QServiceDiscoveryFilter>(uri, 1, 0, "ServiceDiscoveryFilter");

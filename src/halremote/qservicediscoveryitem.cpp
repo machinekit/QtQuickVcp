@@ -88,7 +88,8 @@ QServiceDiscoveryItem::QServiceDiscoveryItem(QQuickItem *parent) :
     m_port(0),
     m_hostAddress(QHostAddress()),
     m_txtRecords(QStringList()),
-    m_outstandingRequests(0)
+    m_outstandingRequests(0),
+    m_updated(false)
 {
 }
 

@@ -37,6 +37,7 @@ class QServiceDiscoveryItem : public QQuickItem
     Q_PROPERTY(int port READ port NOTIFY portChanged)
     Q_PROPERTY(QHostAddress hostAddress READ hostAddress NOTIFY hostAddressChanged)
     Q_PROPERTY(QStringList txtRecords READ txtRecords NOTIFY txtRecordsChanged)
+    Q_PROPERTY(bool updated READ updated WRITE setUpdated NOTIFY updatedChanged)
 
 public:
     explicit QServiceDiscoveryItem(QQuickItem *parent = 0);
@@ -85,6 +86,11 @@ int outstandingRequests() const
 int version() const
 {
     return m_version;
+}
+
+bool updated() const
+{
+    return m_updated;
 }
 
 public slots:
@@ -150,6 +156,14 @@ void setVersion(int arg)
     }
 }
 
+void setUpdated(bool arg)
+{
+    if (m_updated != arg) {
+        m_updated = arg;
+        emit updatedChanged(arg);
+    }
+}
+
 private:
     QString m_name;
     QString m_type;
@@ -160,6 +174,7 @@ private:
     QHostAddress m_hostAddress;
     QStringList m_txtRecords;
     int m_outstandingRequests;
+    bool m_updated;
 
 signals:
 
@@ -171,6 +186,7 @@ void typeChanged(QString arg);
 void txtRecordsChanged(QStringList arg);
 void uuidChanged(QString arg);
 void versionChanged(int arg);
+void updatedChanged(bool arg);
 };
 
 #endif // QAPPDISCOVERYITEM_H

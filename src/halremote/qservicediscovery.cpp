@@ -20,6 +20,7 @@
 **
 ****************************************************************************/
 #include "qservicediscovery.h"
+#include "debughelper.h"
 
 /*!
     \qmltype ServiceDiscovery
@@ -80,6 +81,40 @@
     \note To change services and filter at runtime it is necessary to
     run the update functions for these properties.
 
+    The following example demonstrates the usage of the unicast DNS mode.
+
+    \qml
+    Item {
+        ServiceDiscovery {
+            id: serviceDiscovery
+
+            serviceType: "machinekit"
+            domain:      "local"
+            running:     true
+            lookupMode:  ServiceDiscovery.UnicastDNS
+
+            nameServers: [
+                NameServer {
+                    hostName: "192.168.1.16"
+                    port: 5353
+                }
+            ]
+
+            serviceLists: [
+                ServiceList {
+                    services: [
+                        Service {
+                            id: configService
+
+                            type: "config"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    \endqml
+
     \sa Service, ServiceList, ServiceDiscoveryFilter, ServiceDiscoveryItem
 */
 
@@ -108,13 +143,18 @@
     The default value is \c{false}.
 */
 
-/*! \qmlproperty bool ServiceDiscovery::networkOpen
+/*! \qmlproperty bool ServiceDiscovery::networkReady
 
     This property holds whether a suitable network connection is
     available or not. The \l running property will have no effect
     until a network connection is available
+*/
 
-    The default value is \c{false}.
+/*! \qmlproperty bool ServiceDiscovery::lookupReady
+
+    This property holds whether a the lookup client is successfully initialized
+    or not. The \l running property will have no effect until the lookup
+    client is ready.
 */
 
 /*! \qmlproperty ServiceDiscoveryFilter ServiceDiscovery::filter
@@ -137,6 +177,33 @@
     \note It is necessary to run \l updateServices after modifying the services.
 */
 
+/*! \qmlproperty list<NameServer> ServiceDiscovery::nameServers
+
+    This property holds a list of name servers. Name servers have to specified
+    in case unicast DNS is used as \l lookupMode . If this list is empty the
+    default name servers of the system will be used.
+
+    \note It is necessary to run \l updateNameServers after modifying the name servers.
+*/
+
+/*! \qmlproperty enumeration ServiceDiscovery::lookupMode
+
+    This property holds the method that should be used for discovering services.
+
+    \list
+    \li ServiceDiscovery.MulticastDNS - Multicast DNS (mDNS) is used to discovery services. (default)
+    \li ServiceDiscovery.UnicastDNS - Unicast DNS is used to discover services. It is necessary to specify \l nameServers .
+    \endlist
+*/
+
+/*! \qmlproperty int ServiceDiscovery::unicastLookupInterval
+
+    This property holds the interval for looking up services in unicast DNS mode
+    in milliseconds.
+
+    The default value is \c{5000}.
+*/
+
 /*! \qmlmethod void ServiceDiscovery::updateServices()
 
     Updates the \l{serviceLists}. Needs to be executed after modifying
@@ -149,6 +216,12 @@
     the \l filter property.
 */
 
+/*! \qmlmethod void ServiceDiscovery::updateNameServers()
+
+    Updates the \l{nameServers}. Needs to be executed after modifying
+    the \l nameServers property.
+*/
+
 
 QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     QQuickItem(parent),
@@ -156,21 +229,30 @@ QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     m_serviceType("machinekit"),
     m_domain("local"),
     m_running(false),
-    m_networkOpen(false),
+    m_networkReady(false),
+    m_lookupReady(false),
+    m_lookupMode(MulticastDNS),
+    m_unicastLookupInterval(5000),
     m_filter(new QServiceDiscoveryFilter(this)),
     m_networkSession(NULL),
     m_networkConfigManager(NULL),
     m_networkConfigTimer(new QTimer(this)),
-    m_elapsedTimer(QElapsedTimer()),
-    m_jdns(NULL)
+    m_jdns(NULL),
+    m_unicastLookupTimer(new QTimer(this))
 {
+    m_networkConfigTimer->setInterval(3000);
+    connect(m_networkConfigTimer, SIGNAL(timeout()),
+            this, SLOT(updateNetConfig()));
+
+    m_unicastLookupTimer->setInterval(m_unicastLookupInterval);
+    connect(m_unicastLookupTimer, SIGNAL(timeout()),
+            this, SLOT(unicastLookup()));
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
 void QServiceDiscovery::componentComplete()
 {
     m_componentCompleted = true;
-    m_elapsedTimer.start();
 
     initializeNetworkSession();
 
@@ -184,11 +266,7 @@ void QServiceDiscovery::initializeNetworkSession()
     connect(m_networkConfigManager, SIGNAL(updateCompleted()),
             this, SLOT(openNetworkSession()));
     m_networkConfigManager->updateConfigurations();
-    // update the connections cyclically
-    m_networkConfigTimer->setInterval(5000);
-    connect(m_networkConfigTimer, SIGNAL(timeout()),
-            this, SLOT(updateNetConfig()));
-    m_networkConfigTimer->start();
+    m_networkConfigTimer->start(); // update the connections cyclically
 }
 
 void QServiceDiscovery::initializeMdns()
@@ -201,8 +279,9 @@ void QServiceDiscovery::initializeMdns()
     }
 
 #ifdef QT_DEBUG
-            qDebug() << "Initializing MDNS";
+    DEBUG_TAG(1, "SD", "Initializing MDNS");
 #endif
+
     m_jdns = new QJDns(this);
 
     connect(m_jdns, SIGNAL(resultsReady(int,QJDns::Response)),
@@ -210,39 +289,66 @@ void QServiceDiscovery::initializeMdns()
     connect(m_jdns, SIGNAL(error(int,QJDns::Error)),
             this, SLOT(error(int,QJDns::Error)));
 
-    initialized = m_jdns->init(QJDns::Multicast, QHostAddress::Any);
+    if (m_lookupMode == MulticastDNS)
+    {
+        initialized = m_jdns->init(QJDns::Multicast, QHostAddress::Any);
+    }
+    else
+    {
+        initialized = m_jdns->init(QJDns::Unicast, QHostAddress::Any);
+    }
 
     if (!initialized) // something went wrong
     {
 #ifdef QT_DEBUG
-        qDebug() << "Initializing JDNS failed";
-        qDebug() << m_jdns->debugLines();
+        DEBUG_TAG(1, "SD", "Initializing JDNS failed");
+        DEBUG_TAG(1, "SD", m_jdns->debugLines());
 #endif
+
         m_jdns->deleteLater();
         m_jdns = NULL;
     }
     else
     {
-        m_networkOpen = true;
+        m_lookupReady = true;
+
+        if (m_lookupMode == UnicastDNS)
+        {
+            updateNameServers();
+        }
+
         if (m_running == true)
         {
             updateServices();
+
+            if (m_lookupMode == UnicastDNS)
+            {
+                m_unicastLookupTimer->start();
+            }
         }
 
-        emit networkOpenChanged(m_networkOpen);
+        emit lookupReadyChanged(m_lookupReady);
     }
 }
 
 void QServiceDiscovery::deinitializeMdns()
 {
+    if (m_jdns == NULL)
+    {
+        return;
+    }
+
 #ifdef QT_DEBUG
-            qDebug() << "Deinitializing MDNS";
+    DEBUG_TAG(1, "SD", "Deinitializing MDNS");
 #endif
-    m_networkOpen = false;
-    emit networkOpenChanged(m_networkOpen);
 
     if (m_running)
     {
+        if (m_lookupMode == UnicastDNS)
+        {
+            m_unicastLookupTimer->stop();
+        }
+
         removeAllServiceTypes();
         m_queryItemMap.clear();
         m_queryServiceMap.clear();
@@ -251,6 +357,35 @@ void QServiceDiscovery::deinitializeMdns()
 
     m_jdns->deleteLater();
     m_jdns = NULL;
+
+    m_lookupReady = false;                      // lookup no ready anymore
+    emit lookupReadyChanged(m_lookupReady);
+}
+
+void QServiceDiscovery::networkSessionOpened()
+{
+    m_networkReady = true;          // the network is ready
+    emit networkReadyChanged(m_networkReady);
+
+    initializeMdns();
+}
+
+void QServiceDiscovery::networkSessionClosed()
+{
+    deinitializeMdns();
+
+    m_networkReady = false;                     // network no ready anymore
+    emit networkReadyChanged(m_networkReady);
+}
+
+void QServiceDiscovery::unicastLookup()
+{
+    // TODO
+    QMapIterator<int, QString> i(m_queryServiceMap);
+    while (i.hasNext()) {
+        i.next();
+        refreshQuery(i.value());
+    }
 }
 
 QQmlListProperty<QServiceList> QServiceDiscovery::serviceLists()
@@ -268,18 +403,33 @@ QServiceList *QServiceDiscovery::serviceList(int index) const
     return m_serviceLists.at(index);
 }
 
+QQmlListProperty<QNameServer> QServiceDiscovery::nameServers()
+{
+    return QQmlListProperty<QNameServer>(this, m_nameServers);
+}
+
+int QServiceDiscovery::nameServerCount() const
+{
+    return m_nameServers.count();
+}
+
+QNameServer *QServiceDiscovery::nameServer(int index) const
+{
+    return m_nameServers.at(index);
+}
+
 void QServiceDiscovery::setServiceType(QString arg)
 {
     if (m_serviceType != arg) {
 
-        if (m_running && m_networkOpen) {
+        if (m_running && m_networkReady) {
             stopQueries();
         }
 
         m_serviceType = arg;
         emit serviceTypeChanged(arg);
 
-        if (m_running && m_networkOpen) {
+        if (m_running && m_networkReady) {
             startQueries();
         }
     }
@@ -289,14 +439,14 @@ void QServiceDiscovery::setDomain(QString arg)
 {
     if (m_domain != arg) {
 
-        if (m_running && m_networkOpen) {
+        if (m_running && m_networkReady) {
             stopQueries();
         }
 
         m_domain = arg;
         emit domainChanged(arg);
 
-        if (m_running && m_networkOpen) {
+        if (m_running && m_networkReady) {
             startQueries();
         }
     }
@@ -308,15 +458,25 @@ void QServiceDiscovery::setRunning(bool arg)
         m_running = arg;
         emit runningChanged(arg);
 
-        if (!m_networkOpen) {
+        if (!m_networkReady) {
             return;
         }
 
         if (m_running) {
             startQueries();
+
+            if (m_lookupMode == UnicastDNS)
+            {
+                m_unicastLookupTimer->start();
+            }
         }
         else
         {
+            if (m_lookupMode == UnicastDNS)
+            {
+                m_unicastLookupTimer->stop();
+            }
+
             stopQueries();
         }
     }
@@ -338,7 +498,7 @@ void QServiceDiscovery::updateServices()
             service = serviceList->service(i);
             addServiceType(service->type());
             oldServiceTypeMap.remove(service->type());
-            if (m_running && m_networkOpen)
+            if (m_running && m_networkReady)
             {
                 startQuery(service->type());
             }
@@ -350,7 +510,7 @@ void QServiceDiscovery::updateServices()
     while (i.hasNext()) {
         i.next();
 
-        if (m_running && m_networkOpen)
+        if (m_running && m_networkReady)
         {
             stopQuery(i.key());
         }
@@ -361,6 +521,83 @@ void QServiceDiscovery::updateServices()
 void QServiceDiscovery::updateFilter()
 {
     updateAllServiceTypes();
+}
+
+void QServiceDiscovery::updateNameServers()
+{
+    QList<QJDns::NameServer> nameServers;
+
+    if ((m_jdns == NULL) || (m_lookupMode != UnicastDNS))
+    {
+        return;
+    }
+
+    foreach (QNameServer *nameServer, m_nameServers)
+    {
+        QJDns::NameServer host;
+
+        if (nameServer->hostAddress().isNull())
+        {
+            continue;
+        }
+
+        host.address = nameServer->hostAddress();
+        host.port = nameServer->port();
+        nameServers.append(host);
+    }
+
+    if (nameServers.isEmpty())
+    {
+        nameServers = QJDns::systemInfo().nameServers;
+    }
+
+    if (nameServers.isEmpty())
+    {
+        // TODO: error
+    }
+
+    m_jdns->setNameServers(nameServers);
+
+    if (m_running)
+    {
+        unicastLookup();
+    }
+}
+
+void QServiceDiscovery::setUnicastLookupInterval(int arg)
+{
+    if (m_unicastLookupInterval != arg) {
+        m_unicastLookupInterval = arg;
+        emit unicastLookupIntervalChanged(arg);
+
+        m_unicastLookupTimer->setInterval(arg);
+    }
+}
+
+void QServiceDiscovery::setLookupMode(QServiceDiscovery::LookupMode arg)
+{
+    bool ready;
+
+    if (m_lookupMode != arg)
+    {
+        if (m_lookupReady)
+        {
+            deinitializeMdns();
+            ready = true;
+        }
+        else
+        {
+            ready = false;
+        }
+
+        m_lookupMode = arg;
+        emit lookupModeChanged(arg);
+
+        if (ready)
+        {
+            initializeMdns();
+        }
+    }
 }
 
 void QServiceDiscovery::setFilter(QServiceDiscoveryFilter *arg)
@@ -394,6 +631,7 @@ void QServiceDiscovery::stopQueries()
 void QServiceDiscovery::startQuery(QString type)
 {
     int queryId;
+    QString queryString;
 
     QMapIterator<int, QString> i(m_queryServiceMap);
     while (i.hasNext()) {
@@ -404,9 +642,14 @@ void QServiceDiscovery::startQuery(QString type)
         }
     }
 
-    queryId = m_jdns->queryStart(composeSdString(type, m_serviceType, m_domain).toLocal8Bit(), QJDns::Ptr);
+    queryString = composeSdString(type, m_serviceType, m_domain);
+    queryId = m_jdns->queryStart(queryString.toLocal8Bit(), QJDns::Ptr);
     m_queryTypeMap.insert(queryId, QJDns::Ptr);
     m_queryServiceMap.insert(queryId, type);
+
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, "SD", "Started query" << queryId << queryString);
+#endif
 }
 
 void QServiceDiscovery::stopQuery(QString type)
@@ -434,6 +677,66 @@ void QServiceDiscovery::stopQuery(QString type)
     m_queryTypeMap.remove(queryId);
     m_queryServiceMap.remove(queryId);
     clearItems(type);
+
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, "SD", "Stopped query" << queryId << type);
+#endif
+}
+
+void QServiceDiscovery::refreshQuery(QString type)
+{
+    int queryId;
+    bool found;
+    QString queryString;
+
+    QMapIterator<int, QString> i(m_queryServiceMap);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value() == type)  // query type matching
+        {
+            found = true;
+            queryId = i.key();
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        return;
+    }
+
+    m_jdns->queryCancel(queryId);                                       // stop old query
+    m_queryTypeMap.remove(queryId);
+    m_queryServiceMap.remove(queryId);
+
+    purgeItems(type);                                                   // purge outdated items
+
+    queryString = composeSdString(type, m_serviceType, m_domain);       // start a new query
+    queryId = m_jdns->queryStart(queryString.toLocal8Bit(), QJDns::Ptr);
+    m_queryTypeMap.insert(queryId, QJDns::Ptr);
+    m_queryServiceMap.insert(queryId, type);
+
+#ifdef QT_DEBUG
+    DEBUG_TAG(2, "SD", "Refreshed query" << queryId << queryString);
+#endif
+}
+
+void QServiceDiscovery::stopItemQueries(QServiceDiscoveryItem *item)
+{
+    int queryId;
+
+    QMapIterator<int, QServiceDiscoveryItem*> i(m_queryItemMap);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value() == item)  // query item matching
+        {
+            queryId = i.key();
+
+            m_jdns->queryCancel(queryId);
+            m_queryItemMap.remove(queryId);
+            m_queryTypeMap.remove(queryId);
+        }
+    }
 }
 
 void QServiceDiscovery::addServiceType(QString type)
@@ -624,6 +927,7 @@ void QServiceDiscovery::removeItem(QString name, QString type)
     {
         if (serviceDiscoveryItems.at(i)->name() == name)
         {
+            stopItemQueries(serviceDiscoveryItems.at(i));
             serviceDiscoveryItems.removeAt(i);
             m_serviceTypeMap.insert(type, serviceDiscoveryItems);
             updateServiceType(type);
@@ -648,12 +952,53 @@ void QServiceDiscovery::clearItems(QString type)
     // delete all service discovery items
     for (int i = (serviceDiscoveryItems.count()-1); i >= 0; i--)
     {
-        serviceDiscoveryItems.at(i)->deleteLater();
+        stopItemQueries(serviceDiscoveryItems.at(i));
         serviceDiscoveryItems.removeAt(i);
+        serviceDiscoveryItems.at(i)->deleteLater();
     }
 
     m_serviceTypeMap.insert(type, serviceDiscoveryItems);   // insert the empty list
     updateServiceType(type);
+}
+
+/** Removes items that have no been updated and flags other items with not updated **/
+void QServiceDiscovery::purgeItems(QString type)
+{
+    QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
+    bool modified;
+
+    if (m_serviceTypeMap.contains(type))
+    {
+        serviceDiscoveryItems = m_serviceTypeMap.value(type);
+    }
+    else
+    {
+        return;
+    }
+
+    modified = false;
+    for (int i = (serviceDiscoveryItems.count()-1); i >= 0; i--)
+    {
+        QServiceDiscoveryItem *serviceDiscoveryItem = serviceDiscoveryItems[i];
+
+        if (!serviceDiscoveryItem->updated())    // remove old items
+        {
+            stopItemQueries(serviceDiscoveryItem);
+            serviceDiscoveryItems.removeAt(i);
+            serviceDiscoveryItem->deleteLater();
+            modified = true;
+        }
+        else
+        {
+            serviceDiscoveryItem->setUpdated(false);
+        }
+    }
+
+    if (modified)
+    {
+        m_serviceTypeMap.insert(type, serviceDiscoveryItems);   // insert the modified list
+        updateServiceType(type);
+    }
 }
 
 QString QServiceDiscovery::composeSdString(QString type, QString domain)
@@ -693,7 +1038,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             QString name = r.name.left(r.name.indexOf(composeSdString(m_serviceType, m_domain)) - 1);
 
 #ifdef QT_DEBUG
-            qDebug() << "Found mDNS/DNS-SD:" << r.owner << r.name << serviceType << name << "TTL:" << r.ttl;
+            DEBUG_TAG(2, "SD", "Discovered DNS record:" << r.owner << r.name << serviceType << name << "TTL:" << r.ttl);
 #endif
 
             if (r.ttl != 0)
@@ -729,7 +1074,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             item->setTxtRecords(txtRecords);
 
 #ifdef QT_DEBUG
-            qDebug() << item->type() << item->name() << "Texts:" << r.texts;
+            DEBUG_TAG(2, "SD", item->type() << item->name() << "Texts:" << r.texts);
 #endif
         }
         else if (type == QJDns::Srv)
@@ -744,8 +1089,9 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_queryItemMap.insert(newId, item);
 
             item->setPort(r.port);
+
 #ifdef QT_DEBUG
-            qDebug() << item->type() << item->name() << "Port:" << r.port;
+            DEBUG_TAG(2, "SD", item->type() << item->name() << "Port:" << r.port);
 #endif
         }
         else if (type == QJDns::A)
@@ -755,10 +1101,11 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_queryTypeMap.remove(id);
             m_queryItemMap.remove(id);
 
-#ifdef QT_DEBUG
-            qDebug() << item->type() << item->name() << "Address:" << r.address.toString();
-#endif
             item->setHostAddress(r.address);
+
+#ifdef QT_DEBUG
+            DEBUG_TAG(2, "SD", item->type() << item->name() << "Address:" << r.address.toString());
+#endif
         }
 
         if (item != NULL)   // we got a answer to a request
@@ -767,6 +1114,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             if (item->outstandingRequests() == 0)   // item is fully resolved
             {
                 updateItem(item->name(), item->type());
+                item->setUpdated(true);
             }
         }
     }
@@ -783,14 +1131,19 @@ void QServiceDiscovery::error(int id, QJDns::Error e)
         errorString = "Timeout";
     else if(e == QJDns::ErrorConflict)
         errorString = "Conflict";
-    qDebug() << "==================== error ====================";
-    qDebug() << "id:" << id << errorString;
+
+#ifdef QT_DEBUG
+    WARNING_TAG(1, "SD",  "==================== error ====================");
+    WARNING_TAG(1, "SD",  "id:" << id << errorString);
+    WARNING_TAG(1, "SD", m_jdns->debugLines());
+#else
+    Q_UNUSED(id)
+#endif
 }
 
 void QServiceDiscovery::openNetworkSession()
 {
-    // use the default network configuration and make sure that
-    // the link is open
+    // use the default network configuration and make sure that the link is open
     QNetworkConfiguration networkConfig;
 
     if ((m_networkConfigManager->defaultConfiguration().bearerType() == QNetworkConfiguration::BearerEthernet)
@@ -806,8 +1159,9 @@ void QServiceDiscovery::openNetworkSession()
                     (config.bearerType() == QNetworkConfiguration::BearerWLAN))
             {
                 networkConfig = config;
+
 #ifdef QT_DEBUG
-                qDebug() << "network configs: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name();
+                DEBUG_TAG(2, "SD", "network configs: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
 #endif
             }
         }
@@ -816,8 +1170,9 @@ void QServiceDiscovery::openNetworkSession()
     if (networkConfig.isValid())
     {
 #ifdef QT_DEBUG
-            qDebug() << "network config: " << networkConfig.bearerTypeName() << networkConfig.bearerTypeFamily() << networkConfig.name() << networkConfig.state();
+        DEBUG_TAG(2, "SD", "network config: " << networkConfig.bearerTypeName() << networkConfig.bearerTypeFamily() << networkConfig.name() << networkConfig.state());
 #endif
+
         if (m_networkSession != NULL)
         {
             m_networkSession->deleteLater();
@@ -826,9 +1181,9 @@ void QServiceDiscovery::openNetworkSession()
         m_networkSession = new QNetworkSession(networkConfig);
 
         connect(m_networkSession, SIGNAL(opened()),
-                this, SLOT(initializeMdns()));
+                this, SLOT(networkSessionOpened()));
         connect(m_networkSession, SIGNAL(closed()),
-                this, SLOT(deinitializeMdns()));
+                this, SLOT(networkSessionClosed()));
 
         m_networkSession->open();
     }
@@ -838,7 +1193,7 @@ void QServiceDiscovery::updateNetConfig()
 {
     if ((m_networkSession == NULL)
             || (!m_networkSession->isOpen())
-            || (!m_networkOpen))
+            || (!m_networkReady))
     {
         m_networkConfigManager->updateConfigurations();
     }
