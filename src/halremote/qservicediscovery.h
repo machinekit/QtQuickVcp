@@ -109,7 +109,6 @@ private:
     QMap<int, QServiceDiscoveryItem*> m_queryItemMap;
     QMap<QString, QList<QServiceDiscoveryItem*> > m_serviceTypeMap;
     QMap<int, QString> m_queryServiceMap;
-    bool m_delayedInitRunning;
 
     void initializeNetworkSession();
     void startQueries();
@@ -138,7 +137,6 @@ private:
     void updateNetConfig();
     void initializeMdns();
     void deinitializeMdns();
-    void delayedInit();
 };
 
 #endif // QAPPDISCOVERY_H

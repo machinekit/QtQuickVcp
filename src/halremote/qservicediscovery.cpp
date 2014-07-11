@@ -162,8 +162,7 @@ QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     m_networkConfigManager(NULL),
     m_networkConfigTimer(new QTimer(this)),
     m_elapsedTimer(QElapsedTimer()),
-    m_jdns(NULL),
-    m_delayedInitRunning(false)
+    m_jdns(NULL)
 {
 }
 
@@ -194,6 +193,8 @@ void QServiceDiscovery::initializeNetworkSession()
 
 void QServiceDiscovery::initializeMdns()
 {
+    bool initialized;
+
     if (m_jdns != NULL) // already initialized
     {
         return;
@@ -204,23 +205,32 @@ void QServiceDiscovery::initializeMdns()
 #endif
     m_jdns = new QJDns(this);
 
-
     connect(m_jdns, SIGNAL(resultsReady(int,QJDns::Response)),
             this, SLOT(resultsReady(int,QJDns::Response)));
     connect(m_jdns, SIGNAL(error(int,QJDns::Error)),
             this, SLOT(error(int,QJDns::Error)));
 
-    m_jdns->init(QJDns::Multicast, QHostAddress::Any);
+    initialized = m_jdns->init(QJDns::Multicast, QHostAddress::Any);
 
-    m_networkOpen = true;
-    if (m_running == true)
+    if (!initialized) // something went wrong
     {
-        updateServices();
+#ifdef QT_DEBUG
+        qDebug() << "Initializing JDNS failed";
+        qDebug() << m_jdns->debugLines();
+#endif
+        m_jdns->deleteLater();
+        m_jdns = NULL;
     }
+    else
+    {
+        m_networkOpen = true;
+        if (m_running == true)
+        {
+            updateServices();
+        }
 
-    emit networkOpenChanged(m_networkOpen);
-
-    m_delayedInitRunning = false;
+        emit networkOpenChanged(m_networkOpen);
+    }
 }
 
 void QServiceDiscovery::deinitializeMdns()
@@ -241,26 +251,6 @@ void QServiceDiscovery::deinitializeMdns()
 
     m_jdns->deleteLater();
     m_jdns = NULL;
-}
-
-void QServiceDiscovery::delayedInit()
-{
-    if (m_delayedInitRunning)
-    {
-        return;
-    }
-    m_delayedInitRunning = true;
-
-    // for some reason there needs to be a delay if the network is initialized after the app was started
-    // if the network comes up 500 msecs or less after the application has started skip the delay
-    if (m_elapsedTimer.hasExpired(1000))
-    {
-        QTimer::singleShot(2000, this, SLOT(initializeMdns()));
-    }
-    else
-    {
-        initializeMdns();
-    }
 }
 
 QQmlListProperty<QServiceList> QServiceDiscovery::serviceLists()
@@ -784,8 +774,17 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
 void QServiceDiscovery::error(int id, QJDns::Error e)
 {
+    QString errorString;
+    if(e == QJDns::ErrorGeneric)
+        errorString = "Generic";
+    else if(e == QJDns::ErrorNXDomain)
+        errorString = "NXDomain";
+    else if(e == QJDns::ErrorTimeout)
+        errorString = "Timeout";
+    else if(e == QJDns::ErrorConflict)
+        errorString = "Conflict";
     qDebug() << "==================== error ====================";
-    qDebug() << id << e;
+    qDebug() << "id:" << id << errorString;
 }
 
 void QServiceDiscovery::openNetworkSession()
@@ -817,7 +816,7 @@ void QServiceDiscovery::openNetworkSession()
     if (networkConfig.isValid())
     {
 #ifdef QT_DEBUG
-            qDebug() << "network config: " << networkConfig.bearerTypeName() << networkConfig.bearerTypeFamily() << networkConfig.name();
+            qDebug() << "network config: " << networkConfig.bearerTypeName() << networkConfig.bearerTypeFamily() << networkConfig.name() << networkConfig.state();
 #endif
         if (m_networkSession != NULL)
         {
@@ -827,7 +826,7 @@ void QServiceDiscovery::openNetworkSession()
         m_networkSession = new QNetworkSession(networkConfig);
 
         connect(m_networkSession, SIGNAL(opened()),
-                this, SLOT(delayedInit()));
+                this, SLOT(initializeMdns()));
         connect(m_networkSession, SIGNAL(closed()),
                 this, SLOT(deinitializeMdns()));
 
@@ -837,7 +836,9 @@ void QServiceDiscovery::openNetworkSession()
 
 void QServiceDiscovery::updateNetConfig()
 {
-    if ((m_networkSession == NULL) || (!m_networkSession->isOpen()))
+    if ((m_networkSession == NULL)
+            || (!m_networkSession->isOpen())
+            || (!m_networkOpen))
     {
         m_networkConfigManager->updateConfigurations();
     }
