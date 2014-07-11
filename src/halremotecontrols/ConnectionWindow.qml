@@ -568,7 +568,7 @@ Rectangle {
     }
 
     state: {
-        if (serviceDiscovery.networkOpen)
+        if (serviceDiscovery.networkReady)
         {
             if (d.errorActive)
             {
