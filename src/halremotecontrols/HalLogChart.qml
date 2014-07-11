@@ -68,7 +68,10 @@ LogChart {
         direction: HalPin.In
 
         onValueChanged: {
-            main.addData(value)
+            if (!autoSampling)
+                main.addData(value)
         }
     }
+
+    Binding { target: main; property: "value"; value: pin.value}
 }
