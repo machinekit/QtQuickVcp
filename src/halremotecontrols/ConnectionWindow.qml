@@ -23,6 +23,7 @@ import QtQuick 2.1
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
+import Machinekit.Controls 1.0
 import Machinekit.HalRemote 1.0
 
 /*!
@@ -138,6 +139,26 @@ Rectangle {
     */
     property alias instanceFilter: configService.filter
 
+    /*! \qmlproperty list<NameServer> nameServers
+
+        This property holds a list of name servers. Name servers have to specified
+        in case unicast DNS is used as \l lookupMode . If this list is empty the
+        default name servers of the system will be used.
+
+    */
+    property alias nameServers: serviceDiscovery.nameServers
+
+    /*! \qmlproperty enumeration lookupMode
+
+        This property holds the method that should be used for discovering services.
+
+        \list
+        \li ServiceDiscovery.MulticastDNS - Multicast DNS (mDNS) is used to discovery services. (default)
+        \li ServiceDiscovery.UnicastDNS - Unicast DNS is used to discover services. It is necessary to specify \l nameServers .
+        \endlist
+    */
+    property alias lookupMode: serviceDiscovery.lookupMode
+
     /*! This property holds the title of the window.
     */
     readonly property string title: (applicationLoader.active && (applicationLoader.item != null))
@@ -151,7 +172,6 @@ Rectangle {
     /*! This property holds the list of local applications.
     */
     property list<ApplicationDescription> applications
-
 
     id: mainWindow
 
@@ -264,6 +284,8 @@ Rectangle {
     Keys.onReleased: {
         if ((event.key === Qt.Key_Back) ||
                 (event.key === Qt.Key_Backspace)) {
+            if (!mainWindow.activeFocus)
+                return;
             goBack()
             event.accepted = true
         }
@@ -277,7 +299,6 @@ Rectangle {
         property string errorType: ""           // a string representing the type of the current error
         property string errorText: ""           // a string representing the text of the current error
         property string applicationSource: ""   // indicates that a local app was selected
-
     }
 
     SystemPalette {
@@ -317,25 +338,10 @@ Rectangle {
 
         anchors.fill: parent
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: Screen.logicalPixelDensity*3
-            spacing: Screen.logicalPixelDensity*3
-
-            Label {
-                id: pageTitleText2
-
-                Layout.fillWidth: true
-                text: qsTr("Available Instances:")
-                font.pointSize: dummyText.font.pointSize * 1.3
-                font.bold: true
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-            }
+        Component {
+            id: instanceListView
 
             ListView {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
                 spacing: Screen.logicalPixelDensity*3
                 clip: true
 
@@ -366,15 +372,176 @@ Rectangle {
                         selectInstance(0)
                     }
                 }
+
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    running: true
+                    visible: configService.items.length === 0
+                    height: parent.height * 0.15
+                    width: height
+                }
             }
         }
 
-        BusyIndicator {
-            anchors.centerIn: parent
-            running: true
-            visible: configService.items.length === 0
-            height: parent.height * 0.15
-            width: height
+        SlideView {
+            id: discoveryView
+            anchors.fill: parent
+
+            onCurrentIndexChanged: {
+                if (currentIndex == 0)
+                    serviceDiscovery.lookupMode = ServiceDiscovery.MulticastDNS
+                else
+                    serviceDiscovery.lookupMode = ServiceDiscovery.UnicastDNS
+            }
+
+            Binding {
+                target: discoveryView; property: "currentIndex";
+                value: (serviceDiscovery.lookupMode == ServiceDiscovery.MulticastDNS) ? 0 : 1
+            }
+
+            SlidePage {
+                title: qsTr("Multicast")
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: Screen.logicalPixelDensity*3
+                    spacing: Screen.logicalPixelDensity*3
+
+                    Label {
+                        id: pageTitleText2
+
+                        Layout.fillWidth: true
+                        text: qsTr("Available Instances:")
+                        font.pointSize: dummyText.font.pointSize * 1.3
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Loader {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        sourceComponent: instanceListView
+                        active: true
+                    }
+                }
+            }
+
+            SlidePage {
+                id: unicastPage
+                title: qsTr("Unicast")
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: Screen.logicalPixelDensity*3
+                    spacing: Screen.logicalPixelDensity*3
+
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("Available Instances:")
+                        font.pointSize: dummyText.font.pointSize * 1.3
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Loader {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        sourceComponent: instanceListView
+                        active: true
+                    }
+
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("DNS Servers:")
+                        font.pointSize: dummyText.font.pointSize * 1.3
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                    }
+
+                    ListView {
+                        id: dnsServerView
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: dummyButon.height * 1.5 * model.length + Screen.logicalPixelDensity * 1.5 * Math.max(model.length-1, 0)
+                        spacing: Screen.logicalPixelDensity*1.5
+
+                        model: serviceDiscovery.nameServers
+
+                        delegate: RowLayout {
+                                    id: viewItem
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    height: dummyButon.height * 1.5
+
+                                    Label {
+                                        text: qsTr("Server ") + (index + 1) + ":"
+                                        font.pointSize: dummyText.font.pointSize * 1.2
+                                    }
+
+                                    TextField {
+                                        id: dnsServerTextField
+                                        Layout.fillWidth: true
+                                        Layout.fillHeight: true
+                                        font.pointSize: dummyText.font.pointSize * 1.2
+                                        onEditingFinished: {
+                                            if (text != "") {
+                                                dnsServerView.model[index].hostName = text
+                                                serviceDiscovery.updateNameServers()
+                                                mainWindow.forceActiveFocus()
+                                            }
+                                            else {
+                                                serviceDiscovery.removeNameServer(index)
+                                            }
+                                        }
+                                        Binding { target: dnsServerTextField; property: "text"; value: dnsServerView.model[index].hostName }
+                                    }
+
+                                    Button {
+                                        Layout.fillHeight: true
+                                        text: "+"
+                                        visible: index === (dnsServerView.model.length - 1)   // last item
+                                        onClicked: {
+                                            serviceDiscovery.addNameServer(nameServer.createObject(serviceDiscovery, {}))
+                                        }
+
+                                        Label {
+                                            anchors.fill: parent
+                                            font.pointSize: dummyText.font.pointSize*1.2
+                                            font.bold: true
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                            text: "+"
+                                        }
+                                    }
+                                }
+                    }
+
+                    Button {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: dummyButon.height * 1.5
+                        visible: dnsServerView.model.length === 0
+                        onClicked: {
+                            serviceDiscovery.addNameServer(nameServer.createObject(serviceDiscovery, {}))
+                        }
+
+                        Label {
+                            anchors.fill: parent
+                            font.pointSize: dummyText.font.pointSize*1.2
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: "+"
+                        }
+                    }
+
+                    Component {
+                        id: nameServer
+                        NameServer { }
+                    }
+                }
+            }
         }
     }
 
@@ -383,82 +550,113 @@ Rectangle {
 
         anchors.fill: parent
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: Screen.logicalPixelDensity*3
-            spacing: Screen.logicalPixelDensity*3
+        Component {
+            id: localRemoteContent
 
-            Label {
-                id: pageTitleText
-
-                Layout.fillWidth: true
-                text: configService.name
-                font.pointSize: dummyText.font.pointSize * 1.3
-                font.bold: true
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-            }
-
-            ListView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            ColumnLayout {
                 spacing: Screen.logicalPixelDensity*3
-                clip: true
 
-                model: (mode == "local") ? applications : applicationConfig.configs
-                delegate: Button {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: dummyButon.height * 3
+                Label {
+                    id: pageTitleText
 
-                    ColumnLayout {
+                    Layout.fillWidth: true
+                    text: configService.name
+                    font.pointSize: dummyText.font.pointSize * 1.3
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                }
+
+                ListView {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    spacing: Screen.logicalPixelDensity*3
+                    clip: true
+
+                    model: (mode == "local") ? applications : applicationConfig.configs
+                    delegate: Button {
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
+                        height: dummyButon.height * 3
 
-                        Label {
-                            id: titleText
+                        ColumnLayout {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
 
-                            Layout.fillWidth: true
-                            font.pointSize: dummyText.font.pointSize*1.3
-                            font.bold: true
-                            text: name
-                            horizontalAlignment: Text.AlignHCenter
-                            elide: Text.ElideRight
+                            Label {
+                                id: titleText
+
+                                Layout.fillWidth: true
+                                font.pointSize: dummyText.font.pointSize*1.3
+                                font.bold: true
+                                text: name
+                                horizontalAlignment: Text.AlignHCenter
+                                elide: Text.ElideRight
+                            }
+                            Label {
+                                id: descriptionText
+
+                                Layout.fillWidth: true
+                                text: description
+                                color: systemPalette.dark
+                                horizontalAlignment: Text.AlignHCenter
+                                wrapMode: Text.WordWrap
+                            }
                         }
-                        Label {
-                            id: descriptionText
 
-                            Layout.fillWidth: true
-                            text: description
-                            color: systemPalette.dark
-                            horizontalAlignment: Text.AlignHCenter
-                            wrapMode: Text.WordWrap
-                        }
+                        onClicked: selectApplication(index)
                     }
 
-                    onClicked: selectApplication(index)
-                }
-
-                onCountChanged: {
-                    if ((mainWindow.state == "config") && (autoSelectApplication == true) && (count > 0))
-                    {
-                        selectApplication(0)
+                    onCountChanged: {
+                        if ((mainWindow.state == "config") && (autoSelectApplication == true) && (count > 0))
+                        {
+                            selectApplication(0)
+                        }
                     }
                 }
             }
+        }
 
-            Button {
-                id: modeButton
+        SlideView {
+            id: appView
+            anchors.fill: parent
 
-                Layout.fillWidth: true
-                text: (mode == "local") ? qsTr("Show Remote Applications") : qsTr("Show Local Applications")
-                visible: mainWindow.remoteVisible && mainWindow.localVisible
-                onClicked: {
-                    if (mainWindow.mode == "local")
-                        mainWindow.mode = "remote"
-                    else
-                        mainWindow.mode = "local"
+            onCurrentIndexChanged: {
+                if (currentIndex == 0)
+                    mainWindow.mode = "remote"
+                else
+                    mainWindow.mode = "local"
+            }
+
+            Binding {
+                target: appView; property: "currentIndex";
+                value: ((mainWindow.mode == "remote") ? 0 : 1)
+            }
+
+            SlidePage {
+                anchors.fill: parent
+                anchors.margins: Screen.logicalPixelDensity*3
+                title: qsTr("Remote")
+                visible: mainWindow.remoteVisible
+
+                Loader {
+                    anchors.fill: parent
+                    sourceComponent: localRemoteContent
+                    active: true
+                }
+            }
+
+            SlidePage {
+                anchors.fill: parent
+                anchors.margins: Screen.logicalPixelDensity*3
+                title: qsTr("Local")
+                visible: mainWindow.localVisible
+
+                Loader {
+                    anchors.fill: parent
+                    sourceComponent: localRemoteContent
+                    active: true
                 }
             }
         }
