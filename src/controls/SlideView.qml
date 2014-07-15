@@ -57,6 +57,30 @@ Item {
         menuVisible = false
     }
 
+    /*! \internal */
+    function _updateItems() {
+        var items = root.children
+        var filteredItems = []
+        var i
+
+        for (i = items.length-1; i >= 0; --i) {
+            if (items[i] === menuView )
+                continue
+
+            if (items[i] === mouseArea )
+                continue
+
+            if (items[i] === normalView )
+                continue
+
+            filteredItems.push(items[i])
+        }
+
+        for (i = filteredItems.length-1; i >= 0; --i) {
+            filteredItems[i].parent = normalView
+        }
+    }
+
     SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
 
     MouseArea {
@@ -128,11 +152,14 @@ Item {
                    Rectangle {
                        property bool isCurrentItem: ListView.isCurrentItem
 
+                       SystemPalette { id: systemPalette; colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled }
+
                        id: rect
                        anchors.left: parent.left
                        anchors.right: parent.right
                        height: Screen.pixelDensity * 10
                        color: rect.isCurrentItem ? systemPalette.highlight : "transparent"
+                       enabled:  menuList.model[index].visible
                        ListView.onCurrentItemChanged: menuList.model[index].opacity = ListView.isCurrentItem * 1.0
 
                        Text {
@@ -203,26 +230,5 @@ Item {
                }
     }
 
-    onChildrenChanged: {
-       var items = root.children
-       var filteredItems = []
-       var i
-
-       for (i = items.length-1; i >= 0; --i) {
-           if (items[i] === menuView )
-               continue
-
-           if (items[i] === mouseArea )
-               continue
-
-           if (items[i] === normalView )
-               continue
-
-           filteredItems.push(items[i])
-       }
-
-       for (i = filteredItems.length-1; i >= 0; --i) {
-           filteredItems[i].parent = normalView
-       }
-    }
+    onChildrenChanged: _updateItems()
 }
