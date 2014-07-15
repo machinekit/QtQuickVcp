@@ -30,6 +30,8 @@ QML_FILES = \
     Line.qml \
     LogChart.qml \
     RoundGauge.qml \
+    SlideView.qml \
+    SlidePage.qml \
     TemperatureSelector.qml \
     TouchButton.qml \
     ValueChart.qml \

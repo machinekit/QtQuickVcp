@@ -12,5 +12,7 @@
         <file>Gauge.qml</file>
         <file>Dial.qml</file>
         <file>RoundGauge.qml</file>
+        <file>SlidePage.qml</file>
+        <file>SlideView.qml</file>
     </qresource>
 </RCC>
