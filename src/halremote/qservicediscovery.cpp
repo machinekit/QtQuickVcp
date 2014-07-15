@@ -222,6 +222,20 @@
     the \l nameServers property.
 */
 
+/*! \qmlmethod void ServiceDiscovery::addNameServer(NameServer nameServer)
+
+    Adds a name server to the list of \l{nameServers}.
+*/
+
+/*! \qmlmethod void ServiceDiscovery::removeNameServer(int index)
+
+    Removes a name server from the list of \l{nameServers}.
+*/
+
+/*! \qmlmethod void ServiceDiscovery::clearNameServers()
+
+    Clears the list of \l{nameServers}.
+*/
 
 QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
     QQuickItem(parent),
@@ -416,6 +430,24 @@ int QServiceDiscovery::nameServerCount() const
 QNameServer *QServiceDiscovery::nameServer(int index) const
 {
     return m_nameServers.at(index);
+}
+
+void QServiceDiscovery::addNameServer(QNameServer *nameServer)
+{
+    m_nameServers.append(nameServer);
+    emit nameServersChanged(nameServers());
+}
+
+void QServiceDiscovery::removeNameServer(int index)
+{
+    m_nameServers.removeAt(index);
+    emit nameServersChanged(nameServers());
+}
+
+void QServiceDiscovery::clearNameServers()
+{
+    m_nameServers.clear();
+    emit nameServersChanged(nameServers());
 }
 
 void QServiceDiscovery::setServiceType(QString arg)
@@ -953,8 +985,8 @@ void QServiceDiscovery::clearItems(QString type)
     for (int i = (serviceDiscoveryItems.count()-1); i >= 0; i--)
     {
         stopItemQueries(serviceDiscoveryItems.at(i));
-        serviceDiscoveryItems.removeAt(i);
         serviceDiscoveryItems.at(i)->deleteLater();
+        serviceDiscoveryItems.removeAt(i);
     }
 
     m_serviceTypeMap.insert(type, serviceDiscoveryItems);   // insert the empty list

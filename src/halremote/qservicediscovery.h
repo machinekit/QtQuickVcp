@@ -44,7 +44,7 @@ class QServiceDiscovery : public QQuickItem
     Q_PROPERTY(QQmlListProperty<QServiceList> serviceLists READ serviceLists)
     Q_PROPERTY(LookupMode lookupMode READ lookupMode WRITE setLookupMode NOTIFY lookupModeChanged)
     Q_PROPERTY(int unicastLookupInterval READ unicastLookupInterval WRITE setUnicastLookupInterval NOTIFY unicastLookupIntervalChanged)
-    Q_PROPERTY(QQmlListProperty<QNameServer> nameServers READ nameServers)
+    Q_PROPERTY(QQmlListProperty<QNameServer> nameServers READ nameServers NOTIFY nameServersChanged)
 
     Q_ENUMS(LookupMode)
 
@@ -116,6 +116,9 @@ public slots:
     void updateServices();
     void updateFilter();
     void updateNameServers();
+    void addNameServer(QNameServer *nameServer);
+    void removeNameServer(int index);
+    void clearNameServers();
 
 signals:
     void serviceTypeChanged(QString arg);
@@ -126,6 +129,7 @@ signals:
     void lookupReadyChanged(bool arg);
     void lookupModeChanged(LookupMode arg);
     void unicastLookupIntervalChanged(int arg);
+    void nameServersChanged(QQmlListProperty<QNameServer> arg);
 
 private:
     bool m_componentCompleted;
