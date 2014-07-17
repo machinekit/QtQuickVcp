@@ -3,6 +3,7 @@ TARGET = machinekitvideoviewplugin
 TARGETPATH = Machinekit/VideoView
 QT += qml quick
 CONFIG += qt plugin
+CONFIG -= android_install
 
 
 TARGET = $$qtLibraryTarget($$TARGET)

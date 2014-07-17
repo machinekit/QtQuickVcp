@@ -3,6 +3,7 @@ TARGET = machinekitpathviewplugin
 TARGETPATH = Machinekit/PathView
 QT += qml quick
 CONFIG += qt plugin
+CONFIG -= android_install
 
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.PathView

@@ -3,12 +3,11 @@ TARGET = machinekitcontrolsplugin
 TARGETPATH = Machinekit/Controls
 QT += qml quick
 CONFIG += qt plugin
+CONFIG -= android_install
 
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.Controls
-#ios: {
-    QMAKE_MOC_OPTIONS += -Muri=$$uri
-#}
+QMAKE_MOC_OPTIONS += -Muri=$$uri
 
 # Input
 SOURCES += \
