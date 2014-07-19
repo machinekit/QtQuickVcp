@@ -23,3 +23,10 @@ QML_INFRA_FILES = \
 
 include(../deployment.pri)
 
+OTHER_FILES += \
+    SimpleVertex.glsl \
+    SimpleFragment.glsl
+
+RESOURCES += \
+    shaders.qrc
+

@@ -65,8 +65,9 @@
 
 #include <QtQuick/QQuickItem>
 #include <QtGui/QOpenGLShaderProgram>
+#include <QTimer>
+#include <QOpenGLBuffer>
 
-//! [1]
 class PathView3d : public QQuickItem
 {
     Q_OBJECT
@@ -92,10 +93,15 @@ private slots:
 
 private:
     QOpenGLShaderProgram *m_program;
+    QOpenGLBuffer *m_vertexBuffer;
+    QOpenGLBuffer *m_indexBuffer;
 
     qreal m_t;
     qreal m_thread_t;
+
+    void setupVBOs();
+    void setupShaders();
+    void setupWindow();
 };
-//! [1]
 
 #endif // SQUIRCLE_H
