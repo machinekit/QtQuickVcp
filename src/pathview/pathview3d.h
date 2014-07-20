@@ -73,9 +73,32 @@ class PathView3d : public QQuickItem
     Q_OBJECT
 
     Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
+    Q_ENUMS(ModelType)
 
 public:
     PathView3d();
+
+    typedef struct {
+        GLfloat x;
+        GLfloat y;
+        GLfloat z;
+    } Vector3D;
+
+    typedef struct {
+        Vector3D position;
+        Vector3D normal;
+    } ModelVertex;
+
+    typedef struct {
+        QMatrix4x4 modelMatrix;
+        QColor color;
+    } ModelState;
+
+    enum ModelType {
+        Cube = 0,
+        Cylinder = 1,
+        Sphere = 2
+    };
 
     qreal t() const { return m_t; }
     void setT(qreal t);
@@ -92,16 +115,69 @@ private slots:
     void handleWindowChanged(QQuickWindow *win);
 
 private:
+    // the shader program
     QOpenGLShaderProgram *m_program;
-    QOpenGLBuffer *m_vertexBuffer;
-    QOpenGLBuffer *m_indexBuffer;
 
+    // vertex buffers
+    QOpenGLBuffer *m_cubeVertexBuffer;
+    QOpenGLBuffer *m_cylinderVertexBuffer;
+
+    // transformation matrices
+    QMatrix4x4 m_viewMatrix;
+    QMatrix4x4 m_modelMatrix;
+    QMatrix4x4 m_projectionMatrix;
+
+    // shader program location ids
+    int m_positionLocation;
+    int m_normalLocation;
+    int m_colorLocation;
+    int m_lightPosLocation;
+    int m_projectionMatrixLocation;
+    int m_viewMatrixLocation;
+    int m_modelMatrixLocation;
+
+    // thread secure properties
     qreal m_t;
     qreal m_thread_t;
 
+    // setup functions
+    void initializeVertexBuffer(QOpenGLBuffer **glBuffer, const QVector<ModelVertex> & vertices);
+    void initializeVertexBuffer(QOpenGLBuffer **glBuffer, const void *bufferData, int bufferLength);
     void setupVBOs();
+    void setupCube();
     void setupShaders();
     void setupWindow();
+    void setupCylinder(GLfloat originRadius, QVector3D originPoint, GLfloat endRadius, QVector3D endPoint, int precision);
+
+    void drawCube();
+    void drawCube(QVector3D size);
+    void drawCube(QVector3D size, QVector3D position);
+    void drawCube(QVector3D size, QVector3D position, float rotationAngle, QVector3D rotationVector);
+    void drawCylinder(float radius, float height, QVector3D position, float rotationAngle, QVector3D rotationVector);
+
+    // model manipulation functions
+    void color(float r, float g, float b, float a);
+    void color(QColor color);
+    void translate(float x, float y, float z);
+    void translate(QVector3D vector);
+    void rotate(float angle, float x, float y, float z);
+    void rotate(float angle, QVector3D axis);
+    void rotate(QQuaternion quaternion);
+    void scale(float x, float y, float z);
+    void scale(QVector3D vector);
+    void mirror(float x, float y, float z);
+    void mirror(QVector3D vector);
+
+    // model functions
+    void cube(float w, float l, float h, bool center = false);
+    void cube(QVector3D size, bool center = false);
+    void cylinder(float h, float r1);
+    void cylinder(float h, float r1, float r2);
+    void sphere(float r);
+
+    // grouping functions
+    void beginUnion();
+    void endUnion();
 };
 
 #endif // SQUIRCLE_H

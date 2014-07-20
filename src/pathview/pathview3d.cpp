@@ -68,46 +68,6 @@
 #include <QtCore/qmath.h>
 #include <QDateTime>
 
-const GLubyte indices[] = {
-    // Front
-    0, 1, 2,
-    2, 3, 0,
-    // Back
-    4, 6, 5,
-    4, 7, 6,
-    // Left
-    2, 7, 3,
-    7, 6, 2,
-    // Right
-    0, 4, 1,
-    4, 1, 5,
-    // Top
-    6, 2, 1,
-    1, 6, 5,
-    // Bottom
-    0, 3, 7,
-    0, 7, 4
-};
-
-typedef struct {
-    GLfloat position[3];
-    GLfloat color[4];
-} Vertex;
-
-const Vertex vertices[] = {
-    {{1, -1, 0}, {1, 0, 0, 1}},
-    {{1, 1, 0}, {1, 0, 0, 1}},
-    {{-1, 1, 0}, {0, 1, 0, 1}},
-    {{-1, -1, 0}, {0, 1, 0, 1}},
-    {{1, -1, -1}, {1, 0, 0, 1}},
-    {{1, 1, -1}, {1, 0, 0, 1}},
-    {{-1, 1, -1}, {0, 1, 0, 1}},
-    {{-1, -1, -1}, {0, 1, 0, 1}}
-};
-
-GLuint colorRenderBuffer;
-GLuint depthRenderBuffer;
-
 PathView3d::PathView3d()
     : m_program(0)
     , m_t(0)
@@ -142,21 +102,116 @@ void PathView3d::handleWindowChanged(QQuickWindow *win)
     }
 }
 
+void PathView3d::initializeVertexBuffer(QOpenGLBuffer **glBuffer, const QVector<ObjectVertex> &vertices)
+{
+    initializeVertexBuffer(glBuffer, vertices.data(), vertices.length() * sizeof(ObjectVertex));
+}
+
+void PathView3d::initializeVertexBuffer(QOpenGLBuffer **glBuffer, const void *bufferData, int bufferLength)
+{
+    *glBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    (*glBuffer)->create();
+    (*glBuffer)->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    (*glBuffer)->bind();
+    (*glBuffer)->allocate(bufferData, bufferLength);
+    (*glBuffer)->release();
+}
+
 void PathView3d::setupVBOs()
 {
-    m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-    m_vertexBuffer->create();
-    m_vertexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    m_vertexBuffer->bind();
-    m_vertexBuffer->allocate(vertices, sizeof(vertices));
-    m_vertexBuffer->release();
+    setupCube();
+    setupCylinder(1.0, QVector3D(0,0,0),
+                  1.0, QVector3D(0,0,1),
+                  16);
+}
 
-    m_indexBuffer = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
-    m_indexBuffer->create();
-    m_indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    m_indexBuffer->bind();
-    m_indexBuffer->allocate(indices, sizeof(indices));
-    m_indexBuffer->release();
+void PathView3d::setupCube()
+{
+    static const ObjectVertex vertices[] = {
+        // Front face
+        {{-1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+        {{-1.0f, -1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+        {{1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+        {{-1.0f, -1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+        {{1.0f, -1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+        {{1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+
+        // Right face
+        {{1.0f, 1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}},
+        {{1.0f, -1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}},
+        {{1.0f, 1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},
+        {{1.0f, -1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}},
+        {{1.0f, -1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},
+        {{1.0f, 1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},
+
+        // Back face
+        {{1.0f, 1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}},
+        {{1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}},
+        {{-1.0f, 1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}},
+        {{1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}},
+        {{-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}},
+        {{-1.0f, 1.0f, -1.0f}, {0.0f, 0.0f, -1.0f}},
+
+        // Left face
+        {{-1.0f, 1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}},
+        {{-1.0f, -1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}},
+        {{-1.0f, 1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}},
+        {{-1.0f, -1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f}},
+        {{-1.0f, -1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}},
+        {{-1.0f, 1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}},
+
+        // Top face
+        {{-1.0f, 1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{-1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{1.0f, 1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{-1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{1.0f, 1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
+
+        // Bottom face
+        {{1.0f, -1.0f, -1.0f}, {0.0f, -1.0f, 0.0f}},
+        {{1.0f, -1.0f, 1.0f}, {0.0f, -1.0f, 0.0f}},
+        {{-1.0f, -1.0f, -1.0f}, {0.0f, -1.0f, 0.0f}},
+        {{1.0f, -1.0f, 1.0f}, {0.0f, -1.0f, 0.0f}},
+        {{-1.0f, -1.0f, 1.0f}, {0.0f, -1.0f, 0.0f}},
+        {{-1.0f, -1.0f, -1.0f}, {0.0f, -1.0f, 0.0f}}
+    };
+
+    initializeVertexBuffer(&m_cubeVertexBuffer, vertices, sizeof(vertices));
+}
+
+void PathView3d::drawCube()
+{
+    drawCube(QVector3D(1,1,1), QVector3D(), 0, QVector3D());
+}
+
+void PathView3d::drawCube(QVector3D size)
+{
+    drawCube(size, QVector3D(), 0, QVector3D());
+}
+
+void PathView3d::drawCube(QVector3D size, QVector3D position)
+{
+    drawCube(size, position, 0, QVector3D());
+}
+
+void PathView3d::drawCube(QVector3D size, QVector3D position, float rotationAngle, QVector3D rotationVector)
+{
+    QMatrix4x4 modelMatrix;
+    modelMatrix.translate(position);
+    modelMatrix.rotate(rotationAngle, rotationVector);
+    modelMatrix.scale(size);
+
+    m_cubeVertexBuffer->bind();
+    m_program->enableAttributeArray(m_positionLocation);
+    m_program->enableAttributeArray(m_normalLocation);
+    m_program->setAttributeBuffer(m_positionLocation, GL_FLOAT, 0, 3, sizeof(ObjectVertex));
+    m_program->setAttributeBuffer(m_normalLocation, GL_FLOAT, 3*sizeof(GLfloat), 3, sizeof(ObjectVertex));
+    m_program->setUniformValue(m_modelMatrixLocation, modelMatrix);
+    glDrawArrays(GL_TRIANGLES, 0, m_cubeVertexBuffer->size()/sizeof(ObjectVertex));
+    m_program->disableAttributeArray(m_positionLocation);
+    m_program->disableAttributeArray(m_normalLocation);
+    m_cubeVertexBuffer->release();
 }
 
 void PathView3d::setupShaders()
@@ -165,6 +220,14 @@ void PathView3d::setupShaders()
     m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/SimpleVertex.glsl");
     m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/SimpleFragment.glsl");
     m_program->link();
+
+    m_positionLocation = m_program->attributeLocation("position");
+    m_normalLocation = m_program->attributeLocation("normal");
+    m_colorLocation = m_program->uniformLocation("color");
+    m_lightPosLocation = m_program->uniformLocation("lightPos");
+    m_modelMatrixLocation = m_program->uniformLocation("modelMatrix");
+    m_viewMatrixLocation = m_program->uniformLocation("viewMatrix");
+    m_projectionMatrixLocation = m_program->uniformLocation("projectionMatrix");
 }
 
 void PathView3d::setupWindow()
@@ -178,6 +241,152 @@ void PathView3d::setupWindow()
     window()->setFormat(format);
 }
 
+void PathView3d::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, int precision)
+{
+    QVector<ObjectVertex> vertices;
+    QVector3D normal;
+
+    // normal pointing from origin point to end point
+    normal = P2 - P1;
+
+    // create two perpendicular vectors - perp and q
+    QVector3D perp = normal;
+    if ((normal.x() == 0) && (normal.z() == 0)) {
+        perp.setX(perp.x() + 1);
+    } else {
+        perp.setY(perp.y() + 1);
+    }
+
+    // cross product
+    QVector3D q = QVector3D::crossProduct(perp, normal);
+    perp = QVector3D::crossProduct(normal, q);
+
+    // normalize vectors
+    perp.normalize();
+    q.normalize();
+
+    // calculate vertices
+    GLfloat twoPi = 2 * M_PI;
+    for (int i = 0; i < precision + 1; ++i)
+    {
+        GLfloat theta1 = (GLfloat)i / (GLfloat)precision * twoPi; // go around circle and get points
+        GLfloat theta2 = (GLfloat)(i+1) / (GLfloat)precision * twoPi;
+        ObjectVertex vertex[6];
+
+        QVector3D upVector(0,0,1);
+        QVector3D downVector(0,0,-1);
+        QVector3D resultVector;
+
+        // normals
+        normal.setX(qCos(theta1) * perp.x() + qSin(theta1) * q.x());
+        normal.setY(qCos(theta1) * perp.y() + qSin(theta1) * q.y());
+        normal.setZ(qCos(theta1) * perp.z() + qSin(theta1) * q.z());
+
+        // top vertex
+        vertex[0].position.x = P1.x() + r1 * normal.x();
+        vertex[0].position.y = P1.y() + r1 * normal.y();
+        vertex[0].position.z = P1.z() + r1 * normal.z();
+        resultVector = (upVector + normal).normalized();
+        vertex[0].normal.x = resultVector.x();
+        vertex[0].normal.y = resultVector.y();
+        vertex[0].normal.z = resultVector.z();
+
+
+        // bottom vertex
+        vertex[1].position.x = P2.x() + r2 * normal.x();
+        vertex[1].position.y = P2.y() + r2 * normal.y();
+        vertex[1].position.z = P2.z() + r2 * normal.z();
+        resultVector = (downVector + normal).normalized();
+        vertex[1].normal.x = resultVector.x();
+        vertex[1].normal.y = resultVector.y();
+        vertex[1].normal.z = resultVector.z();
+
+        // normals
+        normal.setX(qCos(theta2) * perp.x() + qSin(theta2) * q.x());
+        normal.setY(qCos(theta2) * perp.y() + qSin(theta2) * q.y());
+        normal.setZ(qCos(theta2) * perp.z() + qSin(theta2) * q.z());
+
+        if (r2 != 0)
+        {
+            vertex[2].position.x = P2.x() + r2 * normal.x();
+            vertex[2].position.y = P2.y() + r2 * normal.y();
+            vertex[2].position.z = P2.z() + r2 * normal.z();
+            resultVector = (downVector + normal).normalized();
+            vertex[2].normal.x = resultVector.x();
+            vertex[2].normal.y = resultVector.y();
+            vertex[2].normal.z = resultVector.z();
+
+            vertex[5].position.x = P2.x();
+            vertex[5].position.y = P2.y();
+            vertex[5].position.z = P2.z();
+            vertex[5].normal.x = downVector.x();
+            vertex[5].normal.y = downVector.y();
+            vertex[5].normal.z = downVector.z();
+
+            vertices.append(vertex[5]);
+            vertices.append(vertex[2]);
+            vertices.append(vertex[1]);
+        }
+
+        if (r1 != 0)
+        {
+            vertex[3].position.x = P1.x() + r1 * normal.x();
+            vertex[3].position.y = P1.y() + r1 * normal.y();
+            vertex[3].position.z = P1.z() + r1 * normal.z();
+            resultVector = (upVector + normal).normalized();
+            vertex[3].normal.x = resultVector.x();
+            vertex[3].normal.y = resultVector.y();
+            vertex[3].normal.z = resultVector.z();
+
+            vertex[4].position.x = P1.x();
+            vertex[4].position.y = P1.y();
+            vertex[4].position.z = P1.z();
+            vertex[4].normal.x = upVector.x();
+            vertex[4].normal.y = upVector.y();
+            vertex[4].normal.z = upVector.z();
+
+            vertices.append(vertex[4]);
+            vertices.append(vertex[0]);
+            vertices.append(vertex[3]);
+        }
+
+         // append vertex
+        vertices.append(vertex[0]);
+        vertices.append(vertex[1]);
+        vertices.append(vertex[2]);
+
+        vertices.append(vertex[0]);
+        vertices.append(vertex[2]);
+        vertices.append(vertex[3]);
+    }
+
+    initializeVertexBuffer(&m_cylinderVertexBuffer, vertices);
+}
+
+void PathView3d::drawCylinder(float radius, float height, QVector3D position, float rotationAngle, QVector3D rotationVector)
+{
+    QMatrix4x4 modelMatrix;
+    modelMatrix.translate(position);
+    modelMatrix.rotate(rotationAngle, rotationVector);
+    modelMatrix.scale(QVector3D(radius, radius, height));
+
+    m_cylinderVertexBuffer->bind();
+    m_program->enableAttributeArray(m_positionLocation);
+    m_program->enableAttributeArray(m_normalLocation);
+    m_program->setAttributeBuffer(m_positionLocation, GL_FLOAT, 0, 3, sizeof(ObjectVertex));
+    m_program->setAttributeBuffer(m_normalLocation, GL_FLOAT, 3*sizeof(GLfloat), 3, sizeof(ObjectVertex));
+    m_program->setUniformValue(m_modelMatrixLocation, modelMatrix);
+    glDrawArrays(GL_TRIANGLES, 0, m_cylinderVertexBuffer->size()/sizeof(ObjectVertex));
+    m_program->disableAttributeArray(m_positionLocation);
+    m_program->disableAttributeArray(m_normalLocation);
+    m_cylinderVertexBuffer->release();
+}
+
+void PathView3d::color(QColor color)
+{
+    m_program->setUniformValue(m_colorLocation, color);
+}
+
 void PathView3d::paint()
 {
     if (!m_program) {
@@ -188,35 +397,23 @@ void PathView3d::paint()
 
     m_program->bind();
 
-    int position = m_program->attributeLocation("position");
-    int sourceColor = m_program->attributeLocation("sourceColor");
-
     qreal ratio = window()->devicePixelRatio();
     int w = int(ratio * window()->width());
     int h = int(ratio * window()->height());
-    float matrixH = 4.0f * h / w;
+    float matrixH = 6.0f * h / w;
     glViewport(0, 0, w, h);
 
-    QMatrix4x4 projectionMatrix;
-    projectionMatrix.ortho(-2, 2, -matrixH/2, matrixH/2, 4, 10);
+    m_projectionMatrix = QMatrix4x4();
+    m_projectionMatrix.frustum(-3, 3, -matrixH/2, matrixH/2, 4, 10);
 
-    QMatrix4x4 modelviewMatrix;
-    modelviewMatrix.translate(QVector3D(qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0),
-                                        0, -7));
-    float currentRotation = qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0) * 180.0;
-    modelviewMatrix.rotate(currentRotation, 1, 1, 0);
+    m_viewMatrix = QMatrix4x4();
+    m_viewMatrix.translate(0,0,0);
 
-    m_program->enableAttributeArray(position);
-    m_program->enableAttributeArray(sourceColor);
-    m_vertexBuffer->bind();
-    m_indexBuffer->bind();
+    m_program->setUniformValue(m_projectionMatrixLocation, m_projectionMatrix);
+    m_program->setUniformValue(m_viewMatrixLocation, m_viewMatrix);
+    m_program->setUniformValue(m_lightPosLocation, QVector3D(-1, -1, 1));
 
-    m_program->setAttributeBuffer(position, GL_FLOAT, 0, 3, sizeof(Vertex));
-    m_program->setAttributeBuffer(sourceColor, GL_FLOAT, 3*sizeof(GLfloat), 4, sizeof(Vertex));
-    m_program->setUniformValue("projection", projectionMatrix);
-    m_program->setUniformValue("modelview", modelviewMatrix);
-
-    glClearColor(0, 104.0/255.0, 55.0/255.0, 1.0);
+    glClearColor(0.0, 0.0, 0.0, 1.0);//(0, 104.0/255.0, 55.0/255.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Enable depth test
@@ -225,15 +422,21 @@ void PathView3d::paint()
     glDepthMask(true);
 
     // Enable back face culling
-    // glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
 
-    glDrawElements(GL_TRIANGLES, sizeof(indices)/(sizeof(GLubyte)),
-                GL_UNSIGNED_BYTE, 0);
+    float currentRotation;
+    /*currentRotation = qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0) * 180;
+    setColor(Qt::red);
+    drawCube(QVector3D(1.5,1,1),
+             QVector3D(qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0), 0, -7),
+             currentRotation, QVector3D(1,1,0));*/
 
-    m_program->disableAttributeArray(position);
-    m_program->disableAttributeArray(sourceColor);
-    m_vertexBuffer->release();
-    m_indexBuffer->release();
+    currentRotation = -1.0 * qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0) * 180.0;
+    color(Qt::gray);
+    drawCylinder(0.5, 10,
+             QVector3D(-1.0 * qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0), 0, -7),
+             currentRotation, QVector3D(1,1,0));
+
     m_program->release();
 }
 
