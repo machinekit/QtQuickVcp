@@ -1,0 +1,34 @@
+#include "qglsphereitem.h"
+
+QGLSphereItem::QGLSphereItem(QObject *parent) :
+    QGLItem(parent),
+    m_radius(1.0),
+    m_color(QColor(Qt::yellow))
+{
+}
+
+QGLSphereItem::QGLSphereItem(float radius, QObject *parent) :
+    QGLItem(parent),
+    m_color(QColor(Qt::yellow))
+{
+    m_radius = radius;
+}
+
+QGLSphereItem::QGLSphereItem(float radius, QColor color, QObject *parent) :
+    QGLItem(parent)
+{
+    m_radius = radius;
+    m_color = color;
+}
+
+void QGLSphereItem::paint(QGLView *glView)
+{
+    glView->translate(position());
+    glView->rotate(rotation());
+    glView->scale(scale());
+
+    glView->beginUnion(modelId());
+    glView->color(m_color);
+    glView->sphere(m_radius);
+    glView->endUnion();
+}

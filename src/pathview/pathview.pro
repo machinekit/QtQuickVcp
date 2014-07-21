@@ -11,12 +11,22 @@ QMAKE_MOC_OPTIONS += -Muri=$$uri
 
 # Input
 SOURCES += \
-    pathview3d.cpp \
-    plugin.cpp
+    plugin.cpp \
+    qglview.cpp \
+    qpathview3d.cpp \
+    qglitem.cpp \
+    qglcubeitem.cpp \
+    qglgriditem.cpp \
+    qglsphereitem.cpp
 
 HEADERS += \
-    pathview3d.h \
-    plugin.h
+    plugin.h \
+    qglview.h \
+    qpathview3d.h \
+    qglitem.h \
+    qglcubeitem.h \
+    qglgriditem.h \
+    qglsphereitem.h
 
 QML_INFRA_FILES = \
     qmldir
