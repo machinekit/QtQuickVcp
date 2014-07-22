@@ -3,19 +3,22 @@
 QGLCubeItem::QGLCubeItem(QObject *parent) :
     QGLItem(parent),
     m_size(QVector3D(1,1,1)),
-    m_color(QColor(Qt::yellow))
+    m_color(QColor(Qt::yellow)),
+    m_centered(false)
 {
 }
 
 QGLCubeItem::QGLCubeItem(QVector3D size, QObject *parent) :
     QGLItem(parent),
-    m_color(QColor(Qt::yellow))
+    m_color(QColor(Qt::yellow)),
+    m_centered(false)
 {
     m_size = size;
 }
 
 QGLCubeItem::QGLCubeItem(QVector3D size, QColor color, QObject *parent) :
-    QGLItem(parent)
+    QGLItem(parent),
+    m_centered(false)
 {
     m_size = size;
     m_color = color;
@@ -29,6 +32,6 @@ void QGLCubeItem::paint(QGLView *glView)
 
     glView->beginUnion(modelId());
     glView->color(m_color);
-    glView->cube(m_size);
+    glView->cube(m_size, m_centered);
     glView->endUnion();
 }

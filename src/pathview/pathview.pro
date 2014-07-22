@@ -17,7 +17,8 @@ SOURCES += \
     qglitem.cpp \
     qglcubeitem.cpp \
     qglgriditem.cpp \
-    qglsphereitem.cpp
+    qglsphereitem.cpp \
+    qglcylinderitem.cpp
 
 HEADERS += \
     plugin.h \
@@ -26,7 +27,8 @@ HEADERS += \
     qglitem.h \
     qglcubeitem.h \
     qglgriditem.h \
-    qglsphereitem.h
+    qglsphereitem.h \
+    qglcylinderitem.h
 
 QML_INFRA_FILES = \
     qmldir
@@ -35,7 +37,11 @@ include(../deployment.pri)
 
 OTHER_FILES += \
     SimpleVertex.glsl \
-    SimpleFragment.glsl
+    SimpleFragment.glsl \
+    LineVertexShader.glsl \
+    LineFragmentShader.glsl \
+    TextFragmentShader.glsl \
+    TextVertexShader.glsl
 
 RESOURCES += \
     shaders.qrc

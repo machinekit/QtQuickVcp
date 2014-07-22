@@ -69,7 +69,7 @@
 #include <QDateTime>
 
 QGLView::QGLView()
-    : m_program(0)
+    : m_modelProgram(0)
     , m_t(0)
     , m_thread_t(0)
 {
@@ -111,11 +111,15 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
     }
 }
 
+
+
+
+
 void QGLView::clearModels(QGLView::ModelType type = NoType)
 {
     if (type == NoType)
     {
-        QMapIterator<ModelType, QList<ModelState>* > i(m_modelMap);
+        QMapIterator<ModelType, QList<ModelParameters>* > i(m_modelMap);
         while (i.hasNext()) {
             i.next();
             i.value()->clear();
@@ -131,7 +135,7 @@ void QGLView::drawModels(QGLView::ModelType type = NoType)
 {
     if (type == NoType)
     {
-        QMapIterator<ModelType, QList<ModelState>* > i(m_modelMap);
+        QMapIterator<ModelType, QList<ModelParameters>* > i(m_modelMap);
         while (i.hasNext()) {
             i.next();
             drawModelVertices(i.key());
@@ -170,6 +174,37 @@ void QGLView::setupVBOs()
                   0.0, QVector3D(0,0,1),
                   16, Cone);
     setupSphere(16);
+    setupLineVertexBuffer();
+    setupTextVertexBuffer();
+}
+
+void QGLView::setupLineVertexBuffer()
+{
+    m_lineVertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    m_lineVertexBuffer->create();
+    m_lineVertexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    m_lineVertexBuffer->bind();
+    m_lineVertexBuffer->allocate(2*sizeof(Vector3D));
+    m_lineVertexBuffer->release();
+}
+
+void QGLView::setupTextVertexBuffer()
+{
+    static const TextVertex vertices[] = {
+        {{0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+        {{0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+        {{0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+        {{1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+    };
+
+    m_textVertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    m_textVertexBuffer->create();
+    m_textVertexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    m_textVertexBuffer->bind();
+    m_textVertexBuffer->allocate(vertices, sizeof(vertices));
+    m_textVertexBuffer->release();
 }
 
 void QGLView::setupCube()
@@ -226,38 +261,144 @@ void QGLView::setupCube()
 
     initializeVertexBuffer(Cube, vertices, sizeof(vertices));
 
-    QList<ModelState> *modelStates = new QList<ModelState>();
-    m_modelMap.insert(Cube, modelStates);
+    QList<ModelParameters> *modelParametersList = new QList<ModelParameters>();
+    m_modelMap.insert(Cube, modelParametersList);
 }
 
 void QGLView::drawModelVertices(ModelType type)
 {
     QOpenGLBuffer *vertexBuffer = m_vertexBufferMap[type];
-    QList<ModelState> *modelStates = m_modelMap[type];
+    QList<ModelParameters> *modelParametersList = m_modelMap[type];
 
-    if (modelStates->isEmpty())
+    if (modelParametersList->isEmpty())
     {
         return;
     }
 
     vertexBuffer->bind();
-    m_program->enableAttributeArray(m_positionLocation);
-    m_program->enableAttributeArray(m_normalLocation);
-    m_program->setAttributeBuffer(m_positionLocation, GL_FLOAT, 0, 3, sizeof(ModelVertex));
-    m_program->setAttributeBuffer(m_normalLocation, GL_FLOAT, 3*sizeof(GLfloat), 3, sizeof(ModelVertex));
+    m_modelProgram->enableAttributeArray(m_positionLocation);
+    m_modelProgram->enableAttributeArray(m_normalLocation);
+    m_modelProgram->setAttributeBuffer(m_positionLocation, GL_FLOAT, 0, 3, sizeof(ModelVertex));
+    m_modelProgram->setAttributeBuffer(m_normalLocation, GL_FLOAT, 3*sizeof(GLfloat), 3, sizeof(ModelVertex));
 
-    for (int i = 0; i < modelStates->size(); ++i)
+    for (int i = 0; i < modelParametersList->size(); ++i)
     {
-        ModelState modelState = modelStates->at(i);
-        m_program->setUniformValue(m_colorLocation, modelState.color);
-        m_program->setUniformValue(m_modelMatrixLocation, modelState.modelMatrix);
-        m_program->setUniformValue(m_idColorLocation, QColor(0xFF000000u + modelState.id));    // color for selection mode
+        ModelParameters modelParameters = modelParametersList->at(i);
+        m_modelProgram->setUniformValue(m_colorLocation, modelParameters.color);
+        m_modelProgram->setUniformValue(m_modelMatrixLocation, modelParameters.modelMatrix);
+        m_modelProgram->setUniformValue(m_idColorLocation, QColor(0xFF000000u + modelParameters.id));    // color for selection mode
         glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size()/sizeof(ModelVertex));
     }
 
-    m_program->disableAttributeArray(m_positionLocation);
-    m_program->disableAttributeArray(m_normalLocation);
+    m_modelProgram->disableAttributeArray(m_positionLocation);
+    m_modelProgram->disableAttributeArray(m_normalLocation);
     vertexBuffer->release();
+}
+
+void QGLView::clearLines()
+{
+    m_lineParametersList.clear();
+
+}
+
+void QGLView::drawLines()
+{
+    Vector3D vertices[2] = {{0.0f, 0.0f, 0.0f},
+                            {0.0f, 0.0f, 0.0f}};
+
+    if (m_lineParametersList.isEmpty())
+    {
+        return;
+    }
+
+    m_lineVertexBuffer->bind();
+    m_lineProgram->enableAttributeArray(m_linePositionLocation);
+    m_lineProgram->setAttributeBuffer(m_linePositionLocation, GL_FLOAT, 0, 3);
+
+    for (int i = 0; i < m_lineParametersList.size(); ++i)
+    {
+        LineParameters lineParameters = m_lineParametersList.at(i);
+        vertices[1] = lineParameters.vector;
+        m_lineVertexBuffer->write(0, vertices, 2*sizeof(Vector3D));
+        m_lineProgram->setUniformValue(m_lineColorLocation, lineParameters.color);
+        m_lineProgram->setUniformValue(m_lineModelMatrixLocation, lineParameters.modelMatrix);
+        m_lineProgram->setUniformValue(m_lineStippleLocation, lineParameters.stipple);
+        m_lineProgram->setUniformValue(m_lineStippleLengthLocation, lineParameters.stippleLength);
+        glLineWidth(lineParameters.width);
+        glDrawArrays(GL_LINE_STRIP, 0, 2);
+    }
+
+    m_lineProgram->disableAttributeArray(m_linePositionLocation);
+    m_lineVertexBuffer->release();
+}
+
+void QGLView::clearTexts()
+{
+    m_textParametersList.clear();
+}
+
+void QGLView::drawTexts()
+{
+    if (m_textParametersList.isEmpty())
+    {
+        return;
+    }
+
+    m_textVertexBuffer->bind();
+    m_textProgram->enableAttributeArray(m_textPositionLocation);
+    m_textProgram->enableAttributeArray(m_textTexCoordinateLocation);
+    m_textProgram->setAttributeBuffer(m_textPositionLocation, GL_FLOAT, 0, 3, sizeof(TextVertex));
+    m_textProgram->setAttributeBuffer(m_textTexCoordinateLocation, GL_FLOAT, 3*sizeof(GLfloat), 2, sizeof(TextVertex));
+
+    for (int i = 0; i < m_textParametersList.size(); ++i)
+    {
+        TextParameters textParameters = m_textParametersList.at(i);
+        QStaticText staticText = textParameters.staticText;
+        QOpenGLTexture *texture = m_textTextureList.at(m_textTextList.indexOf(staticText));
+
+        textParameters.modelMatrix.scale((float)texture->width()/(float)texture->height(),1.0, 1.0);
+        //qDebug() << texture->isBound() << texture->isCreated() << texture->isStorageAllocated();
+        m_textProgram->setUniformValue(m_textColorLocation, textParameters.color);
+        m_textProgram->setUniformValue(m_textModelMatrixLocation, textParameters.modelMatrix);
+        m_textProgram->setUniformValue(m_textTextureLocation, texture->textureId());
+        glActiveTexture(GL_TEXTURE1);
+        texture->bind();
+        glDrawArrays(GL_TRIANGLES, 0, m_textVertexBuffer->size()/sizeof(TextVertex));
+        texture->release();
+    }
+
+    m_textProgram->disableAttributeArray(m_textPositionLocation);
+    m_textProgram->disableAttributeArray(m_textTexCoordinateLocation);
+    m_textVertexBuffer->release();
+}
+
+void QGLView::generateTextTexture(const QStaticText &staticText, QFont font)
+{
+    QPixmap pixmap(QSize(qCeil(staticText.size().width()), qCeil(staticText.size().height())));
+    pixmap.fill(QColor(Qt::transparent));
+
+    QPainter painter(&pixmap);
+    painter.setPen(Qt::white);
+    painter.setFont(font);
+    //painter.setRenderHint(QPainter::Antialiasing, true);
+    //painter.setRenderHint(QPainter::TextAntialiasing, true);
+    painter.drawStaticText(0, 0, staticText);
+
+    QImage image = pixmap.toImage();    // mirror the image inside opengl
+    image.save("test.png");
+
+    QOpenGLTexture *texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+    texture->create();
+    texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+    texture->setData(image);
+    m_textTextList.append(staticText);
+    m_textTextureList.append(texture);
+}
+
+void QGLView::clearTextTextures()
+{
+    // TODO clear textures
 }
 
 void QGLView::paintItems()
@@ -287,21 +428,50 @@ void QGLView::removeItem(QGLItem *item)
 
 void QGLView::setupShaders()
 {
-    m_program = new QOpenGLShaderProgram();
-    m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/SimpleVertex.glsl");
-    m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/SimpleFragment.glsl");
-    m_program->link();
+    // model shader
+    m_modelProgram = new QOpenGLShaderProgram();
+    m_modelProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/ModelVertexShader.glsl");
+    m_modelProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/ModelFragmentShader.glsl");
+    m_modelProgram->link();
 
-    m_positionLocation = m_program->attributeLocation("position");
-    m_normalLocation = m_program->attributeLocation("normal");
-    m_colorLocation = m_program->uniformLocation("color");
-    m_lightPosLocation = m_program->uniformLocation("lightPos");
-    m_enableLightingLocation = m_program->uniformLocation("enableLighting");
-    m_modelMatrixLocation = m_program->uniformLocation("modelMatrix");
-    m_viewMatrixLocation = m_program->uniformLocation("viewMatrix");
-    m_projectionMatrixLocation = m_program->uniformLocation("projectionMatrix");
-    m_idColorLocation = m_program->uniformLocation("idColor");
-    m_selectionModeLocation = m_program->uniformLocation("selectionMode");
+    m_positionLocation = m_modelProgram->attributeLocation("position");
+    m_normalLocation = m_modelProgram->attributeLocation("normal");
+    m_colorLocation = m_modelProgram->uniformLocation("color");
+    m_lightPosLocation = m_modelProgram->uniformLocation("lightPos");
+    m_enableLightingLocation = m_modelProgram->uniformLocation("enableLighting");
+    m_modelMatrixLocation = m_modelProgram->uniformLocation("modelMatrix");
+    m_viewMatrixLocation = m_modelProgram->uniformLocation("viewMatrix");
+    m_projectionMatrixLocation = m_modelProgram->uniformLocation("projectionMatrix");
+    m_idColorLocation = m_modelProgram->uniformLocation("idColor");
+    m_selectionModeLocation = m_modelProgram->uniformLocation("selectionMode");
+
+    // line shader
+    m_lineProgram = new QOpenGLShaderProgram();
+    m_lineProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/LineVertexShader.glsl");
+    m_lineProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/LineFragmentShader.glsl");
+    m_lineProgram->link();
+
+    m_linePositionLocation = m_lineProgram->attributeLocation("position");
+    m_lineProjectionMatrixLocation = m_lineProgram->uniformLocation("projectionMatrix");
+    m_lineViewMatrixLocation = m_lineProgram->uniformLocation("viewMatrix");
+    m_lineModelMatrixLocation = m_lineProgram->uniformLocation("modelMatrix");
+    m_lineColorLocation = m_lineProgram->uniformLocation("color");
+    m_lineStippleLocation = m_lineProgram->uniformLocation("stipple");
+    m_lineStippleLengthLocation = m_lineProgram->uniformLocation("stippleLength");
+
+    // text shader
+    m_textProgram = new QOpenGLShaderProgram();
+    m_textProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/TextVertexShader.glsl");
+    m_textProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/TextFragmentShader.glsl");
+    m_textProgram->link();
+
+    m_textPositionLocation = m_textProgram->attributeLocation("position");
+    m_textTexCoordinateLocation = m_textProgram->attributeLocation("texCoordinate");
+    m_textProjectionMatrixLocation = m_textProgram->uniformLocation("projectionMatrix");
+    m_textViewMatrixLocation = m_textProgram->uniformLocation("viewMatrix");
+    m_textModelMatrixLocation = m_textProgram->uniformLocation("modelMatrix");
+    m_textColorLocation = m_textProgram->uniformLocation("color");
+    m_textTextureLocation = m_textProgram->uniformLocation("texture");
 }
 
 void QGLView::setupWindow()
@@ -436,8 +606,8 @@ void QGLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, 
 
     initializeVertexBuffer(type, vertices);
 
-    QList<ModelState> *modelStates = new QList<ModelState>();
-    m_modelMap.insert(type, modelStates);
+    QList<ModelParameters> *modelParametersList = new QList<ModelParameters>();
+    m_modelMap.insert(type, modelParametersList);
 }
 
 void QGLView::setupSphere(int detail)
@@ -492,20 +662,43 @@ void QGLView::setupSphere(int detail)
 
     initializeVertexBuffer(Sphere, vertices);
 
-    QList<ModelState> *modelStates = new QList<ModelState>();
-    m_modelMap.insert(Sphere, modelStates);
+    QList<ModelParameters> *modelParametersList = new QList<ModelParameters>();
+    m_modelMap.insert(Sphere, modelParametersList);
 }
 
 void QGLView::setupStack()
 {
-    ModelState defaultModelState;
+    ModelParameters defaultModelParameters;
 
-    defaultModelState.modelMatrix = QMatrix4x4();
-    defaultModelState.color = QColor(Qt::yellow);
-    defaultModelState.id = 0;
+    defaultModelParameters.modelMatrix = QMatrix4x4();
+    defaultModelParameters.color = QColor(Qt::yellow);
+    defaultModelParameters.id = 0;
 
-    m_modelStateStack.clear();
-    m_modelStateStack.push(defaultModelState);
+    m_modelParametersStack.clear();
+    m_modelParametersStack.push(defaultModelParameters);
+    m_modelParameters = defaultModelParameters;
+
+    LineParameters defaultLineParameters;
+
+    defaultLineParameters.modelMatrix = QMatrix4x4();
+    defaultLineParameters.color = QColor(Qt::red);
+    defaultLineParameters.stipple = false;
+    defaultLineParameters.stippleLength = 5;
+    defaultLineParameters.width = 1;
+
+    m_lineParametersStack.clear();
+    m_lineParametersStack.push(defaultLineParameters);
+    m_lineParameters = defaultLineParameters;
+
+    TextParameters defaultTextParameters;
+
+    defaultTextParameters.modelMatrix = QMatrix4x4();
+    defaultTextParameters.color = QColor(Qt::white);
+    defaultTextParameters.staticText = QStaticText();
+
+    m_textParametersStack.clear();
+    m_textParametersStack.push(defaultTextParameters);
+    m_textParameters = defaultTextParameters;
 }
 
 void QGLView::color(float r, float g, float b, float a)
@@ -515,7 +708,9 @@ void QGLView::color(float r, float g, float b, float a)
 
 void QGLView::color(QColor color)
 {
-    m_modelState.color = color;
+    m_modelParameters.color = color;
+    m_lineParameters.color = color;
+    m_textParameters.color = color;
 }
 
 void QGLView::translate(float x, float y, float z)
@@ -525,7 +720,9 @@ void QGLView::translate(float x, float y, float z)
 
 void QGLView::translate(QVector3D vector)
 {
-    m_modelState.modelMatrix.translate(vector);
+    m_modelParameters.modelMatrix.translate(vector);
+    m_lineParameters.modelMatrix.translate(vector);
+    m_textParameters.modelMatrix.translate(vector);
 }
 
 void QGLView::rotate(float angle, float x, float y, float z)
@@ -535,12 +732,16 @@ void QGLView::rotate(float angle, float x, float y, float z)
 
 void QGLView::rotate(float angle, QVector3D axis)
 {
-    m_modelState.modelMatrix.rotate(angle, axis);
+    m_modelParameters.modelMatrix.rotate(angle, axis);
+    m_lineParameters.modelMatrix.rotate(angle, axis);
+    m_textParameters.modelMatrix.rotate(angle, axis);
 }
 
 void QGLView::rotate(QQuaternion quaternion)
 {
-    m_modelState.modelMatrix.rotate(quaternion);
+    m_modelParameters.modelMatrix.rotate(quaternion);
+    m_lineParameters.modelMatrix.rotate(quaternion);
+    m_textParameters.modelMatrix.rotate(quaternion);
 }
 
 void QGLView::scale(float x, float y, float z)
@@ -550,7 +751,9 @@ void QGLView::scale(float x, float y, float z)
 
 void QGLView::scale(QVector3D vector)
 {
-    m_modelState.modelMatrix.scale(vector);
+    m_modelParameters.modelMatrix.scale(vector);
+    m_lineParameters.modelMatrix.scale(vector);
+    m_textParameters.modelMatrix.scale(vector);
 }
 
 void QGLView::mirror(float x, float y, float z)
@@ -564,14 +767,39 @@ void QGLView::mirror(QVector3D vector)
     int y = (int)vector.y();
     int z = (int)vector.z();
 
-    m_modelState.modelMatrix.scale((x == 1) ? -1.0 : 1.0,
+    m_modelParameters.modelMatrix.scale((x == 1) ? -1.0 : 1.0,
+                                   (y == 1) ? -1.0 : 1.0,
+                                   (z == 1) ? -1.0 : 1.0);
+    m_lineParameters.modelMatrix.scale((x == 1) ? -1.0 : 1.0,
+                                   (y == 1) ? -1.0 : 1.0,
+                                   (z == 1) ? -1.0 : 1.0);
+    m_textParameters.modelMatrix.scale((x == 1) ? -1.0 : 1.0,
                                    (y == 1) ? -1.0 : 1.0,
                                    (z == 1) ? -1.0 : 1.0);
 }
 
-void QGLView::resetTransformations()
+void QGLView::resetTransformations(bool hard)
 {
-    m_modelState = m_modelStateStack.top();
+    if (hard)
+    {
+        m_modelParameters = m_modelParametersStack.first();
+        m_modelParametersStack.clear();
+        m_modelParametersStack.push(m_modelParameters);
+
+        m_lineParameters = m_lineParametersStack.first();
+        m_lineParametersStack.clear();
+        m_lineParametersStack.push(m_lineParameters);
+
+        m_textParameters = m_textParametersStack.first();
+        m_textParametersStack.clear();
+        m_textParametersStack.push(m_textParameters);
+    }
+    else
+    {
+        m_modelParameters = m_modelParametersStack.top();
+        m_lineParameters = m_lineParametersStack.top();
+        m_textParameters = m_textParametersStack.top();
+    }
 }
 
 void QGLView::cube(float w, float l, float h, bool center)
@@ -583,58 +811,109 @@ void QGLView::cube(QVector3D size, bool center)
 {
     if (center)
     {
-        m_modelState.modelMatrix.translate(-size/2.0);
+        m_modelParameters.modelMatrix.translate(-size/2.0);
     }
-    m_modelState.modelMatrix.scale(size);
+    m_modelParameters.modelMatrix.scale(size);
 
-    m_modelMap[Cube]->append(m_modelState);
+    m_modelMap[Cube]->append(m_modelParameters);
 
     resetTransformations();
 }
 
-void QGLView::cylinder(float h, float r)
+void QGLView::cylinder(float r, float h)
 {
-    m_modelState.modelMatrix.scale(r, r, h);
-    m_modelMap[Cylinder]->append(m_modelState);
+    m_modelParameters.modelMatrix.scale(r, r, h);
+    m_modelMap[Cylinder]->append(m_modelParameters);
     resetTransformations();
 }
 
-void QGLView::cone(float h, float r)
+void QGLView::cone(float r, float h)
 {
-    m_modelState.modelMatrix.scale(r, r, h);
-    m_modelMap[Cone]->append(m_modelState);
+    m_modelParameters.modelMatrix.scale(r, r, h);
+    m_modelMap[Cone]->append(m_modelParameters);
     resetTransformations();
 }
 
 void QGLView::sphere(float r)
 {
-    m_modelState.modelMatrix.scale(r,r,r);
-    m_modelMap[Sphere]->append(m_modelState);
+    m_modelParameters.modelMatrix.scale(r,r,r);
+    m_modelMap[Sphere]->append(m_modelParameters);
+    resetTransformations();
+}
+
+void QGLView::lineWidth(float width)
+{
+    m_lineParameters.width = width;
+}
+
+void QGLView::lineStipple(float enable, float length)
+{
+    m_lineParameters.stipple = enable;
+    m_lineParameters.stippleLength = length;
+}
+
+void QGLView::line(float x, float y, float z)
+{
+    m_lineParameters.vector.x = x;
+    m_lineParameters.vector.y = y;
+    m_lineParameters.vector.z = z;
+
+    m_lineParametersList.append(m_lineParameters);
+    resetTransformations();
+}
+
+void QGLView::line(QVector3D vector)
+{
+    line(vector.x(), vector.y(), vector.z());
+}
+
+void QGLView::text(QString text, QFont font)
+{
+    QStaticText staticText(text);
+    font.setPixelSize(100);
+    staticText.prepare(QTransform(), font);
+
+    if (!m_textTextList.contains(staticText))
+    {
+        generateTextTexture(staticText, font);
+    }
+
+    m_textParameters.staticText = staticText;
+
+    m_textParametersList.append(m_textParameters);
     resetTransformations();
 }
 
 void QGLView::beginUnion(quint32 id = 0)
 {
-    m_modelState.id = id;
-    m_modelStateStack.push(m_modelState);
+    m_modelParameters.id = id;
+    m_modelParametersStack.push(m_modelParameters);
+
+    m_lineParametersStack.push(m_lineParameters);
+
+    m_textParametersStack.push(m_textParameters);
 }
 
 void QGLView::endUnion()
 {
-    m_modelStateStack.pop();
-    m_modelState = m_modelStateStack.top();
+    m_modelParametersStack.pop();
+    m_modelParameters = m_modelParametersStack.top();
+
+    m_lineParametersStack.pop();
+    m_lineParameters = m_lineParametersStack.top();
+
+    m_textParametersStack.pop();
+    m_textParameters = m_textParametersStack.top();
 }
 
 void QGLView::paint()
 {
-    if (!m_program) {
+    if (!m_modelProgram) {
         setupShaders();
         setupWindow();
         setupVBOs();
         setupStack();
     }
-
-    m_program->bind();
 
     qreal ratio = window()->devicePixelRatio();
     int w = int(ratio * window()->width());
@@ -648,12 +927,6 @@ void QGLView::paint()
     m_viewMatrix = QMatrix4x4();
     m_viewMatrix.translate(0,0,0);
 
-    m_program->setUniformValue(m_projectionMatrixLocation, m_projectionMatrix);
-    m_program->setUniformValue(m_viewMatrixLocation, m_viewMatrix);
-    m_program->setUniformValue(m_lightPosLocation, QVector3D(-1, -1, 1));
-    m_program->setUniformValue(m_enableLightingLocation, true);
-    m_program->setUniformValue(m_selectionModeLocation, false);
-
     glClearColor(0.0, 0.0, 0.0, 1.0);//(0, 104.0/255.0, 55.0/255.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -665,40 +938,67 @@ void QGLView::paint()
     // Enable back face culling
     glEnable(GL_CULL_FACE);
 
+    // Enable Alpha blend
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+
+    clearLines();
     clearModels();
+    clearTexts();
+    resetTransformations(true); // reset all tranformations for a clean start
 
     paintItems();
 
-    /*float currentRotation;
-    currentRotation = qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0) * 180;
+    translate(0,0,-7);
+    lineWidth(2);
+    lineStipple(true, 0.2);
+    line(QVector3D(1,3,0));
+    translate(0,0,-7);
+    line(QVector3D(2,3,0));
+    translate(0,0,-7);
+    line(QVector3D(3,3,0));
+
+    translate(0,0,-5);
     color(Qt::red);
-    translate(qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0), 0, -7);
-    rotate(currentRotation, 1, 1, 0);
-    beginUnion(1);
-        //cube(1.5, 1, 1, true);
-        cone(2,0.9);
-        //translate(0.2, 0.2, 0.2);
-        color(Qt::blue);
-        //cube(1.2, 1, 1);
-        sphere(0.8);
-    endUnion();*/
+    text("12.7mm");
 
-    //currentRotation = -1.0 * qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0) * 180.0;
-    //color(Qt::gray);
-    /*drawCylinder(0.5, 10,
-             QVector3D(-1.0 * qSin((qreal)QDateTime::currentMSecsSinceEpoch()/1000.0), 0, -7),
-             currentRotation, QVector3D(1,1,0));*/
+    m_lineProgram->bind();
+    m_lineProgram->setUniformValue(m_lineProjectionMatrixLocation, m_projectionMatrix);
+    m_lineProgram->setUniformValue(m_lineViewMatrixLocation, m_viewMatrix);
+    drawLines();
+    m_lineProgram->release();
 
+    m_textProgram->bind();
+    m_textProgram->setUniformValue(m_textProjectionMatrixLocation, m_projectionMatrix);
+    m_textProgram->setUniformValue(m_textViewMatrixLocation, m_viewMatrix);
+    drawTexts();
+    m_textProgram->release();
+
+    m_modelProgram->bind();
+    m_modelProgram->setUniformValue(m_projectionMatrixLocation, m_projectionMatrix);
+    m_modelProgram->setUniformValue(m_viewMatrixLocation, m_viewMatrix);
+    m_modelProgram->setUniformValue(m_lightPosLocation, QVector3D(-1, -1, 1));
+    m_modelProgram->setUniformValue(m_enableLightingLocation, true);
+    m_modelProgram->setUniformValue(m_selectionModeLocation, false);
     drawModels();
-
-    m_program->release();
+    m_modelProgram->release();
 }
 
 void QGLView::cleanup()
 {
-    if (m_program) {
-        delete m_program;
-        m_program = 0;
+    if (m_modelProgram) {
+        delete m_modelProgram;
+        m_modelProgram = 0;
+    }
+
+    if (m_lineProgram) {
+        delete m_lineProgram;
+        m_lineProgram = 0;
+    }
+
+    if (m_textProgram) {
+        delete m_textProgram;
+        m_textProgram = 0;
     }
 }
 

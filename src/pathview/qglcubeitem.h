@@ -8,6 +8,7 @@ class QGLCubeItem : public QGLItem
     Q_OBJECT
     Q_PROPERTY(QVector3D size READ size WRITE setSize NOTIFY sizeChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+    Q_PROPERTY(bool centered READ isCentered WRITE setCentered NOTIFY centeredChanged)
 
 public:
     explicit QGLCubeItem(QObject *parent = 0);
@@ -26,10 +27,17 @@ public:
         return m_color;
     }
 
+    bool isCentered() const
+    {
+        return m_centered;
+    }
+
 signals:
 
     void sizeChanged(QVector3D arg);
     void colorChanged(QColor arg);
+
+    void centeredChanged(bool arg);
 
 public slots:
 
@@ -54,9 +62,18 @@ public slots:
         }
     }
 
+    void setCentered(bool arg)
+    {
+        if (m_centered != arg) {
+            m_centered = arg;
+            emit centeredChanged(arg);
+        }
+    }
+
 private:
     QVector3D m_size;
     QColor m_color;
+    bool m_centered;
 };
 
 #endif // QGLCUBEITEM_H

@@ -67,7 +67,10 @@
 #include <QtGui/QOpenGLShaderProgram>
 #include <QTimer>
 #include <QOpenGLBuffer>
+#include <QOpenGLTexture>
 #include <QStack>
+#include <QStaticText>
+#include <QPainter>
 #include "qglitem.h"
 
 class QGLItem;
@@ -78,9 +81,15 @@ class QGLView : public QQuickItem
 
     Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
     Q_ENUMS(ModelType)
+    Q_ENUMS(PaintMode)
 
 public:
     QGLView();
+
+    typedef struct {
+        GLfloat x;
+        GLfloat y;
+    } Vector2D;
 
     typedef struct {
         GLfloat x;
@@ -94,10 +103,30 @@ public:
     } ModelVertex;
 
     typedef struct {
+        Vector3D position;
+        Vector2D texCoordinate;
+    } TextVertex;
+
+    typedef struct {
         QMatrix4x4 modelMatrix;
         QColor color;
         quint32 id;
-    } ModelState;
+    } ModelParameters;
+
+    typedef struct {
+        QMatrix4x4 modelMatrix;
+        Vector3D vector;
+        QColor color;
+        GLfloat width;
+        bool stipple;
+        GLfloat stippleLength;
+    } LineParameters;
+
+    typedef struct {
+        QMatrix4x4 modelMatrix;
+        QStaticText staticText;
+        QColor color;
+    } TextParameters;
 
     enum ModelType {
         NoType = 0,
@@ -112,7 +141,7 @@ public:
 
     Q_INVOKABLE void readPixel(int x, int y);
 
-    // model transformation functions
+    // model and line transformation functions
     void color(float r, float g, float b, float a);
     void color(QColor color);
     void translate(float x, float y, float z);
@@ -124,14 +153,23 @@ public:
     void scale(QVector3D vector);
     void mirror(float x, float y, float z);
     void mirror(QVector3D vector);
-    void resetTransformations();
+    void resetTransformations(bool hard = false);
 
     // model functions
     void cube(float w, float l, float h, bool center = false);
     void cube(QVector3D size, bool center = false);
-    void cylinder(float h, float r);
-    void cone(float h, float r);
+    void cylinder(float r, float h);
+    void cone(float r, float h);
     void sphere(float r);
+
+    // line functions
+    void lineWidth(float width);
+    void lineStipple(float enable, float length = 5.0);
+    void line(float x, float y, float z);
+    void line(QVector3D vector);
+
+    // text functions
+    void text(QString text, QFont font = QFont());
 
     // grouping functions
     void beginUnion(quint32 id);
@@ -153,11 +191,15 @@ private slots:
     void handleWindowChanged(QQuickWindow *win);
 
 private:
-    // the shader program
-    QOpenGLShaderProgram *m_program;
+    // the shader programs
+    QOpenGLShaderProgram *m_modelProgram;
+    QOpenGLShaderProgram *m_lineProgram;
+    QOpenGLShaderProgram *m_textProgram;
 
     // vertex buffers
     QMap<ModelType, QOpenGLBuffer*> m_vertexBufferMap;
+    QOpenGLBuffer *m_lineVertexBuffer;
+    QOpenGLBuffer *m_textVertexBuffer;
 
     // transformation matrices
     QMatrix4x4 m_viewMatrix;
@@ -175,14 +217,42 @@ private:
     int m_selectionModeLocation;
     int m_idColorLocation;
 
+    int m_lineProjectionMatrixLocation;
+    int m_lineViewMatrixLocation;
+    int m_lineModelMatrixLocation;
+    int m_lineColorLocation;
+    int m_linePositionLocation;
+    int m_lineStippleLocation;
+    int m_lineStippleLengthLocation;
+
+    int m_textProjectionMatrixLocation;
+    int m_textViewMatrixLocation;
+    int m_textModelMatrixLocation;
+    int m_textColorLocation;
+    int m_textPositionLocation;
+    int m_textTexCoordinateLocation;
+    int m_textTextureLocation;
+
     // thread secure properties
     qreal m_t;
     qreal m_thread_t;
 
-    // stack
-    ModelState m_modelState;
-    QStack<ModelState> m_modelStateStack;
-    QMap<ModelType, QList<ModelState>* > m_modelMap;
+    // model stack
+    ModelParameters m_modelParameters;
+    QStack<ModelParameters> m_modelParametersStack;
+    QMap<ModelType, QList<ModelParameters>* > m_modelMap;
+
+    // line stack
+    LineParameters m_lineParameters;
+    QStack<LineParameters> m_lineParametersStack;
+    QList<LineParameters> m_lineParametersList;
+
+    // text stack
+    QList<QStaticText> m_textTextList;
+    QList<QOpenGLTexture*> m_textTextureList;
+    TextParameters m_textParameters;
+    QStack<TextParameters> m_textParametersStack;
+    QList<TextParameters> m_textParametersList;
 
     //GL items
     QList<QGLItem*> m_glItems;
@@ -191,12 +261,22 @@ private:
     void drawModels(ModelType type);
     void drawModelVertices(ModelType type);
 
+    void clearLines();
+    void drawLines();
+
+    void clearTexts();
+    void drawTexts();
+    void generateTextTexture(const QStaticText &staticText, QFont font);
+    void clearTextTextures();
+
     void paintItems();
 
     // setup functions
     void initializeVertexBuffer(ModelType type, const QVector<ModelVertex> & vertices);
     void initializeVertexBuffer(ModelType type, const void *bufferData, int bufferLength);
     void setupVBOs();
+    void setupLineVertexBuffer();
+    void setupTextVertexBuffer();
     void setupShaders();
     void setupWindow();
     void setupCube();
