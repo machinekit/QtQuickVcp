@@ -1,5 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Window 2.0
+import QtQuick.Controls 1.0
+import QtQuick.Controls.Styles 1.0
 
 /*!
     \qmltype SlideView
@@ -41,6 +43,12 @@ Item {
     */
     property bool autoHideMenu: true
 
+    /*! Whether the small button to open the menu should be visible.
+
+        By default this is set to \c true.
+    */
+    property bool buttonVisible: true
+
     /*! The current index of the view.
     */
     property alias currentIndex: menuList.currentIndex
@@ -73,6 +81,9 @@ Item {
             if (items[i] === normalView )
                 continue
 
+            if (items[i] === menuButton)
+                continue
+
             filteredItems.push(items[i])
         }
 
@@ -89,7 +100,8 @@ Item {
         property int dragThreshold: menuView.width * 0.1
 
         id: mouseArea
-        anchors.fill: parent
+        anchors.fill: menuView
+        z: !menuVisible ? 0 : 100
 
         onPressed: {
             startX = mouseX
@@ -97,9 +109,13 @@ Item {
         onReleased: {
             if (dragX > dragThreshold)
                 menuVisible = true
-            else if (dragX < -dragThreshold)
+            else
                 menuVisible = false
         }
+        transform: Translate {
+                    id: mouseAreaTranslate
+                    x: viewTranslate.x
+                }
     }
 
     Rectangle {
@@ -107,7 +123,7 @@ Item {
        anchors.left: parent.left
        anchors.top: parent.top
        anchors.bottom: parent.bottom
-       width: Screen.pixelDensity * 50
+       width: Screen.pixelDensity * 40
        color: systemPalette.base
 
        opacity: viewTranslate.x/width
@@ -228,6 +244,24 @@ Item {
                    x: menuVisible ? Math.max(0, menuView.width + Math.min(0, mouseArea.dragX)) :  Math.min(menuView.width, Math.max(0, mouseArea.dragX))
                    Behavior on x { NumberAnimation { duration: 400; easing.type: Easing.OutQuad } }
                }
+    }
+
+    Button {
+        id: menuButton
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.margins: Screen.pixelDensity
+        width: Screen.pixelDensity * 8
+        height: width
+        text: menuVisible ? "<" : ">"
+        visible: buttonVisible && !menuVisible
+
+        onClicked: menuVisible = !menuVisible
+
+        transform: Translate {
+                    id: buttonTranslate
+                    x: viewTranslate.x
+        }
     }
 
     onChildrenChanged: _updateItems()
