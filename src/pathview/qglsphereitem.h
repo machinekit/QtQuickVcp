@@ -10,9 +10,9 @@ class QGLSphereItem : public QGLItem
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
 
 public:
-    explicit QGLSphereItem(QObject *parent = 0);
-    explicit QGLSphereItem(float radius, QObject *parent = 0);
-    explicit QGLSphereItem(float radius, QColor color, QObject *parent = 0);
+    explicit QGLSphereItem(QQuickItem *parent = 0);
+    explicit QGLSphereItem(float radius, QQuickItem *parent = 0);
+    explicit QGLSphereItem(float radius, QColor color, QQuickItem *parent = 0);
 
     virtual void paint(QGLView *glView);
 

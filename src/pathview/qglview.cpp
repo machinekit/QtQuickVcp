@@ -19,46 +19,6 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-/****************************************************************************
-**
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
-**
-** This file is part of the demonstration applications of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-**
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
-** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
 
 #include "qglview.h"
 
@@ -72,8 +32,11 @@ QGLView::QGLView()
     : m_modelProgram(0)
     , m_t(0)
     , m_thread_t(0)
+    , m_camera(new QGLCamera(this))
+    , m_projectionAspectRatio(1.0)
 {
     connect(this, SIGNAL(windowChanged(QQuickWindow*)), this, SLOT(handleWindowChanged(QQuickWindow*)));
+    connect(this, SIGNAL(childrenChanged()), this, SLOT(updateChildren()));
 }
 
 void QGLView::setT(qreal t)
@@ -104,16 +67,43 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
         connect(win, SIGNAL(beforeRendering()), this, SLOT(paint()), Qt::DirectConnection);
         connect(win, SIGNAL(beforeSynchronizing()), this, SLOT(sync()), Qt::DirectConnection);
         connect(win, SIGNAL(frameSwapped()), win, SLOT(update()));  // repaint every frame
+        connect(win, SIGNAL(widthChanged(int)), this, SLOT(updatePerspectiveAspectRatio()));
+        connect(win, SIGNAL(heightChanged(int)), this, SLOT(updatePerspectiveAspectRatio()));
 
         // If we allow QML to do the clearing, they would clear what we paint
         // and nothing would show.
         win->setClearBeforeRendering(false);
+
+        updatePerspectiveAspectRatio();
     }
 }
 
+void QGLView::updatePerspectiveAspectRatio()
+{
+    qreal ratio = window()->devicePixelRatio();
+    int w = int(ratio * window()->width());
+    int h = int(ratio * window()->height());
+    m_projectionAspectRatio = (float)w/(float)h;
+}
 
+void QGLView::updateChildren()
+{
+    m_glItems.clear();
 
+    QList<QQuickItem*> objectChildren = childItems();
+    QGLItem* glItem;
+    for (int i = 0; i < objectChildren.size(); ++i)
+    {
 
+        glItem = qobject_cast<QGLItem*>(objectChildren.at(i));
+        if (glItem != NULL)
+        {
+            addGlItem(glItem);
+        }
+    }
+
+    emit glItemsChanged(glItems());
+}
 
 void QGLView::clearModels(QGLView::ModelType type = NoType)
 {
@@ -191,12 +181,18 @@ void QGLView::setupLineVertexBuffer()
 void QGLView::setupTextVertexBuffer()
 {
     static const TextVertex vertices[] = {
-        {{0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-        {{0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-        {{0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-        {{1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+        {{0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
     };
 
     m_textVertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
@@ -354,15 +350,15 @@ void QGLView::drawTexts()
     {
         TextParameters textParameters = m_textParametersList.at(i);
         QStaticText staticText = textParameters.staticText;
-        QOpenGLTexture *texture = m_textTextureList.at(m_textTextList.indexOf(staticText));
+        int textureIndex = m_textTextList.indexOf(staticText);
+        QOpenGLTexture *texture = m_textTextureList.at(textureIndex);
+        float aspectRatio = m_textAspectRatioList.at(textureIndex);
 
-        textParameters.modelMatrix.scale((float)texture->width()/(float)texture->height(),1.0, 1.0);
-        //qDebug() << texture->isBound() << texture->isCreated() << texture->isStorageAllocated();
+        m_textProgram->setUniformValue(m_textAspectRatioLocation, aspectRatio);
         m_textProgram->setUniformValue(m_textColorLocation, textParameters.color);
         m_textProgram->setUniformValue(m_textModelMatrixLocation, textParameters.modelMatrix);
         m_textProgram->setUniformValue(m_textTextureLocation, texture->textureId());
-        glActiveTexture(GL_TEXTURE1);
-        texture->bind();
+        texture->bind(texture->textureId());
         glDrawArrays(GL_TRIANGLES, 0, m_textVertexBuffer->size()/sizeof(TextVertex));
         texture->release();
     }
@@ -374,31 +370,59 @@ void QGLView::drawTexts()
 
 void QGLView::generateTextTexture(const QStaticText &staticText, QFont font)
 {
+    if (m_textTextureList.size() > 100) // maximum of 100 rendered texts TODO: make parameter
+    {
+        clearTextTextures();
+    }
+
     QPixmap pixmap(QSize(qCeil(staticText.size().width()), qCeil(staticText.size().height())));
     pixmap.fill(QColor(Qt::transparent));
 
     QPainter painter(&pixmap);
     painter.setPen(Qt::white);
     painter.setFont(font);
-    //painter.setRenderHint(QPainter::Antialiasing, true);
-    //painter.setRenderHint(QPainter::TextAntialiasing, true);
     painter.drawStaticText(0, 0, staticText);
-
-    QImage image = pixmap.toImage();    // mirror the image inside opengl
-    image.save("test.png");
 
     QOpenGLTexture *texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
     texture->create();
     texture->setMinificationFilter(QOpenGLTexture::Nearest);
     texture->setMagnificationFilter(QOpenGLTexture::Nearest);
-    texture->setData(image);
+    texture->setData(pixmap.toImage());
+
+    float aspectRatio = staticText.size().width()/staticText.size().height();
+
     m_textTextList.append(staticText);
     m_textTextureList.append(texture);
+    m_textAspectRatioList.append(aspectRatio);
 }
 
 void QGLView::clearTextTextures()
 {
-    // TODO clear textures
+    QList<int> usedIndexes;
+
+    // search for indexes still in use
+    for (int i = 0; i < m_textParametersList.size(); ++i)
+    {
+        TextParameters textParameters = m_textParametersList.at(i);
+
+        if (m_textTextList.contains(textParameters.staticText))
+        {
+            usedIndexes.append(i);
+        }
+    }
+
+    // remove all textures that are not in use anymore
+    for (int i = (m_textTextureList.size()-1); i >= 0; i--)
+    {
+        if (!usedIndexes.contains(i))
+        {
+            m_textTextList.removeAt(i);
+            m_textAspectRatioList.removeAt(i);
+            m_textTextureList.at(i)->destroy();
+            delete m_textTextureList.at(i);
+            m_textTextureList.removeAt(i);
+        }
+    }
 }
 
 void QGLView::paintItems()
@@ -409,21 +433,49 @@ void QGLView::paintItems()
     }
 }
 
-void QGLView::addItem(QGLItem *item)
+void QGLView::addGlItem(QGLItem *item)
 {
     m_glItems.append(item);
+    emit glItemsChanged(glItems());
 }
 
-void QGLView::removeItem(QGLItem *item)
+void QGLView::removeGlItem(int index)
+{
+    m_glItems.removeAt(index);
+    emit glItemsChanged(glItems());
+}
+
+void QGLView::removeGlItem(QGLItem *item)
 {
     for (int i = 0; i < m_glItems.size(); ++i)
     {
         if (m_glItems.at(i) == item)
         {
             m_glItems.removeAt(i);
+            emit glItemsChanged(glItems());
             return;
         }
     }
+}
+
+void QGLView::clearGlItems()
+{
+    m_glItems.clear();
+}
+
+QQmlListProperty<QGLItem> QGLView::glItems()
+{
+    return QQmlListProperty<QGLItem>(this, m_glItems);
+}
+
+int QGLView::glItemCount() const
+{
+    return m_glItems.count();
+}
+
+QGLItem *QGLView::glItem(int index) const
+{
+    return m_glItems.at(index);
 }
 
 void QGLView::setupShaders()
@@ -437,8 +489,11 @@ void QGLView::setupShaders()
     m_positionLocation = m_modelProgram->attributeLocation("position");
     m_normalLocation = m_modelProgram->attributeLocation("normal");
     m_colorLocation = m_modelProgram->uniformLocation("color");
-    m_lightPosLocation = m_modelProgram->uniformLocation("lightPos");
-    m_enableLightingLocation = m_modelProgram->uniformLocation("enableLighting");
+    m_lightPositionLocation = m_modelProgram->uniformLocation("light.position");
+    m_lightIntensitiesLocation = m_modelProgram->uniformLocation("light.intensities");
+    m_lightAttenuationLocation = m_modelProgram->uniformLocation("light.attenuation");
+    m_lightAmbientCoefficientLocation = m_modelProgram->uniformLocation("light.ambientCoefficient");
+    m_lightEnabledLocation = m_modelProgram->uniformLocation("light.enabled");
     m_modelMatrixLocation = m_modelProgram->uniformLocation("modelMatrix");
     m_viewMatrixLocation = m_modelProgram->uniformLocation("viewMatrix");
     m_projectionMatrixLocation = m_modelProgram->uniformLocation("projectionMatrix");
@@ -472,6 +527,7 @@ void QGLView::setupShaders()
     m_textModelMatrixLocation = m_textProgram->uniformLocation("modelMatrix");
     m_textColorLocation = m_textProgram->uniformLocation("color");
     m_textTextureLocation = m_textProgram->uniformLocation("texture");
+    m_textAspectRatioLocation = m_textProgram->uniformLocation("aspectRatio");
 }
 
 void QGLView::setupWindow()
@@ -914,20 +970,15 @@ void QGLView::paint()
         setupVBOs();
         setupStack();
     }
+    //glViewport(0, 0, w, h);
 
-    qreal ratio = window()->devicePixelRatio();
-    int w = int(ratio * window()->width());
-    int h = int(ratio * window()->height());
-    float matrixH = 6.0f * h / w;
-    glViewport(0, 0, w, h);
+    m_projectionMatrix = m_camera->projectionMatrix(m_projectionAspectRatio);//QMatrix4x4();
+    //m_projectionMatrix.frustum(-3, 3, -matrixH/2, matrixH/2, 4, 10);
 
-    m_projectionMatrix = QMatrix4x4();
-    m_projectionMatrix.frustum(-3, 3, -matrixH/2, matrixH/2, 4, 10);
+    m_viewMatrix = m_camera->modelViewMatrix();//QMatrix4x4();
+   // m_viewMatrix.translate(0,0,0);
 
-    m_viewMatrix = QMatrix4x4();
-    m_viewMatrix.translate(0,0,0);
-
-    glClearColor(0.0, 0.0, 0.0, 1.0);//(0, 104.0/255.0, 55.0/255.0, 1.0);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Enable depth test
@@ -949,19 +1000,6 @@ void QGLView::paint()
 
     paintItems();
 
-    translate(0,0,-7);
-    lineWidth(2);
-    lineStipple(true, 0.2);
-    line(QVector3D(1,3,0));
-    translate(0,0,-7);
-    line(QVector3D(2,3,0));
-    translate(0,0,-7);
-    line(QVector3D(3,3,0));
-
-    translate(0,0,-5);
-    color(Qt::red);
-    text("12.7mm");
-
     m_lineProgram->bind();
     m_lineProgram->setUniformValue(m_lineProjectionMatrixLocation, m_projectionMatrix);
     m_lineProgram->setUniformValue(m_lineViewMatrixLocation, m_viewMatrix);
@@ -974,11 +1012,20 @@ void QGLView::paint()
     drawTexts();
     m_textProgram->release();
 
+    m_light.enabled = true;
+    m_light.ambientCoefficient = 0.1;
+    m_light.attenuation = 0.01;
+    m_light.intensities = QVector3D(3.0, 3.0, 10.0 );
+    m_light.position = QVector3D(1.0, 1.0, 5);
+
     m_modelProgram->bind();
     m_modelProgram->setUniformValue(m_projectionMatrixLocation, m_projectionMatrix);
     m_modelProgram->setUniformValue(m_viewMatrixLocation, m_viewMatrix);
-    m_modelProgram->setUniformValue(m_lightPosLocation, QVector3D(-1, -1, 1));
-    m_modelProgram->setUniformValue(m_enableLightingLocation, true);
+    m_modelProgram->setUniformValue(m_lightPositionLocation, m_light.position);
+    m_modelProgram->setUniformValue(m_lightIntensitiesLocation, m_light.intensities);
+    m_modelProgram->setUniformValue(m_lightAttenuationLocation, m_light.attenuation);
+    m_modelProgram->setUniformValue(m_lightAmbientCoefficientLocation, m_light.ambientCoefficient);
+    m_modelProgram->setUniformValue(m_lightEnabledLocation, m_light.enabled);
     m_modelProgram->setUniformValue(m_selectionModeLocation, false);
     drawModels();
     m_modelProgram->release();

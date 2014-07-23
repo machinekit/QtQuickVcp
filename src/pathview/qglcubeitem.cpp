@@ -1,6 +1,6 @@
 #include "qglcubeitem.h"
 
-QGLCubeItem::QGLCubeItem(QObject *parent) :
+QGLCubeItem::QGLCubeItem(QQuickItem *parent) :
     QGLItem(parent),
     m_size(QVector3D(1,1,1)),
     m_color(QColor(Qt::yellow)),
@@ -8,7 +8,7 @@ QGLCubeItem::QGLCubeItem(QObject *parent) :
 {
 }
 
-QGLCubeItem::QGLCubeItem(QVector3D size, QObject *parent) :
+QGLCubeItem::QGLCubeItem(QVector3D size, QQuickItem *parent) :
     QGLItem(parent),
     m_color(QColor(Qt::yellow)),
     m_centered(false)
@@ -16,7 +16,7 @@ QGLCubeItem::QGLCubeItem(QVector3D size, QObject *parent) :
     m_size = size;
 }
 
-QGLCubeItem::QGLCubeItem(QVector3D size, QColor color, QObject *parent) :
+QGLCubeItem::QGLCubeItem(QVector3D size, QColor color, QQuickItem *parent) :
     QGLItem(parent),
     m_centered(false)
 {

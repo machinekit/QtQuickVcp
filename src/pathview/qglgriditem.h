@@ -7,7 +7,7 @@ class QGLGridItem : public QGLItem
 {
     Q_OBJECT
 public:
-    explicit QGLGridItem(QObject *parent = 0);
+    explicit QGLGridItem(QQuickItem *parent = 0);
 
     virtual void paint(QGLView *glView);
 

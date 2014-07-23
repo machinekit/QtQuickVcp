@@ -12,9 +12,9 @@ class QGLCylinderItem : public QGLItem
     Q_PROPERTY(bool cone READ isCone WRITE setCone NOTIFY coneChanged)
 
 public:
-    explicit QGLCylinderItem(QObject *parent = 0);
-    explicit QGLCylinderItem(float radius, float height, QObject *parent = 0);
-    explicit QGLCylinderItem(float radius, float height, QColor color, QObject *parent = 0);
+    explicit QGLCylinderItem(QQuickItem *parent = 0);
+    explicit QGLCylinderItem(float radius, float height, QQuickItem *parent = 0);
+    explicit QGLCylinderItem(float radius, float height, QColor color, QQuickItem *parent = 0);
 
     virtual void paint(QGLView *glView);
 

@@ -1,20 +1,20 @@
 #include "qglsphereitem.h"
 
-QGLSphereItem::QGLSphereItem(QObject *parent) :
+QGLSphereItem::QGLSphereItem(QQuickItem *parent) :
     QGLItem(parent),
     m_radius(1.0),
     m_color(QColor(Qt::yellow))
 {
 }
 
-QGLSphereItem::QGLSphereItem(float radius, QObject *parent) :
+QGLSphereItem::QGLSphereItem(float radius, QQuickItem *parent) :
     QGLItem(parent),
     m_color(QColor(Qt::yellow))
 {
     m_radius = radius;
 }
 
-QGLSphereItem::QGLSphereItem(float radius, QColor color, QObject *parent) :
+QGLSphereItem::QGLSphereItem(float radius, QColor color, QQuickItem *parent) :
     QGLItem(parent)
 {
     m_radius = radius;

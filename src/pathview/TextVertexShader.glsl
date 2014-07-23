@@ -5,6 +5,7 @@ uniform mat4 viewMatrix;          // view matrix
 // model specific
 uniform mat4 modelMatrix;         // model matrix
 uniform vec4 color;               // per-vertex color
+uniform float aspectRatio;        // aspect ratio
 
 // vertex specific
 attribute vec4 position;          // per-vertex position
@@ -19,5 +20,8 @@ void main(void)
 
     destinationTexCoordinate = texCoordinate;
     destinationColor = color;
-    gl_Position = projectionMatrix * modelviewMatrix * position;
+
+    vec4 scaledPosition = position;
+    scaledPosition[0] *= aspectRatio;
+    gl_Position = projectionMatrix * modelviewMatrix * scaledPosition;
 }

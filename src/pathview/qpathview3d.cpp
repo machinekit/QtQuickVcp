@@ -7,14 +7,14 @@ QPathView3d::QPathView3d() :
     cubeItem = new QGLCubeItem();
     cubeItem->setPosition(0,0,-7);
     cubeItem->setColor(Qt::red);
-    addItem(cubeItem);
+    addGlItem(cubeItem);
 
     QGLSphereItem *sphereItem = new QGLSphereItem();
     sphereItem->setPosition(1,2,-7);
     sphereItem->setColor(Qt::blue);
-    addItem(sphereItem);
+    addGlItem(sphereItem);
 
     QGLGridItem *gridItem = new QGLGridItem();
     gridItem->setPosition(0,0,-7);
-    addItem(gridItem);
+    addGlItem(gridItem);
 }

@@ -71,7 +71,9 @@
 #include <QStack>
 #include <QStaticText>
 #include <QPainter>
+#include <QQmlListProperty>
 #include "qglitem.h"
+#include "qglcamera.h"
 
 class QGLItem;
 
@@ -80,8 +82,9 @@ class QGLView : public QQuickItem
     Q_OBJECT
 
     Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
+    Q_PROPERTY(QGLCamera *camera READ camera WRITE setCamera NOTIFY cameraChanged)
+    Q_PROPERTY(QQmlListProperty<QGLItem> glItems READ glItems NOTIFY glItemsChanged)
     Q_ENUMS(ModelType)
-    Q_ENUMS(PaintMode)
 
 public:
     QGLView();
@@ -127,6 +130,14 @@ public:
         QStaticText staticText;
         QColor color;
     } TextParameters;
+
+    typedef struct {
+        QVector3D position;
+        QVector3D intensities;
+        GLfloat attenuation;
+        GLfloat ambientCoefficient;
+        GLboolean enabled;
+    } Light;
 
     enum ModelType {
         NoType = 0,
@@ -175,20 +186,43 @@ public:
     void beginUnion(quint32 id);
     void endUnion();
 
-    // item handling
-    void addItem(QGLItem *item);
-    void removeItem(QGLItem *item);
+    QGLCamera* camera()
+    {
+        return m_camera;
+    }
+
+    QQmlListProperty<QGLItem> glItems();
+    int glItemCount() const;
+    QGLItem *glItem(int index) const;
 
 signals:
     void tChanged();
+    void cameraChanged(QGLCamera *arg);
+    void glItemsChanged(QQmlListProperty<QGLItem> arg);
 
 public slots:
     void paint();
     void cleanup();
     void sync();
 
+    // item handling
+    void addGlItem(QGLItem *glItem);
+    void removeGlItem(int index);
+    void removeGlItem(QGLItem *glItem);
+    void clearGlItems();
+
+    void setCamera(QGLCamera *arg)
+    {
+        if (m_camera != arg) {
+            m_camera = arg;
+            emit cameraChanged(arg);
+        }
+    }
+
 private slots:
     void handleWindowChanged(QQuickWindow *win);
+    void updatePerspectiveAspectRatio();
+    void updateChildren();
 
 private:
     // the shader programs
@@ -204,13 +238,20 @@ private:
     // transformation matrices
     QMatrix4x4 m_viewMatrix;
     QMatrix4x4 m_projectionMatrix;
+    float m_projectionAspectRatio;
+
+    // light
+    Light m_light;
 
     // shader program location ids
     int m_positionLocation;
     int m_normalLocation;
     int m_colorLocation;
-    int m_lightPosLocation;
-    int m_enableLightingLocation;
+    int m_lightPositionLocation;
+    int m_lightIntensitiesLocation;
+    int m_lightAttenuationLocation;
+    int m_lightAmbientCoefficientLocation;
+    int m_lightEnabledLocation;
     int m_projectionMatrixLocation;
     int m_viewMatrixLocation;
     int m_modelMatrixLocation;
@@ -232,6 +273,7 @@ private:
     int m_textPositionLocation;
     int m_textTexCoordinateLocation;
     int m_textTextureLocation;
+    int m_textAspectRatioLocation;
 
     // thread secure properties
     qreal m_t;
@@ -250,12 +292,16 @@ private:
     // text stack
     QList<QStaticText> m_textTextList;
     QList<QOpenGLTexture*> m_textTextureList;
+    QList<float> m_textAspectRatioList;
     TextParameters m_textParameters;
     QStack<TextParameters> m_textParametersStack;
     QList<TextParameters> m_textParametersList;
 
     //GL items
     QList<QGLItem*> m_glItems;
+
+    // camera
+    QGLCamera *m_camera;
 
     void clearModels(ModelType type);
     void drawModels(ModelType type);

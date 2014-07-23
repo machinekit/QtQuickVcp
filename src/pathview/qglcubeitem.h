@@ -11,9 +11,9 @@ class QGLCubeItem : public QGLItem
     Q_PROPERTY(bool centered READ isCentered WRITE setCentered NOTIFY centeredChanged)
 
 public:
-    explicit QGLCubeItem(QObject *parent = 0);
-    explicit QGLCubeItem(QVector3D size, QObject *parent = 0);
-    explicit QGLCubeItem(QVector3D size, QColor color, QObject *parent = 0);
+    explicit QGLCubeItem(QQuickItem *parent = 0);
+    explicit QGLCubeItem(QVector3D size, QQuickItem *parent = 0);
+    explicit QGLCubeItem(QVector3D size, QColor color, QQuickItem *parent = 0);
 
     virtual void paint(QGLView *glView);
 

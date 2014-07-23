@@ -1,6 +1,6 @@
 #include "qglcylinderitem.h"
 
-QGLCylinderItem::QGLCylinderItem(QObject *parent) :
+QGLCylinderItem::QGLCylinderItem(QQuickItem *parent) :
     QGLItem(parent),
     m_radius(1.0),
     m_height(1.0),
@@ -9,7 +9,7 @@ QGLCylinderItem::QGLCylinderItem(QObject *parent) :
 {
 }
 
-QGLCylinderItem::QGLCylinderItem(float radius, float height, QObject *parent) :
+QGLCylinderItem::QGLCylinderItem(float radius, float height, QQuickItem *parent) :
     QGLItem(parent),
     m_color(QColor(Qt::yellow)),
     m_cone(false)
@@ -18,7 +18,7 @@ QGLCylinderItem::QGLCylinderItem(float radius, float height, QObject *parent) :
     m_height = height;
 }
 
-QGLCylinderItem::QGLCylinderItem(float radius, float height, QColor color, QObject *parent) :
+QGLCylinderItem::QGLCylinderItem(float radius, float height, QColor color, QQuickItem *parent) :
     QGLItem(parent),
     m_cone(false)
 {

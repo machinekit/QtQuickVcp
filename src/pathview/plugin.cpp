@@ -21,10 +21,25 @@
 ****************************************************************************/
 #include "plugin.h"
 #include "qpathview3d.h"
+#include "qglitem.h"
+#include "qglview.h"
+#include "qglcubeitem.h"
+#include "qglcylinderitem.h"
+#include "qglgriditem.h"
+#include "qglsphereitem.h"
+#include "qglcamera.h"
+#include "qglcoordinateitem.h"
 #include <qqml.h>
 
 void MachinekitPathViewPlugin::registerTypes(const char *uri)
 {
     // @uri Machinekit.PathView
     qmlRegisterType<QPathView3d>(uri, 1, 0, "PathView3d");
+    qmlRegisterType<QGLCamera>(uri, 1, 0, "Camera3d");
+    qmlRegisterType<QGLView>(uri, 1, 0, "GLView3d");
+    qmlRegisterType<QGLCubeItem>(uri, 1, 0, "Cube3d");
+    qmlRegisterType<QGLCylinderItem>(uri, 1, 0, "Cylinder3d");
+    qmlRegisterType<QGLSphereItem>(uri, 1, 0, "Sphere3d");
+    qmlRegisterType<QGLGridItem>(uri, 1, 0, "Grid3d");
+    qmlRegisterType<QGLCoordinateItem>(uri, 1, 0, "Coordintate3d");
 }
