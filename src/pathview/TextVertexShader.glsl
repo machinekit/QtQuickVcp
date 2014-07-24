@@ -6,6 +6,7 @@ uniform mat4 viewMatrix;          // view matrix
 uniform mat4 modelMatrix;         // model matrix
 uniform vec4 color;               // per-vertex color
 uniform float aspectRatio;        // aspect ratio
+uniform int alignment;            // text alignment
 
 // vertex specific
 attribute vec4 position;          // per-vertex position
@@ -23,5 +24,15 @@ void main(void)
 
     vec4 scaledPosition = position;
     scaledPosition[0] *= aspectRatio;
+
+    if (alignment == 1) // centered
+    {
+        scaledPosition[0] -= aspectRatio/2.0;
+    }
+    else if (alignment == 2) // left
+    {
+        scaledPosition[0] -= aspectRatio;
+    }
+
     gl_Position = projectionMatrix * modelviewMatrix * scaledPosition;
 }

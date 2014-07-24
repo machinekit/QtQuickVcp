@@ -5,20 +5,10 @@ QGLSphereItem::QGLSphereItem(QQuickItem *parent) :
     m_radius(1.0),
     m_color(QColor(Qt::yellow))
 {
-}
-
-QGLSphereItem::QGLSphereItem(float radius, QQuickItem *parent) :
-    QGLItem(parent),
-    m_color(QColor(Qt::yellow))
-{
-    m_radius = radius;
-}
-
-QGLSphereItem::QGLSphereItem(float radius, QColor color, QQuickItem *parent) :
-    QGLItem(parent)
-{
-    m_radius = radius;
-    m_color = color;
+    connect(this, SIGNAL(radiusChanged(float)),
+            this, SIGNAL(propertyChanged()));
+    connect(this, SIGNAL(colorChanged(QColor)),
+            this, SIGNAL(propertyChanged()));
 }
 
 void QGLSphereItem::paint(QGLView *glView)

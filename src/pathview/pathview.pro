@@ -20,7 +20,11 @@ SOURCES += \
     qglsphereitem.cpp \
     qglcylinderitem.cpp \
     qglcamera.cpp \
-    qglcoordinateitem.cpp
+    qglcoordinateitem.cpp \
+    qglboundingboxitem.cpp \
+    qglobjectdimensionsitem.cpp \
+    qgllight.cpp \
+    qglpathitem.cpp
 
 HEADERS += \
     plugin.h \
@@ -32,7 +36,11 @@ HEADERS += \
     qglsphereitem.h \
     qglcylinderitem.h \
     qglcamera.h \
-    qglcoordinateitem.h
+    qglcoordinateitem.h \
+    qglboundingboxitem.h \
+    qglobjectdimensionsitem.h \
+    qgllight.h \
+    qglpathitem.h
 
 QML_INFRA_FILES = \
     qmldir

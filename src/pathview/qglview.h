@@ -74,6 +74,7 @@
 #include <QQmlListProperty>
 #include "qglitem.h"
 #include "qglcamera.h"
+#include "qgllight.h"
 
 class QGLItem;
 
@@ -83,11 +84,18 @@ class QGLView : public QQuickItem
 
     Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
     Q_PROPERTY(QGLCamera *camera READ camera WRITE setCamera NOTIFY cameraChanged)
+    Q_PROPERTY(QGLLight *light READ light WRITE setLight NOTIFY lightChanged)
     Q_PROPERTY(QQmlListProperty<QGLItem> glItems READ glItems NOTIFY glItemsChanged)
-    Q_ENUMS(ModelType)
+    Q_ENUMS(ModelType TextAlignment)
 
 public:
     QGLView();
+
+    enum TextAlignment {
+        AlignLeft = 0,
+        AlignCenter = 1,
+        AlignRight = 2
+    };
 
     typedef struct {
         GLfloat x;
@@ -129,6 +137,7 @@ public:
         QMatrix4x4 modelMatrix;
         QStaticText staticText;
         QColor color;
+        TextAlignment alignment;
     } TextParameters;
 
     typedef struct {
@@ -144,7 +153,9 @@ public:
         Cube = 1,
         Cylinder = 2,
         Sphere = 3,
-        Cone = 4
+        Cone = 4,
+        Text = 5,
+        Line = 6
     };
 
     qreal t() const { return m_t; }
@@ -178,9 +189,13 @@ public:
     void lineStipple(float enable, float length = 5.0);
     void line(float x, float y, float z);
     void line(QVector3D vector);
+    void lineTo(float x, float y, float z);
+    void lineTo(QVector3D vector);
+    void lineFromTo(float x1, float y1, float z1, float x2, float y2, float z2);
+    void lineFromTo(QVector3D startPosition, QVector3D endPosition);
 
     // text functions
-    void text(QString text, QFont font = QFont());
+    void text(QString text, TextAlignment alignment = AlignLeft, QFont font = QFont());
 
     // grouping functions
     void beginUnion(quint32 id);
@@ -191,6 +206,11 @@ public:
         return m_camera;
     }
 
+    QGLLight * light() const
+    {
+        return m_light;
+    }
+
     QQmlListProperty<QGLItem> glItems();
     int glItemCount() const;
     QGLItem *glItem(int index) const;
@@ -199,6 +219,7 @@ signals:
     void tChanged();
     void cameraChanged(QGLCamera *arg);
     void glItemsChanged(QQmlListProperty<QGLItem> arg);
+    void lightChanged(QGLLight * arg);
 
 public slots:
     void paint();
@@ -216,15 +237,34 @@ public slots:
         if (m_camera != arg) {
             m_camera = arg;
             emit cameraChanged(arg);
+            connect(m_camera, SIGNAL(projectionChanged()),
+                    this, SLOT(updateProjectionMatrix()));
+            connect(m_camera, SIGNAL(viewChanged()),
+                    this, SLOT(updateViewMatrix()));
+        }
+    }
+
+    void setLight(QGLLight * arg)
+    {
+        if (m_light != arg) {
+            m_light = arg;
+            emit lightChanged(arg);
+            connect(m_light, SIGNAL(propertyChanged()),
+                    this, SLOT(update()));
         }
     }
 
 private slots:
     void handleWindowChanged(QQuickWindow *win);
     void updatePerspectiveAspectRatio();
+    void updateViewMatrix();
+    void updateProjectionMatrix();
+    void updateItems();
     void updateChildren();
 
 private:
+    bool m_initialized;
+
     // the shader programs
     QOpenGLShaderProgram *m_modelProgram;
     QOpenGLShaderProgram *m_lineProgram;
@@ -239,9 +279,6 @@ private:
     QMatrix4x4 m_viewMatrix;
     QMatrix4x4 m_projectionMatrix;
     float m_projectionAspectRatio;
-
-    // light
-    Light m_light;
 
     // shader program location ids
     int m_positionLocation;
@@ -274,10 +311,15 @@ private:
     int m_textTexCoordinateLocation;
     int m_textTextureLocation;
     int m_textAspectRatioLocation;
+    int m_textAlignmentLocation;
 
     // thread secure properties
     qreal m_t;
     qreal m_thread_t;
+
+    // generic map of drawable items
+    QMap<ModelType, QList<void*>* > m_drawableMap;
+
 
     // model stack
     ModelParameters m_modelParameters;
@@ -290,12 +332,12 @@ private:
     QList<LineParameters> m_lineParametersList;
 
     // text stack
-    QList<QStaticText> m_textTextList;
-    QList<QOpenGLTexture*> m_textTextureList;
-    QList<float> m_textAspectRatioList;
     TextParameters m_textParameters;
     QStack<TextParameters> m_textParametersStack;
     QList<TextParameters> m_textParametersList;
+    QList<QStaticText> m_textTextList;
+    QList<QOpenGLTexture*> m_textTextureList;
+    QList<float> m_textAspectRatioList;
 
     //GL items
     QList<QGLItem*> m_glItems;
@@ -303,8 +345,11 @@ private:
     // camera
     QGLCamera *m_camera;
 
-    void clearModels(ModelType type);
-    void drawModels(ModelType type);
+    // light
+    QGLLight *m_light;
+
+    void clearModels(ModelType type = NoType);
+    void drawModels(ModelType type = NoType);
     void drawModelVertices(ModelType type);
 
     void clearLines();

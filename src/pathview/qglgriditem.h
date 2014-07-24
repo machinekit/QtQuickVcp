@@ -6,6 +6,7 @@
 class QGLGridItem : public QGLItem
 {
     Q_OBJECT
+
 public:
     explicit QGLGridItem(QQuickItem *parent = 0);
 

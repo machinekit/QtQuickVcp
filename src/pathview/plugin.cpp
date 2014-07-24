@@ -29,17 +29,25 @@
 #include "qglsphereitem.h"
 #include "qglcamera.h"
 #include "qglcoordinateitem.h"
+#include "qglboundingboxitem.h"
+#include "qglobjectdimensionsitem.h"
+#include "qglpathitem.h"
+#include "qgllight.h"
 #include <qqml.h>
 
 void MachinekitPathViewPlugin::registerTypes(const char *uri)
 {
     // @uri Machinekit.PathView
-    qmlRegisterType<QPathView3d>(uri, 1, 0, "PathView3d");
-    qmlRegisterType<QGLCamera>(uri, 1, 0, "Camera3d");
-    qmlRegisterType<QGLView>(uri, 1, 0, "GLView3d");
-    qmlRegisterType<QGLCubeItem>(uri, 1, 0, "Cube3d");
-    qmlRegisterType<QGLCylinderItem>(uri, 1, 0, "Cylinder3d");
-    qmlRegisterType<QGLSphereItem>(uri, 1, 0, "Sphere3d");
-    qmlRegisterType<QGLGridItem>(uri, 1, 0, "Grid3d");
-    qmlRegisterType<QGLCoordinateItem>(uri, 1, 0, "Coordintate3d");
+    qmlRegisterType<QPathView3d>(uri, 1, 0, "PathView3D");
+    qmlRegisterType<QGLCamera>(uri, 1, 0, "Camera3D");
+    qmlRegisterType<QGLLight>(uri, 1, 0, "Light3D");
+    qmlRegisterType<QGLView>(uri, 1, 0, "GLView3D");
+    qmlRegisterType<QGLCubeItem>(uri, 1, 0, "Cube3D");
+    qmlRegisterType<QGLCylinderItem>(uri, 1, 0, "Cylinder3D");
+    qmlRegisterType<QGLSphereItem>(uri, 1, 0, "Sphere3D");
+    qmlRegisterType<QGLGridItem>(uri, 1, 0, "Grid3D");
+    qmlRegisterType<QGLCoordinateItem>(uri, 1, 0, "Coordintate3D");
+    qmlRegisterType<QGLBoundingBoxItem>(uri, 1, 0, "BoundingBox3D");
+    qmlRegisterType<QGLObjectDimensionsItem>(uri, 1, 0, "ObjectDimensions3D");
+    qmlRegisterType<QGLPathItem>(uri, 1, 0, "Path3D");
 }

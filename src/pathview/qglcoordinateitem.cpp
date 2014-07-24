@@ -1,9 +1,14 @@
 #include "qglcoordinateitem.h"
 
 QGLCoordinateItem::QGLCoordinateItem(QQuickItem *parent):
-    QGLItem(parent)
+    QGLItem(parent),
+    m_axesLength(5.0),
+    m_textSize(1.0)
 {
-
+    connect(this, SIGNAL(axesLengthChanged(float)),
+            this, SIGNAL(propertyChanged()));
+    connect(this, SIGNAL(textSizeChanged(float)),
+            this, SIGNAL(propertyChanged()));
 }
 
 void QGLCoordinateItem::paint(QGLView *glView)
@@ -15,24 +20,27 @@ void QGLCoordinateItem::paint(QGLView *glView)
     glView->beginUnion(modelId());
 
     glView->color(QColor(Qt::red));
-    glView->line(10,0,0);
+    glView->line(m_axesLength,0,0);
     glView->color(QColor(Qt::red));
-    glView->translate(10,-0.5,0);
+    glView->translate(m_axesLength, -m_textSize/2.0, 0);
+    glView->scale(m_textSize, m_textSize, m_textSize);
     glView->text("X");
 
     glView->color(QColor(Qt::green));
-    glView->line(0,10,0);
+    glView->line(0,m_axesLength,0);
     glView->color(QColor(Qt::green));
-    glView->translate(0.5,10,0);
+    glView->translate(m_textSize/2.0, m_axesLength, 0);
     glView->rotate(90,0,0,1);
+    glView->scale(m_textSize, m_textSize, m_textSize);
     glView->text("Y");
 
     glView->color(QColor(Qt::blue));
-    glView->line(0,0,10);
+    glView->line(0,0,m_axesLength);
     glView->color(QColor(Qt::blue));
-    glView->translate(0,0,10);
+    glView->translate(0,0,m_axesLength);
     glView->rotate(90,1,0,0);
-    glView->text("Z");
+    glView->scale(m_textSize, m_textSize, m_textSize);
+    glView->text("Z", QGLView::AlignCenter);
 
     glView->endUnion();
 }

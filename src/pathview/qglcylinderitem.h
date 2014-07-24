@@ -13,8 +13,6 @@ class QGLCylinderItem : public QGLItem
 
 public:
     explicit QGLCylinderItem(QQuickItem *parent = 0);
-    explicit QGLCylinderItem(float radius, float height, QQuickItem *parent = 0);
-    explicit QGLCylinderItem(float radius, float height, QColor color, QQuickItem *parent = 0);
 
     virtual void paint(QGLView *glView);
 

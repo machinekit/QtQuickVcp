@@ -52,6 +52,7 @@ public:
     }
 
 signals:
+    void propertyChanged();
     void modelIdChanged(quint32 arg);
     void positionChanged(QVector3D arg);
     void scaleChanged(QVector3D arg);

@@ -12,8 +12,6 @@ class QGLCubeItem : public QGLItem
 
 public:
     explicit QGLCubeItem(QQuickItem *parent = 0);
-    explicit QGLCubeItem(QVector3D size, QQuickItem *parent = 0);
-    explicit QGLCubeItem(QVector3D size, QColor color, QQuickItem *parent = 0);
 
     virtual void paint(QGLView *glView);
 

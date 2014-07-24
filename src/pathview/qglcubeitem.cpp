@@ -6,22 +6,12 @@ QGLCubeItem::QGLCubeItem(QQuickItem *parent) :
     m_color(QColor(Qt::yellow)),
     m_centered(false)
 {
-}
-
-QGLCubeItem::QGLCubeItem(QVector3D size, QQuickItem *parent) :
-    QGLItem(parent),
-    m_color(QColor(Qt::yellow)),
-    m_centered(false)
-{
-    m_size = size;
-}
-
-QGLCubeItem::QGLCubeItem(QVector3D size, QColor color, QQuickItem *parent) :
-    QGLItem(parent),
-    m_centered(false)
-{
-    m_size = size;
-    m_color = color;
+    connect(this, SIGNAL(sizeChanged(QVector3D)),
+            this, SIGNAL(propertyChanged()));
+    connect(this, SIGNAL(colorChanged(QColor)),
+            this, SIGNAL(propertyChanged()));
+    connect(this, SIGNAL(centeredChanged(bool)),
+            this, SIGNAL(propertyChanged()));
 }
 
 void QGLCubeItem::paint(QGLView *glView)

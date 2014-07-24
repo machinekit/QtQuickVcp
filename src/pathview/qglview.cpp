@@ -29,14 +29,21 @@
 #include <QDateTime>
 
 QGLView::QGLView()
-    : m_modelProgram(0)
+    : m_initialized(false)
+    , m_modelProgram(0)
+    , m_lineProgram(0)
+    , m_textProgram(0)
     , m_t(0)
     , m_thread_t(0)
-    , m_camera(new QGLCamera(this))
     , m_projectionAspectRatio(1.0)
+    , m_camera(new QGLCamera(this))
+    , m_light(new QGLLight(this))
 {
     connect(this, SIGNAL(windowChanged(QQuickWindow*)), this, SLOT(handleWindowChanged(QQuickWindow*)));
     connect(this, SIGNAL(childrenChanged()), this, SLOT(updateChildren()));
+    connect(this, SIGNAL(glItemsChanged(QQmlListProperty<QGLItem>)), this, SLOT(updateItems()));
+
+    setFlag(QQuickItem::ItemHasContents, true);
 }
 
 void QGLView::setT(qreal t)
@@ -66,7 +73,7 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
         // a Qt::DirectConnection
         connect(win, SIGNAL(beforeRendering()), this, SLOT(paint()), Qt::DirectConnection);
         connect(win, SIGNAL(beforeSynchronizing()), this, SLOT(sync()), Qt::DirectConnection);
-        connect(win, SIGNAL(frameSwapped()), win, SLOT(update()));  // repaint every frame
+        //connect(win, SIGNAL(frameSwapped()), win, SLOT(update()));  // repaint every frame
         connect(win, SIGNAL(widthChanged(int)), this, SLOT(updatePerspectiveAspectRatio()));
         connect(win, SIGNAL(heightChanged(int)), this, SLOT(updatePerspectiveAspectRatio()));
 
@@ -84,10 +91,44 @@ void QGLView::updatePerspectiveAspectRatio()
     int w = int(ratio * window()->width());
     int h = int(ratio * window()->height());
     m_projectionAspectRatio = (float)w/(float)h;
+    updateProjectionMatrix();
+}
+
+void QGLView::updateViewMatrix()
+{
+    m_viewMatrix = m_camera->modelViewMatrix();
+    update();
+}
+
+void QGLView::updateProjectionMatrix()
+{
+    m_projectionMatrix = m_camera->projectionMatrix(m_projectionAspectRatio);
+    update();
+}
+
+void QGLView::updateItems()
+{
+    if (!m_initialized)
+    {
+        return;
+    }
+
+    clearLines();
+    clearModels();
+    clearTexts();
+    resetTransformations(true); // reset all tranformations for a clean start
+
+    paintItems();
+    update();
 }
 
 void QGLView::updateChildren()
 {
+    foreach (QGLItem *item, m_glItems)
+    {
+        disconnect(item, SIGNAL(propertyChanged()),
+                   this, SLOT(update()));
+    }
     m_glItems.clear();
 
     QList<QQuickItem*> objectChildren = childItems();
@@ -105,7 +146,7 @@ void QGLView::updateChildren()
     emit glItemsChanged(glItems());
 }
 
-void QGLView::clearModels(QGLView::ModelType type = NoType)
+void QGLView::clearModels(QGLView::ModelType type)
 {
     if (type == NoType)
     {
@@ -121,7 +162,7 @@ void QGLView::clearModels(QGLView::ModelType type = NoType)
     }
 }
 
-void QGLView::drawModels(QGLView::ModelType type = NoType)
+void QGLView::drawModels(QGLView::ModelType type)
 {
     if (type == NoType)
     {
@@ -355,6 +396,7 @@ void QGLView::drawTexts()
         float aspectRatio = m_textAspectRatioList.at(textureIndex);
 
         m_textProgram->setUniformValue(m_textAspectRatioLocation, aspectRatio);
+        m_textProgram->setUniformValue(m_textAlignmentLocation, (GLint)textParameters.alignment);
         m_textProgram->setUniformValue(m_textColorLocation, textParameters.color);
         m_textProgram->setUniformValue(m_textModelMatrixLocation, textParameters.modelMatrix);
         m_textProgram->setUniformValue(m_textTextureLocation, texture->textureId());
@@ -429,19 +471,24 @@ void QGLView::paintItems()
 {
     for (int i = 0; i < m_glItems.size(); ++i)
     {
-        m_glItems.at(i)->paint(this);
+        if (m_glItems.at(i)->isVisible())
+            m_glItems.at(i)->paint(this);
     }
 }
 
 void QGLView::addGlItem(QGLItem *item)
 {
     m_glItems.append(item);
+    connect(item, SIGNAL(propertyChanged()),
+            this, SLOT(updateItems()));
     emit glItemsChanged(glItems());
 }
 
 void QGLView::removeGlItem(int index)
 {
-    m_glItems.removeAt(index);
+    QGLItem *item = m_glItems.takeAt(index);
+    disconnect(item, SIGNAL(propertyChanged()),
+               this, SLOT(updateItems()));
     emit glItemsChanged(glItems());
 }
 
@@ -451,7 +498,9 @@ void QGLView::removeGlItem(QGLItem *item)
     {
         if (m_glItems.at(i) == item)
         {
-            m_glItems.removeAt(i);
+            QGLItem *item = m_glItems.takeAt(i);
+            disconnect(item, SIGNAL(propertyChanged()),
+                       this, SLOT(updateItems()));
             emit glItemsChanged(glItems());
             return;
         }
@@ -528,6 +577,7 @@ void QGLView::setupShaders()
     m_textColorLocation = m_textProgram->uniformLocation("color");
     m_textTextureLocation = m_textProgram->uniformLocation("texture");
     m_textAspectRatioLocation = m_textProgram->uniformLocation("aspectRatio");
+    m_textAlignmentLocation = m_textProgram->uniformLocation("alignment");
 }
 
 void QGLView::setupWindow()
@@ -741,6 +791,9 @@ void QGLView::setupStack()
     defaultLineParameters.stipple = false;
     defaultLineParameters.stippleLength = 5;
     defaultLineParameters.width = 1;
+    defaultLineParameters.vector.x = 0.0;
+    defaultLineParameters.vector.y = 0.0;
+    defaultLineParameters.vector.z = 0.0;
 
     m_lineParametersStack.clear();
     m_lineParametersStack.push(defaultLineParameters);
@@ -751,6 +804,7 @@ void QGLView::setupStack()
     defaultTextParameters.modelMatrix = QMatrix4x4();
     defaultTextParameters.color = QColor(Qt::white);
     defaultTextParameters.staticText = QStaticText();
+    defaultTextParameters.alignment = AlignLeft;
 
     m_textParametersStack.clear();
     m_textParametersStack.push(defaultTextParameters);
@@ -923,7 +977,44 @@ void QGLView::line(QVector3D vector)
     line(vector.x(), vector.y(), vector.z());
 }
 
-void QGLView::text(QString text, QFont font)
+void QGLView::lineTo(float x, float y, float z)
+{
+    m_lineParameters.vector.x = x - m_lineParameters.vector.x;
+    m_lineParameters.vector.y = y - m_lineParameters.vector.y;
+    m_lineParameters.vector.z = z - m_lineParameters.vector.z;
+
+    m_lineParametersList.append(m_lineParameters);
+    m_lineParameters.modelMatrix.translate(m_lineParameters.vector.x,
+                                           m_lineParameters.vector.y,
+                                           m_lineParameters.vector.z);
+    m_lineParameters.vector.x = x;
+    m_lineParameters.vector.y = y;
+    m_lineParameters.vector.z = z;
+}
+
+void QGLView::lineTo(QVector3D vector)
+{
+    lineTo(vector.x(), vector.y(), vector.z());
+}
+
+void QGLView::lineFromTo(float x1, float y1, float z1, float x2, float y2, float z2)
+{
+    lineFromTo(QVector3D(x1, y1, z1), QVector3D(x2, y2, z2));
+}
+
+void QGLView::lineFromTo(QVector3D startPosition, QVector3D endPosition)
+{
+   QVector3D vector = endPosition - startPosition;
+   m_lineParameters.vector.x = vector.x();
+   m_lineParameters.vector.y = vector.y();
+   m_lineParameters.vector.z = vector.z();
+
+   m_lineParameters.modelMatrix.translate(startPosition);
+   m_lineParametersList.append(m_lineParameters);
+   resetTransformations();
+}
+
+void QGLView::text(QString text, TextAlignment alignment ,QFont font)
 {
     QStaticText staticText(text);
     font.setPixelSize(100);
@@ -935,6 +1026,7 @@ void QGLView::text(QString text, QFont font)
     }
 
     m_textParameters.staticText = staticText;
+    m_textParameters.alignment = alignment;
 
     m_textParametersList.append(m_textParameters);
     resetTransformations();
@@ -964,19 +1056,13 @@ void QGLView::endUnion()
 
 void QGLView::paint()
 {
-    if (!m_modelProgram) {
+    if (!m_initialized) {
         setupShaders();
         setupWindow();
         setupVBOs();
         setupStack();
+        m_initialized = true;
     }
-    //glViewport(0, 0, w, h);
-
-    m_projectionMatrix = m_camera->projectionMatrix(m_projectionAspectRatio);//QMatrix4x4();
-    //m_projectionMatrix.frustum(-3, 3, -matrixH/2, matrixH/2, 4, 10);
-
-    m_viewMatrix = m_camera->modelViewMatrix();//QMatrix4x4();
-   // m_viewMatrix.translate(0,0,0);
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -993,13 +1079,6 @@ void QGLView::paint()
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glEnable(GL_BLEND);
 
-    clearLines();
-    clearModels();
-    clearTexts();
-    resetTransformations(true); // reset all tranformations for a clean start
-
-    paintItems();
-
     m_lineProgram->bind();
     m_lineProgram->setUniformValue(m_lineProjectionMatrixLocation, m_projectionMatrix);
     m_lineProgram->setUniformValue(m_lineViewMatrixLocation, m_viewMatrix);
@@ -1012,20 +1091,14 @@ void QGLView::paint()
     drawTexts();
     m_textProgram->release();
 
-    m_light.enabled = true;
-    m_light.ambientCoefficient = 0.1;
-    m_light.attenuation = 0.01;
-    m_light.intensities = QVector3D(3.0, 3.0, 10.0 );
-    m_light.position = QVector3D(1.0, 1.0, 5);
-
     m_modelProgram->bind();
     m_modelProgram->setUniformValue(m_projectionMatrixLocation, m_projectionMatrix);
     m_modelProgram->setUniformValue(m_viewMatrixLocation, m_viewMatrix);
-    m_modelProgram->setUniformValue(m_lightPositionLocation, m_light.position);
-    m_modelProgram->setUniformValue(m_lightIntensitiesLocation, m_light.intensities);
-    m_modelProgram->setUniformValue(m_lightAttenuationLocation, m_light.attenuation);
-    m_modelProgram->setUniformValue(m_lightAmbientCoefficientLocation, m_light.ambientCoefficient);
-    m_modelProgram->setUniformValue(m_lightEnabledLocation, m_light.enabled);
+    m_modelProgram->setUniformValue(m_lightPositionLocation, m_light->position());
+    m_modelProgram->setUniformValue(m_lightIntensitiesLocation, m_light->intensities());
+    m_modelProgram->setUniformValue(m_lightAttenuationLocation, m_light->attenuation());
+    m_modelProgram->setUniformValue(m_lightAmbientCoefficientLocation, m_light->ambientCoefficient());
+    m_modelProgram->setUniformValue(m_lightEnabledLocation, m_light->enabled());
     m_modelProgram->setUniformValue(m_selectionModeLocation, false);
     drawModels();
     m_modelProgram->release();

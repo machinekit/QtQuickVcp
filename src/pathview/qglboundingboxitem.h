@@ -1,22 +1,22 @@
-#ifndef QGLSPHEREITEM_H
-#define QGLSPHEREITEM_H
+#ifndef QGLBOUNDINGBOXITEM_H
+#define QGLBOUNDINGBOXITEM_H
 
 #include "qglitem.h"
 
-class QGLSphereItem : public QGLItem
+class QGLBoundingBoxItem : public QGLItem
 {
     Q_OBJECT
-    Q_PROPERTY(float radius READ radius WRITE setRadius NOTIFY radiusChanged)
+    Q_PROPERTY(QVector3D size READ size WRITE setSize NOTIFY sizeChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
 
 public:
-    explicit QGLSphereItem(QQuickItem *parent = 0);
+    explicit QGLBoundingBoxItem(QQuickItem *parent = 0);
 
     virtual void paint(QGLView *glView);
 
-    float radius() const
+    QVector3D size() const
     {
-        return m_radius;
+        return m_size;
     }
 
     QColor color() const
@@ -25,16 +25,15 @@ public:
     }
 
 signals:
-    void radiusChanged(float arg);
-
+    void sizeChanged(QVector3D arg);
     void colorChanged(QColor arg);
 
 public slots:
-    void setRadius(float arg)
+    void setSize(QVector3D arg)
     {
-        if (m_radius != arg) {
-            m_radius = arg;
-            emit radiusChanged(arg);
+        if (m_size != arg) {
+            m_size = arg;
+            emit sizeChanged(arg);
         }
     }
 
@@ -47,9 +46,8 @@ public slots:
     }
 
 private:
-    float m_radius;
-
+    QVector3D m_size;
     QColor m_color;
 };
 
-#endif // QGLSPHEREITEM_H
+#endif // QGLBOUNDINGBOXITEM_H
