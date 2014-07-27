@@ -19,49 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-/****************************************************************************
-**
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
-**
-** This file is part of the demonstration applications of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-**
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
-** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
 
-#ifndef SQUIRCLE_H
-#define SQUIRCLE_H
+#ifndef QGLVIEW_H
+#define QGLVIEW_H
 
 #include <QtQuick/QQuickItem>
 #include <QtGui/QOpenGLShaderProgram>
@@ -72,6 +32,7 @@
 #include <QStaticText>
 #include <QPainter>
 #include <QQmlListProperty>
+#include <QSignalMapper>
 #include "qglitem.h"
 #include "qglcamera.h"
 #include "qgllight.h"
@@ -86,7 +47,7 @@ class QGLView : public QQuickItem
     Q_PROPERTY(QGLCamera *camera READ camera WRITE setCamera NOTIFY cameraChanged)
     Q_PROPERTY(QGLLight *light READ light WRITE setLight NOTIFY lightChanged)
     Q_PROPERTY(QQmlListProperty<QGLItem> glItems READ glItems NOTIFY glItemsChanged)
-    Q_ENUMS(ModelType TextAlignment)
+    Q_ENUMS(TextAlignment)
 
 public:
     QGLView();
@@ -95,6 +56,16 @@ public:
         AlignLeft = 0,
         AlignCenter = 1,
         AlignRight = 2
+    };
+
+    enum ModelType {
+        NoType = 0,
+        Cube = 1,
+        Cylinder = 2,
+        Sphere = 3,
+        Cone = 4,
+        Text = 5,
+        Line = 6
     };
 
     typedef struct {
@@ -118,50 +89,125 @@ public:
         Vector2D texCoordinate;
     } TextVertex;
 
-    typedef struct {
-        QMatrix4x4 modelMatrix;
-        QColor color;
-        quint32 id;
-    } ModelParameters;
+    class Parameters {
+    public:
+        Parameters():
+            id(0),
+            modelMatrix(QMatrix4x4()),
+            color(QColor(Qt::yellow)),
+            deleteFlag(false)
+        { }
 
-    typedef struct {
+        Parameters(Parameters *parameters)
+        {
+            id = parameters->id;
+            modelMatrix = parameters->modelMatrix;
+            color = parameters->color;
+            deleteFlag = parameters->deleteFlag;
+        }
+
+        quint32 id;
         QMatrix4x4 modelMatrix;
-        Vector3D vector;
         QColor color;
+        bool deleteFlag;    // marks the parameter to delete
+    };
+
+    class LineParameters: public Parameters {
+    public:
+        LineParameters():
+            Parameters(),
+            width(1.0),
+            stipple(false),
+            stippleLength(1.0)
+        {
+            vector.x = 0.0;
+            vector.x = 0.0;
+            vector.z = 0.0;
+            color = QColor(Qt::red);
+        }
+
+        LineParameters(LineParameters *parameters):
+            Parameters(parameters)
+        {
+            vector.x = parameters->vector.x;
+            vector.y = parameters->vector.y;
+            vector.z = parameters->vector.z;
+            width = parameters->width;
+            stipple = parameters->stipple;
+            stippleLength = parameters->stippleLength;
+        }
+
+        Vector3D vector;
         GLfloat width;
         bool stipple;
         GLfloat stippleLength;
-    } LineParameters;
-
-    typedef struct {
-        QMatrix4x4 modelMatrix;
-        QStaticText staticText;
-        QColor color;
-        TextAlignment alignment;
-    } TextParameters;
-
-    typedef struct {
-        QVector3D position;
-        QVector3D intensities;
-        GLfloat attenuation;
-        GLfloat ambientCoefficient;
-        GLboolean enabled;
-    } Light;
-
-    enum ModelType {
-        NoType = 0,
-        Cube = 1,
-        Cylinder = 2,
-        Sphere = 3,
-        Cone = 4,
-        Text = 5,
-        Line = 6
     };
+
+    class TextParameters: public Parameters {
+    public:
+        TextParameters():
+            Parameters(),
+            staticText(QStaticText()),
+            alignment(AlignLeft)
+        {
+            color = QColor(Qt::white);
+        }
+
+        TextParameters(TextParameters *parameters):
+            Parameters(parameters)
+        {
+            staticText = parameters->staticText;
+            alignment = parameters->alignment;
+        }
+
+        QStaticText staticText;
+        TextAlignment alignment;
+    };
+
+    typedef struct {
+        ModelType type;
+        Parameters *parameters;
+    } Drawable;
 
     qreal t() const { return m_t; }
     void setT(qreal t);
 
     Q_INVOKABLE void readPixel(int x, int y);
+
+    QGLCamera* camera()
+    {
+        return m_camera;
+    }
+
+    QGLLight * light() const
+    {
+        return m_light;
+    }
+
+    QQmlListProperty<QGLItem> glItems();
+    int glItemCount() const;
+    QGLItem *glItem(int index) const;
+
+signals:
+    void tChanged();
+    void cameraChanged(QGLCamera *arg);
+    void glItemsChanged(QQmlListProperty<QGLItem> arg);
+    void lightChanged(QGLLight * arg);
+    void initialized();
+
+public slots:
+    void paint();
+    void cleanup();
+    void sync();
+
+    // item handling
+    void addGlItem(QGLItem *glItem);
+    void removeGlItem(int index);
+    void removeGlItem(QGLItem *glItem);
+    void clearGlItems();
+
+    // removing drawables
+    void reset();
 
     // model and line transformation functions
     void color(float r, float g, float b, float a);
@@ -198,39 +244,8 @@ public:
     void text(QString text, TextAlignment alignment = AlignLeft, QFont font = QFont());
 
     // grouping functions
-    void beginUnion(quint32 id);
+    void beginUnion();
     void endUnion();
-
-    QGLCamera* camera()
-    {
-        return m_camera;
-    }
-
-    QGLLight * light() const
-    {
-        return m_light;
-    }
-
-    QQmlListProperty<QGLItem> glItems();
-    int glItemCount() const;
-    QGLItem *glItem(int index) const;
-
-signals:
-    void tChanged();
-    void cameraChanged(QGLCamera *arg);
-    void glItemsChanged(QQmlListProperty<QGLItem> arg);
-    void lightChanged(QGLLight * arg);
-
-public slots:
-    void paint();
-    void cleanup();
-    void sync();
-
-    // item handling
-    void addGlItem(QGLItem *glItem);
-    void removeGlItem(int index);
-    void removeGlItem(QGLItem *glItem);
-    void clearGlItems();
 
     void setCamera(QGLCamera *arg)
     {
@@ -260,6 +275,7 @@ private slots:
     void updateViewMatrix();
     void updateProjectionMatrix();
     void updateItems();
+    void updateItem(QObject *item);
     void updateChildren();
 
 private:
@@ -318,29 +334,31 @@ private:
     qreal m_thread_t;
 
     // generic map of drawable items
-    QMap<ModelType, QList<void*>* > m_drawableMap;
-
+    QMap<ModelType, QList<Parameters*>* > m_drawableMap;
 
     // model stack
-    ModelParameters m_modelParameters;
-    QStack<ModelParameters> m_modelParametersStack;
-    QMap<ModelType, QList<ModelParameters>* > m_modelMap;
+    Parameters *m_modelParameters;
+    QStack<Parameters*> m_modelParametersStack;
 
     // line stack
-    LineParameters m_lineParameters;
-    QStack<LineParameters> m_lineParametersStack;
-    QList<LineParameters> m_lineParametersList;
+    LineParameters *m_lineParameters;
+    QStack<LineParameters*> m_lineParametersStack;
 
     // text stack
-    TextParameters m_textParameters;
-    QStack<TextParameters> m_textParametersStack;
-    QList<TextParameters> m_textParametersList;
+    TextParameters *m_textParameters;
+    QStack<TextParameters*> m_textParametersStack;
     QList<QStaticText> m_textTextList;
     QList<QOpenGLTexture*> m_textTextureList;
     QList<float> m_textAspectRatioList;
 
     //GL items
+    int m_currentModelId;
+    int m_continousModelId;
     QList<QGLItem*> m_glItems;
+    QMap<QGLItem*, int> m_modelIdMap;
+    QMap<QGLItem*, QList<Drawable>* > m_drawableListMap;
+    QList<Drawable> *m_currentDrawableList;
+    QSignalMapper *m_propertySignalMapper;
 
     // camera
     QGLCamera *m_camera;
@@ -348,19 +366,28 @@ private:
     // light
     QGLLight *m_light;
 
-    void clearModels(ModelType type = NoType);
-    void drawModels(ModelType type = NoType);
+    void addDrawableList(ModelType type);
+    QList<Parameters*>* getDrawableList(ModelType type);
+    Drawable addDrawableData(const LineParameters & parameters);
+    Drawable addDrawableData(const TextParameters & parameters);
+    Drawable addDrawableData(ModelType type, const Parameters & parameters);
+
+    void drawDrawables(ModelType type = NoType);
+    void clearDrawables();
+    void cleanupDrawables(ModelType type);
+    void removeDrawables(QList<Drawable> *drawableList);
+
     void drawModelVertices(ModelType type);
 
-    void clearLines();
     void drawLines();
 
-    void clearTexts();
     void drawTexts();
     void generateTextTexture(const QStaticText &staticText, QFont font);
     void clearTextTextures();
 
-    void paintItems();
+    void paintGLItems();
+    void clearGLItem(QGLItem *item);
+    void paintGLItem(QGLItem *item);
 
     // setup functions
     void initializeVertexBuffer(ModelType type, const QVector<ModelVertex> & vertices);
@@ -376,4 +403,4 @@ private:
     void setupStack();
 };
 
-#endif // SQUIRCLE_H
+#endif // QGLVIEW_H

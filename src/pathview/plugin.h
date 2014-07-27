@@ -22,7 +22,8 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
-#include <QQmlExtensionPlugin>
+#include <QtQml>
+#include <QFile>
 
 class MachinekitPathViewPlugin : public QQmlExtensionPlugin
 {
@@ -31,6 +32,10 @@ class MachinekitPathViewPlugin : public QQmlExtensionPlugin
 
 public:
     void registerTypes(const char *uri);
+    void initializeEngine(QQmlEngine *engine, const char *uri);
+private:
+    QString fileLocation() const;
+    bool isLoadedFromResource() const;
 };
 
 #endif // PLUGIN_H

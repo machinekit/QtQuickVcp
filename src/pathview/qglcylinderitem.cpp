@@ -8,13 +8,13 @@ QGLCylinderItem::QGLCylinderItem(QQuickItem *parent) :
     m_cone(false)
 {
     connect(this, SIGNAL(radiusChanged(float)),
-            this, SIGNAL(propertyChanged()));
+            this, SIGNAL(needsUpdate()));
     connect(this, SIGNAL(heightChanged()),
-            this, SIGNAL(propertyChanged()));
+            this, SIGNAL(needsUpdate()));
     connect(this, SIGNAL(colorChanged(QColor)),
-            this, SIGNAL(propertyChanged()));
+            this, SIGNAL(needsUpdate()));
     connect(this, SIGNAL(coneChanged(bool)),
-            this, SIGNAL(propertyChanged()));
+            this, SIGNAL(needsUpdate()));
 }
 
 void QGLCylinderItem::paint(QGLView *glView)
@@ -23,7 +23,8 @@ void QGLCylinderItem::paint(QGLView *glView)
     glView->rotate(rotation());
     glView->scale(scale());
 
-    glView->beginUnion(modelId());
+    glView->reset();
+    glView->beginUnion();
     glView->color(m_color);
     if (!m_cone)
     {

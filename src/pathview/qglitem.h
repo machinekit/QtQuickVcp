@@ -9,7 +9,6 @@ class QGLView;
 class QGLItem : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY(quint32 modelId READ modelId WRITE setModelId NOTIFY modelIdChanged)
     Q_PROPERTY(QVector3D position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QVector3D scale READ scale WRITE setScale NOTIFY scaleChanged)
     Q_PROPERTY(QQuaternion rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
@@ -20,11 +19,6 @@ public:
     explicit QGLItem(QQuickItem *parent = 0);
 
     virtual void paint(QGLView *glView) = 0; // must be implemented
-
-    quint32 modelId() const
-    {
-        return m_modelId;
-    }
 
     QVector3D position() const
     {
@@ -52,7 +46,7 @@ public:
     }
 
 signals:
-    void propertyChanged();
+    void needsUpdate();
     void modelIdChanged(quint32 arg);
     void positionChanged(QVector3D arg);
     void scaleChanged(QVector3D arg);
@@ -61,14 +55,7 @@ signals:
     void rotationAxisChanged(QVector3D arg);
 
 public slots:
-
-    void setModelId(quint32 arg)
-    {
-        if (m_modelId != arg) {
-            m_modelId = arg;
-            emit modelIdChanged(arg);
-        }
-    }
+    void requestPaint();
 
     void setPosition(float x, float y, float z)
     {
@@ -133,7 +120,6 @@ public slots:
     }
 
 private:
-    quint32 m_modelId;
     QVector3D m_position;
     QVector3D m_scale;
     QQuaternion m_rotation;

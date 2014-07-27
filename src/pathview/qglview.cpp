@@ -33,17 +33,18 @@ QGLView::QGLView()
     , m_modelProgram(0)
     , m_lineProgram(0)
     , m_textProgram(0)
-    , m_t(0)
-    , m_thread_t(0)
     , m_projectionAspectRatio(1.0)
+    , m_continousModelId(0)
+    , m_propertySignalMapper(new QSignalMapper(this))
     , m_camera(new QGLCamera(this))
     , m_light(new QGLLight(this))
 {
+    setFlag(QQuickItem::ItemHasContents, true);
+
     connect(this, SIGNAL(windowChanged(QQuickWindow*)), this, SLOT(handleWindowChanged(QQuickWindow*)));
     connect(this, SIGNAL(childrenChanged()), this, SLOT(updateChildren()));
-    connect(this, SIGNAL(glItemsChanged(QQmlListProperty<QGLItem>)), this, SLOT(updateItems()));
-
-    setFlag(QQuickItem::ItemHasContents, true);
+    connect(m_propertySignalMapper, SIGNAL(mapped(QObject*)), this, SLOT(updateItem(QObject*)));
+    connect(this, SIGNAL(initialized()), this, SLOT(updateItems()), Qt::QueuedConnection);
 }
 
 void QGLView::setT(qreal t)
@@ -113,69 +114,192 @@ void QGLView::updateItems()
         return;
     }
 
-    clearLines();
-    clearModels();
-    clearTexts();
-    resetTransformations(true); // reset all tranformations for a clean start
+    paintGLItems();
+    update();
+}
 
-    paintItems();
+void QGLView::updateItem(QObject *item)
+{
+    if (!m_initialized)
+    {
+        return;
+    }
+
+    paintGLItem(static_cast<QGLItem*>(item));
     update();
 }
 
 void QGLView::updateChildren()
 {
-    foreach (QGLItem *item, m_glItems)
-    {
-        disconnect(item, SIGNAL(propertyChanged()),
-                   this, SLOT(update()));
-    }
-    m_glItems.clear();
-
+    QList<QGLItem*> newItems;
     QList<QQuickItem*> objectChildren = childItems();
     QGLItem* glItem;
+
+    // get all GL items
     for (int i = 0; i < objectChildren.size(); ++i)
     {
-
         glItem = qobject_cast<QGLItem*>(objectChildren.at(i));
         if (glItem != NULL)
         {
-            addGlItem(glItem);
+            newItems.append(glItem);
         }
     }
 
-    emit glItemsChanged(glItems());
+    // remove all remvoed GL items
+    for (int i = (m_glItems.count()-1); i >= 0; i--)
+    {
+        if (!newItems.contains(m_glItems.at(i)))
+        {
+            removeGlItem(i);
+        }
+    }
+
+    // add all new GL items
+    for (int i = 0; i < newItems.count(); ++i)
+    {
+        if (!m_glItems.contains(newItems.at(i)))
+        {
+            addGlItem(newItems.at(i));
+        }
+    }
 }
 
-void QGLView::clearModels(QGLView::ModelType type)
+void QGLView::addDrawableList(QGLView::ModelType type)
+{
+    QList<Parameters*> *parametersList = new QList<Parameters*>();
+    m_drawableMap.insert(type, parametersList);
+}
+
+QList<QGLView::Parameters *> *QGLView::getDrawableList(QGLView::ModelType type)
+{
+    return m_drawableMap.value(type);
+}
+
+QGLView::Drawable QGLView::addDrawableData(const QGLView::LineParameters &parameters)
+{
+    // add parameter
+    QList<Parameters*> *parametersList = m_drawableMap.value(Line);
+    LineParameters *lineParameters = new LineParameters(parameters);
+    lineParameters->id = m_currentModelId;
+    parametersList->append(lineParameters);
+
+    // add drawable to list
+    Drawable drawable;
+    drawable.type = Line;
+    drawable.parameters = lineParameters;
+    m_currentDrawableList->append(drawable);
+
+    return drawable;
+}
+
+QGLView::Drawable QGLView::addDrawableData(const QGLView::TextParameters &parameters)
+{
+    QList<Parameters*> *parametersList = m_drawableMap.value(Text);
+    TextParameters *textParameters = new TextParameters(parameters);
+    textParameters->id = m_currentModelId;
+    parametersList->append(textParameters);
+
+    Drawable drawable;
+    drawable.type = Text;
+    drawable.parameters = textParameters;
+    m_currentDrawableList->append(drawable);
+
+    return drawable;
+}
+
+QGLView::Drawable QGLView::addDrawableData(QGLView::ModelType type, const QGLView::Parameters &parameters)
+{
+    QList<Parameters*> *parametersList = m_drawableMap.value(type);
+    Parameters *modelParameters = new Parameters(parameters);
+    modelParameters->id = m_currentModelId;
+    parametersList->append(modelParameters);
+
+    Drawable drawable;
+    drawable.type = type;
+    drawable.parameters = modelParameters;
+    m_currentDrawableList->append(drawable);
+
+    return drawable;
+}
+
+void QGLView::drawDrawables(QGLView::ModelType type)
 {
     if (type == NoType)
     {
-        QMapIterator<ModelType, QList<ModelParameters>* > i(m_modelMap);
+        QMapIterator<ModelType, QList<Parameters*>* > i(m_drawableMap);
         while (i.hasNext()) {
             i.next();
-            i.value()->clear();
+            drawDrawables(i.key());
         }
     }
     else
     {
-        m_modelMap[type]->clear();
+        switch (type)
+        {
+        case Cube:
+        case Cylinder:
+        case Cone:
+        case Sphere:
+            drawModelVertices(type);
+            break;
+        case Text:
+            drawTexts();
+            break;
+        case Line:
+            drawLines();
+            break;
+        default:
+            return;
+        }
     }
 }
 
-void QGLView::drawModels(QGLView::ModelType type)
+void QGLView::clearDrawables()
 {
-    if (type == NoType)
-    {
-        QMapIterator<ModelType, QList<ModelParameters>* > i(m_modelMap);
-        while (i.hasNext()) {
-            i.next();
-            drawModelVertices(i.key());
+    QMapIterator<ModelType, QList<Parameters*>* > i(m_drawableMap);
+    while (i.hasNext()) {
+        i.next();
+        QList<Parameters*> * parametersList = i.value();
+        for (int j = 0; j < i.value()->size(); ++j)
+        {
+            Parameters *parameters = parametersList->takeAt(j);
+            delete parameters;
         }
     }
-    else
+}
+
+void QGLView::cleanupDrawables(ModelType type)
+{
+    QList<Parameters*> * parametersList = m_drawableMap.value(type);
+
+    for (int i = (parametersList->size()-1); i >= 0; i--)
     {
-        drawModelVertices(type);
+        Parameters *parameters = parametersList->at(i);
+        if (parameters->deleteFlag)
+        {
+            delete parametersList->takeAt(i);
+        }
     }
+}
+
+void QGLView::removeDrawables(QList<QGLView::Drawable> *drawableList)
+{
+    QList<ModelType> types;
+
+    for (int i = (drawableList->size() - 1); i >= 0; i--)
+    {
+        Drawable drawable = drawableList->at(i);
+        drawable.parameters->deleteFlag = true; // mark for deletion
+        if (!types.contains(drawable.type)) {
+            types.append(drawable.type);
+        }
+    }
+
+    for (int i = 0; i < types.size(); ++i) {
+        cleanupDrawables(types.at(i));
+    }
+
+    drawableList->clear();
 }
 
 void QGLView::initializeVertexBuffer(ModelType type, const QVector<ModelVertex> &vertices)
@@ -217,6 +341,8 @@ void QGLView::setupLineVertexBuffer()
     m_lineVertexBuffer->bind();
     m_lineVertexBuffer->allocate(2*sizeof(Vector3D));
     m_lineVertexBuffer->release();
+
+    addDrawableList(Line);
 }
 
 void QGLView::setupTextVertexBuffer()
@@ -242,6 +368,8 @@ void QGLView::setupTextVertexBuffer()
     m_textVertexBuffer->bind();
     m_textVertexBuffer->allocate(vertices, sizeof(vertices));
     m_textVertexBuffer->release();
+
+    addDrawableList(Text);
 }
 
 void QGLView::setupCube()
@@ -298,233 +426,7 @@ void QGLView::setupCube()
 
     initializeVertexBuffer(Cube, vertices, sizeof(vertices));
 
-    QList<ModelParameters> *modelParametersList = new QList<ModelParameters>();
-    m_modelMap.insert(Cube, modelParametersList);
-}
-
-void QGLView::drawModelVertices(ModelType type)
-{
-    QOpenGLBuffer *vertexBuffer = m_vertexBufferMap[type];
-    QList<ModelParameters> *modelParametersList = m_modelMap[type];
-
-    if (modelParametersList->isEmpty())
-    {
-        return;
-    }
-
-    vertexBuffer->bind();
-    m_modelProgram->enableAttributeArray(m_positionLocation);
-    m_modelProgram->enableAttributeArray(m_normalLocation);
-    m_modelProgram->setAttributeBuffer(m_positionLocation, GL_FLOAT, 0, 3, sizeof(ModelVertex));
-    m_modelProgram->setAttributeBuffer(m_normalLocation, GL_FLOAT, 3*sizeof(GLfloat), 3, sizeof(ModelVertex));
-
-    for (int i = 0; i < modelParametersList->size(); ++i)
-    {
-        ModelParameters modelParameters = modelParametersList->at(i);
-        m_modelProgram->setUniformValue(m_colorLocation, modelParameters.color);
-        m_modelProgram->setUniformValue(m_modelMatrixLocation, modelParameters.modelMatrix);
-        m_modelProgram->setUniformValue(m_idColorLocation, QColor(0xFF000000u + modelParameters.id));    // color for selection mode
-        glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size()/sizeof(ModelVertex));
-    }
-
-    m_modelProgram->disableAttributeArray(m_positionLocation);
-    m_modelProgram->disableAttributeArray(m_normalLocation);
-    vertexBuffer->release();
-}
-
-void QGLView::clearLines()
-{
-    m_lineParametersList.clear();
-
-}
-
-void QGLView::drawLines()
-{
-    Vector3D vertices[2] = {{0.0f, 0.0f, 0.0f},
-                            {0.0f, 0.0f, 0.0f}};
-
-    if (m_lineParametersList.isEmpty())
-    {
-        return;
-    }
-
-    m_lineVertexBuffer->bind();
-    m_lineProgram->enableAttributeArray(m_linePositionLocation);
-    m_lineProgram->setAttributeBuffer(m_linePositionLocation, GL_FLOAT, 0, 3);
-
-    for (int i = 0; i < m_lineParametersList.size(); ++i)
-    {
-        LineParameters lineParameters = m_lineParametersList.at(i);
-        vertices[1] = lineParameters.vector;
-        m_lineVertexBuffer->write(0, vertices, 2*sizeof(Vector3D));
-        m_lineProgram->setUniformValue(m_lineColorLocation, lineParameters.color);
-        m_lineProgram->setUniformValue(m_lineModelMatrixLocation, lineParameters.modelMatrix);
-        m_lineProgram->setUniformValue(m_lineStippleLocation, lineParameters.stipple);
-        m_lineProgram->setUniformValue(m_lineStippleLengthLocation, lineParameters.stippleLength);
-        glLineWidth(lineParameters.width);
-        glDrawArrays(GL_LINE_STRIP, 0, 2);
-    }
-
-    m_lineProgram->disableAttributeArray(m_linePositionLocation);
-    m_lineVertexBuffer->release();
-}
-
-void QGLView::clearTexts()
-{
-    m_textParametersList.clear();
-}
-
-void QGLView::drawTexts()
-{
-    if (m_textParametersList.isEmpty())
-    {
-        return;
-    }
-
-    m_textVertexBuffer->bind();
-    m_textProgram->enableAttributeArray(m_textPositionLocation);
-    m_textProgram->enableAttributeArray(m_textTexCoordinateLocation);
-    m_textProgram->setAttributeBuffer(m_textPositionLocation, GL_FLOAT, 0, 3, sizeof(TextVertex));
-    m_textProgram->setAttributeBuffer(m_textTexCoordinateLocation, GL_FLOAT, 3*sizeof(GLfloat), 2, sizeof(TextVertex));
-
-    for (int i = 0; i < m_textParametersList.size(); ++i)
-    {
-        TextParameters textParameters = m_textParametersList.at(i);
-        QStaticText staticText = textParameters.staticText;
-        int textureIndex = m_textTextList.indexOf(staticText);
-        QOpenGLTexture *texture = m_textTextureList.at(textureIndex);
-        float aspectRatio = m_textAspectRatioList.at(textureIndex);
-
-        m_textProgram->setUniformValue(m_textAspectRatioLocation, aspectRatio);
-        m_textProgram->setUniformValue(m_textAlignmentLocation, (GLint)textParameters.alignment);
-        m_textProgram->setUniformValue(m_textColorLocation, textParameters.color);
-        m_textProgram->setUniformValue(m_textModelMatrixLocation, textParameters.modelMatrix);
-        m_textProgram->setUniformValue(m_textTextureLocation, texture->textureId());
-        texture->bind(texture->textureId());
-        glDrawArrays(GL_TRIANGLES, 0, m_textVertexBuffer->size()/sizeof(TextVertex));
-        texture->release();
-    }
-
-    m_textProgram->disableAttributeArray(m_textPositionLocation);
-    m_textProgram->disableAttributeArray(m_textTexCoordinateLocation);
-    m_textVertexBuffer->release();
-}
-
-void QGLView::generateTextTexture(const QStaticText &staticText, QFont font)
-{
-    if (m_textTextureList.size() > 100) // maximum of 100 rendered texts TODO: make parameter
-    {
-        clearTextTextures();
-    }
-
-    QPixmap pixmap(QSize(qCeil(staticText.size().width()), qCeil(staticText.size().height())));
-    pixmap.fill(QColor(Qt::transparent));
-
-    QPainter painter(&pixmap);
-    painter.setPen(Qt::white);
-    painter.setFont(font);
-    painter.drawStaticText(0, 0, staticText);
-
-    QOpenGLTexture *texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-    texture->create();
-    texture->setMinificationFilter(QOpenGLTexture::Nearest);
-    texture->setMagnificationFilter(QOpenGLTexture::Nearest);
-    texture->setData(pixmap.toImage());
-
-    float aspectRatio = staticText.size().width()/staticText.size().height();
-
-    m_textTextList.append(staticText);
-    m_textTextureList.append(texture);
-    m_textAspectRatioList.append(aspectRatio);
-}
-
-void QGLView::clearTextTextures()
-{
-    QList<int> usedIndexes;
-
-    // search for indexes still in use
-    for (int i = 0; i < m_textParametersList.size(); ++i)
-    {
-        TextParameters textParameters = m_textParametersList.at(i);
-
-        if (m_textTextList.contains(textParameters.staticText))
-        {
-            usedIndexes.append(i);
-        }
-    }
-
-    // remove all textures that are not in use anymore
-    for (int i = (m_textTextureList.size()-1); i >= 0; i--)
-    {
-        if (!usedIndexes.contains(i))
-        {
-            m_textTextList.removeAt(i);
-            m_textAspectRatioList.removeAt(i);
-            m_textTextureList.at(i)->destroy();
-            delete m_textTextureList.at(i);
-            m_textTextureList.removeAt(i);
-        }
-    }
-}
-
-void QGLView::paintItems()
-{
-    for (int i = 0; i < m_glItems.size(); ++i)
-    {
-        if (m_glItems.at(i)->isVisible())
-            m_glItems.at(i)->paint(this);
-    }
-}
-
-void QGLView::addGlItem(QGLItem *item)
-{
-    m_glItems.append(item);
-    connect(item, SIGNAL(propertyChanged()),
-            this, SLOT(updateItems()));
-    emit glItemsChanged(glItems());
-}
-
-void QGLView::removeGlItem(int index)
-{
-    QGLItem *item = m_glItems.takeAt(index);
-    disconnect(item, SIGNAL(propertyChanged()),
-               this, SLOT(updateItems()));
-    emit glItemsChanged(glItems());
-}
-
-void QGLView::removeGlItem(QGLItem *item)
-{
-    for (int i = 0; i < m_glItems.size(); ++i)
-    {
-        if (m_glItems.at(i) == item)
-        {
-            QGLItem *item = m_glItems.takeAt(i);
-            disconnect(item, SIGNAL(propertyChanged()),
-                       this, SLOT(updateItems()));
-            emit glItemsChanged(glItems());
-            return;
-        }
-    }
-}
-
-void QGLView::clearGlItems()
-{
-    m_glItems.clear();
-}
-
-QQmlListProperty<QGLItem> QGLView::glItems()
-{
-    return QQmlListProperty<QGLItem>(this, m_glItems);
-}
-
-int QGLView::glItemCount() const
-{
-    return m_glItems.count();
-}
-
-QGLItem *QGLView::glItem(int index) const
-{
-    return m_glItems.at(index);
+    addDrawableList(Cube);
 }
 
 void QGLView::setupShaders()
@@ -712,8 +614,7 @@ void QGLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, 
 
     initializeVertexBuffer(type, vertices);
 
-    QList<ModelParameters> *modelParametersList = new QList<ModelParameters>();
-    m_modelMap.insert(type, modelParametersList);
+    addDrawableList(type);
 }
 
 void QGLView::setupSphere(int detail)
@@ -768,47 +669,276 @@ void QGLView::setupSphere(int detail)
 
     initializeVertexBuffer(Sphere, vertices);
 
-    QList<ModelParameters> *modelParametersList = new QList<ModelParameters>();
-    m_modelMap.insert(Sphere, modelParametersList);
+    addDrawableList(Sphere);
 }
 
 void QGLView::setupStack()
 {
-    ModelParameters defaultModelParameters;
+    m_modelParametersStack.push(new Parameters());
+    m_modelParameters = new Parameters();
 
-    defaultModelParameters.modelMatrix = QMatrix4x4();
-    defaultModelParameters.color = QColor(Qt::yellow);
-    defaultModelParameters.id = 0;
+    m_lineParametersStack.push(new LineParameters());
+    m_lineParameters = new LineParameters();
 
-    m_modelParametersStack.clear();
-    m_modelParametersStack.push(defaultModelParameters);
-    m_modelParameters = defaultModelParameters;
+    m_textParametersStack.push(new TextParameters());
+    m_textParameters = new TextParameters();
+}
 
-    LineParameters defaultLineParameters;
+void QGLView::drawModelVertices(ModelType type)
+{
+    QOpenGLBuffer *vertexBuffer = m_vertexBufferMap[type];
+    QList<Parameters*> *modelParametersList = getDrawableList(type);
 
-    defaultLineParameters.modelMatrix = QMatrix4x4();
-    defaultLineParameters.color = QColor(Qt::red);
-    defaultLineParameters.stipple = false;
-    defaultLineParameters.stippleLength = 5;
-    defaultLineParameters.width = 1;
-    defaultLineParameters.vector.x = 0.0;
-    defaultLineParameters.vector.y = 0.0;
-    defaultLineParameters.vector.z = 0.0;
+    if (modelParametersList->isEmpty())
+    {
+        return;
+    }
 
-    m_lineParametersStack.clear();
-    m_lineParametersStack.push(defaultLineParameters);
-    m_lineParameters = defaultLineParameters;
+    vertexBuffer->bind();
+    m_modelProgram->enableAttributeArray(m_positionLocation);
+    m_modelProgram->enableAttributeArray(m_normalLocation);
+    m_modelProgram->setAttributeBuffer(m_positionLocation, GL_FLOAT, 0, 3, sizeof(ModelVertex));
+    m_modelProgram->setAttributeBuffer(m_normalLocation, GL_FLOAT, 3*sizeof(GLfloat), 3, sizeof(ModelVertex));
 
-    TextParameters defaultTextParameters;
+    for (int i = 0; i < modelParametersList->size(); ++i)
+    {
+        Parameters *modelParameters = static_cast<Parameters*>(modelParametersList->at(i));
+        m_modelProgram->setUniformValue(m_colorLocation, modelParameters->color);
+        m_modelProgram->setUniformValue(m_modelMatrixLocation, modelParameters->modelMatrix);
+        m_modelProgram->setUniformValue(m_idColorLocation, QColor(0xFF000000u + modelParameters->id));    // color for selection mode
+        glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size()/sizeof(ModelVertex));
+    }
 
-    defaultTextParameters.modelMatrix = QMatrix4x4();
-    defaultTextParameters.color = QColor(Qt::white);
-    defaultTextParameters.staticText = QStaticText();
-    defaultTextParameters.alignment = AlignLeft;
+    m_modelProgram->disableAttributeArray(m_positionLocation);
+    m_modelProgram->disableAttributeArray(m_normalLocation);
+    vertexBuffer->release();
+}
 
-    m_textParametersStack.clear();
-    m_textParametersStack.push(defaultTextParameters);
-    m_textParameters = defaultTextParameters;
+void QGLView::drawLines()
+{
+    static Vector3D vertices[2] = {{0.0f, 0.0f, 0.0f},
+                            {0.0f, 0.0f, 0.0f}};
+    QList<Parameters*>* parametersList = getDrawableList(Line);
+
+    if (parametersList->isEmpty())
+    {
+        return;
+    }
+
+    m_lineVertexBuffer->bind();
+    m_lineProgram->enableAttributeArray(m_linePositionLocation);
+    m_lineProgram->setAttributeBuffer(m_linePositionLocation, GL_FLOAT, 0, 3);
+
+    for (int i = 0; i < parametersList->size(); ++i)
+    {
+        LineParameters *lineParameters = static_cast<LineParameters*>(parametersList->at(i));
+        vertices[1] = lineParameters->vector;
+        m_lineVertexBuffer->write(0, vertices, 2*sizeof(Vector3D));
+        m_lineProgram->setUniformValue(m_lineColorLocation, lineParameters->color);
+        m_lineProgram->setUniformValue(m_lineModelMatrixLocation, lineParameters->modelMatrix);
+        m_lineProgram->setUniformValue(m_lineStippleLocation, lineParameters->stipple);
+        m_lineProgram->setUniformValue(m_lineStippleLengthLocation, lineParameters->stippleLength);
+        glLineWidth(lineParameters->width);
+        glDrawArrays(GL_LINE_STRIP, 0, 2);
+    }
+
+    m_lineProgram->disableAttributeArray(m_linePositionLocation);
+    m_lineVertexBuffer->release();
+}
+
+void QGLView::drawTexts()
+{
+    QList<Parameters*>* parametersList = getDrawableList(Text);
+
+    if (parametersList->isEmpty())
+    {
+        return;
+    }
+
+    m_textVertexBuffer->bind();
+    m_textProgram->enableAttributeArray(m_textPositionLocation);
+    m_textProgram->enableAttributeArray(m_textTexCoordinateLocation);
+    m_textProgram->setAttributeBuffer(m_textPositionLocation, GL_FLOAT, 0, 3, sizeof(TextVertex));
+    m_textProgram->setAttributeBuffer(m_textTexCoordinateLocation, GL_FLOAT, 3*sizeof(GLfloat), 2, sizeof(TextVertex));
+
+    for (int i = 0; i < parametersList->size(); ++i)
+    {
+        TextParameters *textParameters = static_cast<TextParameters*>(parametersList->at(i));
+        QStaticText staticText = textParameters->staticText;
+        int textureIndex = m_textTextList.indexOf(staticText);
+        QOpenGLTexture *texture = m_textTextureList.at(textureIndex);
+        float aspectRatio = m_textAspectRatioList.at(textureIndex);
+
+        m_textProgram->setUniformValue(m_textAspectRatioLocation, aspectRatio);
+        m_textProgram->setUniformValue(m_textAlignmentLocation, (GLint)textParameters->alignment);
+        m_textProgram->setUniformValue(m_textColorLocation, textParameters->color);
+        m_textProgram->setUniformValue(m_textModelMatrixLocation, textParameters->modelMatrix);
+        m_textProgram->setUniformValue(m_textTextureLocation, texture->textureId());
+        texture->bind(texture->textureId());
+        glDrawArrays(GL_TRIANGLES, 0, m_textVertexBuffer->size()/sizeof(TextVertex));
+        texture->release();
+    }
+
+    m_textProgram->disableAttributeArray(m_textPositionLocation);
+    m_textProgram->disableAttributeArray(m_textTexCoordinateLocation);
+    m_textVertexBuffer->release();
+}
+
+void QGLView::generateTextTexture(const QStaticText &staticText, QFont font)
+{
+    if (m_textTextureList.size() > 100) // maximum of 100 rendered texts TODO: make parameter
+    {
+        clearTextTextures();
+    }
+
+    QPixmap pixmap(QSize(qCeil(staticText.size().width()), qCeil(staticText.size().height())));
+    pixmap.fill(QColor(Qt::transparent));
+
+    QPainter painter(&pixmap);
+    painter.setPen(Qt::white);
+    painter.setFont(font);
+    painter.drawStaticText(0, 0, staticText);
+
+    QOpenGLTexture *texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+    texture->create();
+    texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+    texture->setData(pixmap.toImage());
+
+    float aspectRatio = staticText.size().width()/staticText.size().height();
+
+    m_textTextList.append(staticText);
+    m_textTextureList.append(texture);
+    m_textAspectRatioList.append(aspectRatio);
+}
+
+void QGLView::clearTextTextures()
+{
+    QList<int> usedIndexes;
+    QList<Parameters*>* parametersList = getDrawableList(Text);
+
+
+    // search for indexes still in use
+    for (int i = 0; i < parametersList->size(); ++i)
+    {
+        TextParameters *textParameters = static_cast<TextParameters*>(parametersList->at(i));
+
+        if (m_textTextList.contains(textParameters->staticText))
+        {
+            usedIndexes.append(i);
+        }
+    }
+
+    // remove all textures that are not in use anymore
+    for (int i = (m_textTextureList.size()-1); i >= 0; i--)
+    {
+        if (!usedIndexes.contains(i))
+        {
+            m_textTextList.removeAt(i);
+            m_textAspectRatioList.removeAt(i);
+            m_textTextureList.at(i)->destroy();
+            delete m_textTextureList.at(i);
+            m_textTextureList.removeAt(i);
+        }
+    }
+}
+
+void QGLView::paintGLItems()
+{
+    for (int i = 0; i < m_glItems.size(); ++i)
+    {
+        paintGLItem(m_glItems.at(i));
+    }
+}
+
+void QGLView::clearGLItem(QGLItem *item)
+{
+    removeDrawables(m_drawableListMap.value(item));
+}
+
+void QGLView::paintGLItem(QGLItem *item)
+{
+    if (item->isVisible())
+    {
+        m_currentDrawableList = m_drawableListMap.value(item);
+        m_currentModelId = m_modelIdMap.value(item);
+        resetTransformations(true); // reset all tranformations for a clean start
+        item->paint(this);
+    }
+    else
+    {
+        removeDrawables(m_drawableListMap.value(item));     // if the item is not visible we remove all drawables
+    }
+}
+
+void QGLView::addGlItem(QGLItem *item)
+{
+    m_glItems.append(item);
+
+    QList<Drawable> *drawableList = new QList<Drawable>();
+    m_drawableListMap.insert(item, drawableList);
+    m_modelIdMap.insert(item, m_continousModelId++);    // add and increase the model id
+
+    if (m_initialized) {
+        paintGLItem(item);
+        update();
+    }
+
+    m_propertySignalMapper->setMapping(item, item);
+    connect(item, SIGNAL(needsUpdate()), m_propertySignalMapper, SLOT(map()));
+    emit glItemsChanged(glItems());
+}
+
+void QGLView::removeGlItem(int index)
+{
+    QGLItem *item = m_glItems.takeAt(index);
+
+    if (m_initialized) {
+        clearGLItem(item);
+        update();
+    }
+
+    delete m_drawableListMap.take(item);
+    m_modelIdMap.remove(item);
+
+    m_propertySignalMapper->removeMappings(item);
+    disconnect(item, SIGNAL(propertyChanged()), m_propertySignalMapper, SLOT(map()));
+    emit glItemsChanged(glItems());
+}
+
+void QGLView::removeGlItem(QGLItem *item)
+{
+    for (int i = 0; i < m_glItems.size(); ++i)
+    {
+        if (m_glItems.at(i) == item)
+        {
+            removeGlItem(i);
+            return;
+        }
+    }
+}
+
+void QGLView::clearGlItems()
+{
+    for (int i = (m_glItems.size()-1); i >= 0; i--)
+    {
+        removeGlItem(i);
+    }
+}
+
+QQmlListProperty<QGLItem> QGLView::glItems()
+{
+    return QQmlListProperty<QGLItem>(this, m_glItems);
+}
+
+int QGLView::glItemCount() const
+{
+    return m_glItems.count();
+}
+
+QGLItem *QGLView::glItem(int index) const
+{
+    return m_glItems.at(index);
 }
 
 void QGLView::color(float r, float g, float b, float a)
@@ -818,9 +948,9 @@ void QGLView::color(float r, float g, float b, float a)
 
 void QGLView::color(QColor color)
 {
-    m_modelParameters.color = color;
-    m_lineParameters.color = color;
-    m_textParameters.color = color;
+    m_modelParameters->color = color;
+    m_lineParameters->color = color;
+    m_textParameters->color = color;
 }
 
 void QGLView::translate(float x, float y, float z)
@@ -830,9 +960,9 @@ void QGLView::translate(float x, float y, float z)
 
 void QGLView::translate(QVector3D vector)
 {
-    m_modelParameters.modelMatrix.translate(vector);
-    m_lineParameters.modelMatrix.translate(vector);
-    m_textParameters.modelMatrix.translate(vector);
+    m_modelParameters->modelMatrix.translate(vector);
+    m_lineParameters->modelMatrix.translate(vector);
+    m_textParameters->modelMatrix.translate(vector);
 }
 
 void QGLView::rotate(float angle, float x, float y, float z)
@@ -842,16 +972,16 @@ void QGLView::rotate(float angle, float x, float y, float z)
 
 void QGLView::rotate(float angle, QVector3D axis)
 {
-    m_modelParameters.modelMatrix.rotate(angle, axis);
-    m_lineParameters.modelMatrix.rotate(angle, axis);
-    m_textParameters.modelMatrix.rotate(angle, axis);
+    m_modelParameters->modelMatrix.rotate(angle, axis);
+    m_lineParameters->modelMatrix.rotate(angle, axis);
+    m_textParameters->modelMatrix.rotate(angle, axis);
 }
 
 void QGLView::rotate(QQuaternion quaternion)
 {
-    m_modelParameters.modelMatrix.rotate(quaternion);
-    m_lineParameters.modelMatrix.rotate(quaternion);
-    m_textParameters.modelMatrix.rotate(quaternion);
+    m_modelParameters->modelMatrix.rotate(quaternion);
+    m_lineParameters->modelMatrix.rotate(quaternion);
+    m_textParameters->modelMatrix.rotate(quaternion);
 }
 
 void QGLView::scale(float x, float y, float z)
@@ -861,9 +991,9 @@ void QGLView::scale(float x, float y, float z)
 
 void QGLView::scale(QVector3D vector)
 {
-    m_modelParameters.modelMatrix.scale(vector);
-    m_lineParameters.modelMatrix.scale(vector);
-    m_textParameters.modelMatrix.scale(vector);
+    m_modelParameters->modelMatrix.scale(vector);
+    m_lineParameters->modelMatrix.scale(vector);
+    m_textParameters->modelMatrix.scale(vector);
 }
 
 void QGLView::mirror(float x, float y, float z)
@@ -877,13 +1007,13 @@ void QGLView::mirror(QVector3D vector)
     int y = (int)vector.y();
     int z = (int)vector.z();
 
-    m_modelParameters.modelMatrix.scale((x == 1) ? -1.0 : 1.0,
+    m_modelParameters->modelMatrix.scale((x == 1) ? -1.0 : 1.0,
                                    (y == 1) ? -1.0 : 1.0,
                                    (z == 1) ? -1.0 : 1.0);
-    m_lineParameters.modelMatrix.scale((x == 1) ? -1.0 : 1.0,
+    m_lineParameters->modelMatrix.scale((x == 1) ? -1.0 : 1.0,
                                    (y == 1) ? -1.0 : 1.0,
                                    (z == 1) ? -1.0 : 1.0);
-    m_textParameters.modelMatrix.scale((x == 1) ? -1.0 : 1.0,
+    m_textParameters->modelMatrix.scale((x == 1) ? -1.0 : 1.0,
                                    (y == 1) ? -1.0 : 1.0,
                                    (z == 1) ? -1.0 : 1.0);
 }
@@ -892,23 +1022,41 @@ void QGLView::resetTransformations(bool hard)
 {
     if (hard)
     {
-        m_modelParameters = m_modelParametersStack.first();
+        delete m_modelParameters;
+        m_modelParameters = m_modelParametersStack.takeFirst();
+        foreach (Parameters *parameters, m_modelParametersStack)
+        {
+            delete parameters;
+        }
         m_modelParametersStack.clear();
-        m_modelParametersStack.push(m_modelParameters);
+        m_modelParametersStack.push(new Parameters(m_modelParameters));
 
-        m_lineParameters = m_lineParametersStack.first();
+        delete m_lineParameters;
+        m_lineParameters = m_lineParametersStack.takeFirst();
+        foreach (LineParameters *parameters, m_lineParametersStack)
+        {
+            delete parameters;
+        }
         m_lineParametersStack.clear();
-        m_lineParametersStack.push(m_lineParameters);
+        m_lineParametersStack.push(new LineParameters(m_lineParameters));
 
-        m_textParameters = m_textParametersStack.first();
+        delete m_textParameters;
+        m_textParameters = m_textParametersStack.takeFirst();
+        foreach (TextParameters *parameters, m_textParametersStack)
+        {
+            delete parameters;
+        }
         m_textParametersStack.clear();
-        m_textParametersStack.push(m_textParameters);
+        m_textParametersStack.push(new TextParameters(m_textParameters));
     }
     else
     {
-        m_modelParameters = m_modelParametersStack.top();
-        m_lineParameters = m_lineParametersStack.top();
-        m_textParameters = m_textParametersStack.top();
+        delete m_modelParameters;
+        m_modelParameters = new Parameters(m_modelParametersStack.top());
+        delete m_lineParameters;
+        m_lineParameters = new LineParameters(m_lineParametersStack.top());
+        delete m_textParameters;
+        m_textParameters = new TextParameters(m_textParametersStack.top());
     }
 }
 
@@ -921,54 +1069,53 @@ void QGLView::cube(QVector3D size, bool center)
 {
     if (center)
     {
-        m_modelParameters.modelMatrix.translate(-size/2.0);
+        m_modelParameters->modelMatrix.translate(-size/2.0);
     }
-    m_modelParameters.modelMatrix.scale(size);
+    m_modelParameters->modelMatrix.scale(size);
 
-    m_modelMap[Cube]->append(m_modelParameters);
-
+    addDrawableData(Cube, m_modelParameters);
     resetTransformations();
 }
 
 void QGLView::cylinder(float r, float h)
 {
-    m_modelParameters.modelMatrix.scale(r, r, h);
-    m_modelMap[Cylinder]->append(m_modelParameters);
+    m_modelParameters->modelMatrix.scale(r, r, h);
+    addDrawableData(Cylinder, m_modelParameters);
     resetTransformations();
 }
 
 void QGLView::cone(float r, float h)
 {
-    m_modelParameters.modelMatrix.scale(r, r, h);
-    m_modelMap[Cone]->append(m_modelParameters);
+    m_modelParameters->modelMatrix.scale(r, r, h);
+    addDrawableData(Cone, m_modelParameters);
     resetTransformations();
 }
 
 void QGLView::sphere(float r)
 {
-    m_modelParameters.modelMatrix.scale(r,r,r);
-    m_modelMap[Sphere]->append(m_modelParameters);
+    m_modelParameters->modelMatrix.scale(r,r,r);
+    addDrawableData(Sphere, m_modelParameters);
     resetTransformations();
 }
 
 void QGLView::lineWidth(float width)
 {
-    m_lineParameters.width = width;
+    m_lineParameters->width = width;
 }
 
 void QGLView::lineStipple(float enable, float length)
 {
-    m_lineParameters.stipple = enable;
-    m_lineParameters.stippleLength = length;
+    m_lineParameters->stipple = enable;
+    m_lineParameters->stippleLength = length;
 }
 
 void QGLView::line(float x, float y, float z)
 {
-    m_lineParameters.vector.x = x;
-    m_lineParameters.vector.y = y;
-    m_lineParameters.vector.z = z;
+    m_lineParameters->vector.x = x;
+    m_lineParameters->vector.y = y;
+    m_lineParameters->vector.z = z;
 
-    m_lineParametersList.append(m_lineParameters);
+    addDrawableData(m_lineParameters);
     resetTransformations();
 }
 
@@ -979,17 +1126,17 @@ void QGLView::line(QVector3D vector)
 
 void QGLView::lineTo(float x, float y, float z)
 {
-    m_lineParameters.vector.x = x - m_lineParameters.vector.x;
-    m_lineParameters.vector.y = y - m_lineParameters.vector.y;
-    m_lineParameters.vector.z = z - m_lineParameters.vector.z;
+    m_lineParameters->vector.x = x - m_lineParameters->vector.x;
+    m_lineParameters->vector.y = y - m_lineParameters->vector.y;
+    m_lineParameters->vector.z = z - m_lineParameters->vector.z;
 
-    m_lineParametersList.append(m_lineParameters);
-    m_lineParameters.modelMatrix.translate(m_lineParameters.vector.x,
-                                           m_lineParameters.vector.y,
-                                           m_lineParameters.vector.z);
-    m_lineParameters.vector.x = x;
-    m_lineParameters.vector.y = y;
-    m_lineParameters.vector.z = z;
+    addDrawableData(m_lineParameters);
+    m_lineParameters->modelMatrix.translate(m_lineParameters->vector.x,
+                                           m_lineParameters->vector.y,
+                                           m_lineParameters->vector.z);
+    m_lineParameters->vector.x = x;
+    m_lineParameters->vector.y = y;
+    m_lineParameters->vector.z = z;
 }
 
 void QGLView::lineTo(QVector3D vector)
@@ -1004,14 +1151,14 @@ void QGLView::lineFromTo(float x1, float y1, float z1, float x2, float y2, float
 
 void QGLView::lineFromTo(QVector3D startPosition, QVector3D endPosition)
 {
-   QVector3D vector = endPosition - startPosition;
-   m_lineParameters.vector.x = vector.x();
-   m_lineParameters.vector.y = vector.y();
-   m_lineParameters.vector.z = vector.z();
+    QVector3D vector = endPosition - startPosition;
+    m_lineParameters->vector.x = vector.x();
+    m_lineParameters->vector.y = vector.y();
+    m_lineParameters->vector.z = vector.z();
 
-   m_lineParameters.modelMatrix.translate(startPosition);
-   m_lineParametersList.append(m_lineParameters);
-   resetTransformations();
+    m_lineParameters->modelMatrix.translate(startPosition);
+    addDrawableData(m_lineParameters);
+    resetTransformations();
 }
 
 void QGLView::text(QString text, TextAlignment alignment ,QFont font)
@@ -1025,33 +1172,30 @@ void QGLView::text(QString text, TextAlignment alignment ,QFont font)
         generateTextTexture(staticText, font);
     }
 
-    m_textParameters.staticText = staticText;
-    m_textParameters.alignment = alignment;
+    m_textParameters->staticText = staticText;
+    m_textParameters->alignment = alignment;
 
-    m_textParametersList.append(m_textParameters);
+    addDrawableData(m_textParameters);
     resetTransformations();
 }
 
-void QGLView::beginUnion(quint32 id = 0)
+void QGLView::beginUnion()
 {
-    m_modelParameters.id = id;
-    m_modelParametersStack.push(m_modelParameters);
-
-    m_lineParametersStack.push(m_lineParameters);
-
-    m_textParametersStack.push(m_textParameters);
+    m_modelParametersStack.push(new Parameters(m_modelParameters));
+    m_lineParametersStack.push(new LineParameters(m_lineParameters));
+    m_textParametersStack.push(new TextParameters(m_textParameters));
 }
 
 void QGLView::endUnion()
 {
-    m_modelParametersStack.pop();
-    m_modelParameters = m_modelParametersStack.top();
+    delete m_modelParametersStack.pop();
+    m_modelParameters = new Parameters(m_modelParametersStack.top());
 
-    m_lineParametersStack.pop();
-    m_lineParameters = m_lineParametersStack.top();
+    delete m_lineParametersStack.pop();
+    m_lineParameters = new LineParameters(m_lineParametersStack.top());
 
-    m_textParametersStack.pop();
-    m_textParameters = m_textParametersStack.top();
+    delete m_textParametersStack.pop();
+    m_textParameters = new TextParameters(m_textParametersStack.top());
 }
 
 void QGLView::paint()
@@ -1062,6 +1206,7 @@ void QGLView::paint()
         setupVBOs();
         setupStack();
         m_initialized = true;
+        emit initialized();
     }
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -1100,7 +1245,10 @@ void QGLView::paint()
     m_modelProgram->setUniformValue(m_lightAmbientCoefficientLocation, m_light->ambientCoefficient());
     m_modelProgram->setUniformValue(m_lightEnabledLocation, m_light->enabled());
     m_modelProgram->setUniformValue(m_selectionModeLocation, false);
-    drawModels();
+    drawDrawables(Cube);
+    drawDrawables(Cylinder);
+    drawDrawables(Cone);
+    drawDrawables(Sphere);
     m_modelProgram->release();
 }
 
@@ -1127,3 +1275,7 @@ void QGLView::sync()
     m_thread_t = m_t;
 }
 
+void QGLView::reset()
+{
+    removeDrawables(m_currentDrawableList);
+}

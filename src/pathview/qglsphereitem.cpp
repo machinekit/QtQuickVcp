@@ -6,9 +6,9 @@ QGLSphereItem::QGLSphereItem(QQuickItem *parent) :
     m_color(QColor(Qt::yellow))
 {
     connect(this, SIGNAL(radiusChanged(float)),
-            this, SIGNAL(propertyChanged()));
+            this, SIGNAL(needsUpdate()));
     connect(this, SIGNAL(colorChanged(QColor)),
-            this, SIGNAL(propertyChanged()));
+            this, SIGNAL(needsUpdate()));
 }
 
 void QGLSphereItem::paint(QGLView *glView)
@@ -17,7 +17,8 @@ void QGLSphereItem::paint(QGLView *glView)
     glView->rotate(rotation());
     glView->scale(scale());
 
-    glView->beginUnion(modelId());
+    glView->reset();
+    glView->beginUnion();
     glView->color(m_color);
     glView->sphere(m_radius);
     glView->endUnion();

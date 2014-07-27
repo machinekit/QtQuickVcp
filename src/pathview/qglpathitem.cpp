@@ -20,7 +20,7 @@ void QGLPathItem::paint(QGLView *glView)
     glView->scale(scale());
 
     glView->color(QColor(Qt::white));
-    glView->beginUnion(modelId());
+    glView->beginUnion();
     for (int i = 0; i < n; ++i)
     {
         x = qCos(2 * M_PI * (float)i / f);

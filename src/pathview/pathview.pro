@@ -13,39 +13,41 @@ QMAKE_MOC_OPTIONS += -Muri=$$uri
 SOURCES += \
     plugin.cpp \
     qglview.cpp \
-    qpathview3d.cpp \
     qglitem.cpp \
     qglcubeitem.cpp \
-    qglgriditem.cpp \
     qglsphereitem.cpp \
     qglcylinderitem.cpp \
     qglcamera.cpp \
-    qglcoordinateitem.cpp \
-    qglboundingboxitem.cpp \
-    qglobjectdimensionsitem.cpp \
     qgllight.cpp \
-    qglpathitem.cpp
+    qglpathitem.cpp \
+    qglcanvas.cpp
 
 HEADERS += \
     plugin.h \
     qglview.h \
-    qpathview3d.h \
     qglitem.h \
     qglcubeitem.h \
-    qglgriditem.h \
     qglsphereitem.h \
     qglcylinderitem.h \
     qglcamera.h \
-    qglcoordinateitem.h \
-    qglboundingboxitem.h \
-    qglobjectdimensionsitem.h \
     qgllight.h \
-    qglpathitem.h
+    qglpathitem.h \
+    qglcanvas.h
+
+RESOURCES += \
+    shaders.qrc \
+    pathview.qrc
+
+QML_FILES = \
+    BoundingBox3D.qml \
+    Coordinate3D.qml \
+    Grid3D.qml \
+    PathView3D.qml \
+    ProgramExtents3D.qml
 
 QML_INFRA_FILES = \
+    $$QML_FILES \
     qmldir
-
-include(../deployment.pri)
 
 OTHER_FILES += \
     SimpleVertex.glsl \
@@ -55,6 +57,4 @@ OTHER_FILES += \
     TextFragmentShader.glsl \
     TextVertexShader.glsl
 
-RESOURCES += \
-    shaders.qrc
-
+include(../deployment.pri)

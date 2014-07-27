@@ -7,11 +7,11 @@ QGLCubeItem::QGLCubeItem(QQuickItem *parent) :
     m_centered(false)
 {
     connect(this, SIGNAL(sizeChanged(QVector3D)),
-            this, SIGNAL(propertyChanged()));
+            this, SIGNAL(needsUpdate()));
     connect(this, SIGNAL(colorChanged(QColor)),
-            this, SIGNAL(propertyChanged()));
+            this, SIGNAL(needsUpdate()));
     connect(this, SIGNAL(centeredChanged(bool)),
-            this, SIGNAL(propertyChanged()));
+            this, SIGNAL(needsUpdate()));
 }
 
 void QGLCubeItem::paint(QGLView *glView)
@@ -20,7 +20,8 @@ void QGLCubeItem::paint(QGLView *glView)
     glView->rotate(rotation());
     glView->scale(scale());
 
-    glView->beginUnion(modelId());
+    glView->reset();
+    glView->beginUnion();
     glView->color(m_color);
     glView->cube(m_size, m_centered);
     glView->endUnion();

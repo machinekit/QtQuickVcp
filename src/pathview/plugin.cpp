@@ -20,34 +20,72 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "qpathview3d.h"
 #include "qglitem.h"
 #include "qglview.h"
 #include "qglcubeitem.h"
 #include "qglcylinderitem.h"
-#include "qglgriditem.h"
 #include "qglsphereitem.h"
 #include "qglcamera.h"
-#include "qglcoordinateitem.h"
-#include "qglboundingboxitem.h"
-#include "qglobjectdimensionsitem.h"
 #include "qglpathitem.h"
 #include "qgllight.h"
-#include <qqml.h>
+#include "qglcanvas.h"
+
+static void initResources()
+{
+    Q_INIT_RESOURCE(pathview);
+}
+
+static const struct {
+    const char *type;
+    int major, minor;
+} qmldir [] = {
+    { "BoundingBox3D", 1, 0 },
+    { "Coordinate3D", 1, 0 },
+    { "Grid3D", 1, 0 },
+    { "PathView3D", 1, 0 },
+    { "ProgramExtents3D", 1, 0 }
+};
 
 void MachinekitPathViewPlugin::registerTypes(const char *uri)
 {
+    initResources();
+
     // @uri Machinekit.PathView
-    qmlRegisterType<QPathView3d>(uri, 1, 0, "PathView3D");
     qmlRegisterType<QGLCamera>(uri, 1, 0, "Camera3D");
     qmlRegisterType<QGLLight>(uri, 1, 0, "Light3D");
     qmlRegisterType<QGLView>(uri, 1, 0, "GLView3D");
     qmlRegisterType<QGLCubeItem>(uri, 1, 0, "Cube3D");
     qmlRegisterType<QGLCylinderItem>(uri, 1, 0, "Cylinder3D");
     qmlRegisterType<QGLSphereItem>(uri, 1, 0, "Sphere3D");
-    qmlRegisterType<QGLGridItem>(uri, 1, 0, "Grid3D");
-    qmlRegisterType<QGLCoordinateItem>(uri, 1, 0, "Coordintate3D");
-    qmlRegisterType<QGLBoundingBoxItem>(uri, 1, 0, "BoundingBox3D");
-    qmlRegisterType<QGLObjectDimensionsItem>(uri, 1, 0, "ObjectDimensions3D");
     qmlRegisterType<QGLPathItem>(uri, 1, 0, "Path3D");
+    qmlRegisterType<QGLCanvas>(uri, 1, 0, "Canvas3D");
+
+    const QString filesLocation = fileLocation();
+    for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {
+        qmlRegisterType(QUrl(filesLocation + "/" + qmldir[i].type + ".qml"), uri, qmldir[i].major, qmldir[i].minor, qmldir[i].type);
+    }
+}
+
+void MachinekitPathViewPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
+{
+    Q_UNUSED(uri);
+
+    if (isLoadedFromResource())
+        engine->addImportPath(QStringLiteral("qrc:/"));
+}
+
+QString MachinekitPathViewPlugin::fileLocation() const
+{
+    if (isLoadedFromResource())
+        return "qrc:/Machinekit/PathView";
+    return baseUrl().toString();
+}
+
+bool MachinekitPathViewPlugin::isLoadedFromResource() const
+{
+    // If one file is missing, it will load all the files from the resource
+    QFile file(baseUrl().toLocalFile() + "/ColorPicker.qml");
+    if (!file.exists())
+        return true;
+    return false;
 }

@@ -2,3 +2,11 @@ module Machinekit.PathView
 plugin machinekitpathviewplugin
 classname MachinekitPathViewPlugin
 typeinfo plugins.qmltypes
+
+# Workaround: inform Qt Creator about QML files
+# typeinfo plugins.qmltypes does not work
+BoundingBox3D 1.0 BoundingBox3D.qml
+Coordinate3D 1.0 Coordinate3D.qml
+Grid3D 1.0 Grid3D.qml
+PathView3D 1.0 PathView3D.qml
+ProgramExtents3D 1.0 ProgramExtents3D.qml

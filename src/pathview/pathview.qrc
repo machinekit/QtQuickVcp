@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/Machinekit/PathView">
+        <file>BoundingBox3D.qml</file>
+        <file>Grid3D.qml</file>
+        <file>Coordinate3D.qml</file>
+        <file>ProgramExtents3D.qml</file>
+        <file>PathView3D.qml</file>
+    </qresource>
+</RCC>
