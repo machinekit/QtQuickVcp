@@ -34,7 +34,9 @@ QGLView::QGLView()
     , m_lineProgram(0)
     , m_textProgram(0)
     , m_projectionAspectRatio(1.0)
-    , m_continousModelId(0)
+    , m_pathEnabled(false)
+    , m_selectionModeActive(false)
+    , m_currentGlItem(NULL)
     , m_propertySignalMapper(new QSignalMapper(this))
     , m_camera(new QGLCamera(this))
     , m_light(new QGLLight(this))
@@ -59,11 +61,9 @@ void QGLView::setT(qreal t)
 
 void QGLView::readPixel(int x, int y)
 {
-    GLubyte pixel[3];
-    quint32 id;
-    glReadPixels(x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE, pixel);
-    id = ((quint32)pixel[0] << 16) + ((quint32)pixel[1] << 8) + (quint32)pixel[2];
-    qDebug() << id;
+    m_selectionPoint = QPoint(x, window()->height() - y);
+    m_selectionModeActive = true;
+    update();
 }
 
 void QGLView::handleWindowChanged(QQuickWindow *win)
@@ -175,12 +175,12 @@ QList<QGLView::Parameters *> *QGLView::getDrawableList(QGLView::ModelType type)
     return m_drawableMap.value(type);
 }
 
-QGLView::Drawable QGLView::addDrawableData(const QGLView::LineParameters &parameters)
+QGLView::Parameters* QGLView::addDrawableData(const QGLView::LineParameters &parameters)
 {
     // add parameter
     QList<Parameters*> *parametersList = m_drawableMap.value(Line);
     LineParameters *lineParameters = new LineParameters(parameters);
-    lineParameters->id = m_currentModelId;
+    lineParameters->creator = m_currentGlItem;
     parametersList->append(lineParameters);
 
     // add drawable to list
@@ -189,14 +189,14 @@ QGLView::Drawable QGLView::addDrawableData(const QGLView::LineParameters &parame
     drawable.parameters = lineParameters;
     m_currentDrawableList->append(drawable);
 
-    return drawable;
+    return lineParameters;
 }
 
-QGLView::Drawable QGLView::addDrawableData(const QGLView::TextParameters &parameters)
+QGLView::Parameters* QGLView::addDrawableData(const QGLView::TextParameters &parameters)
 {
     QList<Parameters*> *parametersList = m_drawableMap.value(Text);
     TextParameters *textParameters = new TextParameters(parameters);
-    textParameters->id = m_currentModelId;
+    textParameters->creator = m_currentGlItem;
     parametersList->append(textParameters);
 
     Drawable drawable;
@@ -204,14 +204,14 @@ QGLView::Drawable QGLView::addDrawableData(const QGLView::TextParameters &parame
     drawable.parameters = textParameters;
     m_currentDrawableList->append(drawable);
 
-    return drawable;
+    return textParameters;
 }
 
-QGLView::Drawable QGLView::addDrawableData(QGLView::ModelType type, const QGLView::Parameters &parameters)
+QGLView::Parameters* QGLView::addDrawableData(QGLView::ModelType type, const QGLView::Parameters &parameters)
 {
     QList<Parameters*> *parametersList = m_drawableMap.value(type);
     Parameters *modelParameters = new Parameters(parameters);
-    modelParameters->id = m_currentModelId;
+    modelParameters->creator = m_currentGlItem;
     parametersList->append(modelParameters);
 
     Drawable drawable;
@@ -219,7 +219,7 @@ QGLView::Drawable QGLView::addDrawableData(QGLView::ModelType type, const QGLVie
     drawable.parameters = modelParameters;
     m_currentDrawableList->append(drawable);
 
-    return drawable;
+    return modelParameters;
 }
 
 void QGLView::drawDrawables(QGLView::ModelType type)
@@ -335,11 +335,13 @@ void QGLView::setupVBOs()
 
 void QGLView::setupLineVertexBuffer()
 {
+    const int MaxLinesPerPath = 50;
+
     m_lineVertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     m_lineVertexBuffer->create();
     m_lineVertexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
     m_lineVertexBuffer->bind();
-    m_lineVertexBuffer->allocate(2*sizeof(Vector3D));
+    m_lineVertexBuffer->allocate(MaxLinesPerPath*sizeof(GLvector3D));
     m_lineVertexBuffer->release();
 
     addDrawableList(Line);
@@ -464,6 +466,8 @@ void QGLView::setupShaders()
     m_lineColorLocation = m_lineProgram->uniformLocation("color");
     m_lineStippleLocation = m_lineProgram->uniformLocation("stipple");
     m_lineStippleLengthLocation = m_lineProgram->uniformLocation("stippleLength");
+    m_lineIdColorLocation = m_lineProgram->uniformLocation("idColor");
+    m_lineSelectionModeLocation = m_lineProgram->uniformLocation("selectionMode");
 
     // text shader
     m_textProgram = new QOpenGLShaderProgram();
@@ -480,6 +484,8 @@ void QGLView::setupShaders()
     m_textTextureLocation = m_textProgram->uniformLocation("texture");
     m_textAspectRatioLocation = m_textProgram->uniformLocation("aspectRatio");
     m_textAlignmentLocation = m_textProgram->uniformLocation("alignment");
+    m_textIdColorLocation = m_textProgram->uniformLocation("idColor");
+    m_textSelectionModeLocation = m_textProgram->uniformLocation("selectionMode");
 }
 
 void QGLView::setupWindow()
@@ -705,7 +711,14 @@ void QGLView::drawModelVertices(ModelType type)
         Parameters *modelParameters = static_cast<Parameters*>(modelParametersList->at(i));
         m_modelProgram->setUniformValue(m_colorLocation, modelParameters->color);
         m_modelProgram->setUniformValue(m_modelMatrixLocation, modelParameters->modelMatrix);
-        m_modelProgram->setUniformValue(m_idColorLocation, QColor(0xFF000000u + modelParameters->id));    // color for selection mode
+
+        if (m_selectionModeActive)  // selection mode active
+        {
+            m_modelProgram->setUniformValue(m_idColorLocation, QColor(0xFF000000u + m_currentDrawableId));    // color for selection mode
+            m_drawableIdMap.insert(m_currentDrawableId, modelParameters);
+            m_currentDrawableId++;
+        }
+
         glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size()/sizeof(ModelVertex));
     }
 
@@ -716,8 +729,6 @@ void QGLView::drawModelVertices(ModelType type)
 
 void QGLView::drawLines()
 {
-    static Vector3D vertices[2] = {{0.0f, 0.0f, 0.0f},
-                            {0.0f, 0.0f, 0.0f}};
     QList<Parameters*>* parametersList = getDrawableList(Line);
 
     if (parametersList->isEmpty())
@@ -732,14 +743,21 @@ void QGLView::drawLines()
     for (int i = 0; i < parametersList->size(); ++i)
     {
         LineParameters *lineParameters = static_cast<LineParameters*>(parametersList->at(i));
-        vertices[1] = lineParameters->vector;
-        m_lineVertexBuffer->write(0, vertices, 2*sizeof(Vector3D));
+        m_lineVertexBuffer->write(0, lineParameters->vertices.data(), lineParameters->vertices.size() * sizeof(GLvector3D));
         m_lineProgram->setUniformValue(m_lineColorLocation, lineParameters->color);
         m_lineProgram->setUniformValue(m_lineModelMatrixLocation, lineParameters->modelMatrix);
         m_lineProgram->setUniformValue(m_lineStippleLocation, lineParameters->stipple);
         m_lineProgram->setUniformValue(m_lineStippleLengthLocation, lineParameters->stippleLength);
+
+        if (m_selectionModeActive)  // selection mode active
+        {
+            m_lineProgram->setUniformValue(m_lineIdColorLocation, QColor(0xFF000000u + m_currentDrawableId));    // color for selection mode
+            m_drawableIdMap.insert(m_currentDrawableId, lineParameters);
+            m_currentDrawableId++;
+        }
+
         glLineWidth(lineParameters->width);
-        glDrawArrays(GL_LINE_STRIP, 0, 2);
+        glDrawArrays(GL_LINE_STRIP, 0, lineParameters->vertices.size());
     }
 
     m_lineProgram->disableAttributeArray(m_linePositionLocation);
@@ -774,6 +792,14 @@ void QGLView::drawTexts()
         m_textProgram->setUniformValue(m_textColorLocation, textParameters->color);
         m_textProgram->setUniformValue(m_textModelMatrixLocation, textParameters->modelMatrix);
         m_textProgram->setUniformValue(m_textTextureLocation, texture->textureId());
+
+        if (m_selectionModeActive)  // selection mode active
+        {
+            m_textProgram->setUniformValue(m_textIdColorLocation, QColor(0xFF000000u + m_currentDrawableId));    // color for selection mode
+            m_drawableIdMap.insert(m_currentDrawableId, textParameters);
+            m_currentDrawableId++;
+        }
+
         texture->bind(texture->textureId());
         glDrawArrays(GL_TRIANGLES, 0, m_textVertexBuffer->size()/sizeof(TextVertex));
         texture->release();
@@ -861,7 +887,7 @@ void QGLView::paintGLItem(QGLItem *item)
     if (item->isVisible())
     {
         m_currentDrawableList = m_drawableListMap.value(item);
-        m_currentModelId = m_modelIdMap.value(item);
+        m_currentGlItem = item;
         resetTransformations(true); // reset all tranformations for a clean start
         item->paint(this);
     }
@@ -871,13 +897,67 @@ void QGLView::paintGLItem(QGLItem *item)
     }
 }
 
+quint32 QGLView::getSelection()
+{
+    QList<quint32> ids;
+    QList<quint32> sortedIds;
+    int selectionSize = 5;  // only odd selection sizes make sense
+    int sizeOffset;
+    QPoint correctedSelectionPoint;
+
+    sizeOffset = qFloor((float)selectionSize/2.0);  // calculate the offset
+
+    // correct the position of the selection to center the mouse click
+    correctedSelectionPoint.setX(qMin(qMax(m_selectionPoint.x() - sizeOffset, 0), window()->width() - selectionSize));
+    correctedSelectionPoint.setY(qMin(qMax(m_selectionPoint.y() - sizeOffset, 0), window()->height() - selectionSize));
+
+    // read the data
+    for (int i = 0; i < (selectionSize * selectionSize); ++i)
+    {
+        GLcolorRGB colorRGB;
+        quint32 id;
+
+        glReadPixels(correctedSelectionPoint.x() + (i % selectionSize), correctedSelectionPoint.y() + (i / selectionSize), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &colorRGB);
+        id = ((quint32)colorRGB.r << 16) + ((quint32)colorRGB.g << 8) + (quint32)colorRGB.b;
+
+        if ((id != 0) && (!ids.contains(id)))   // collect all ids in selection
+        {
+            ids.append(id);
+        }
+    }
+
+    int maxCount = 0;
+
+    // find the id that is most common in the selection
+    foreach(int id, ids)
+    {
+        int count;
+        qCount(ids.begin(), ids.end(), id, count);
+        if (count > maxCount) {
+            sortedIds.prepend(id);
+            maxCount = count;
+        }
+        else {
+            sortedIds.append(id);
+        }
+    }
+
+    if (sortedIds.size() > 0)
+    {
+        return sortedIds.first();
+    }
+    else
+    {
+        return 0;   // nothing selected
+    }
+}
+
 void QGLView::addGlItem(QGLItem *item)
 {
     m_glItems.append(item);
 
     QList<Drawable> *drawableList = new QList<Drawable>();
     m_drawableListMap.insert(item, drawableList);
-    m_modelIdMap.insert(item, m_continousModelId++);    // add and increase the model id
 
     if (m_initialized) {
         paintGLItem(item);
@@ -886,6 +966,7 @@ void QGLView::addGlItem(QGLItem *item)
 
     m_propertySignalMapper->setMapping(item, item);
     connect(item, SIGNAL(needsUpdate()), m_propertySignalMapper, SLOT(map()));
+    connect(this, SIGNAL(drawableSelected(void*)), item, SLOT(selectDrawable(void*)), Qt::QueuedConnection);
     emit glItemsChanged(glItems());
 }
 
@@ -899,10 +980,10 @@ void QGLView::removeGlItem(int index)
     }
 
     delete m_drawableListMap.take(item);
-    m_modelIdMap.remove(item);
 
     m_propertySignalMapper->removeMappings(item);
     disconnect(item, SIGNAL(propertyChanged()), m_propertySignalMapper, SLOT(map()));
+    disconnect(this, SIGNAL(drawableSelected(void*)), item, SLOT(selectDrawable(void*)));
     emit glItemsChanged(glItems());
 }
 
@@ -1060,12 +1141,12 @@ void QGLView::resetTransformations(bool hard)
     }
 }
 
-void QGLView::cube(float w, float l, float h, bool center)
+void *QGLView::cube(float w, float l, float h, bool center)
 {
-    cube(QVector3D(w, l, h), center);
+    return cube(QVector3D(w, l, h), center);
 }
 
-void QGLView::cube(QVector3D size, bool center)
+void *QGLView::cube(QVector3D size, bool center)
 {
     if (center)
     {
@@ -1073,29 +1154,33 @@ void QGLView::cube(QVector3D size, bool center)
     }
     m_modelParameters->modelMatrix.scale(size);
 
-    addDrawableData(Cube, m_modelParameters);
+    Parameters *parameters = addDrawableData(Cube, m_modelParameters);
     resetTransformations();
+    return parameters;
 }
 
-void QGLView::cylinder(float r, float h)
+void *QGLView::cylinder(float r, float h)
 {
     m_modelParameters->modelMatrix.scale(r, r, h);
-    addDrawableData(Cylinder, m_modelParameters);
+    Parameters *parameters = addDrawableData(Cylinder, m_modelParameters);
     resetTransformations();
+    return parameters;
 }
 
-void QGLView::cone(float r, float h)
+void *QGLView::cone(float r, float h)
 {
     m_modelParameters->modelMatrix.scale(r, r, h);
-    addDrawableData(Cone, m_modelParameters);
+    Parameters *parameters = addDrawableData(Cone, m_modelParameters);
     resetTransformations();
+    return parameters;
 }
 
-void QGLView::sphere(float r)
+void *QGLView::sphere(float r)
 {
     m_modelParameters->modelMatrix.scale(r,r,r);
-    addDrawableData(Sphere, m_modelParameters);
+    Parameters *parameters = addDrawableData(Sphere, m_modelParameters);
     resetTransformations();
+    return parameters;
 }
 
 void QGLView::lineWidth(float width)
@@ -1109,56 +1194,106 @@ void QGLView::lineStipple(float enable, float length)
     m_lineParameters->stippleLength = length;
 }
 
-void QGLView::line(float x, float y, float z)
+void *QGLView::line(float x, float y, float z)
 {
-    m_lineParameters->vector.x = x;
-    m_lineParameters->vector.y = y;
-    m_lineParameters->vector.z = z;
+    GLvector3D vector;
+    vector.x = x;
+    vector.y = y;
+    vector.z = z;
 
-    addDrawableData(m_lineParameters);
+    m_lineParameters->vertices.append(vector);
+
+    Parameters *parameters = addDrawableData(m_lineParameters);
     resetTransformations();
+    return parameters;
 }
 
-void QGLView::line(QVector3D vector)
+void *QGLView::line(QVector3D vector)
 {
-    line(vector.x(), vector.y(), vector.z());
+    return line(vector.x(), vector.y(), vector.z());
 }
 
-void QGLView::lineTo(float x, float y, float z)
+void *QGLView::lineTo(float x, float y, float z)
 {
-    m_lineParameters->vector.x = x - m_lineParameters->vector.x;
-    m_lineParameters->vector.y = y - m_lineParameters->vector.y;
-    m_lineParameters->vector.z = z - m_lineParameters->vector.z;
+    if (!m_pathEnabled)
+    {
+        GLvector3D lastVector;
+        GLvector3D vector;
 
-    addDrawableData(m_lineParameters);
-    m_lineParameters->modelMatrix.translate(m_lineParameters->vector.x,
-                                           m_lineParameters->vector.y,
-                                           m_lineParameters->vector.z);
-    m_lineParameters->vector.x = x;
-    m_lineParameters->vector.y = y;
-    m_lineParameters->vector.z = z;
+        if (m_lineParameters->vertices.size() > 1)
+        {
+            lastVector = m_lineParameters->vertices.takeLast();
+        }
+        else
+        {
+            lastVector = m_lineParameters->vertices.last();
+        }
+
+        vector.x = x - lastVector.x;
+        vector.y = y - lastVector.y;
+        vector.z = z - lastVector.z;
+        m_lineParameters->vertices.append(vector);
+
+        Parameters *parameters = addDrawableData(m_lineParameters);
+        m_lineParameters->modelMatrix.translate(vector.x,
+                                                vector.y,
+                                                vector.z);
+        vector.x = x;
+        vector.y = y;
+        vector.z = z;
+        m_lineParameters->vertices.removeLast();
+        m_lineParameters->vertices.append(vector);
+
+        return parameters;
+    }
+    else
+    {
+        GLvector3D vector;
+        vector.x = x;
+        vector.y = y;
+        vector.z = z;
+        m_lineParameters->vertices.append(vector);
+    }
+
+    return NULL;
 }
 
-void QGLView::lineTo(QVector3D vector)
+void *QGLView::lineTo(QVector3D vector)
 {
-    lineTo(vector.x(), vector.y(), vector.z());
+    return lineTo(vector.x(), vector.y(), vector.z());
 }
 
-void QGLView::lineFromTo(float x1, float y1, float z1, float x2, float y2, float z2)
+void *QGLView::lineFromTo(float x1, float y1, float z1, float x2, float y2, float z2)
 {
-    lineFromTo(QVector3D(x1, y1, z1), QVector3D(x2, y2, z2));
+    return lineFromTo(QVector3D(x1, y1, z1), QVector3D(x2, y2, z2));
 }
 
-void QGLView::lineFromTo(QVector3D startPosition, QVector3D endPosition)
+void *QGLView::lineFromTo(QVector3D startPosition, QVector3D endPosition)
 {
-    QVector3D vector = endPosition - startPosition;
-    m_lineParameters->vector.x = vector.x();
-    m_lineParameters->vector.y = vector.y();
-    m_lineParameters->vector.z = vector.z();
+    QVector3D diffVector = endPosition - startPosition;
+    GLvector3D vector;
+    vector.x = diffVector.x();
+    vector.y = diffVector.y();
+    vector.z = diffVector.z();
+    m_lineParameters->vertices.append(vector);
 
     m_lineParameters->modelMatrix.translate(startPosition);
-    addDrawableData(m_lineParameters);
+    Parameters *parameters = addDrawableData(m_lineParameters);
     resetTransformations();
+    return parameters;
+}
+
+void QGLView::beginPath()
+{
+    m_pathEnabled = true;
+}
+
+void *QGLView::endPath()
+{
+    m_pathEnabled = false;
+    Parameters *parameters = addDrawableData(m_lineParameters);
+    resetTransformations();
+    return parameters;
 }
 
 void QGLView::text(QString text, TextAlignment alignment ,QFont font)
@@ -1224,15 +1359,22 @@ void QGLView::paint()
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glEnable(GL_BLEND);
 
+    if (m_selectionModeActive)
+    {
+        m_currentDrawableId = 1;    // we start by one since 0 is the background color
+    }
+
     m_lineProgram->bind();
     m_lineProgram->setUniformValue(m_lineProjectionMatrixLocation, m_projectionMatrix);
     m_lineProgram->setUniformValue(m_lineViewMatrixLocation, m_viewMatrix);
+    m_lineProgram->setUniformValue(m_lineSelectionModeLocation, m_selectionModeActive);
     drawLines();
     m_lineProgram->release();
 
     m_textProgram->bind();
     m_textProgram->setUniformValue(m_textProjectionMatrixLocation, m_projectionMatrix);
     m_textProgram->setUniformValue(m_textViewMatrixLocation, m_viewMatrix);
+    m_textProgram->setUniformValue(m_textSelectionModeLocation, m_selectionModeActive);
     drawTexts();
     m_textProgram->release();
 
@@ -1244,12 +1386,22 @@ void QGLView::paint()
     m_modelProgram->setUniformValue(m_lightAttenuationLocation, m_light->attenuation());
     m_modelProgram->setUniformValue(m_lightAmbientCoefficientLocation, m_light->ambientCoefficient());
     m_modelProgram->setUniformValue(m_lightEnabledLocation, m_light->enabled());
-    m_modelProgram->setUniformValue(m_selectionModeLocation, false);
+    m_modelProgram->setUniformValue(m_selectionModeLocation, m_selectionModeActive);
     drawDrawables(Cube);
     drawDrawables(Cylinder);
     drawDrawables(Cone);
     drawDrawables(Sphere);
     m_modelProgram->release();
+
+    if (m_selectionModeActive)
+    {
+        quint32 id = getSelection();
+        emit drawableSelected(m_drawableIdMap.value(id, NULL));
+
+        m_drawableIdMap.clear();
+        m_selectionModeActive = false;
+        paint();
+    }
 }
 
 void QGLView::cleanup()

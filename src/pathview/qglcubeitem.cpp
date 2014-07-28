@@ -2,9 +2,11 @@
 
 QGLCubeItem::QGLCubeItem(QQuickItem *parent) :
     QGLItem(parent),
+    m_cubePointer(NULL),
     m_size(QVector3D(1,1,1)),
     m_color(QColor(Qt::yellow)),
-    m_centered(false)
+    m_centered(false),
+    m_selected(false)
 {
     connect(this, SIGNAL(sizeChanged(QVector3D)),
             this, SIGNAL(needsUpdate()));
@@ -23,6 +25,24 @@ void QGLCubeItem::paint(QGLView *glView)
     glView->reset();
     glView->beginUnion();
     glView->color(m_color);
-    glView->cube(m_size, m_centered);
+    m_cubePointer = glView->cube(m_size, m_centered);
     glView->endUnion();
+}
+
+void QGLCubeItem::selectDrawable(void *pointer)
+{
+    bool selected;
+
+    if (m_cubePointer == NULL)
+    {
+        return;
+    }
+
+    selected = (pointer == m_cubePointer);
+
+    if (selected != m_selected)
+    {
+        m_selected = selected;
+        emit selectedChanged(m_selected);
+    }
 }

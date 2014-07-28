@@ -31,3 +31,8 @@ void QGLPathItem::paint(QGLView *glView)
     }
     glView->endUnion();
 }
+
+void QGLPathItem::selectDrawable(void *pointer)
+{
+
+}

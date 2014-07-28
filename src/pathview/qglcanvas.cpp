@@ -21,3 +21,8 @@ void QGLCanvas::paint(QGLView *glView)
     paint();
     glView->endUnion();
 }
+
+void QGLCanvas::selectDrawable(void *pointer)
+{
+    emit drawableSelected(pointer);
+}

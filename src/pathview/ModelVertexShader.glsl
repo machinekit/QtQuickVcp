@@ -24,7 +24,7 @@ uniform struct Light {
 
 // selection mode
 uniform vec4 idColor;             // color to be used for selection mode
-uniform bool selectionMode;       //
+uniform bool selectionMode;       // enables or disables the selection mode
 
 varying vec4 destinationColor;  // the output colors
 
@@ -72,5 +72,6 @@ void main(void) {
     {
         destinationColor = color;
     }
+
     gl_Position = projectionMatrix * modelviewMatrix * position;
 }

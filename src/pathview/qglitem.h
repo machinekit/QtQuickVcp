@@ -56,6 +56,7 @@ signals:
 
 public slots:
     void requestPaint();
+    virtual void selectDrawable(void *pointer) = 0; // must be implemented
 
     void setPosition(float x, float y, float z)
     {

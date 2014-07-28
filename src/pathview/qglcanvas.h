@@ -21,8 +21,10 @@ public:
 signals:
     void contextChanged(QGLView * arg);
     void paint();
+    void drawableSelected(void *pointer);
 
 public slots:
+    virtual void selectDrawable(void *pointer);
 
 private:
     QGLView * m_context;

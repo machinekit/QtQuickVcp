@@ -14,6 +14,7 @@ public:
 signals:
 
 public slots:
+    virtual void selectDrawable(void *pointer);
 
 };
 

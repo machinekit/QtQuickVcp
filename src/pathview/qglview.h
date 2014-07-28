@@ -58,41 +58,10 @@ public:
         AlignRight = 2
     };
 
-    enum ModelType {
-        NoType = 0,
-        Cube = 1,
-        Cylinder = 2,
-        Sphere = 3,
-        Cone = 4,
-        Text = 5,
-        Line = 6
-    };
-
-    typedef struct {
-        GLfloat x;
-        GLfloat y;
-    } Vector2D;
-
-    typedef struct {
-        GLfloat x;
-        GLfloat y;
-        GLfloat z;
-    } Vector3D;
-
-    typedef struct {
-        Vector3D position;
-        Vector3D normal;
-    } ModelVertex;
-
-    typedef struct {
-        Vector3D position;
-        Vector2D texCoordinate;
-    } TextVertex;
-
     class Parameters {
     public:
         Parameters():
-            id(0),
+            creator(NULL),
             modelMatrix(QMatrix4x4()),
             color(QColor(Qt::yellow)),
             deleteFlag(false)
@@ -100,74 +69,17 @@ public:
 
         Parameters(Parameters *parameters)
         {
-            id = parameters->id;
+            creator = parameters->creator;
             modelMatrix = parameters->modelMatrix;
             color = parameters->color;
             deleteFlag = parameters->deleteFlag;
         }
 
-        quint32 id;
+        QGLItem *creator;
         QMatrix4x4 modelMatrix;
         QColor color;
         bool deleteFlag;    // marks the parameter to delete
     };
-
-    class LineParameters: public Parameters {
-    public:
-        LineParameters():
-            Parameters(),
-            width(1.0),
-            stipple(false),
-            stippleLength(1.0)
-        {
-            vector.x = 0.0;
-            vector.x = 0.0;
-            vector.z = 0.0;
-            color = QColor(Qt::red);
-        }
-
-        LineParameters(LineParameters *parameters):
-            Parameters(parameters)
-        {
-            vector.x = parameters->vector.x;
-            vector.y = parameters->vector.y;
-            vector.z = parameters->vector.z;
-            width = parameters->width;
-            stipple = parameters->stipple;
-            stippleLength = parameters->stippleLength;
-        }
-
-        Vector3D vector;
-        GLfloat width;
-        bool stipple;
-        GLfloat stippleLength;
-    };
-
-    class TextParameters: public Parameters {
-    public:
-        TextParameters():
-            Parameters(),
-            staticText(QStaticText()),
-            alignment(AlignLeft)
-        {
-            color = QColor(Qt::white);
-        }
-
-        TextParameters(TextParameters *parameters):
-            Parameters(parameters)
-        {
-            staticText = parameters->staticText;
-            alignment = parameters->alignment;
-        }
-
-        QStaticText staticText;
-        TextAlignment alignment;
-    };
-
-    typedef struct {
-        ModelType type;
-        Parameters *parameters;
-    } Drawable;
 
     qreal t() const { return m_t; }
     void setT(qreal t);
@@ -194,6 +106,7 @@ signals:
     void glItemsChanged(QQmlListProperty<QGLItem> arg);
     void lightChanged(QGLLight * arg);
     void initialized();
+    void drawableSelected(void *pointer);
 
 public slots:
     void paint();
@@ -224,21 +137,23 @@ public slots:
     void resetTransformations(bool hard = false);
 
     // model functions
-    void cube(float w, float l, float h, bool center = false);
-    void cube(QVector3D size, bool center = false);
-    void cylinder(float r, float h);
-    void cone(float r, float h);
-    void sphere(float r);
+    void *cube(float w, float l, float h, bool center = false);
+    void *cube(QVector3D size, bool center = false);
+    void *cylinder(float r, float h);
+    void *cone(float r, float h);
+    void *sphere(float r);
 
     // line functions
     void lineWidth(float width);
     void lineStipple(float enable, float length = 5.0);
-    void line(float x, float y, float z);
-    void line(QVector3D vector);
-    void lineTo(float x, float y, float z);
-    void lineTo(QVector3D vector);
-    void lineFromTo(float x1, float y1, float z1, float x2, float y2, float z2);
-    void lineFromTo(QVector3D startPosition, QVector3D endPosition);
+    void *line(float x, float y, float z);
+    void *line(QVector3D vector);
+    void* lineTo(float x, float y, float z);
+    void *lineTo(QVector3D vector);
+    void *lineFromTo(float x1, float y1, float z1, float x2, float y2, float z2);
+    void *lineFromTo(QVector3D startPosition, QVector3D endPosition);
+    void beginPath();
+    void *endPath();
 
     // text functions
     void text(QString text, TextAlignment alignment = AlignLeft, QFont font = QFont());
@@ -279,6 +194,100 @@ private slots:
     void updateChildren();
 
 private:
+    enum ModelType {
+        NoType = 0,
+        Cube = 1,
+        Cylinder = 2,
+        Sphere = 3,
+        Cone = 4,
+        Text = 5,
+        Line = 6
+    };
+
+    typedef struct {
+        GLfloat x;
+        GLfloat y;
+    } GLvector2D;
+
+    typedef struct {
+        GLfloat x;
+        GLfloat y;
+        GLfloat z;
+    } GLvector3D;
+
+    typedef struct {
+        GLubyte r;
+        GLubyte g;
+        GLubyte b;
+    } GLcolorRGB ;
+
+    typedef struct {
+        GLvector3D position;
+        GLvector3D normal;
+    } ModelVertex;
+
+    typedef struct {
+        GLvector3D position;
+        GLvector2D texCoordinate;
+    } TextVertex;
+
+    class LineParameters: public Parameters {
+    public:
+        LineParameters():
+            Parameters(),
+            width(1.0),
+            stipple(false),
+            stippleLength(1.0)
+        {
+            GLvector3D vector;
+            vector.x = 0.0;
+            vector.y = 0.0;
+            vector.z = 0.0;
+            vertices.append(vector);
+            color = QColor(Qt::red);
+        }
+
+        LineParameters(LineParameters *parameters):
+            Parameters(parameters)
+        {
+            vertices = parameters->vertices;
+            width = parameters->width;
+            stipple = parameters->stipple;
+            stippleLength = parameters->stippleLength;
+        }
+
+        QVector<GLvector3D> vertices;
+        GLfloat width;
+        bool stipple;
+        GLfloat stippleLength;
+    };
+
+    class TextParameters: public Parameters {
+    public:
+        TextParameters():
+            Parameters(),
+            staticText(QStaticText()),
+            alignment(AlignLeft)
+        {
+            color = QColor(Qt::white);
+        }
+
+        TextParameters(TextParameters *parameters):
+            Parameters(parameters)
+        {
+            staticText = parameters->staticText;
+            alignment = parameters->alignment;
+        }
+
+        QStaticText staticText;
+        TextAlignment alignment;
+    };
+
+    typedef struct {
+        ModelType type;
+        Parameters *parameters;
+    } Drawable;
+
     bool m_initialized;
 
     // the shader programs
@@ -318,6 +327,8 @@ private:
     int m_linePositionLocation;
     int m_lineStippleLocation;
     int m_lineStippleLengthLocation;
+    int m_lineSelectionModeLocation;
+    int m_lineIdColorLocation;
 
     int m_textProjectionMatrixLocation;
     int m_textViewMatrixLocation;
@@ -328,6 +339,8 @@ private:
     int m_textTextureLocation;
     int m_textAspectRatioLocation;
     int m_textAlignmentLocation;
+    int m_textSelectionModeLocation;
+    int m_textIdColorLocation;
 
     // thread secure properties
     qreal m_t;
@@ -341,6 +354,7 @@ private:
     QStack<Parameters*> m_modelParametersStack;
 
     // line stack
+    bool m_pathEnabled;
     LineParameters *m_lineParameters;
     QStack<LineParameters*> m_lineParametersStack;
 
@@ -351,11 +365,15 @@ private:
     QList<QOpenGLTexture*> m_textTextureList;
     QList<float> m_textAspectRatioList;
 
+    // item selection
+    quint32 m_currentDrawableId;
+    QMap<quint32, Parameters* > m_drawableIdMap;
+    QPoint m_selectionPoint;
+    bool m_selectionModeActive;
+
     //GL items
-    int m_currentModelId;
-    int m_continousModelId;
+    QGLItem *m_currentGlItem;
     QList<QGLItem*> m_glItems;
-    QMap<QGLItem*, int> m_modelIdMap;
     QMap<QGLItem*, QList<Drawable>* > m_drawableListMap;
     QList<Drawable> *m_currentDrawableList;
     QSignalMapper *m_propertySignalMapper;
@@ -368,9 +386,9 @@ private:
 
     void addDrawableList(ModelType type);
     QList<Parameters*>* getDrawableList(ModelType type);
-    Drawable addDrawableData(const LineParameters & parameters);
-    Drawable addDrawableData(const TextParameters & parameters);
-    Drawable addDrawableData(ModelType type, const Parameters & parameters);
+    Parameters *addDrawableData(const LineParameters & parameters);
+    Parameters *addDrawableData(const TextParameters & parameters);
+    Parameters *addDrawableData(ModelType type, const Parameters & parameters);
 
     void drawDrawables(ModelType type = NoType);
     void clearDrawables();
@@ -388,6 +406,8 @@ private:
     void paintGLItems();
     void clearGLItem(QGLItem *item);
     void paintGLItem(QGLItem *item);
+
+    quint32 getSelection();
 
     // setup functions
     void initializeVertexBuffer(ModelType type, const QVector<ModelVertex> & vertices);

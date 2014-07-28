@@ -10,6 +10,7 @@ class QGLCylinderItem : public QGLItem
     Q_PROPERTY(float height READ height WRITE setHeight NOTIFY heightChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(bool cone READ isCone WRITE setCone NOTIFY coneChanged)
+    Q_PROPERTY(bool selected READ isSelected NOTIFY selectedChanged)
 
 public:
     explicit QGLCylinderItem(QQuickItem *parent = 0);
@@ -36,13 +37,21 @@ public:
         return m_cone;
     }
 
+    bool isSelected() const
+    {
+        return m_selected;
+    }
+
 signals:
     void radiusChanged(float arg);
     void heightChanged(float arg);
     void colorChanged(QColor arg);
     void coneChanged(bool arg);
+    void selectedChanged(bool arg);
 
 public slots:
+    virtual void selectDrawable(void *pointer);
+
     void setRadius(float arg)
     {
         if (m_radius != arg) {
@@ -76,10 +85,12 @@ public slots:
     }
 
 private:
+    void *m_cylinderPointer;
     float m_radius;
     float m_height;
     QColor m_color;
     bool m_cone;
+    bool m_selected;
 };
 
 #endif // QGLCYLINDERITEM_H
