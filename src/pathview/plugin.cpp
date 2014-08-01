@@ -29,6 +29,9 @@
 #include "qglpathitem.h"
 #include "qgllight.h"
 #include "qglcanvas.h"
+#include "qpreviewclient.h"
+#include "qgcodeprogrammodel.h"
+#include "qgcodeprogramloader.h"
 
 static void initResources()
 {
@@ -59,6 +62,9 @@ void MachinekitPathViewPlugin::registerTypes(const char *uri)
     qmlRegisterType<QGLSphereItem>(uri, 1, 0, "Sphere3D");
     qmlRegisterType<QGLPathItem>(uri, 1, 0, "Path3D");
     qmlRegisterType<QGLCanvas>(uri, 1, 0, "Canvas3D");
+    qmlRegisterType<QPreviewClient>(uri, 1, 0, "PreviewClient");
+    qmlRegisterType<QGCodeProgramModel>(uri, 1, 0, "GCodeProgramModel");
+    qmlRegisterType<QGCodeProgramLoader>(uri, 1, 0, "GCodeProgramLoader");
 
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {

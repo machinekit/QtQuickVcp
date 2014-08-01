@@ -28,8 +28,9 @@
 #include <QtCore/qmath.h>
 #include <QDateTime>
 
-QGLView::QGLView()
-    : m_initialized(false)
+QGLView::QGLView(QQuickItem *parent)
+    : QQuickItem(parent)
+    , m_initialized(false)
     , m_modelProgram(0)
     , m_lineProgram(0)
     , m_textProgram(0)
@@ -72,7 +73,7 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
         // Connect the beforeRendering signal to our paint function.
         // Since this call is executed on the rendering thread it must be
         // a Qt::DirectConnection
-        connect(win, SIGNAL(beforeRendering()), this, SLOT(paint()), Qt::DirectConnection);
+        connect(win, SIGNAL(afterRendering()), this, SLOT(paint()), Qt::DirectConnection);
         connect(win, SIGNAL(beforeSynchronizing()), this, SLOT(sync()), Qt::DirectConnection);
         //connect(win, SIGNAL(frameSwapped()), win, SLOT(update()));  // repaint every frame
         connect(win, SIGNAL(widthChanged(int)), this, SLOT(updatePerspectiveAspectRatio()));
@@ -80,7 +81,7 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
 
         // If we allow QML to do the clearing, they would clear what we paint
         // and nothing would show.
-        win->setClearBeforeRendering(false);
+        win->setClearBeforeRendering(true);
 
         updatePerspectiveAspectRatio();
     }
@@ -525,7 +526,7 @@ void QGLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, 
 
     // calculate vertices
     GLfloat twoPi = 2 * M_PI;
-    for (int i = 0; i < detail + 1; ++i)
+    for (int i = 0; i < detail; ++i)
     {
         GLfloat theta1 = (GLfloat)i / (GLfloat)detail * twoPi; // go around circle and get points
         GLfloat theta2 = (GLfloat)(i+1) / (GLfloat)detail * twoPi;
@@ -1344,13 +1345,19 @@ void QGLView::paint()
         emit initialized();
     }
 
+    glScissor(this->x(), window()->height() - this->y() - this->height(), this->width(), this->height());
+
+    glEnable(GL_SCISSOR_TEST);
+
+    //glViewport(this->x(), window()->height() - this->y() - this->height(), this->width(), this->height());
+
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glDepthMask(true);
+    glDepthMask(GL_TRUE);
 
     // Enable back face culling
     glEnable(GL_CULL_FACE);

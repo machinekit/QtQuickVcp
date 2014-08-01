@@ -9,6 +9,9 @@ TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.PathView
 QMAKE_MOC_OPTIONS += -Muri=$$uri
 
+include(../zeromq.pri)
+include(../../3rdparty/machinetalk-protobuf.pri)
+
 # Input
 SOURCES += \
     plugin.cpp \
@@ -20,7 +23,12 @@ SOURCES += \
     qglcamera.cpp \
     qgllight.cpp \
     qglpathitem.cpp \
-    qglcanvas.cpp
+    qglcanvas.cpp \
+    qpreviewclient.cpp \
+    qgcodeprogramitem.cpp \
+    qgcodeprogrammodel.cpp \
+    qgcodeprogramloader.cpp \
+    qpreviewitem3d.cpp
 
 HEADERS += \
     plugin.h \
@@ -32,7 +40,13 @@ HEADERS += \
     qglcamera.h \
     qgllight.h \
     qglpathitem.h \
-    qglcanvas.h
+    qglcanvas.h \
+    qpreviewclient.h \
+    debughelper.h \
+    qgcodeprogramitem.h \
+    qgcodeprogrammodel.h \
+    qgcodeprogramloader.h \
+    qpreviewitem3d.h
 
 RESOURCES += \
     shaders.qrc \
