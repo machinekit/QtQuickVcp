@@ -9,11 +9,14 @@ QPreviewClient::QPreviewClient(QQuickItem *parent) :
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
+    m_model(NULL),
+    m_interpreterState(InterpreterStateUnset),
+    m_interpreterNote(""),
     m_componentCompleted(false),
     m_context(NULL),
     m_statusSocket(NULL),
     m_previewSocket(NULL),
-    m_model(NULL)
+    m_previewUpdated(false)
 {
     m_previewStatus.fileName = "test.ngc";
     m_previewStatus.lineNumber = 0;
@@ -119,6 +122,28 @@ void QPreviewClient::statusMessageReceived(QList<QByteArray> messageList)
         gpb::TextFormat::PrintToString(m_rx, &s);
         DEBUG_TAG(3, "preview", "status update" << topic << QString::fromStdString(s))
     #endif
+
+    if (m_rx.type() == pb::MT_INTERP_STAT)
+    {
+        QStringList notes;
+
+        m_interpreterState = (InterpreterState)m_rx.interp_state();
+        for (int i = 0; i< m_rx.note_size(); ++i)
+        {
+            notes.append(QString::fromStdString(m_rx.note(i)));
+        }
+        m_interpreterNote = notes.join("\n");
+
+        emit interpreterNoteChanged(m_interpreterNote);
+        emit interpreterStateChanged(m_interpreterState);
+
+        if ((m_interpreterState == InterpreterIdle)
+                && m_previewUpdated
+                && m_model)
+        {
+            m_model->endUpdate();
+        }
+    }
 }
 
 /** Processes all message received on the preview 0MQ socket */
@@ -167,6 +192,8 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
             m_model->setData(m_previewStatus.fileName, m_previewStatus.lineNumber,
                              QVariant::fromValue(static_cast<void*>(previewList)),
                              QGCodeProgramModel::PreviewRole);
+
+            m_previewUpdated = true;
         }
     }
 }

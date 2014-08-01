@@ -26,7 +26,9 @@ class QPreviewClient : public QQuickItem
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
-    Q_ENUMS(State ConnectionError)
+    Q_PROPERTY(InterpreterState interpreterState READ interpreterState NOTIFY interpreterStateChanged)
+    Q_PROPERTY(QString interpreterNote READ interpreterNote NOTIFY interpreterNoteChanged)
+    Q_ENUMS(State ConnectionError InterpreterState)
 
 public:
     explicit QPreviewClient(QQuickItem *parent = 0);
@@ -43,6 +45,16 @@ public:
         NoError = 0,
         BindError = 1,
         SocketError = 2
+    };
+
+    enum InterpreterState {
+        InterpreterIdle = pb::INTERP_IDLE,
+        InterpreterRunning = pb::INTERP_RUNNING,
+        InterpreterPaused = pb::INTERP_PAUSED,
+        InterpreterQueueWait = pb::INTERP_QEUEUE_WAIT,
+        InterpreterSyncWait = pb::INTERP_SYNC_WAIT,
+        InterpreterAbortWait = pb::INTERP_ABORT_WAIT,
+        InterpreterStateUnset = pb::INTERP_STATE_UNSET
     };
 
     virtual void componentComplete();
@@ -80,6 +92,16 @@ public:
     QGCodeProgramModel * model() const
     {
         return m_model;
+    }
+
+    InterpreterState interpreterState() const
+    {
+        return m_interpreterState;
+    }
+
+    QString interpreterNote() const
+    {
+        return m_interpreterNote;
     }
 
 public slots:
@@ -122,6 +144,9 @@ private:
     State       m_connectionState;
     ConnectionError       m_error;
     QString m_errorString;
+    QGCodeProgramModel * m_model;
+    InterpreterState m_interpreterState;
+    QString m_interpreterNote;
     bool    m_componentCompleted;
 
     PollingZMQContext *m_context;
@@ -131,13 +156,12 @@ private:
     pb::Container   m_rx;
 
     PreviewStatus m_previewStatus;
+    bool m_previewUpdated;
 
     void start();
     void stop();
     void updateState(State state);
     void updateError(ConnectionError error, QString errorString);
-
-    QGCodeProgramModel * m_model;
 
 private slots:
     void statusMessageReceived(QList<QByteArray> messageList);
@@ -155,6 +179,8 @@ signals:
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
     void modelChanged(QGCodeProgramModel * arg);
+    void interpreterStateChanged(InterpreterState arg);
+    void interpreterNoteChanged(QString arg);
 };
 
 #endif // QPREVIEWCLIENT_H

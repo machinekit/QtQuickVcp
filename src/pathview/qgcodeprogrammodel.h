@@ -14,7 +14,8 @@ public:
             FileNameRole = Qt::UserRole,
             LineNumberRole,
             GCodeRole,
-            PreviewRole
+            PreviewRole,
+            SelectedRole
         };
 
     explicit QGCodeProgramModel(QObject *parent = 0);
@@ -23,8 +24,9 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     QModelIndex index(const QString &fileName, int lineNumber) const;
+    QModelIndex index(int row);
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    int rowCount(const QModelIndex &parent) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QHash<int, QByteArray> roleNames() const;
 
 public slots:

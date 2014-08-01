@@ -27,8 +27,7 @@ SOURCES += \
     qpreviewclient.cpp \
     qgcodeprogramitem.cpp \
     qgcodeprogrammodel.cpp \
-    qgcodeprogramloader.cpp \
-    qpreviewitem3d.cpp
+    qgcodeprogramloader.cpp
 
 HEADERS += \
     plugin.h \
@@ -45,8 +44,7 @@ HEADERS += \
     debughelper.h \
     qgcodeprogramitem.h \
     qgcodeprogrammodel.h \
-    qgcodeprogramloader.h \
-    qpreviewitem3d.h
+    qgcodeprogramloader.h
 
 RESOURCES += \
     shaders.qrc \

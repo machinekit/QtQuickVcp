@@ -1,4 +1,5 @@
 #include "qgcodeprogrammodel.h"
+#include <QDebug>
 
 QGCodeProgramModel::QGCodeProgramModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -37,6 +38,11 @@ QModelIndex QGCodeProgramModel::index(const QString &fileName, int lineNumber) c
     }
 
     return createIndex(fileIndex.index + (lineNumber-1), 0);
+}
+
+QModelIndex QGCodeProgramModel::index(int row)
+{
+    return createIndex(row, 0);
 }
 
 Qt::ItemFlags QGCodeProgramModel::flags(const QModelIndex &index) const
@@ -236,6 +242,8 @@ QVariant QGCodeProgramModel::internalData(const QModelIndex &index, int role) co
         return QVariant(item->gcode());
     case PreviewRole:
         return QVariant::fromValue(static_cast<void*>(item->previewList()));
+    case SelectedRole:
+        return QVariant(item->selected());
     default:
         return QVariant();
     }
@@ -265,6 +273,10 @@ bool QGCodeProgramModel::internalSetData(const QModelIndex &index, const QVarian
         break;
     case PreviewRole:
         item->setPreviewList(static_cast<QList<pb::Preview>* >(value.value<void*>()));
+        break;
+    case SelectedRole:
+        item->setSelected(value.toBool());
+        break;
     default:
         return false;
     }

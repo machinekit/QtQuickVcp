@@ -4,6 +4,7 @@ QGCodeProgramItem::QGCodeProgramItem(const QString &fileName, int lineNumber):
     m_fileName(fileName),
     m_lineNumber(lineNumber),
     m_gcode(QString("")),
+    m_selected(false),
     m_previewList(NULL)
 {
 }
@@ -48,6 +49,16 @@ void QGCodeProgramItem::setPreviewList(QList<pb::Preview> *previewList)
 {
     m_previewList = previewList;
 }
+bool QGCodeProgramItem::selected() const
+{
+    return m_selected;
+}
+
+void QGCodeProgramItem::setSelected(bool selected)
+{
+    m_selected = selected;
+}
+
 
 
 

@@ -45,13 +45,13 @@ GLView3D {
     camera: Camera3D {
         property real heading: 45
         property real pitch: 60
-        property real distance: 15
+        property real distance: 50
         id: camera
         projectionType: Camera3D.Perspective
         eye: Qt.vector3d(distance*Math.sin(Math.PI*pitch/180) * Math.cos(Math.PI*heading/180),
                          distance*Math.sin(Math.PI*pitch/180)*Math.sin(Math.PI*heading/180),
                          distance*Math.cos(Math.PI*pitch/180))
-        center: Qt.vector3d(0, 0, 0)
+        center: Qt.vector3d(boundingBox.size.x/2.0, boundingBox.size.y/2.0, 0)
         upVector: Qt.vector3d(0, 0, 1)
     }
 

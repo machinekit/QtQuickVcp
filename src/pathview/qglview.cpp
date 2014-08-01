@@ -803,7 +803,7 @@ void QGLView::drawTexts()
 
         texture->bind(texture->textureId());
         glDrawArrays(GL_TRIANGLES, 0, m_textVertexBuffer->size()/sizeof(TextVertex));
-        texture->release();
+        texture->release(texture->textureId());
     }
 
     m_textProgram->disableAttributeArray(m_textPositionLocation);
@@ -1336,6 +1336,13 @@ void QGLView::endUnion()
 
 void QGLView::paint()
 {
+    GLboolean scissorEnabled;
+    GLboolean depthTestEnabled;
+    GLint depthFunc;
+    GLboolean depthMask;
+    GLboolean cullFaceEnabled;
+
+
     if (!m_initialized) {
         setupShaders();
         setupWindow();
@@ -1347,6 +1354,7 @@ void QGLView::paint()
 
     glScissor(this->x(), window()->height() - this->y() - this->height(), this->width(), this->height());
 
+    glGetBooleanv(GL_SCISSOR_TEST, &scissorEnabled);
     glEnable(GL_SCISSOR_TEST);
 
     //glViewport(this->x(), window()->height() - this->y() - this->height(), this->width(), this->height());
@@ -1355,11 +1363,15 @@ void QGLView::paint()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Enable depth test
+    glGetBooleanv(GL_DEPTH_TEST, &depthTestEnabled);
     glEnable(GL_DEPTH_TEST);
+    glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
     glDepthFunc(GL_LEQUAL);
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
     glDepthMask(GL_TRUE);
 
     // Enable back face culling
+    glGetBooleanv(GL_CULL_FACE, &cullFaceEnabled);
     glEnable(GL_CULL_FACE);
 
     // Enable Alpha blend
@@ -1382,7 +1394,7 @@ void QGLView::paint()
     m_textProgram->setUniformValue(m_textProjectionMatrixLocation, m_projectionMatrix);
     m_textProgram->setUniformValue(m_textViewMatrixLocation, m_viewMatrix);
     m_textProgram->setUniformValue(m_textSelectionModeLocation, m_selectionModeActive);
-    drawTexts();
+    //drawTexts();
     m_textProgram->release();
 
     m_modelProgram->bind();
@@ -1408,6 +1420,24 @@ void QGLView::paint()
         m_drawableIdMap.clear();
         m_selectionModeActive = false;
         paint();
+    }
+
+    if (!scissorEnabled)
+    {
+        glDisable(GL_SCISSOR_TEST);
+    }
+    glClear(GL_SCISSOR_BIT);
+
+    if (!depthTestEnabled)
+    {
+        glDisable(GL_DEPTH_TEST);
+    }
+    glDepthFunc(depthFunc);
+    glDepthMask(depthMask);
+
+    if (!cullFaceEnabled)
+    {
+        glDisable(GL_CULL_FACE);
     }
 }
 
