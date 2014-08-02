@@ -10,6 +10,7 @@ class QGLPathItem : public QGLItem
     Q_OBJECT
     Q_PROPERTY(QColor feedColor READ feedColor WRITE setFeedColor NOTIFY feedColorChanged)
     Q_PROPERTY(QColor traverseColor READ traverseColor WRITE setTraverseColor NOTIFY traverseColorChanged)
+    Q_PROPERTY(QColor selectedColor READ selectedColor WRITE setSelectedColor NOTIFY selectedColorChanged)
     Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
 
 public:
@@ -20,6 +21,7 @@ public:
     QGCodeProgramModel * model() const;
     QColor feedColor() const;
     QColor traverseColor() const;
+    QColor selectedColor() const;
 
 public slots:
     virtual void selectDrawable(void *pointer);
@@ -27,6 +29,7 @@ public slots:
     void setModel(QGCodeProgramModel * arg);
     void setFeedColor(QColor arg);
     void setTraverseColor(QColor arg);
+    void setSelectedColor(QColor arg);
 
 private:
     struct Position {
@@ -60,11 +63,16 @@ private:
 
     class PathItem {
     public:
-        PathItem(): pathType(Line), movementType(FeedMove) {}
+        PathItem():
+            pathType(Line),
+            movementType(FeedMove),
+            drawablePointer(NULL){}
 
         PathType pathType;
         MovementType movementType;
         QVector3D position;
+        QModelIndex modelIndex;
+        void *drawablePointer;
     };
 
     class LinePathItem: public PathItem {
@@ -85,10 +93,18 @@ private:
     QGCodeProgramModel * m_model;
     QColor m_feedColor;
     QColor m_traverseColor;
+    QColor m_selectedColor;
 
     Offsets m_activeOffsets;
     Position m_currentPosition;
     QList<PathItem*> m_previewPathItems;
+    QModelIndex m_currentModelIndex;
+    QMap<QModelIndex, PathItem*> m_modelPathMap;  // for mapping the model to internal items
+    QMap<void*, PathItem*> m_drawablePathMap;  // for mapping GL views drawables to internal items
+    void* m_previousSelectedDrawable;
+
+    bool m_needsFullUpdate;
+    QList<PathItem*> m_modifiedPathItems;
 
     void resetActiveOffsets();
     void resetCurrentPosition();
@@ -104,11 +120,13 @@ private:
 
 private slots:
     void drawPath();
+    void modelDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles);
 
 signals:
     void modelChanged(QGCodeProgramModel * arg);
     void feedColorChanged(QColor arg);
     void traverseColorChanged(QColor arg);
+    void selectedColorChanged(QColor arg);
 };
 
 #endif // QGLPATHITEM_H

@@ -70,6 +70,7 @@ QHash<int, QByteArray> QGCodeProgramModel::roleNames() const
     roles[LineNumberRole] = "lineNumber";
     roles[GCodeRole] = "gcode";
     roles[PreviewRole] = "preview";
+    roles[SelectedRole] = "selected";
     return roles;
 }
 
@@ -260,6 +261,7 @@ bool QGCodeProgramModel::internalSetData(const QModelIndex &index, const QVarian
 
     QGCodeProgramItem *item = m_items.at(index.row());
 
+
     switch (role)
     {
     case LineNumberRole:
@@ -281,7 +283,9 @@ bool QGCodeProgramModel::internalSetData(const QModelIndex &index, const QVarian
         return false;
     }
 
-    emit dataChanged(index, index);
+    QVector<int> changedRoles;
+    changedRoles.append(role);
+    emit dataChanged(index, index, changedRoles);
 
     return true;
 }

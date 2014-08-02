@@ -1028,7 +1028,7 @@ void QGLView::color(float r, float g, float b, float a)
     color(QColor((int)(255.0*r), (int)(255.0*g), (int)(255.0*b), (int)(255.0*a)));
 }
 
-void QGLView::color(QColor color)
+void QGLView::color(const QColor &color)
 {
     m_modelParameters->color = color;
     m_lineParameters->color = color;
@@ -1040,7 +1040,7 @@ void QGLView::translate(float x, float y, float z)
     translate(QVector3D(x, y, z));
 }
 
-void QGLView::translate(QVector3D vector)
+void QGLView::translate(const QVector3D &vector)
 {
     m_modelParameters->modelMatrix.translate(vector);
     m_lineParameters->modelMatrix.translate(vector);
@@ -1052,14 +1052,14 @@ void QGLView::rotate(float angle, float x, float y, float z)
     rotate(angle, QVector3D(x, y, z));
 }
 
-void QGLView::rotate(float angle, QVector3D axis)
+void QGLView::rotate(float angle, const QVector3D &axis)
 {
     m_modelParameters->modelMatrix.rotate(angle, axis);
     m_lineParameters->modelMatrix.rotate(angle, axis);
     m_textParameters->modelMatrix.rotate(angle, axis);
 }
 
-void QGLView::rotate(QQuaternion quaternion)
+void QGLView::rotate(const QQuaternion &quaternion)
 {
     m_modelParameters->modelMatrix.rotate(quaternion);
     m_lineParameters->modelMatrix.rotate(quaternion);
@@ -1071,7 +1071,7 @@ void QGLView::scale(float x, float y, float z)
     scale(QVector3D(x, y, z));
 }
 
-void QGLView::scale(QVector3D vector)
+void QGLView::scale(const QVector3D &vector)
 {
     m_modelParameters->modelMatrix.scale(vector);
     m_lineParameters->modelMatrix.scale(vector);
@@ -1083,7 +1083,7 @@ void QGLView::mirror(float x, float y, float z)
     mirror(QVector3D(x, y, z));
 }
 
-void QGLView::mirror(QVector3D vector)
+void QGLView::mirror(const QVector3D &vector)
 {
     int x = (int)vector.x();
     int y = (int)vector.y();
@@ -1147,7 +1147,7 @@ void *QGLView::cube(float w, float l, float h, bool center)
     return cube(QVector3D(w, l, h), center);
 }
 
-void *QGLView::cube(QVector3D size, bool center)
+void *QGLView::cube(const QVector3D &size, bool center)
 {
     if (center)
     {
@@ -1209,7 +1209,7 @@ void *QGLView::line(float x, float y, float z)
     return parameters;
 }
 
-void *QGLView::line(QVector3D vector)
+void *QGLView::line(const QVector3D &vector)
 {
     return line(vector.x(), vector.y(), vector.z());
 }
@@ -1259,7 +1259,7 @@ void *QGLView::lineTo(float x, float y, float z)
     return NULL;
 }
 
-void *QGLView::lineTo(QVector3D vector)
+void *QGLView::lineTo(const QVector3D &vector)
 {
     return lineTo(vector.x(), vector.y(), vector.z());
 }
@@ -1269,7 +1269,7 @@ void *QGLView::lineFromTo(float x1, float y1, float z1, float x2, float y2, floa
     return lineFromTo(QVector3D(x1, y1, z1), QVector3D(x2, y2, z2));
 }
 
-void *QGLView::lineFromTo(QVector3D startPosition, QVector3D endPosition)
+void *QGLView::lineFromTo(const QVector3D &startPosition, const QVector3D &endPosition)
 {
     QVector3D diffVector = endPosition - startPosition;
     GLvector3D vector;
@@ -1297,7 +1297,7 @@ void *QGLView::endPath()
     return parameters;
 }
 
-void QGLView::text(QString text, TextAlignment alignment ,QFont font)
+void QGLView::text(QString text, TextAlignment alignment , QFont font)
 {
     QStaticText staticText(text);
     font.setPixelSize(100);
@@ -1332,6 +1332,14 @@ void QGLView::endUnion()
 
     delete m_textParametersStack.pop();
     m_textParameters = new TextParameters(m_textParametersStack.top());
+}
+
+void QGLView::updateColor(void *drawablePointer, const QColor &color)
+{
+    Parameters *parameters;
+
+    parameters = static_cast<Parameters*>(drawablePointer);
+    parameters->color = color;
 }
 
 void QGLView::paint()

@@ -6,43 +6,77 @@ QGLPathItem::QGLPathItem(QQuickItem *parent) :
     QGLItem(parent),
     m_model(NULL),
     m_feedColor(QColor(Qt::white)),
-    m_traverseColor(QColor(Qt::cyan))
+    m_traverseColor(QColor(Qt::cyan)),
+    m_selectedColor(QColor(Qt::magenta)),
+    m_needsFullUpdate(true)
 {
 }
 
 void QGLPathItem::paint(QGLView *glView)
 {
-    glView->translate(position());
-    glView->rotate(rotation());
-    glView->scale(scale());
-
-    glView->reset();
-    glView->color(QColor(Qt::white));
-    glView->beginUnion();
-    for (int i = 0; i < m_previewPathItems.size(); ++i)
+    if (m_needsFullUpdate)
     {
-        PathItem *pathItem = m_previewPathItems.at(i);
-        if (pathItem->pathType == Line)
-        {
-            LinePathItem *linePathItem = static_cast<LinePathItem*>(pathItem);
-            if (linePathItem->movementType == FeedMove)
-            {
-                glView->color(m_feedColor);
-            }
-            else
-            {
-                glView->color(m_traverseColor);
-                glView->lineStipple(true, 1.0);
-            }
-            glView->translate(linePathItem->position);
-            glView->line(linePathItem->lineVector);
-        }
-        else if (pathItem->pathType == Arc)
-        {
+        glView->reset();
+        glView->translate(position());
+        glView->rotate(rotation());
+        glView->scale(scale());
 
+        for (int i = 0; i < m_previewPathItems.size(); ++i)
+        {
+            void* drawablePointer;
+            PathItem *pathItem = m_previewPathItems.at(i);
+            if (pathItem->pathType == Line)
+            {
+                LinePathItem *linePathItem = static_cast<LinePathItem*>(pathItem);
+                if (linePathItem->movementType == FeedMove)
+                {
+                    glView->color(m_feedColor);
+                }
+                else
+                {
+                    glView->color(m_traverseColor);
+                    glView->lineStipple(true, 1.0);
+                }
+                glView->translate(linePathItem->position);
+                drawablePointer = glView->line(linePathItem->lineVector);
+                pathItem->drawablePointer = drawablePointer;
+                m_drawablePathMap.insert(drawablePointer, pathItem);
+            }
+            else if (pathItem->pathType == Arc)
+            {
+
+            }
         }
+
+        m_needsFullUpdate = false;
     }
-    glView->endUnion();
+    else
+    {
+        for (int i = 0; i < m_modifiedPathItems.size(); ++i)
+        {
+            PathItem *pathItem;
+
+            pathItem = m_modifiedPathItems.at(i);
+            if (pathItem != NULL)
+            {
+                QColor color;
+                if (m_model->data(pathItem->modelIndex, QGCodeProgramModel::SelectedRole).toBool()) {
+                    color = m_selectedColor;
+                }
+                else
+                {
+                    if (pathItem->movementType == FeedMove) {
+                        color = m_feedColor;
+                    }
+                    else {
+                        color = m_traverseColor;
+                    }
+                }
+                glView->updateColor(pathItem->drawablePointer, color);
+            }
+        }
+        m_modifiedPathItems.clear();
+    }
 }
 
 QGCodeProgramModel *QGLPathItem::model() const
@@ -60,9 +94,39 @@ QColor QGLPathItem::traverseColor() const
     return m_traverseColor;
 }
 
+QColor QGLPathItem::selectedColor() const
+{
+    return m_selectedColor;
+}
+
 void QGLPathItem::selectDrawable(void *pointer)
 {
+    PathItem *mappedPathItem;
+    QModelIndex mappedModelIndex;
 
+    if (m_model == NULL)
+    {
+        return;
+    }
+
+    mappedPathItem = m_drawablePathMap.value(pointer, NULL);
+    if (mappedPathItem != NULL)
+    {
+        mappedModelIndex = mappedPathItem->modelIndex;
+        m_model->setData(mappedModelIndex, true, QGCodeProgramModel::SelectedRole);
+    }
+
+    if (m_previousSelectedDrawable != pointer)
+    {
+        mappedPathItem = m_drawablePathMap.value(m_previousSelectedDrawable);
+        if (mappedPathItem != NULL)
+        {
+            mappedModelIndex = mappedPathItem->modelIndex;
+            m_model->setData(mappedModelIndex, false, QGCodeProgramModel::SelectedRole);
+        }
+
+        m_previousSelectedDrawable = pointer;
+    }
 }
 
 void QGLPathItem::setModel(QGCodeProgramModel *arg)
@@ -73,6 +137,8 @@ void QGLPathItem::setModel(QGCodeProgramModel *arg)
 
         connect(m_model, SIGNAL(modelReset()),
                 this, SLOT(drawPath()));
+        connect(m_model, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
+                this, SLOT(modelDataChanged(QModelIndex,QModelIndex,QVector<int>)));
     }
 }
 
@@ -89,6 +155,14 @@ void QGLPathItem::setTraverseColor(QColor arg)
     if (m_traverseColor != arg) {
         m_traverseColor = arg;
         emit traverseColorChanged(arg);
+    }
+}
+
+void QGLPathItem::setSelectedColor(QColor arg)
+{
+    if (m_selectedColor != arg) {
+        m_selectedColor = arg;
+        emit selectedColorChanged(arg);
     }
 }
 
@@ -178,7 +252,9 @@ void QGLPathItem::processStraightMove(const pb::Preview &preview, MovementType m
     linePathItem->position = currentVector;
     linePathItem->lineVector = newVector - currentVector;
     linePathItem->movementType = movementType;
+    linePathItem->modelIndex = m_currentModelIndex,
     m_previewPathItems.append(linePathItem);
+    m_modelPathMap.insert(m_currentModelIndex, linePathItem);   // mapping model index to the item
 
     m_currentPosition = newPosition;
 }
@@ -335,6 +411,10 @@ void QGLPathItem::drawPath()
     resetActiveOffsets(); // clear the offsets
     resetCurrentPosition(); // reset position
 
+    m_modelPathMap.clear();
+    m_drawablePathMap.clear();
+    m_previousSelectedDrawable = NULL;
+
     for (int i = 0; i < m_model->rowCount(); ++i)
     {
         QModelIndex index;
@@ -345,6 +425,7 @@ void QGLPathItem::drawPath()
 
         if (previewList != NULL)
         {
+            m_currentModelIndex = index;
             for (int j = 0; j < previewList->size(); ++j)
             {
                 processPreview(previewList->at(j));
@@ -352,5 +433,22 @@ void QGLPathItem::drawPath()
         }
     }
 
+    m_needsFullUpdate = true;
     emit needsUpdate();
+}
+
+void QGLPathItem::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+{
+    Q_UNUSED(bottomRight) // we only change one item at a time
+    if (roles.contains(QGCodeProgramModel::SelectedRole))
+    {
+        PathItem *pathItem;
+
+        pathItem = m_modelPathMap.value(topLeft, NULL);
+        if (pathItem != NULL)
+        {
+            m_modifiedPathItems.append(pathItem);
+            emit needsUpdate();
+        }
+    }
 }

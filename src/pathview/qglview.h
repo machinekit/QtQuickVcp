@@ -58,29 +58,6 @@ public:
         AlignRight = 2
     };
 
-    class Parameters {
-    public:
-        Parameters():
-            creator(NULL),
-            modelMatrix(QMatrix4x4()),
-            color(QColor(Qt::yellow)),
-            deleteFlag(false)
-        { }
-
-        Parameters(Parameters *parameters)
-        {
-            creator = parameters->creator;
-            modelMatrix = parameters->modelMatrix;
-            color = parameters->color;
-            deleteFlag = parameters->deleteFlag;
-        }
-
-        QGLItem *creator;
-        QMatrix4x4 modelMatrix;
-        QColor color;
-        bool deleteFlag;    // marks the parameter to delete
-    };
-
     qreal t() const { return m_t; }
     void setT(qreal t);
 
@@ -124,21 +101,21 @@ public slots:
 
     // model and line transformation functions
     void color(float r, float g, float b, float a);
-    void color(QColor color);
+    void color(const QColor &color);
     void translate(float x, float y, float z);
-    void translate(QVector3D vector);
+    void translate(const QVector3D &vector);
     void rotate(float angle, float x, float y, float z);
-    void rotate(float angle, QVector3D axis);
-    void rotate(QQuaternion quaternion);
+    void rotate(float angle, const QVector3D &axis);
+    void rotate(const QQuaternion &quaternion);
     void scale(float x, float y, float z);
-    void scale(QVector3D vector);
+    void scale(const QVector3D &vector);
     void mirror(float x, float y, float z);
-    void mirror(QVector3D vector);
+    void mirror(const QVector3D &vector);
     void resetTransformations(bool hard = false);
 
     // model functions
     void *cube(float w, float l, float h, bool center = false);
-    void *cube(QVector3D size, bool center = false);
+    void *cube(const QVector3D &size, bool center = false);
     void *cylinder(float r, float h);
     void *cone(float r, float h);
     void *sphere(float r);
@@ -147,11 +124,11 @@ public slots:
     void lineWidth(float width);
     void lineStipple(float enable, float length = 5.0);
     void *line(float x, float y, float z);
-    void *line(QVector3D vector);
+    void *line(const QVector3D &vector);
     void* lineTo(float x, float y, float z);
-    void *lineTo(QVector3D vector);
+    void *lineTo(const QVector3D &vector);
     void *lineFromTo(float x1, float y1, float z1, float x2, float y2, float z2);
-    void *lineFromTo(QVector3D startPosition, QVector3D endPosition);
+    void *lineFromTo(const QVector3D &startPosition, const QVector3D &endPosition);
     void beginPath();
     void *endPath();
 
@@ -161,6 +138,9 @@ public slots:
     // grouping functions
     void beginUnion();
     void endUnion();
+
+    // update functions
+    void updateColor(void *drawablePointer, const QColor &color);
 
     void setCamera(QGLCamera *arg)
     {
@@ -230,6 +210,29 @@ private:
         GLvector3D position;
         GLvector2D texCoordinate;
     } TextVertex;
+
+    class Parameters {
+    public:
+        Parameters():
+            creator(NULL),
+            modelMatrix(QMatrix4x4()),
+            color(QColor(Qt::yellow)),
+            deleteFlag(false)
+        { }
+
+        Parameters(Parameters *parameters)
+        {
+            creator = parameters->creator;
+            modelMatrix = parameters->modelMatrix;
+            color = parameters->color;
+            deleteFlag = parameters->deleteFlag;
+        }
+
+        QGLItem *creator;
+        QMatrix4x4 modelMatrix;
+        QColor color;
+        bool deleteFlag;    // marks the parameter to delete
+    };
 
     class LineParameters: public Parameters {
     public:
