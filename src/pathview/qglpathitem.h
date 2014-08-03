@@ -61,6 +61,15 @@ private:
         TraverseMove
     };
 
+    enum Plane {
+        XYPlane,
+        ZXPlane,
+        YZPlane,
+        UVPlane,
+        WUPlane,
+        VWPlane
+    };
+
     class PathItem {
     public:
         PathItem():
@@ -85,9 +94,18 @@ private:
     };
 
     class ArcPathItem: public PathItem {
+    public:
         ArcPathItem(): PathItem() {
             pathType = Arc;
         }
+
+        QVector2D center;
+        double helixOffset;     // helix offset from the rotation axis
+        double radius;
+        double startAngle;
+        double endAngle;
+        bool anticlockwise;
+        Plane rotationPlane;
     };
 
     QGCodeProgramModel * m_model;
@@ -97,6 +115,7 @@ private:
 
     Offsets m_activeOffsets;
     Position m_currentPosition;
+    Plane m_activePlane;
     QList<PathItem*> m_previewPathItems;
     QModelIndex m_currentModelIndex;
     QMap<QModelIndex, PathItem*> m_modelPathMap;  // for mapping the model to internal items

@@ -43,7 +43,7 @@ class QGLView : public QQuickItem
 {
     Q_OBJECT
 
-    Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
+    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QGLCamera *camera READ camera WRITE setCamera NOTIFY cameraChanged)
     Q_PROPERTY(QGLLight *light READ light WRITE setLight NOTIFY lightChanged)
     Q_PROPERTY(QQmlListProperty<QGLItem> glItems READ glItems NOTIFY glItemsChanged)
@@ -58,8 +58,8 @@ public:
         AlignRight = 2
     };
 
-    qreal t() const { return m_t; }
-    void setT(qreal t);
+    QColor backgroundColor() const { return m_backgroundColor; }
+    void setBackgroundColor(const QColor &backgroundColor);
 
     Q_INVOKABLE void readPixel(int x, int y);
 
@@ -78,7 +78,7 @@ public:
     QGLItem *glItem(int index) const;
 
 signals:
-    void tChanged();
+    void backgroundColorChanged();
     void cameraChanged(QGLCamera *arg);
     void glItemsChanged(QQmlListProperty<QGLItem> arg);
     void lightChanged(QGLLight * arg);
@@ -131,6 +131,7 @@ public slots:
     void *lineFromTo(const QVector3D &startPosition, const QVector3D &endPosition);
     void beginPath();
     void *endPath();
+    void *arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset = 0.0);
 
     // text functions
     void text(QString text, TextAlignment alignment = AlignLeft, QFont font = QFont());
@@ -346,8 +347,8 @@ private:
     int m_textIdColorLocation;
 
     // thread secure properties
-    qreal m_t;
-    qreal m_thread_t;
+    QColor m_backgroundColor;
+    QColor m_thread_backgroundColor;
 
     // generic map of drawable items
     QMap<ModelType, QList<Parameters*>* > m_drawableMap;

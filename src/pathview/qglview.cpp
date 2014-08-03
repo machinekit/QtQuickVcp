@@ -41,6 +41,7 @@ QGLView::QGLView(QQuickItem *parent)
     , m_propertySignalMapper(new QSignalMapper(this))
     , m_camera(new QGLCamera(this))
     , m_light(new QGLLight(this))
+    , m_backgroundColor(QColor(Qt::black))
 {
     setFlag(QQuickItem::ItemHasContents, true);
 
@@ -50,14 +51,13 @@ QGLView::QGLView(QQuickItem *parent)
     connect(this, SIGNAL(initialized()), this, SLOT(updateItems()), Qt::QueuedConnection);
 }
 
-void QGLView::setT(qreal t)
+void QGLView::setBackgroundColor(const QColor &t)
 {
-    if (t == m_t)
+    if (t == m_backgroundColor)
         return;
-    m_t = t;
-    emit tChanged();
-    if (window())
-        window()->update();
+    m_backgroundColor = t;
+    emit backgroundColorChanged();
+    update();
 }
 
 void QGLView::readPixel(int x, int y)
@@ -336,7 +336,7 @@ void QGLView::setupVBOs()
 
 void QGLView::setupLineVertexBuffer()
 {
-    const int MaxLinesPerPath = 50;
+    const int MaxLinesPerPath = 100;
 
     m_lineVertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     m_lineVertexBuffer->create();
@@ -1297,6 +1297,56 @@ void *QGLView::endPath()
     return parameters;
 }
 
+void *QGLView::arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset)
+{
+    qreal currentX;
+    qreal currentY;
+    qreal currentZ;
+    qreal startX;
+    qreal startY;
+    int arcPrecision = 16;  // 16 segments per revolution
+    int nSegments;
+    qreal totalAngle;
+    qreal segmentAngle;
+    qreal segmentZ;
+    bool inPath;
+
+    totalAngle = qAbs(endAngle - startAngle);
+
+    nSegments = qCeil(qAbs(totalAngle) * (qreal)arcPrecision / (2.0*M_PI));
+    segmentAngle = totalAngle / (qreal)nSegments;
+    if (!anticlockwise) {
+        segmentAngle *= -1.0;
+    }
+    segmentZ = helixOffset / (qreal)nSegments;
+
+    inPath = m_pathEnabled;
+    beginPath();
+    for (int i = 0; i < (nSegments + 1); ++i)
+    {
+        currentX = qCos(startAngle + segmentAngle * (qreal)i) * radius + x;
+        currentY = qSin(startAngle + segmentAngle * (qreal)i) * radius + y;
+        currentZ = (qreal)i * segmentZ;
+        if (i > 0) {
+            lineTo(currentX-startX, currentY-startY, currentZ);
+        }
+        else {
+            startX = currentX;
+            startY = currentY;
+            translate(startX, startY, 0);
+        }
+    }
+
+    if (!inPath)    // if no path was previousle active end the path started in this function
+    {
+        return endPath();
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
 void QGLView::text(QString text, TextAlignment alignment , QFont font)
 {
     QStaticText staticText(text);
@@ -1367,7 +1417,10 @@ void QGLView::paint()
 
     //glViewport(this->x(), window()->height() - this->y() - this->height(), this->width(), this->height());
 
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(m_thread_backgroundColor.redF(),
+                 m_thread_backgroundColor.greenF(),
+                 m_thread_backgroundColor.blueF(),
+                 m_thread_backgroundColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Enable depth test
@@ -1469,7 +1522,7 @@ void QGLView::cleanup()
 
 void QGLView::sync()
 {
-    m_thread_t = m_t;
+    m_thread_backgroundColor = m_backgroundColor;
 }
 
 void QGLView::reset()
