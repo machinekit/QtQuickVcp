@@ -118,7 +118,7 @@ private:
     Plane m_activePlane;
     QList<PathItem*> m_previewPathItems;
     QModelIndex m_currentModelIndex;
-    QMap<QModelIndex, PathItem*> m_modelPathMap;  // for mapping the model to internal items
+    QMultiMap<QModelIndex, PathItem*> m_modelPathMap;  // for mapping the model to internal items
     QMap<void*, PathItem*> m_drawablePathMap;  // for mapping GL views drawables to internal items
     void* m_previousSelectedDrawable;
 

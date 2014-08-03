@@ -345,7 +345,7 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     arcPathItem->movementType = FeedMove;
     arcPathItem->modelIndex = m_currentModelIndex,
     m_previewPathItems.append(arcPathItem);
-    m_modelPathMap.insert(m_currentModelIndex, arcPathItem);   // mapping model index to the item
+    m_modelPathMap.insertMulti(m_currentModelIndex, arcPathItem);   // mapping model index to the item
 
     m_currentPosition = newPosition;
 }
@@ -529,12 +529,12 @@ void QGLPathItem::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
     Q_UNUSED(bottomRight) // we only change one item at a time
     if (roles.contains(QGCodeProgramModel::SelectedRole))
     {
-        PathItem *pathItem;
+        QList<PathItem*> pathItemList;
 
-        pathItem = m_modelPathMap.value(topLeft, NULL);
-        if (pathItem != NULL)
+        pathItemList = m_modelPathMap.values(topLeft);
+        if (!pathItemList.isEmpty())
         {
-            m_modifiedPathItems.append(pathItem);
+            m_modifiedPathItems.append(pathItemList);
             emit needsUpdate();
         }
     }
