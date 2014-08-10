@@ -23,7 +23,7 @@
 #ifndef QGLVIEW_H
 #define QGLVIEW_H
 
-#include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickPaintedItem>
 #include <QtGui/QOpenGLShaderProgram>
 #include <QTimer>
 #include <QOpenGLBuffer>
@@ -39,7 +39,7 @@
 
 class QGLItem;
 
-class QGLView : public QQuickItem
+class QGLView : public QQuickPaintedItem
 {
     Q_OBJECT
 
@@ -76,6 +76,8 @@ public:
     QQmlListProperty<QGLItem> glItems();
     int glItemCount() const;
     QGLItem *glItem(int index) const;
+
+    void paint(QPainter * painter);
 
 signals:
     void backgroundColorChanged();
@@ -350,6 +352,8 @@ private:
     QColor m_backgroundColor;
     QColor m_thread_backgroundColor;
 
+    QSize m_viewportSize;
+
     // generic map of drawable items
     QMap<ModelType, QList<Parameters*>* > m_drawableMap;
 
@@ -381,6 +385,7 @@ private:
     QMap<QGLItem*, QList<Drawable>* > m_drawableListMap;
     QList<Drawable> *m_currentDrawableList;
     QSignalMapper *m_propertySignalMapper;
+    QList<QGLItem*> m_modifiedGlItems;  // list of gl items that have been modified
 
     // camera
     QGLCamera *m_camera;
@@ -407,8 +412,10 @@ private:
     void generateTextTexture(const QStaticText &staticText, QFont font);
     void clearTextTextures();
 
-    void paintGLItems();
+    void updateGLItems();
     void clearGLItem(QGLItem *item);
+    void updateGLItem(QGLItem *item);
+    void paintGLItems();
     void paintGLItem(QGLItem *item);
 
     quint32 getSelection();

@@ -5,10 +5,13 @@
 QGLPathItem::QGLPathItem(QQuickItem *parent) :
     QGLItem(parent),
     m_model(NULL),
-    m_feedColor(QColor(Qt::white)),
+    m_arcFeedColor(QColor(Qt::white)),
+    m_straightFeedColor(QColor(Qt::white)),
     m_traverseColor(QColor(Qt::cyan)),
     m_selectedColor(QColor(Qt::magenta)),
-    m_needsFullUpdate(true)
+    m_needsFullUpdate(true),
+    m_minimumExtents(QVector3D(0, 0, 0)),
+    m_maximumExtents(QVector3D(0, 0, 0))
 {
 }
 
@@ -30,7 +33,7 @@ void QGLPathItem::paint(QGLView *glView)
                 LinePathItem *linePathItem = static_cast<LinePathItem*>(pathItem);
                 if (linePathItem->movementType == FeedMove)
                 {
-                    glView->color(m_feedColor);
+                    glView->color(m_straightFeedColor);
                 }
                 else
                 {
@@ -43,8 +46,14 @@ void QGLPathItem::paint(QGLView *glView)
             else if (pathItem->pathType == Arc)
             {
                 ArcPathItem *arcPathItem = static_cast<ArcPathItem*>(pathItem);
-                glView->color(m_feedColor);
+                glView->color(m_arcFeedColor);
                 glView->translate(arcPathItem->position);
+                if (arcPathItem->rotationPlane == XZPlane) {
+                    glView->rotate(90, 1, 0, 0);
+                }
+                else if  (arcPathItem->rotationPlane == YZPlane) {
+                    glView->rotate(-90, 0, 1, 0);
+                }
                 drawablePointer = glView->arc(arcPathItem->center.x(),
                                               arcPathItem->center.y(),
                                               arcPathItem->radius,
@@ -80,7 +89,12 @@ void QGLPathItem::paint(QGLView *glView)
                 else
                 {
                     if (pathItem->movementType == FeedMove) {
-                        color = m_feedColor;
+                        if (pathItem->pathType == Arc) {
+                            color = m_arcFeedColor;
+                        }
+                        else {
+                            color = m_straightFeedColor;
+                        }
                     }
                     else {
                         color = m_traverseColor;
@@ -98,9 +112,9 @@ QGCodeProgramModel *QGLPathItem::model() const
     return m_model;
 }
 
-QColor QGLPathItem::feedColor() const
+QColor QGLPathItem::arcFeedColor() const
 {
-    return m_feedColor;
+    return m_arcFeedColor;
 }
 
 QColor QGLPathItem::traverseColor() const
@@ -111,6 +125,21 @@ QColor QGLPathItem::traverseColor() const
 QColor QGLPathItem::selectedColor() const
 {
     return m_selectedColor;
+}
+
+QVector3D QGLPathItem::minimumExtents() const
+{
+    return m_minimumExtents;
+}
+
+QVector3D QGLPathItem::maximumExtents() const
+{
+    return m_maximumExtents;
+}
+
+QColor QGLPathItem::straightFeedColor() const
+{
+    return m_straightFeedColor;
 }
 
 void QGLPathItem::selectDrawable(void *pointer)
@@ -156,11 +185,11 @@ void QGLPathItem::setModel(QGCodeProgramModel *arg)
     }
 }
 
-void QGLPathItem::setFeedColor(QColor arg)
+void QGLPathItem::setArcFeedColor(QColor arg)
 {
-    if (m_feedColor != arg) {
-        m_feedColor = arg;
-        emit feedColorChanged(arg);
+    if (m_arcFeedColor != arg) {
+        m_arcFeedColor = arg;
+        emit arcFeedColorChanged(arg);
     }
 }
 
@@ -177,6 +206,14 @@ void QGLPathItem::setSelectedColor(QColor arg)
     if (m_selectedColor != arg) {
         m_selectedColor = arg;
         emit selectedColorChanged(arg);
+    }
+}
+
+void QGLPathItem::setStraightFeedColor(QColor arg)
+{
+    if (m_straightFeedColor != arg) {
+        m_straightFeedColor = arg;
+        emit straightFeedColorChanged(arg);
     }
 }
 
@@ -216,6 +253,45 @@ void QGLPathItem::resetCurrentPosition()
     m_currentPosition.w = 0.0;
 }
 
+void QGLPathItem::resetActivePlane()
+{
+    m_activePlane = XYPlane;
+}
+
+void QGLPathItem::resetExtents()
+{
+    m_maximumExtents = QVector3D();
+    m_minimumExtents = QVector3D();
+}
+
+void QGLPathItem::updateExtents(const QVector3D &vector)
+{
+    if (vector.x() < m_minimumExtents.x()) {
+        m_minimumExtents.setX(vector.x());
+    }
+    if (vector.y() < m_minimumExtents.y()) {
+        m_minimumExtents.setY(vector.y());
+    }
+    if (vector.z() < m_minimumExtents.z()) {
+        m_minimumExtents.setZ(vector.z());
+    }
+    if (vector.x() > m_maximumExtents.x()) {
+        m_maximumExtents.setX(vector.x());
+    }
+    if (vector.y() > m_maximumExtents.y()) {
+        m_maximumExtents.setY(vector.y());
+    }
+    if (vector.z() > m_maximumExtents.z()) {
+        m_maximumExtents.setZ(vector.z());
+    }
+}
+
+void QGLPathItem::releaseExtents()
+{
+    emit minimumExtentsChanged(m_minimumExtents);
+    emit maximumExtentsChanged(m_maximumExtents);
+}
+
 void QGLPathItem::processPreview(const pb::Preview &preview)
 {
     switch (preview.type())
@@ -228,7 +304,7 @@ void QGLPathItem::processPreview(const pb::Preview &preview)
     case pb::PV_SET_G5X_OFFSET: processSetG5xOffset(preview); return;
     case pb::PV_SET_G92_OFFSET: processSetG92Offset(preview); return;
     case pb::PV_SET_XY_ROTATION: /*nothing*/ return;
-    case pb::PV_SELECT_PLANE: /*nothing*/ return;
+    case pb::PV_SELECT_PLANE: processSelectPlane(preview); return;
     case pb::PV_SET_TRAVERSE_RATE: /*nothing*/ return;
     case pb::PV_SET_FEED_RATE: /*nothing*/ return;
     case pb::PV_CHANGE_TOOL: /*nothing*/ return;
@@ -271,6 +347,8 @@ void QGLPathItem::processStraightMove(const pb::Preview &preview, MovementType m
     m_modelPathMap.insert(m_currentModelIndex, linePathItem);   // mapping model index to the item
 
     m_currentPosition = newPosition;
+
+    updateExtents(newVector);
 }
 
 void QGLPathItem::processArcFeed(const pb::Preview &preview)
@@ -289,6 +367,7 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     double endAngle;
     double helixOffset;
     bool anticlockwise;
+    double radius;
     ArcPathItem *arcPathItem;
 
 
@@ -304,40 +383,133 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
 
         startPoint.setX(currentVector.x());
         startPoint.setY(currentVector.y());
-        endPoint.setX(newVector.x());
-        endPoint.setY(newVector.y());
-        centerPoint.setX(preview.first_axis());
-        centerPoint.setY(preview.second_axis());
-        startVector = startPoint - centerPoint;
-        endVector = endPoint - centerPoint;
-
-        startAngle = qAtan2(startVector.y(), startVector.x());
-        if (startAngle < 0) {
-            startAngle += 2 * M_PI;
-        }
-        endAngle = qAtan2(endVector.y(), endVector.x());
-        if (startAngle < 0) {
-            endAngle += 2 * M_PI;
-        }
-        anticlockwise = !(preview.rotation() < 0);
-        if (!anticlockwise) {
-            endAngle -= 2.0*M_PI * (qAbs(preview.rotation())-1.0);  // for rotation > 1 decrease the startAngle
-        }
-        else {
-            startAngle += 2.0*M_PI * (qAbs(preview.rotation())-1.0);  // for rotation > 1 increase the endAngle
-        }
 
         helixOffset = newVector.z() - currentVector.z();
+    }
+    else if (m_activePlane == YZPlane)
+    {
+        arcPathItem = new ArcPathItem();
+        currentVector = positionToVector3D(m_currentPosition);
+        newPosition = calculateNewPosition(preview.pos());
+        newPosition.y = preview.first_end();
+        newPosition.z = preview.second_end();
+        newPosition.x = preview.axis_end_point();
+        newVector = positionToVector3D(newPosition);
+
+        startPoint.setX(currentVector.y());
+        startPoint.setY(currentVector.z());
+
+        helixOffset = newVector.x() - currentVector.x();
+    }
+    else if (m_activePlane == XZPlane)
+    {
+        arcPathItem = new ArcPathItem();
+        currentVector = positionToVector3D(m_currentPosition);
+        newPosition = calculateNewPosition(preview.pos());
+        newPosition.x = preview.first_end();
+        newPosition.z = preview.second_end();
+        newPosition.y = preview.axis_end_point();
+        newVector = positionToVector3D(newPosition);
+
+        startPoint.setX(currentVector.x());
+        startPoint.setY(currentVector.z());
+
+        helixOffset = newVector.y() - currentVector.y();
     }
     else
     {
         return;
     }
 
+    endPoint.setX(preview.first_end());
+    endPoint.setY(preview.second_end());
+    centerPoint.setX(preview.first_axis());
+    centerPoint.setY(preview.second_axis());
+    startVector = startPoint - centerPoint;
+    endVector = endPoint - centerPoint;
+
+    startAngle = qAtan2(startVector.y(), startVector.x());
+    if (startAngle < 0) {
+        startAngle += 2 * M_PI;
+    }
+    endAngle = qAtan2(endVector.y(), endVector.x());
+    if (startAngle < 0) {
+        endAngle += 2 * M_PI;
+    }
+    anticlockwise = !(preview.rotation() < 0);
+    if (!anticlockwise) {
+        endAngle -= 2.0 * M_PI * (qAbs((double)preview.rotation())-1.0);  // for rotation > 1 decrease the startAngle
+    }
+    else {
+        startAngle += 2.0 * M_PI * (qAbs((double)preview.rotation())-1.0);  // for rotation > 1 increase the endAngle
+    }
+
+    radius = centerPoint.distanceToPoint(startPoint);
+
+
+    // calculate the extents of the arc
+    double firstAngle;
+    double secondAngle;
+    bool point1 = false;    // phi=0
+    bool point2 = false;    // phi=pi/2
+    bool point3 = false;    // phi=pi
+    bool point4 = false;    // phi=3pi/2
+
+    if (!anticlockwise) {
+        firstAngle = startAngle;
+        secondAngle = endAngle;
+    }
+    else {
+        firstAngle = endAngle;
+        secondAngle = startAngle;
+    }
+
+    if (secondAngle > firstAngle) {
+        secondAngle = 2.0 * M_PI - secondAngle;
+    }
+
+    if ((firstAngle > 0.0) && (secondAngle < 0.0)) {
+        point1 = true;
+    }
+    if (((firstAngle > M_PI_2) && (secondAngle < M_PI_2)) || (secondAngle < -3.0*M_PI_2)) {
+        point2 = true;
+    }
+    if (((firstAngle > M_PI) && (secondAngle < M_PI)) || (secondAngle < -M_PI)) {
+        point3 = true;
+    }
+    if (((firstAngle > 3.0*M_PI_2) && (secondAngle < 3.0*M_PI_2)) || (secondAngle < -M_PI_2)) {
+        point4 = true;
+    }
+
+    updateExtents(newVector);
+    if (m_activePlane == XYPlane)
+    {
+        if (point1) {
+            updateExtents(QVector3D(centerPoint.x() + radius, centerPoint.y(), currentVector.z()));
+        }
+        if (point2) {
+            updateExtents(QVector3D(centerPoint.x(), centerPoint.y() + radius, currentVector.z()));
+        }
+        if (point3) {
+            updateExtents(QVector3D(centerPoint.x() - radius, centerPoint.y(), currentVector.z()));
+        }
+        if (point1) {
+            updateExtents(QVector3D(centerPoint.x(), centerPoint.y() - radius, currentVector.z()));
+        }
+    }
+    else if (m_activePlane == XZPlane)
+    {
+        //TODO
+    }
+    else if (m_activePlane == YZPlane)
+    {
+        //TODO
+    }
+
     arcPathItem->position = currentVector;
     arcPathItem->rotationPlane = m_activePlane;
     arcPathItem->center = (centerPoint - startPoint);
-    arcPathItem->radius = centerPoint.distanceToPoint(startPoint);
+    arcPathItem->radius = radius;
     arcPathItem->helixOffset = helixOffset;
     arcPathItem->startAngle = startAngle;
     arcPathItem->endAngle = endAngle;
@@ -368,6 +540,23 @@ void QGLPathItem::processUseToolOffset(const pb::Preview &preview)
 {
     if (preview.has_pos()) {
         m_activeOffsets.toolOffset = previewPositionToPosition(preview.pos());
+    }
+}
+
+void QGLPathItem::processSelectPlane(const pb::Preview &preview)
+{
+    if (preview.has_plane())
+    {
+        switch (preview.plane())
+        {
+        case 1: m_activePlane = XYPlane; break;
+        case 2: m_activePlane = YZPlane; break;
+        case 3: m_activePlane = XZPlane; break;
+        case 4: m_activePlane = UVPlane; break;
+        case 5: m_activePlane = VWPlane; break;
+        case 6: m_activePlane = WUPlane; break;
+        default: break;
+        }
     }
 }
 
@@ -495,11 +684,12 @@ void QGLPathItem::drawPath()
 
     qDeleteAll(m_previewPathItems); // clear the list of preview path items
     resetActiveOffsets(); // clear the offsets
+    resetActivePlane();
     resetCurrentPosition(); // reset position
+    resetExtents();
 
     m_modelPathMap.clear();
     m_drawablePathMap.clear();
-    m_activePlane = XYPlane;
     m_previousSelectedDrawable = NULL;
 
     for (int i = 0; i < m_model->rowCount(); ++i)
@@ -508,6 +698,9 @@ void QGLPathItem::drawPath()
         QList<pb::Preview>* previewList;
 
         index = m_model->index(i);
+        if (!index.isValid()) {
+            continue;
+        }
         previewList = static_cast<QList<pb::Preview>* >(m_model->data(index, QGCodeProgramModel::PreviewRole).value<void*>());
 
         if (previewList != NULL)
@@ -522,6 +715,8 @@ void QGLPathItem::drawPath()
 
     m_needsFullUpdate = true;
     emit needsUpdate();
+
+    releaseExtents();
 }
 
 void QGLPathItem::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)

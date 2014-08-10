@@ -29,7 +29,7 @@
 #include <QDateTime>
 
 QGLView::QGLView(QQuickItem *parent)
-    : QQuickItem(parent)
+    : QQuickPaintedItem(parent)
     , m_initialized(false)
     , m_modelProgram(0)
     , m_lineProgram(0)
@@ -43,12 +43,16 @@ QGLView::QGLView(QQuickItem *parent)
     , m_light(new QGLLight(this))
     , m_backgroundColor(QColor(Qt::black))
 {
-    setFlag(QQuickItem::ItemHasContents, true);
+    //setFlag(QQuickItem::ItemHasContents, true);
 
     connect(this, SIGNAL(windowChanged(QQuickWindow*)), this, SLOT(handleWindowChanged(QQuickWindow*)));
     connect(this, SIGNAL(childrenChanged()), this, SLOT(updateChildren()));
     connect(m_propertySignalMapper, SIGNAL(mapped(QObject*)), this, SLOT(updateItem(QObject*)));
-    connect(this, SIGNAL(initialized()), this, SLOT(updateItems()), Qt::QueuedConnection);
+    //connect(this, SIGNAL(initialized()), this, SLOT(updateItems()), Qt::QueuedConnection);
+
+    setRenderTarget(QQuickPaintedItem::InvertedYFramebufferObject);
+    setMipmap(true);
+    //setAntialiasing(true);
 }
 
 void QGLView::setBackgroundColor(const QColor &t)
@@ -73,7 +77,7 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
         // Connect the beforeRendering signal to our paint function.
         // Since this call is executed on the rendering thread it must be
         // a Qt::DirectConnection
-        connect(win, SIGNAL(afterRendering()), this, SLOT(paint()), Qt::DirectConnection);
+        //connect(win, SIGNAL(afterRendering()), this, SLOT(paint()), Qt::DirectConnection);
         connect(win, SIGNAL(beforeSynchronizing()), this, SLOT(sync()), Qt::DirectConnection);
         //connect(win, SIGNAL(frameSwapped()), win, SLOT(update()));  // repaint every frame
         connect(win, SIGNAL(widthChanged(int)), this, SLOT(updatePerspectiveAspectRatio()));
@@ -81,7 +85,7 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
 
         // If we allow QML to do the clearing, they would clear what we paint
         // and nothing would show.
-        win->setClearBeforeRendering(true);
+        //win->setClearBeforeRendering(true);
 
         updatePerspectiveAspectRatio();
     }
@@ -90,8 +94,8 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
 void QGLView::updatePerspectiveAspectRatio()
 {
     qreal ratio = window()->devicePixelRatio();
-    int w = int(ratio * window()->width());
-    int h = int(ratio * window()->height());
+    int w = int(ratio * this->width());
+    int h = int(ratio * this->height());
     m_projectionAspectRatio = (float)w/(float)h;
     updateProjectionMatrix();
 }
@@ -115,7 +119,7 @@ void QGLView::updateItems()
         return;
     }
 
-    paintGLItems();
+    updateGLItems();
     update();
 }
 
@@ -126,7 +130,7 @@ void QGLView::updateItem(QObject *item)
         return;
     }
 
-    paintGLItem(static_cast<QGLItem*>(item));
+    updateGLItem(static_cast<QGLItem*>(item));
     update();
 }
 
@@ -870,17 +874,31 @@ void QGLView::clearTextTextures()
     }
 }
 
-void QGLView::paintGLItems()
+void QGLView::updateGLItems()
 {
     for (int i = 0; i < m_glItems.size(); ++i)
     {
-        paintGLItem(m_glItems.at(i));
+        updateGLItem(m_glItems.at(i));
     }
 }
 
 void QGLView::clearGLItem(QGLItem *item)
 {
     removeDrawables(m_drawableListMap.value(item));
+}
+
+void QGLView::updateGLItem(QGLItem *item)
+{
+    m_modifiedGlItems.append(item);
+}
+
+void QGLView::paintGLItems()
+{
+    for (int i = 0; i < m_modifiedGlItems.size(); ++i)
+    {
+        paintGLItem(m_modifiedGlItems.at(i));
+    }
+    m_modifiedGlItems.clear();
 }
 
 void QGLView::paintGLItem(QGLItem *item)
@@ -961,7 +979,7 @@ void QGLView::addGlItem(QGLItem *item)
     m_drawableListMap.insert(item, drawableList);
 
     if (m_initialized) {
-        paintGLItem(item);
+        updateGLItem(item);
         update();
     }
 
@@ -1021,6 +1039,13 @@ int QGLView::glItemCount() const
 QGLItem *QGLView::glItem(int index) const
 {
     return m_glItems.at(index);
+}
+
+void QGLView::paint(QPainter *painter)
+{
+    painter->beginNativePainting();
+    paint();
+    painter->endNativePainting();
 }
 
 void QGLView::color(float r, float g, float b, float a)
@@ -1394,28 +1419,24 @@ void QGLView::updateColor(void *drawablePointer, const QColor &color)
 
 void QGLView::paint()
 {
-    GLboolean scissorEnabled;
-    GLboolean depthTestEnabled;
-    GLint depthFunc;
-    GLboolean depthMask;
-    GLboolean cullFaceEnabled;
+    //Lboolean scissorEnabled;
+    //GLboolean depthTestEnabled;
+    //GLint depthFunc;
+    //GLboolean depthMask;
+    //GLboolean cullFaceEnabled;
 
 
     if (!m_initialized) {
-        setupShaders();
-        setupWindow();
-        setupVBOs();
-        setupStack();
-        m_initialized = true;
-        emit initialized();
+        return;
     }
 
-    glScissor(this->x(), window()->height() - this->y() - this->height(), this->width(), this->height());
+    //glScissor(this->x(), window()->height() - this->y() - this->height(), this->width(), this->height());
 
-    glGetBooleanv(GL_SCISSOR_TEST, &scissorEnabled);
-    glEnable(GL_SCISSOR_TEST);
+    //glGetBooleanv(GL_SCISSOR_TEST, &scissorEnabled);
+    //glEnable(GL_SCISSOR_TEST);
 
-    //glViewport(this->x(), window()->height() - this->y() - this->height(), this->width(), this->height());
+    //glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
+    glViewport(0, 0, this->width(), this->height());
 
     glClearColor(m_thread_backgroundColor.redF(),
                  m_thread_backgroundColor.greenF(),
@@ -1424,20 +1445,20 @@ void QGLView::paint()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Enable depth test
-    glGetBooleanv(GL_DEPTH_TEST, &depthTestEnabled);
+    //glGetBooleanv(GL_DEPTH_TEST, &depthTestEnabled);
     glEnable(GL_DEPTH_TEST);
-    glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
+    //glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
     glDepthFunc(GL_LEQUAL);
-    glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+    //glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
     glDepthMask(GL_TRUE);
 
     // Enable back face culling
-    glGetBooleanv(GL_CULL_FACE, &cullFaceEnabled);
+    //glGetBooleanv(GL_CULL_FACE, &cullFaceEnabled);
     glEnable(GL_CULL_FACE);
 
     // Enable Alpha blend
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
     if (m_selectionModeActive)
     {
@@ -1455,7 +1476,7 @@ void QGLView::paint()
     m_textProgram->setUniformValue(m_textProjectionMatrixLocation, m_projectionMatrix);
     m_textProgram->setUniformValue(m_textViewMatrixLocation, m_viewMatrix);
     m_textProgram->setUniformValue(m_textSelectionModeLocation, m_selectionModeActive);
-    //drawTexts();
+    drawTexts();
     m_textProgram->release();
 
     m_modelProgram->bind();
@@ -1483,7 +1504,7 @@ void QGLView::paint()
         paint();
     }
 
-    if (!scissorEnabled)
+    /*if (!scissorEnabled)
     {
         glDisable(GL_SCISSOR_TEST);
     }
@@ -1499,7 +1520,7 @@ void QGLView::paint()
     if (!cullFaceEnabled)
     {
         glDisable(GL_CULL_FACE);
-    }
+    }*/
 }
 
 void QGLView::cleanup()
@@ -1522,7 +1543,20 @@ void QGLView::cleanup()
 
 void QGLView::sync()
 {
+    if (!m_initialized)
+    {
+        setupShaders();
+        setupWindow();
+        setupVBOs();
+        setupStack();
+        m_initialized = true;
+        emit initialized();
+        updateGLItems();  // the context is bound, we can now update the items
+    }
+
     m_thread_backgroundColor = m_backgroundColor;
+
+    paintGLItems();
 }
 
 void QGLView::reset()

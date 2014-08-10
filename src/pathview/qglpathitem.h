@@ -8,10 +8,13 @@
 class QGLPathItem : public QGLItem
 {
     Q_OBJECT
-    Q_PROPERTY(QColor feedColor READ feedColor WRITE setFeedColor NOTIFY feedColorChanged)
+    Q_PROPERTY(QColor arcFeedColor READ arcFeedColor WRITE setArcFeedColor NOTIFY arcFeedColorChanged)
+    Q_PROPERTY(QColor straightFeedColor READ straightFeedColor WRITE setStraightFeedColor NOTIFY straightFeedColorChanged)
     Q_PROPERTY(QColor traverseColor READ traverseColor WRITE setTraverseColor NOTIFY traverseColorChanged)
     Q_PROPERTY(QColor selectedColor READ selectedColor WRITE setSelectedColor NOTIFY selectedColorChanged)
     Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(QVector3D minimumExtents READ minimumExtents NOTIFY minimumExtentsChanged)
+    Q_PROPERTY(QVector3D maximumExtents READ maximumExtents NOTIFY maximumExtentsChanged)
 
 public:
     explicit QGLPathItem(QQuickItem *parent = 0);
@@ -19,17 +22,21 @@ public:
     virtual void paint(QGLView *glView);
 
     QGCodeProgramModel * model() const;
-    QColor feedColor() const;
+    QColor arcFeedColor() const;
     QColor traverseColor() const;
     QColor selectedColor() const;
+    QVector3D minimumExtents() const;
+    QVector3D maximumExtents() const;
+    QColor straightFeedColor() const;
 
 public slots:
     virtual void selectDrawable(void *pointer);
 
     void setModel(QGCodeProgramModel * arg);
-    void setFeedColor(QColor arg);
+    void setArcFeedColor(QColor arg);
     void setTraverseColor(QColor arg);
     void setSelectedColor(QColor arg);
+    void setStraightFeedColor(QColor arg);
 
 private:
     struct Position {
@@ -63,7 +70,7 @@ private:
 
     enum Plane {
         XYPlane,
-        ZXPlane,
+        XZPlane,
         YZPlane,
         UVPlane,
         WUPlane,
@@ -100,7 +107,7 @@ private:
         }
 
         QVector2D center;
-        double helixOffset;     // helix offset from the rotation axis
+        double helixOffset;     // offset from the rotation axis
         double radius;
         double startAngle;
         double endAngle;
@@ -109,7 +116,8 @@ private:
     };
 
     QGCodeProgramModel * m_model;
-    QColor m_feedColor;
+    QColor m_arcFeedColor;
+    QColor m_straightFeedColor;
     QColor m_traverseColor;
     QColor m_selectedColor;
 
@@ -125,14 +133,22 @@ private:
     bool m_needsFullUpdate;
     QList<PathItem*> m_modifiedPathItems;
 
+    QVector3D m_minimumExtents;
+    QVector3D m_maximumExtents;
+
     void resetActiveOffsets();
     void resetCurrentPosition();
+    void resetActivePlane();
+    void resetExtents();
+    void updateExtents(const QVector3D &vector);
+    void releaseExtents();
     void processPreview(const pb::Preview &preview);
     void processStraightMove(const pb::Preview &preview, MovementType movementType);
     void processArcFeed(const pb::Preview &preview);
     void processSetG5xOffset(const pb::Preview &preview);
     void processSetG92Offset(const pb::Preview &preview);
     void processUseToolOffset(const pb::Preview &preview);
+    void processSelectPlane(const pb::Preview &preview);
     Position previewPositionToPosition(const pb::Position &position) const;
     Position calculateNewPosition(const pb::Position &newPosition) const;
     QVector3D positionToVector3D(const Position &position) const;
@@ -143,9 +159,12 @@ private slots:
 
 signals:
     void modelChanged(QGCodeProgramModel * arg);
-    void feedColorChanged(QColor arg);
+    void arcFeedColorChanged(QColor arg);
     void traverseColorChanged(QColor arg);
     void selectedColorChanged(QColor arg);
+    void minimumExtentsChanged(QVector3D arg);
+    void maximumExtentsChanged(QVector3D arg);
+    void straightFeedColorChanged(QColor arg);
 };
 
 #endif // QGLPATHITEM_H
