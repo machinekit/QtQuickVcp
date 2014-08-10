@@ -22,6 +22,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
+import QtQuick.Window 2.0
 import Machinekit.Controls 1.0
 import Machinekit.HalRemote 1.0
 import Machinekit.HalRemote.Controls 1.0
@@ -31,285 +32,317 @@ HalApplicationWindow {
 
     id: main
 
-    width: 400
+    width: 800
     height: 600
     name: "pidctrl"
     title: qsTr("PID Control Demo")
 
-    ColumnLayout {
-        anchors.margins: 10
+    ScrollView  {
         anchors.fill: parent
-        spacing: 0
 
-        GroupBox {
-            Layout.fillWidth: true
-            Layout.preferredHeight: main.height * 0.3
-            title: qsTr("Feedback Log")
-
-            RowLayout {
-                anchors.fill: parent
-                spacing: 5
-
-                HalLogChart {
-                    name: "feedback"
-
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    targetValue: commandValue
-                    minimumValue: minSlider.value
-                    maximumValue: maxSlider.value
-                }
-
-                ColumnLayout {
-                    Layout.fillHeight: true
-
-                    Text {
-                        text: qsTr("Min")
-                    }
-
-                    Slider {
-                        id: minSlider
-
-                        orientation: Qt.Vertical
-                        minimumValue: 0.0
-                        maximumValue: 300.0
-                        value: 0.0
-                    }
-
-                    Text {
-                        text: minSlider.value.toFixed(2)
-                    }
-                }
-                ColumnLayout {
-                    Text {
-                        text: qsTr("Max")
-                    }
-
-                    Slider {
-                        id: maxSlider
-
-                        Layout.fillHeight: true
-                        orientation: Qt.Vertical
-                        minimumValue: 0.0
-                        maximumValue: 300.01
-                        value: 300.0
-                    }
-
-                    Text {
-                        text: maxSlider.value.toFixed(2)
-                    }
-                }
-            }
-        }
-
-        GroupBox {
-            Layout.fillWidth: true
-            Layout.preferredHeight: main.height * 0.3
-            title: qsTr("Output Log")
+        ColumnLayout {
+            property int margins: Screen.logicalPixelDensity*3
+            width: main.width - margins*2
+            x: margins
+            y: margins
+            spacing: 0
 
             RowLayout {
-                anchors.fill: parent
-                spacing: 5
+                Layout.fillWidth: true
+                Layout.preferredHeight: main.height * 0.5
 
-                HalLogChart {
-                    name: "output"
-
-                    Layout.fillHeight: true
+                GroupBox {
                     Layout.fillWidth: true
-                    minimumValue: minSlider2.value
-                    maximumValue: maxSlider2.value
-                    yGrid: 0.1
-                    rightTextVisible: false
-                    signalColor: "lightblue"
-                }
-
-                ColumnLayout {
                     Layout.fillHeight: true
+                    title: qsTr("Feedback Log")
 
-                    Text {
-                        text: qsTr("Min")
-                    }
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 5
 
-                    Slider {
-                        id: minSlider2
+                        HalLogChart {
+                            id: feedbackLogChart
+                            name: "feedback"
 
-                        orientation: Qt.Vertical
-                        minimumValue: -20.0
-                        maximumValue: 20.0
-                        value: -10.0
-                    }
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            targetValue: commandValue
+                            minimumValue: minSlider.value
+                            maximumValue: maxSlider.value
+                            autoSampling: true
+                            sampleInterval: 300
+                            timeSpan: 60000*3 // 3min
+                            xGrid: 10000 // 10s
+                            yGrid: 10 //10°C
+                        }
 
-                    Text {
-                        text: minSlider2.value.toFixed(2)
+                        ColumnLayout {
+                            Layout.fillHeight: true
+
+                            Text {
+                                text: qsTr("Min")
+                            }
+
+                            Slider {
+                                id: minSlider
+
+                                Layout.fillHeight: true
+                                orientation: Qt.Vertical
+                                minimumValue: 0.0
+                                maximumValue: 300.0
+                                value: 0.0
+                            }
+
+                            Text {
+                                text: minSlider.value.toFixed(2)
+                            }
+                        }
+                        ColumnLayout {
+                            Text {
+                                text: qsTr("Max")
+                            }
+
+                            Slider {
+                                id: maxSlider
+
+                                Layout.fillHeight: true
+                                orientation: Qt.Vertical
+                                minimumValue: 0.0
+                                maximumValue: 300.01
+                                value: 300.0
+                            }
+
+                            Text {
+                                text: maxSlider.value.toFixed(2)
+                            }
+                        }
                     }
                 }
-                ColumnLayout {
-                    Text {
-                        text: qsTr("Max")
+
+                GroupBox {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    title: qsTr("Output Log")
+
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 5
+
+                        HalLogChart {
+                            id: outputLogChart
+                            name: "output"
+
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            minimumValue: minSlider2.value
+                            maximumValue: maxSlider2.value
+                            xGrid: feedbackLogChart.xGrid
+                            yGrid: 0.5
+                            rightTextVisible: false
+                            signalColor: "lightblue"
+                            autoSampling: true
+                            sampleInterval: feedbackLogChart.sampleInterval
+
+                            Binding { target: outputLogChart; property: "timeSpan"; value: feedbackLogChart.timeSpan }
+                            Binding { target: feedbackLogChart; property: "timeSpan"; value: outputLogChart.timeSpan }
+
+                        }
+
+                        ColumnLayout {
+                            Layout.fillHeight: true
+
+                            Text {
+                                text: qsTr("Min")
+                            }
+
+                            Slider {
+                                id: minSlider2
+
+                                Layout.fillHeight: true
+                                orientation: Qt.Vertical
+                                minimumValue: -20.0
+                                maximumValue: 20.0
+                                value: -10.0
+                            }
+
+                            Text {
+                                text: minSlider2.value.toFixed(2)
+                            }
+                        }
+                        ColumnLayout {
+                            Text {
+                                text: qsTr("Max")
+                            }
+
+                            Slider {
+                                id: maxSlider2
+
+                                Layout.fillHeight: true
+                                orientation: Qt.Vertical
+                                minimumValue: -20.0
+                                maximumValue: 20.0
+                                value: 10.0
+                            }
+
+                            Text {
+                                text: maxSlider2.value.toFixed(2)
+                            }
+                        }
                     }
+                }
 
-                    Slider {
-                        id: maxSlider2
+              }
+            RowLayout {
+                Layout.fillWidth: true
 
-                        Layout.fillHeight: true
-                        orientation: Qt.Vertical
-                        minimumValue: -20.0
-                        maximumValue: 20.0
-                        value: 10.0
+                GroupBox {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: main.height * 0.3
+                    title: qsTr("Command")
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 5
+
+                        GroupBox {
+                            title: qsTr("Commanded value")
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+
+                            HalSlider {
+                                id: commandSlider
+                                name: "command"
+
+                                anchors.fill: parent
+                                minimumValue: 0
+                                maximumValue: 300
+                                value: 0
+
+                                onValueChanged: main.commandValue = value
+                            }
+
+                        }
+
+                        HalButton {
+                            name: "enable"
+
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            checkable: true
+                            text: qsTr("Enable PID cotnrol")
+                        }
                     }
+                }
 
-                    Text {
-                        text: maxSlider2.value.toFixed(2)
+                GroupBox {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: main.height * 0.3
+                    title: qsTr("PID")
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 5
+
+                        GroupBox {
+                            title: qsTr("P gain")
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+
+                            HalSlider {
+                                name: "Pgain"
+                                halPin.direction: HalPin.IO
+
+                                anchors.fill: parent
+                                minimumValue: 0
+                                maximumValue: 1
+                                value: 0.3
+                                stepSize: 0.001
+                                decimals: 3
+                            }
+                        }
+
+                        GroupBox {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            title: qsTr("I gain")
+
+                            HalSlider {
+                                name: "Igain"
+                                halPin.direction: HalPin.IO
+
+                                anchors.fill: parent
+                                minimumValue: 0
+                                maximumValue: 0.01
+                                value: 0.0
+                                stepSize: 0.00001
+                                decimals: 5
+                            }
+                        }
+
+                        GroupBox {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            title: qsTr("D gain")
+
+                            HalSlider {
+                                name: "Dgain"
+                                halPin.direction: HalPin.IO
+
+                                anchors.fill: parent
+                                minimumValue: 0
+                                maximumValue: 0.1
+                                value: 0.0
+                                stepSize: 0.0001
+                                decimals: 4
+                            }
+                        }
+
+                    }
+                }
+
+                GroupBox {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: main.height * 0.3
+                    title: qsTr("Error")
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 5
+
+                        GroupBox {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            title: qsTr("Maximum Error")
+
+                            HalSlider {
+                                name: "maxerrorI"
+                                halPin.direction: HalPin.IO
+
+                                anchors.fill: parent
+                                minimumValue: 0
+                                maximumValue: 10
+                                value: 1.0
+                            }
+                        }
+                        GroupBox {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            title: qsTr("Bias")
+
+                            HalSlider {
+                                name: "bias"
+                                halPin.direction: HalPin.IO
+
+                                anchors.fill: parent
+                                minimumValue: 0.0
+                                maximumValue: 1.0
+                                value: 0.5
+                            }
+                        }
                     }
                 }
             }
-        }
 
-        TabView {
-            Layout.fillWidth: true
-            Layout.preferredHeight: main.height * 0.3
-            frameVisible: true
-
-            Tab {
-                title: qsTr("Command")
-                active: true
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    spacing: 5
-
-                    GroupBox {
-                        title: qsTr("Commanded value")
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-
-                        HalSlider {
-                            id: commandSlider
-                            name: "command"
-
-                            anchors.fill: parent
-                            minimumValue: 0
-                            maximumValue: 300
-                            value: 0
-
-                            onValueChanged: main.commandValue = value
-                        }
-
-                    }
-
-                    HalButton {
-                        name: "enable"
-
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        checkable: true
-                        text: qsTr("Enable PID cotnrol")
-                    }
-                }
-            }
-
-            Tab {
-                title: qsTr("PID")
-                active: true
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    spacing: 5
-
-                    GroupBox {
-                        title: qsTr("P gain")
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-
-                        HalSlider {
-                            name: "Pgain"
-                            halPin.direction: HalPin.IO
-
-                            anchors.fill: parent
-                            minimumValue: 0
-                            maximumValue: 1
-                            value: 0.3
-                        }
-                    }
-
-                    GroupBox {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        title: qsTr("I gain")
-
-                        HalSlider {
-                            name: "Igain"
-                            halPin.direction: HalPin.IO
-
-                            anchors.fill: parent
-                            minimumValue: 0
-                            maximumValue: 1
-                            value: 0.0
-                        }
-                    }
-
-                    GroupBox {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        title: qsTr("D gain")
-
-                        HalSlider {
-                            name: "Dgain"
-                            halPin.direction: HalPin.IO
-
-                            anchors.fill: parent
-                            minimumValue: 0
-                            maximumValue: 1
-                            value: 0.0
-                        }
-                    }
-
-                }
-            }
-
-            Tab {
-                title: qsTr("Error")
-                active: true
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    spacing: 5
-
-                    GroupBox {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        title: qsTr("Maximum Error")
-
-                        HalSlider {
-                            name: "maxerrorI"
-                            halPin.direction: HalPin.IO
-
-                            anchors.fill: parent
-                            minimumValue: 0
-                            maximumValue: 10
-                            value: 1.0
-                        }
-                    }
-                    GroupBox {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        title: qsTr("Bias")
-
-                        HalSlider {
-                            name: "bias"
-                            halPin.direction: HalPin.IO
-
-                            anchors.fill: parent
-                            minimumValue: 0.0
-                            maximumValue: 1.0
-                            value: 0.5
-                        }
-                    }
-                }
-            }
-        }
-        }
+         }
+    }
 }
