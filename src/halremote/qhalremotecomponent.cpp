@@ -161,7 +161,7 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
     m_error(NoError),
     m_errorString(""),
     m_ready(false),
-    m_containerItem(NULL),
+    m_containerItem(this),
     m_componentCompleted(false),
     m_context(NULL),
     m_halrcompSocket(NULL),
