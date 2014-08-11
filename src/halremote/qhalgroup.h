@@ -34,6 +34,12 @@ public:
     explicit QHalGroup(QQuickItem *parent = 0);
     ~QHalGroup();
 
+    enum SocketState {
+        Down = 1,
+        Trying = 2,
+        Up = 3
+    };
+
     enum State {
         Disconnected = 0,
         Connecting = 1,
@@ -43,7 +49,7 @@ public:
 
     enum ConnectionError {
         NoError = 0,
-        BindError = 1,
+        HalGroupError = 1,
         TimeoutError = 2,
         SocketError = 3
     };
@@ -117,6 +123,7 @@ private:
     QString m_halgroupUri;
     QString m_name;
     bool m_ready;
+    SocketState m_sState;
     State m_connectionState;
     ConnectionError m_error;
     QString m_errorString;
@@ -147,6 +154,7 @@ private slots:
     void removeSignals();
     bool connectSockets();
     void disconnectSockets();
+    void subscribe();
 
 signals:
     void halgroupUriChanged(QString arg);

@@ -6,6 +6,7 @@ QHalGroup::QHalGroup(QQuickItem *parent) :
     m_halgroupUri(""),
     m_name("default"),
     m_ready(false),
+    m_sState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
@@ -68,6 +69,7 @@ void QHalGroup::start()
     if (connectSockets())
     {
         addSignals();
+        subscribe();
     }
 }
 
@@ -146,18 +148,70 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
         for (int i = 0; i < m_rx.signal_size(); ++i)
         {
             pb::Signal remoteSignal = m_rx.signal(i);
-            QHalSignal *localSignal = m_signalsByHandle.value(remotePin.handle());
+            QHalSignal *localSignal = m_signalsByHandle.value(remoteSignal.handle());
             signalUpdate(remoteSignal, localSignal);
+        }
+
+        if (m_sState != Up)
+        {
+            m_sState = Up;
+            updateError(NoError, "");
+            updateState(Connected);
         }
 
         return;
     }
     else if (m_rx.type() == pb::MT_HALGROUP_FULL_UPDATE) // full update
     {
+        for (int i = 0; i < m_rx.group_size(); ++i)
+        {
+            pb::Group group = m_rx.group(i);
+            for (int j = 0; j < group.member_size(); ++j)
+            {
+                pb::Member member = group.member(j);
+                if (member.has_signal())
+                {
+                    pb::Signal remoteSignal = member.signal();
+                    QString name = QString::fromStdString(remoteSignal.name());
+                    int dotIndex = name.indexOf(".");
+                    if (dotIndex != -1) // strip comp prefix
+                    {
+                        name = name.mid(dotIndex + 1);
+                    }
+                    QHalSignal *localSignal = m_signalsByName.value(name);
+                    localSignal->setHandle(remoteSignal.handle());
+                    m_signalsByHandle.insert(remoteSignal.handle(), localSignal);
+                    signalUpdate(remoteSignal, localSignal);
+                }
+            }
+
+            if (m_sState != Up) // will be executed only once
+            {
+                m_sState = Up;
+                updateError(NoError, "");
+                updateState(Connected);
+            }
+        }
+
         return;
     }
     else if (m_rx.type() == pb::MT_HALGROUP_ERROR) // error
     {
+        QString errorString;
+
+        for (int i = 0; i < m_rx.note_size(); ++i)
+        {
+            errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
+        }
+
+        m_sState = Down;
+        updateError(HalGroupError, errorString);
+        updateState(Error);
+
+#ifdef QT_DEBUG
+        DEBUG_TAG(1, m_name, "proto error on subscribe" << errorString)
+#endif
+
         return;
     }
 
@@ -165,8 +219,6 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
     gpb::TextFormat::PrintToString(m_rx, &s);
     DEBUG_TAG(1, m_name, "halgroup_update: unknown message type: " << QString::fromStdString(s))
 #endif
-
-    return;
 }
 
 void QHalGroup::pollError(int errorNum, const QString &errorMsg)
@@ -256,6 +308,12 @@ void QHalGroup::disconnectSockets()
         m_context->deleteLater();
         m_context = NULL;
     }
+}
+
+void QHalGroup::subscribe()
+{
+    m_sState = Trying;
+    m_halgroupSocket->subscribeTo(m_name.toLocal8Bit());
 }
 
 /** If the ready property has a rising edge we try to connect
