@@ -564,7 +564,7 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
         for (int i = 0; i < m_rx.pin_size(); ++i)
         {
             pb::Pin remotePin = m_rx.pin(i);
-            QHalPin *localPin = m_pinsByHandle[remotePin.handle()];
+            QHalPin *localPin = m_pinsByHandle.value(remotePin.handle());
             pinUpdate(remotePin, localPin);
         }
 
@@ -589,17 +589,18 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
             {
                 pb::Pin remotePin = component.pin(j);
                 QString name = QString::fromStdString(remotePin.name());
-                if (name.indexOf(".") != -1)    // strip comp prefix
+                int dotIndex = name.indexOf(".");
+                if (dotIndex != -1)    // strip comp prefix
                 {
-                    name = name.mid(name.indexOf(".")+1);
+                    name = name.mid(dotIndex + 1);
                 }
-                QHalPin *localPin = m_pinsByName[name];
+                QHalPin *localPin = m_pinsByName.value(name);
                 localPin->setHandle(remotePin.handle());
-                m_pinsByHandle[remotePin.handle()] = localPin;
+                m_pinsByHandle.insert(remotePin.handle(), localPin);
                 pinUpdate(remotePin, localPin);
             }
 
-            if (m_sState != Up)
+            if (m_sState != Up) // will be executed only once
             {
                 m_sState = Up;
                 updateError(NoError, "");
