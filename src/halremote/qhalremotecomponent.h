@@ -129,7 +129,6 @@ public:
     }
 
 public slots:
-    void pinUpdate(pb::Pin remotePin, QHalPin *localPin);
     void pinChange(QVariant value);
 
     void setHalrcmdUri(QString arg)
@@ -213,6 +212,8 @@ private:
     void sendHalrcmdMessage(const QByteArray &data);
 
 private slots:
+    void pinUpdate(const pb::Pin &remotePin, QHalPin *localPin);
+
     void halrcompMessageReceived(QList<QByteArray> messageList);
     void halrcmdMessageReceived(QList<QByteArray> messageList);
     void pollError(int errorNum, const QString& errorMsg);

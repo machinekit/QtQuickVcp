@@ -340,7 +340,7 @@ void QHalRemoteComponent::bind()
 }
 
 /** Updates a local pin with the value of a remote pin */
-void QHalRemoteComponent::pinUpdate(pb::Pin remotePin, QHalPin *localPin)
+void QHalRemoteComponent::pinUpdate(const pb::Pin &remotePin, QHalPin *localPin)
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(2, m_name,  "pin update" << localPin->name() << remotePin.halfloat() << remotePin.halbit() << remotePin.hals32() << remotePin.halu32())
