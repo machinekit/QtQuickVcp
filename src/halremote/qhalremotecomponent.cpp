@@ -90,6 +90,7 @@
 /*! \qmlproperty int HalRemoteComponent::heartbeadPeriod
 
     This property holds the period time of the heartbeat timer in ms.
+    Set this property to \c{0} to disable the hearbeat.
 
     The default value is \c{3000}.
 */
@@ -166,11 +167,15 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
     m_context(NULL),
     m_halrcompSocket(NULL),
     m_halrcmdSocket(NULL),
-    m_heartbeatTimer(new QTimer(this)),
-    m_pingOutstanding(false)
+    m_halrcmdHeartbeatTimer(new QTimer(this)),
+    m_halrcompHeartbeatTimer(new QTimer(this)),
+    m_halrcmdPingOutstanding(false),
+    m_halrcompPingOutstanding(false)
 {
-    connect(m_heartbeatTimer, SIGNAL(timeout()),
-            this, SLOT(hearbeatTimerTick()));
+    connect(m_halrcmdHeartbeatTimer, SIGNAL(timeout()),
+            this, SLOT(halrcmdHeartbeatTimerTick()));
+    connect(m_halrcompHeartbeatTimer, SIGNAL(timeout()),
+            this, SLOT(halrcompHeartbeatTimerTick()));
 }
 
 QHalRemoteComponent::~QHalRemoteComponent()
@@ -229,6 +234,16 @@ void QHalRemoteComponent::removePins()
 
     m_pinsByHandle.clear();
     m_pinsByName.clear();
+}
+
+/** Sets synced of all pins to false */
+void QHalRemoteComponent::unsyncPins()
+{
+    QMapIterator<QString, QHalPin*> i(m_pinsByName);
+    while (i.hasNext()) {
+        i.next();
+        i.value()->setSynced(false);
+    }
 }
 
 /** Connects the 0MQ sockets */
@@ -339,6 +354,18 @@ void QHalRemoteComponent::bind()
     m_tx.Clear();
 }
 
+void QHalRemoteComponent::subscribe()
+{
+    m_sState = Trying;
+    m_halrcompSocket->subscribeTo(m_name.toLocal8Bit());
+}
+
+void QHalRemoteComponent::unsubscribe()
+{
+    m_sState = Down;
+    m_halrcompSocket->unsubscribeFrom(m_name.toLocal8Bit());
+}
+
 /** Updates a local pin with the value of a remote pin */
 void QHalRemoteComponent::pinUpdate(const pb::Pin &remotePin, QHalPin *localPin)
 {
@@ -444,7 +471,8 @@ void QHalRemoteComponent::stop()
 #endif
 
     // cleanup here
-    stopHeartbeat();
+    stopHalrcmdHeartbeat();
+    stopHalrcompHeartbeat();
     disconnectSockets();
     removePins();
 
@@ -452,32 +480,68 @@ void QHalRemoteComponent::stop()
     updateError(NoError, "");   // clear the error here
 }
 
-void QHalRemoteComponent::startHeartbeat()
+void QHalRemoteComponent::startHalrcmdHeartbeat()
 {
-    m_pingOutstanding = false;
-    m_heartbeatTimer->setInterval(m_heartbeatPeriod);
-    m_heartbeatTimer->start();
+    m_halrcmdPingOutstanding = false;
+
+    if (m_heartbeatPeriod > 0)
+    {
+        m_halrcmdHeartbeatTimer->setInterval(m_heartbeatPeriod);
+        m_halrcmdHeartbeatTimer->start();
+    }
 }
 
-void QHalRemoteComponent::stopHeartbeat()
+void QHalRemoteComponent::stopHalrcmdHeartbeat()
 {
-    m_heartbeatTimer->stop();
+    m_halrcmdHeartbeatTimer->stop();
+}
+
+void QHalRemoteComponent::startHalrcompHeartbeat(int interval)
+{
+    m_halrcompHeartbeatTimer->stop();
+    m_halrcompPingOutstanding = false;
+
+    if (interval > 0)
+    {
+        m_halrcompHeartbeatTimer->setInterval(interval);
+        m_halrcompHeartbeatTimer->start();
+    }
+}
+
+void QHalRemoteComponent::stopHalrcompHeartbeat()
+{
+    m_halrcompHeartbeatTimer->stop();
+}
+
+void QHalRemoteComponent::refreshHalrcompHeartbeat()
+{
+    if (m_halrcompHeartbeatTimer->isActive())
+    {
+        m_halrcompHeartbeatTimer->stop();
+        m_halrcompHeartbeatTimer->start();
+    }
 }
 
 void QHalRemoteComponent::updateState(State state)
 {
     if (state != m_connectionState)
     {
+        if (m_connectionState == Connected) // we are not connected anymore
+        {
+            unsyncPins();
+        }
+
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
 
         if (m_connectionState == Connected)
         {
-            startHeartbeat();
+            startHalrcmdHeartbeat();
         }
         else
         {
-            stopHeartbeat();
+            stopHalrcmdHeartbeat();
+            stopHalrcompHeartbeat();
         }
     }
 }
@@ -575,6 +639,8 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
             updateState(Connected);
         }
 
+        refreshHalrcompHeartbeat();
+
         return;
     }
     else if (m_rx.type() == pb::MT_HALRCOMP_FULL_UPDATE)
@@ -607,6 +673,18 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
                 updateState(Connected);
             }
         }
+
+        if (m_rx.has_pparams())
+        {
+            pb::ProtocolParameters pparams = m_rx.pparams();
+            startHalrcompHeartbeat(pparams.keepalive_timer());
+        }
+
+        return;
+    }
+    else if (m_rx.type() == pb::MT_PING)
+    {
+        refreshHalrcompHeartbeat();
 
         return;
     }
@@ -650,13 +728,13 @@ void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
     if (m_rx.type() == pb::MT_PING_ACKNOWLEDGE)
     {
         m_cState = Up;
-        m_pingOutstanding = false;
+        m_halrcmdPingOutstanding = false;
 
         if ((m_connectionState == Error) && (m_error == TimeoutError))   // recover from a timeout
         {
             updateError(NoError, "");
             updateState(Connected);
-            m_halrcompSocket->subscribeTo(m_name.toLocal8Bit());    // trigger a full update
+            subscribe();    // trigger a full update
         }
 
 #ifdef QT_DEBUG
@@ -671,8 +749,7 @@ void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
         DEBUG_TAG(1, m_name,  "bind confirmed")
 #endif
         m_cState = Up;
-        m_sState = Trying;
-        m_halrcompSocket->subscribeTo(m_name.toLocal8Bit());
+        subscribe();
 
         return;
     }
@@ -730,30 +807,50 @@ void QHalRemoteComponent::sendHalrcmdMessage(const QByteArray &data)
     }
 }
 
-void QHalRemoteComponent::hearbeatTimerTick()
+void QHalRemoteComponent::halrcmdHeartbeatTimerTick()
 {
-    if (m_pingOutstanding)
+    if (m_halrcmdPingOutstanding)
     {
         m_cState = Trying;
-        m_sState = Down;
-        m_halrcompSocket->unsubscribeFrom(m_name.toLocal8Bit());
-        updateError(TimeoutError, "Remote host timed out");
+        unsubscribe();
+        updateError(TimeoutError, "Halrcmd service timed out");
         updateState(Error);
 
 #ifdef QT_DEBUG
-       DEBUG_TAG(1, m_name, "timeout")
+        DEBUG_TAG(1, m_name, "halcmd timeout")
 #endif
     }
 
     m_tx.set_type(pb::MT_PING);
-
     sendHalrcmdMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
     m_tx.Clear();
 
-    m_pingOutstanding = true;
+    m_halrcmdPingOutstanding = true;
 
 #ifdef QT_DEBUG
-        DEBUG_TAG(2, m_name, "ping")
+    DEBUG_TAG(2, m_name, "ping")
+#endif
+}
+
+void QHalRemoteComponent::halrcompHeartbeatTimerTick()
+{
+    m_cState = Trying;
+    unsubscribe();
+    updateError(TimeoutError, "Halrcomp service timed out");
+    updateState(Error);
+
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, m_name, "halcmd timeout")
+#endif
+
+    m_tx.set_type(pb::MT_PING);
+    sendHalrcmdMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
+    m_tx.Clear();
+
+    m_halrcompPingOutstanding = true;
+
+#ifdef QT_DEBUG
+    DEBUG_TAG(2, m_name, "ping")
 #endif
 }
 

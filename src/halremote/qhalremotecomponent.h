@@ -193,8 +193,10 @@ private:
     PollingZMQContext *m_context;
     ZMQSocket  *m_halrcompSocket;
     ZMQSocket  *m_halrcmdSocket;
-    QTimer     *m_heartbeatTimer;
-    bool        m_pingOutstanding;
+    QTimer     *m_halrcmdHeartbeatTimer;
+    QTimer     *m_halrcompHeartbeatTimer;
+    bool        m_halrcmdPingOutstanding;
+    bool        m_halrcompPingOutstanding;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;
@@ -205,8 +207,11 @@ private:
     QObjectList recurseObjects(const QObjectList &list);
     void start();
     void stop();
-    void startHeartbeat();
-    void stopHeartbeat();
+    void startHalrcmdHeartbeat();
+    void stopHalrcmdHeartbeat();
+    void startHalrcompHeartbeat(int interval);
+    void stopHalrcompHeartbeat();
+    void refreshHalrcompHeartbeat();
     void updateState(State state);
     void updateError(ConnectionError error, QString errorString);
     void sendHalrcmdMessage(const QByteArray &data);
@@ -217,13 +222,17 @@ private slots:
     void halrcompMessageReceived(QList<QByteArray> messageList);
     void halrcmdMessageReceived(QList<QByteArray> messageList);
     void pollError(int errorNum, const QString& errorMsg);
-    void hearbeatTimerTick();
+    void halrcmdHeartbeatTimerTick();
+    void halrcompHeartbeatTimerTick();
 
     void addPins();
     void removePins();
+    void unsyncPins();
     bool connectSockets();
     void disconnectSockets();
     void bind();
+    void subscribe();
+    void unsubscribe();
 
 signals:
     void halrcmdUriChanged(QString arg);

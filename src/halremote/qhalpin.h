@@ -158,6 +158,14 @@ void setEnabled(bool arg)
     }
 }
 
+void setSynced(bool arg)
+{
+    if (m_synced != arg) {
+        m_synced = arg;
+        emit syncedChanged(arg);
+    }
+}
+
 private:
     QString         m_name;
     ValueType       m_type;
