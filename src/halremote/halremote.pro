@@ -27,7 +27,9 @@ SOURCES += \
     qapplicationconfigitem.cpp \
     qapplicationconfigfilter.cpp \
     qapplicationdescription.cpp \
-    qnameserver.cpp
+    qnameserver.cpp \
+    qhalgroup.cpp \
+    qhalsignal.cpp
 
 HEADERS += \
     plugin.h \
@@ -43,7 +45,9 @@ HEADERS += \
     qapplicationconfigfilter.h \
     debughelper.h \
     qapplicationdescription.h \
-    qnameserver.h
+    qnameserver.h \
+    qhalgroup.h \
+    qhalsignal.h
 
 QML_INFRA_FILES = \
     qmldir

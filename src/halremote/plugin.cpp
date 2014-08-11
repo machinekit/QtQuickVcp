@@ -21,6 +21,8 @@
 ****************************************************************************/
 #include "plugin.h"
 #include "qhalpin.h"
+#include "qhalsignal.h"
+#include "qhalgroup.h"
 #include "qhalremotecomponent.h"
 #include "qservice.h"
 #include "qservicelist.h"
@@ -54,6 +56,8 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
     qmlRegisterType<QApplicationDescription>(uri, 1, 0, "ApplicationDescription");
     qmlRegisterType<QHalRemoteComponent>(uri, 1, 0, "HalRemoteComponent");
     qmlRegisterType<QHalPin>(uri, 1, 0, "HalPin");
+    qmlRegisterType<QHalGroup>(uri, 1, 0, "HalGroup");
+    qmlRegisterType<QHalSignal>(uri, 1, 0, "HalSignal");
 }
 
 
