@@ -1,13 +1,7 @@
-# known at buildtime
-set(JDns_VERSION "@JDNS_LIB_VERSION_STRING@")
-set(JDns_VERSION_MAJOR @JDNS_LIB_MAJOR_VERSION@)
-set(JDns_VERSION_MINOR @JDNS_LIB_MINOR_VERSION@)
-set(JDns_VERSION_PATCH @JDNS_LIB_PATCH_VERSION@)
-
-get_filename_component(currentDir ${CMAKE_CURRENT_LIST_FILE} PATH) # get the directory where I myself am
+@PACKAGE_INIT@
 
 if(NOT TARGET jdns)
-  include(${currentDir}/JDnsTargets.cmake)
+  include(${CMAKE_CURRENT_LIST_DIR}/JDnsTargets.cmake)
 endif()
 
 set(JDns_LIBRARY jdns)
