@@ -13,6 +13,7 @@ class QHalSignal : public QObject
     Q_PROPERTY(QVariant value READ value NOTIFY valueChanged)
     Q_PROPERTY(int handle READ handle NOTIFY handleChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
     Q_ENUMS(ValueType)
 
 public:
@@ -48,6 +49,11 @@ public:
     bool enabled() const
     {
         return m_enabled;
+    }
+
+    bool synced() const
+    {
+        return m_synced;
     }
 
 public slots:
@@ -91,12 +97,21 @@ public slots:
         }
     }
 
+    void setSynced(bool arg)
+    {
+        if (m_synced != arg) {
+            m_synced = arg;
+            emit syncedChanged(arg);
+        }
+    }
+
 signals:
     void nameChanged(QString arg);
     void typeChanged(ValueType arg);
     void valueChanged(QVariant arg);
     void handleChanged(int arg);
     void enabledChanged(bool arg);
+    void syncedChanged(bool arg);
 
 private:
     QString m_name;
@@ -104,6 +119,7 @@ private:
     QVariant m_value;
     int m_handle;
     bool m_enabled;
+    bool m_synced;
 };
 
 #endif // QHALSIGNAL_H

@@ -13,8 +13,12 @@ QHalGroup::QHalGroup(QQuickItem *parent) :
     m_containerItem(this),
     m_componentCompleted(false),
     m_context(NULL),
-    m_halgroupSocket(NULL)
+    m_halgroupSocket(NULL),
+    m_halgroupHeartbeatTimer(new QTimer(this)),
+    m_halgroupPingOutstanding(false)
 {
+    connect(m_halgroupHeartbeatTimer, SIGNAL(timeout()),
+            this, SLOT(halgroupHeartbeatTimerTick()));
 }
 
 QHalGroup::~QHalGroup()
@@ -80,6 +84,7 @@ void QHalGroup::stop()
 #endif
 
     // cleanup here
+    stopHalgroupHeartbeat();
     disconnectSockets();
     removeSignals();
 
@@ -87,10 +92,42 @@ void QHalGroup::stop()
     updateError(NoError, "");   // clear the error here
 }
 
+void QHalGroup::startHalgroupHeartbeat(int interval)
+{
+    m_halgroupHeartbeatTimer->stop();
+    m_halgroupPingOutstanding = false;
+
+    if (interval > 0)
+    {
+        m_halgroupHeartbeatTimer->setInterval(interval);
+        m_halgroupHeartbeatTimer->start();
+    }
+}
+
+void QHalGroup::stopHalgroupHeartbeat()
+{
+    m_halgroupHeartbeatTimer->stop();
+}
+
+void QHalGroup::refreshHalgroupHeartbeat()
+{
+    if (m_halgroupHeartbeatTimer->isActive())
+    {
+        m_halgroupHeartbeatTimer->stop();
+        m_halgroupHeartbeatTimer->start();
+    }
+}
+
 void QHalGroup::updateState(QHalGroup::State state)
 {
     if (state != m_connectionState)
     {
+        if (m_connectionState == Connected) // we are not connected anymore
+        {
+            unsyncSignals();
+            stopHalgroupHeartbeat();
+        }
+
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
     }
@@ -128,6 +165,8 @@ void QHalGroup::signalUpdate(const pb::Signal &remoteSignal, QHalSignal *localSi
     {
         localSignal->setValue(QVariant(remoteSignal.halu32()));
     }
+
+    localSignal->setSynced(true);   // when the signal is updated we are synced
 }
 
 void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
@@ -158,6 +197,8 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
             updateError(NoError, "");
             updateState(Connected);
         }
+
+        refreshHalgroupHeartbeat();
 
         return;
     }
@@ -192,6 +233,18 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
                 updateState(Connected);
             }
         }
+
+        if (m_rx.has_pparams())
+        {
+            pb::ProtocolParameters pparams = m_rx.pparams();
+            startHalgroupHeartbeat(pparams.keepalive_timer());
+        }
+
+        return;
+    }
+    else if (m_rx.type() == pb::MT_PING)
+    {
+        refreshHalgroupHeartbeat();
 
         return;
     }
@@ -229,6 +282,21 @@ void QHalGroup::pollError(int errorNum, const QString &errorMsg)
     updateState(Error);
 }
 
+void QHalGroup::halgroupHeartbeatTimerTick()
+{
+    unsubscribe();
+    updateError(TimeoutError, "Halgroup service timed out");
+    updateState(Error);
+
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, m_name, "halcmd timeout")
+#endif
+
+    subscribe();    // trigger a fresh subscribe
+
+    m_halgroupPingOutstanding = true;
+}
+
 /** Scans all children of the container item for signals and adds them to a map */
 void QHalGroup::addSignals()
 {
@@ -258,6 +326,16 @@ void QHalGroup::removeSignals()
 {
     m_signalsByHandle.clear();
     m_signalsByName.clear();
+}
+
+/** Sets synced of all signals to false */
+void QHalGroup::unsyncSignals()
+{
+    QMapIterator<QString, QHalSignal*> i(m_signalsByName);
+    while (i.hasNext()) {
+        i.next();
+        i.value()->setSynced(false);
+    }
 }
 
 /** Connects the 0MQ sockets */
@@ -314,6 +392,12 @@ void QHalGroup::subscribe()
 {
     m_sState = Trying;
     m_halgroupSocket->subscribeTo(m_name.toLocal8Bit());
+}
+
+void QHalGroup::unsubscribe()
+{
+    m_sState = Down;
+    m_halgroupSocket->unsubscribeFrom(m_name.toLocal8Bit());
 }
 
 /** If the ready property has a rising edge we try to connect

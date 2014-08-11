@@ -120,18 +120,20 @@ public slots:
     }
 
 private:
-    QString m_halgroupUri;
-    QString m_name;
-    bool m_ready;
+    QString     m_halgroupUri;
+    QString     m_name;
+    bool        m_ready;
     SocketState m_sState;
-    State m_connectionState;
+    State       m_connectionState;
     ConnectionError m_error;
-    QString m_errorString;
-    QQuickItem * m_containerItem;
-    bool m_componentCompleted;
+    QString     m_errorString;
+    QQuickItem  *m_containerItem;
+    bool        m_componentCompleted;
 
     PollingZMQContext *m_context;
-    ZMQSocket *m_halgroupSocket;
+    ZMQSocket   *m_halgroupSocket;
+    QTimer      *m_halgroupHeartbeatTimer;
+    bool        m_halgroupPingOutstanding;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;
@@ -141,6 +143,9 @@ private:
     QList<QHalSignal*> recurseObjects(const QObjectList &list) const;
     void start();
     void stop();
+    void startHalgroupHeartbeat(int interval);
+    void stopHalgroupHeartbeat();
+    void refreshHalgroupHeartbeat();
     void updateState(State state);
     void updateError(ConnectionError error, const QString &errorString);
 
@@ -149,12 +154,15 @@ private slots:
 
     void halgroupMessageReceived(const QList<QByteArray> &messageList);
     void pollError(int errorNum, const QString &errorMsg);
+    void halgroupHeartbeatTimerTick();
 
     void addSignals();
     void removeSignals();
+    void unsyncSignals();
     bool connectSockets();
     void disconnectSockets();
     void subscribe();
+    void unsubscribe();
 
 signals:
     void halgroupUriChanged(QString arg);
