@@ -151,18 +151,22 @@ void QHalGroup::signalUpdate(const pb::Signal &remoteSignal, QHalSignal *localSi
 
     if (remoteSignal.has_halfloat())
     {
+        localSignal->setType(QHalSignal::Float);
         localSignal->setValue(QVariant(remoteSignal.halfloat()));
     }
     else if (remoteSignal.has_halbit())
     {
+        localSignal->setType(QHalSignal::Bit);
         localSignal->setValue(QVariant(remoteSignal.halbit()));
     }
     else if (remoteSignal.has_hals32())
     {
+        localSignal->setType(QHalSignal::S32);
         localSignal->setValue(QVariant(remoteSignal.hals32()));
     }
     else if (remoteSignal.has_halu32())
     {
+        localSignal->setType(QHalSignal::U32);
         localSignal->setValue(QVariant(remoteSignal.halu32()));
     }
 
