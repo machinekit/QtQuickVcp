@@ -145,32 +145,47 @@ void QHalGroup::updateError(QHalGroup::ConnectionError error, const QString &err
 /** Updates a local signal with the value of a remote signal */
 void QHalGroup::signalUpdate(const pb::Signal &remoteSignal, QHalSignal *localSignal)
 {
+    bool updated;
 #ifdef QT_DEBUG
     DEBUG_TAG(2, m_name,  "signal update" << localSignal->name() << remoteSignal.halfloat() << remoteSignal.halbit() << remoteSignal.hals32() << remoteSignal.halu32())
 #endif
 
-    if (remoteSignal.has_halfloat())
+    updated = false;
+
+    if (remoteSignal.type() == pb::HAL_FLOAT)
     {
         localSignal->setType(QHalSignal::Float);
         localSignal->setValue(QVariant(remoteSignal.halfloat()));
+        m_values[localSignal->name()] = remoteSignal.halfloat();
+        updated =  true;
     }
-    else if (remoteSignal.has_halbit())
+    else if (remoteSignal.type() == pb::HAL_BIT)
     {
         localSignal->setType(QHalSignal::Bit);
         localSignal->setValue(QVariant(remoteSignal.halbit()));
+        m_values[localSignal->name()] = remoteSignal.halbit();
+        updated =  true;
     }
-    else if (remoteSignal.has_hals32())
+    else if (remoteSignal.type() == pb::HAL_S32)
     {
         localSignal->setType(QHalSignal::S32);
         localSignal->setValue(QVariant(remoteSignal.hals32()));
+        m_values[localSignal->name()] = remoteSignal.hals32();
+        updated =  true;
     }
-    else if (remoteSignal.has_halu32())
+    else if (remoteSignal.type() == pb::HAL_U32)
     {
         localSignal->setType(QHalSignal::U32);
         localSignal->setValue(QVariant(remoteSignal.halu32()));
+        m_values[localSignal->name()] = (int)remoteSignal.halu32();
+        updated =  true;
     }
 
-    localSignal->setSynced(true);   // when the signal is updated we are synced
+    if (updated)
+    {
+        localSignal->setSynced(true);   // when the signal is updated we are synced
+        emit valuesChanged(m_values);
+    }
 }
 
 void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
@@ -223,7 +238,14 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
                     {
                         name = name.mid(dotIndex + 1);
                     }
-                    QHalSignal *localSignal = m_signalsByName.value(name);
+                    QHalSignal *localSignal = m_signalsByName.value(name, NULL);
+                    if (localSignal == NULL)
+                    {
+                        localSignal = new QHalSignal(this); // create a local signal
+                        localSignal->setName(name);
+                        m_localSignals.append(localSignal);
+                        m_signalsByName.insert(name, localSignal);
+                    }
                     localSignal->setHandle(remoteSignal.handle());
                     m_signalsByHandle.insert(remoteSignal.handle(), localSignal);
                     signalUpdate(remoteSignal, localSignal);
@@ -330,6 +352,16 @@ void QHalGroup::removeSignals()
 {
     m_signalsByHandle.clear();
     m_signalsByName.clear();
+
+    qDeleteAll(m_localSignals.begin(), m_localSignals.end());
+    m_localSignals.clear();
+
+    QStringList keyList = m_values.keys();
+    for (int i = 0; i < keyList.size(); ++i)
+    {
+        m_values.remove(keyList.at(i));
+    }
+    emit valuesChanged(m_values);
 }
 
 /** Sets synced of all signals to false */

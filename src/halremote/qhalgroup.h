@@ -4,6 +4,7 @@
 #include <QQuickItem>
 #include <QHash>
 #include <QTimer>
+#include <QJsonObject>
 #include "qhalsignal.h"
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
@@ -28,6 +29,7 @@ class QHalGroup : public QQuickItem
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QQuickItem *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
+    Q_PROPERTY(QJsonObject values READ values NOTIFY valuesChanged)
     Q_ENUMS(State ConnectionError)
 
 public:
@@ -91,6 +93,11 @@ public:
         return m_containerItem;
     }
 
+    QJsonObject values() const
+    {
+        return m_values;
+    }
+
 public slots:
 
     void setHalgroupUri(QString arg)
@@ -128,6 +135,7 @@ private:
     ConnectionError m_error;
     QString     m_errorString;
     QQuickItem  *m_containerItem;
+    QJsonObject m_values;
     bool        m_componentCompleted;
 
     PollingZMQContext *m_context;
@@ -139,6 +147,7 @@ private:
     pb::Container   m_tx;
     QMap<QString, QHalSignal*> m_signalsByName;
     QHash<int, QHalSignal*>    m_signalsByHandle;
+    QList<QHalSignal*>         m_localSignals;
 
     QList<QHalSignal*> recurseObjects(const QObjectList &list) const;
     void start();
@@ -172,6 +181,7 @@ signals:
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
     void containerItemChanged(QQuickItem * arg);
+    void valuesChanged(QJsonObject arg);
 };
 
 #endif // QHALGROUP_H
