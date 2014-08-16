@@ -27,6 +27,7 @@ HEADERS += \
     $$OUT_PWD/generated/preview.pb.h \
     $$OUT_PWD/generated/rtapi_message.pb.h \
     $$OUT_PWD/generated/rtapicommand.pb.h \
+    $$OUT_PWD/generated/status.pb.h \
     $$OUT_PWD/generated/task.pb.h \
     $$OUT_PWD/generated/test.pb.h \
     $$OUT_PWD/generated/types.pb.h \
@@ -44,6 +45,7 @@ SOURCES += \
     $$OUT_PWD/generated/preview.pb.cc \
     $$OUT_PWD/generated/rtapi_message.pb.cc \
     $$OUT_PWD/generated/rtapicommand.pb.cc \
+    $$OUT_PWD/generated/status.pb.cc \
     $$OUT_PWD/generated/task.pb.cc \
     $$OUT_PWD/generated/test.pb.cc \
     $$OUT_PWD/generated/types.pb.cc \
@@ -61,7 +63,9 @@ OTHER_FILES += \
     $$PWD/machinetalk-protobuf/proto/preview.proto \
     $$PWD/machinetalk-protobuf/proto/rtapi_message.proto \
     $$PWD/machinetalk-protobuf/proto/rtapicommand.proto \
+    $$PWD/machinetalk-protobuf/proto/status.proto \
     $$PWD/machinetalk-protobuf/proto/task.proto \
     $$PWD/machinetalk-protobuf/proto/test.proto \
     $$PWD/machinetalk-protobuf/proto/types.proto \
-    $$PWD/machinetalk-protobuf/proto/value.proto
+    $$PWD/machinetalk-protobuf/proto/value.proto \
+    $$PWD/machinetalk-protobuf/Makefile
