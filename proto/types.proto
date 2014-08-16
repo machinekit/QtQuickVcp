@@ -52,11 +52,14 @@ enum ObjectType {
     HAL_COMP_REMOTE   = 9;
     HAL_RING          = 10;
     HAL_GROUP         = 11;
+
     HAL_MEMBER_SIGNAL = 12;
     HAL_MEMBER_GROUP  = 13;
     HAL_MEMBER_PIN    = 14;
-    RING_RECORD       = 15;
-    RING_STREAM       = 16;
+    HAL_MEMBER_PARAM  = 15;
+
+    RING_RECORD       = 16;
+    RING_STREAM       = 17;
 
     VALUE             = 20;
     INSTANCE          = 21;
@@ -612,6 +615,13 @@ enum ContainerType {
     MT_EMC_STAT		= 11999;
     // --- snip ---
 
+    // EMC status
+    MT_EMCSTAT_FULL_UPDATE = 12999;
+    MT_EMCSTAT_CONFIG = 13000;
+    MT_EMCSTAT_MOTION = 13001;
+    MT_EMCSTAT_IO = 13002;
+    MT_EMCSTAT_TASK = 13003;
+    MT_EMCSTAT_INTERP = 13004;
 }
 
 enum OriginIndex {
