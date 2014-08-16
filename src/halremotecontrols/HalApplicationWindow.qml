@@ -89,22 +89,36 @@ Rectangle {
 
         This property holds the services used by the application.
     */
-    property list<Service> services
+    property var services: []
 
-    /*! \qmlproperty list<Service> internalServices
+    function _recurseObjects(objects, name)
+    {
+        var list = []
 
-        This property holds the services used internally by the HalApplicationWindow.
-    */
-    property list<Service> internalServices: [
-        Service {
-            id: halrcompService
-            type: "halrcomp"
-        },
-        Service {
-            id: halrcmdService
-            type: "halrcmd"
+        if (objects !== undefined) {
+            for (var i = 0; i < objects.length; ++i)
+            {
+                if (objects[i].objectName === name) {
+                    list.push(objects[i])
+                }
+                var nestedList = _recurseObjects(objects[i].data)
+                if (nestedList.length > 0) {
+                    list = list.concat(nestedList)
+                }
+            }
         }
-    ]
+
+        return list;
+    }
+
+    Component.onCompleted: {
+        var list = main.services
+        var nestedList = _recurseObjects(main.data, "Service")
+        if (nestedList.length > 0) {
+            list = list.concat(nestedList)
+        }
+        main.services = list
+    }
 
     id: main
 
@@ -199,6 +213,16 @@ Rectangle {
                 return headerText + "\n" + remoteComponent.errorString
             }
         }
+    }
+
+    Service {
+        id: halrcompService
+        type: "halrcomp"
+    }
+
+    Service {
+        id: halrcmdService
+        type: "halrcmd"
     }
 
     HalRemoteComponent {

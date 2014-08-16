@@ -246,7 +246,6 @@ Rectangle {
                 d.applicationSource = ""
 
             applicationServiceList.services = []
-            applicationInternalServiceList.services = []
             serviceDiscovery.updateServices()
 
             if (autoSelectApplication)  // go back to discovery page
@@ -692,11 +691,6 @@ Rectangle {
                             {
                                 return (((applicationLoader.item != null) && (applicationLoader.item.services !== undefined)) ? applicationLoader.item.services : [])
                             })
-                applicationInternalServiceList.services = Qt.binding(
-                            function()
-                            {
-                                return (((applicationLoader.item != null) && (applicationLoader.item.internalServices !== undefined)) ? applicationLoader.item.internalServices : [])
-                            })
                 serviceDiscovery.updateServices()
             }
         }
@@ -755,9 +749,6 @@ Rectangle {
                         filter: ServiceDiscoveryFilter { name: "" }
                     }
                 ]
-            },
-            ServiceList {
-                id: applicationInternalServiceList
             },
             ServiceList {
                 id: applicationServiceList
