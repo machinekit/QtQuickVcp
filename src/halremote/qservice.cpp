@@ -111,6 +111,7 @@ QService::QService(QObject *parent) :
     m_ready(false),
     m_filter(new QServiceDiscoveryFilter(this))
 {
+    this->setObjectName("Service");
 }
 
 QQmlListProperty<QServiceDiscoveryItem> QService::items()
