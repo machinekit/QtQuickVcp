@@ -206,6 +206,9 @@ message Container {
     optional EmcStatusTask emc_status_task = 603;
     optional EmcStatusInterp emc_status_interp = 604;
 
+    optional EmcCommandParameters emc_command_params = 610;
+
+
     // less commonly used types
 
     // // firmware types. Add as needed
