@@ -1,5 +1,6 @@
 import "types.proto";
 import "preview.proto";
+import "emcclass.proto";
 
 package pb;
 
@@ -68,7 +69,7 @@ enum EmcAxisType {
     EMC_AXIS_ANGULAR    = 2;
 }
 
-message EmcToolResult {
+message EmcToolData {
     required int32          index       = 1;
     optional int32          id          = 2;
     optional double         xOffset     = 3;
@@ -220,7 +221,7 @@ message EmcStatusIo {
     optional int32          pocket_prepped  = 6;
     optional int32          tool_in_spindle = 7;
     optional Position       tool_offset     = 8;
-    repeated EmcToolResult  tool_table      = 9;
+    repeated EmcToolData    tool_table      = 9;
 }
 
 message EmcStatusTask {
@@ -242,4 +243,22 @@ message EmcStatusInterp {
     optional EmcInterpExitCodeType  interpreter_errcode = 4;
     repeated EmcStatusMCode         mcodes              = 5;
     repeated EmcStatusSetting       settings            = 6;
+}
+
+message EmcCommandParameters {
+    optional uint32                 index       = 1;
+    optional uint32                 debug_level = 2;
+    optional int32                  line_number = 3;
+    optional double                 scale = 4;
+    optional double                 velocity = 5;
+    optional double                 distance = 6;
+    optional double                 value = 7;
+    optional bool                   enable = 8;
+    optional string                 command = 9;
+    optional string                 path = 10;
+    optional EmcTaskModeType        task_mode = 100;
+    optional EmcTaskStateType       task_state = 101;
+    optional EmcTrajectoryModeType  traj_mode = 102;
+    optional EmcPose                pose = 103;
+    optional EmcToolData            tool_data = 104;
 }
