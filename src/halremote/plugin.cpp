@@ -34,6 +34,7 @@
 #include "qservicediscoveryitem.h"
 #include "qservicediscoveryfilter.h"
 #include "qnameserver.h"
+#include "qemcstatus.h"
 
 #include <qqml.h>
 
@@ -58,6 +59,7 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
     qmlRegisterType<QHalPin>(uri, 1, 0, "HalPin");
     qmlRegisterType<QHalGroup>(uri, 1, 0, "HalGroup");
     qmlRegisterType<QHalSignal>(uri, 1, 0, "HalSignal");
+    qmlRegisterType<QEmcStatus>(uri, 1, 0, "EmcStatus");
 }
 
 
