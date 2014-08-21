@@ -4,7 +4,7 @@ import "emcclass.proto";
 
 package pb;
 
-enum EmcTaskState {
+enum EmcTaskExecStateType {
     EMC_TASK_EXEC_ERROR                         = 1;
     EMC_TASK_EXEC_DONE                          = 2;
     EMC_TASK_EXEC_WAITING_FOR_MOTION            = 3;
@@ -202,9 +202,9 @@ message EmcStatusMotion {
     optional int32                  queue                   = 37;
     optional bool                   queue_full              = 38;
     optional double                 rotation_xy             = 39;
-    optional int32                  spindle_brake           = 40;
+    optional bool                   spindle_brake           = 40;
     optional int32                  spindle_direction       = 41;
-    optional int32                  spindle_enabled         = 42;
+    optional bool                   spindle_enabled         = 42;
     optional int32                  spindle_increasing      = 43;
     optional bool                   spindle_override_enabled = 44;
     optional double                 spindle_speed           = 45;
@@ -213,27 +213,27 @@ message EmcStatusMotion {
 }
 
 message EmcStatusIo {
-    optional int32          estop           = 1;
-    optional int32          flood           = 2;
-    optional int32          lube            = 3;
-    optional int32          lube_level      = 4;
-    optional int32          mist            = 5;
-    optional int32          pocket_prepped  = 6;
-    optional int32          tool_in_spindle = 7;
+    optional bool           estop           = 1;
+    optional bool           flood           = 2;
+    optional bool           lube            = 3;
+    optional bool           lube_level      = 4;
+    optional bool           mist            = 5;
+    optional bool           pocket_prepped  = 6;
+    optional bool           tool_in_spindle = 7;
     optional Position       tool_offset     = 8;
     repeated EmcToolData    tool_table      = 9;
 }
 
 message EmcStatusTask {
-    optional int32              echo_serial_number  = 1;
-    optional EmcTaskState       exec_state          = 2;
-    optional string             file                = 3;
-    optional bool               input_timeout       = 4;
-    optional bool               optional_stop       = 5;
-    optional int32              read_line           = 6;
-    optional EmcTaskModeType    task_mode           = 7;
-    optional int32              task_paused         = 8;
-    optional EmcTaskStateType   task_state          = 9;
+    optional int32                  echo_serial_number  = 1;
+    optional EmcTaskExecStateType   exec_state          = 2;
+    optional string                 file                = 3;
+    optional bool                   input_timeout       = 4;
+    optional bool                   optional_stop       = 5;
+    optional int32                  read_line           = 6;
+    optional EmcTaskModeType        task_mode           = 7;
+    optional int32                  task_paused         = 8;
+    optional EmcTaskStateType       task_state          = 9;
 }
 
 message EmcStatusInterp {
