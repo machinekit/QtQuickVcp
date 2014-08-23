@@ -11,7 +11,7 @@ QMAKE_MOC_OPTIONS += -Muri=$$uri
 
 include(../zeromq.pri)
 include(../../3rdparty/jdns/jdns.pri)
-include(../../3rdparty/machinetalk-protobuf.pri)
+include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)
 
 # Input
 SOURCES += \

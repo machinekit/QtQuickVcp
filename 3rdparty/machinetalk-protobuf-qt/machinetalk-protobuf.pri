@@ -1,5 +1,6 @@
 # Build machinetalk protobuf files with dependencies
-machinetalk-protobuf.commands = $(MAKE) all -C $$PWD/machinetalk-protobuf CXXGEN=$$OUT_PWD/generated PYGEN=$$OUT_PWD/python OBJDIR=$$OUT_PWD/objects
+MACHINETALK_DIR = $$PWD/../machinetalk-protobuf
+machinetalk-protobuf.commands = $(MAKE) all -C $$MACHINETALK_DIR CXXGEN=$$OUT_PWD/generated PYGEN=$$OUT_PWD/python OBJDIR=$$OUT_PWD/objects
 machinetalk-protobuf.CONFIG += no_link no_clean
 !isEmpty(PROTOBUF_INCLUDE_PATH): machinetalk-protobuf.commands += GPBINCLUDE=$$PROTOBUF_INCLUDE_PATH
 !isEmpty(PROTOBUF_PROTOC): machinetalk-protobuf.commands += PROTOC=$$PROTOBUF_PROTOC
@@ -52,20 +53,20 @@ SOURCES += \
     $$OUT_PWD/generated/value.pb.cc
 
 OTHER_FILES += \
-    $$PWD/machinetalk-protobuf/proto/canon.proto \
-    $$PWD/machinetalk-protobuf/proto/config.proto \
-    $$PWD/machinetalk-protobuf/proto/emcclass.proto \
-    $$PWD/machinetalk-protobuf/proto/log.proto \
-    $$PWD/machinetalk-protobuf/proto/message.proto \
-    $$PWD/machinetalk-protobuf/proto/motcmds.proto \
-    $$PWD/machinetalk-protobuf/proto/nanopb.proto \
-    $$PWD/machinetalk-protobuf/proto/object.proto \
-    $$PWD/machinetalk-protobuf/proto/preview.proto \
-    $$PWD/machinetalk-protobuf/proto/rtapi_message.proto \
-    $$PWD/machinetalk-protobuf/proto/rtapicommand.proto \
-    $$PWD/machinetalk-protobuf/proto/status.proto \
-    $$PWD/machinetalk-protobuf/proto/task.proto \
-    $$PWD/machinetalk-protobuf/proto/test.proto \
-    $$PWD/machinetalk-protobuf/proto/types.proto \
-    $$PWD/machinetalk-protobuf/proto/value.proto \
-    $$PWD/machinetalk-protobuf/Makefile
+    $$MACHINETALK_DIR/proto/canon.proto \
+    $$MACHINETALK_DIR/proto/config.proto \
+    $$MACHINETALK_DIR/proto/emcclass.proto \
+    $$MACHINETALK_DIR/proto/log.proto \
+    $$MACHINETALK_DIR/proto/message.proto \
+    $$MACHINETALK_DIR/proto/motcmds.proto \
+    $$MACHINETALK_DIR/proto/nanopb.proto \
+    $$MACHINETALK_DIRf/proto/object.proto \
+    $$MACHINETALK_DIR/proto/preview.proto \
+    $$MACHINETALK_DIR/proto/rtapi_message.proto \
+    $$MACHINETALK_DIR/proto/rtapicommand.proto \
+    $$MACHINETALK_DIR/proto/status.proto \
+    $$MACHINETALK_DIR/proto/task.proto \
+    $$MACHINETALK_DIR/proto/test.proto \
+    $$MACHINETALK_DIR/proto/types.proto \
+    $$MACHINETALK_DIR/proto/value.proto \
+    $$MACHINETALK_DIR/Makefile

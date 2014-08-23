@@ -31,7 +31,7 @@ defineTest(minQtVersion) {
 TEMPLATE = subdirs
 
 CONFIG += ordered
-SUBDIRS += src # applications examples
+SUBDIRS += 3rdparty src # applications examples
 
 include(qtquickvcp_version.pri)
 include(paths.pri)
