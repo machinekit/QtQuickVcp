@@ -31,7 +31,8 @@ SOURCES += \
     qhalgroup.cpp \
     qhalsignal.cpp \
     qemcstatus.cpp \
-    qemccommand.cpp
+    qemccommand.cpp \
+    qemcerror.cpp
 
 HEADERS += \
     plugin.h \
@@ -51,7 +52,8 @@ HEADERS += \
     qhalgroup.h \
     qhalsignal.h \
     qemcstatus.h \
-    qemccommand.h
+    qemccommand.h \
+    qemcerror.h
 
 QML_INFRA_FILES = \
     qmldir

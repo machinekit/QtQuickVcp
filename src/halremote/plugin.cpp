@@ -36,6 +36,7 @@
 #include "qnameserver.h"
 #include "qemcstatus.h"
 #include "qemccommand.h"
+#include "qemcerror.h"
 
 #include <qqml.h>
 
@@ -62,6 +63,7 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
     qmlRegisterType<QHalSignal>(uri, 1, 0, "HalSignal");
     qmlRegisterType<QEmcStatus>(uri, 1, 0, "EmcStatus");
     qmlRegisterType<QEmcCommand>(uri, 1, 0, "EmcCommand");
+    qmlRegisterType<QEmcError>(uri, 1, 0, "EmcError");
 }
 
 
