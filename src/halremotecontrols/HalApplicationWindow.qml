@@ -91,6 +91,7 @@ Rectangle {
     */
     property var services: []
 
+    /*! \internal */
     function _recurseObjects(objects, name)
     {
         var list = []
