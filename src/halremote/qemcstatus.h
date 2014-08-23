@@ -257,7 +257,6 @@ private:
     bool         m_statusPingOutstanding;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
-    pb::Container   m_tx;
 
     void start();
     void stop();

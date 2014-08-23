@@ -99,6 +99,11 @@ void QEmcStatus::updateState(QEmcStatus::State state)
         if (m_connectionState == Connected) // we are not connected anymore
         {
             stopStatusHeartbeat();
+            clearObject(MotionChannel);
+            clearObject(ConfigChannel);
+            clearObject(IoChannel);
+            clearObject(TaskChannel);
+            clearObject(InterpChannel);
         }
 
         m_connectionState = state;
