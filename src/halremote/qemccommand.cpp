@@ -203,6 +203,11 @@ void QEmcCommand::jog(QEmcCommand::JogType type, int axisIndex, double velocity 
         commandParams->set_velocity(velocity);
         commandParams->set_distance(distance);
     }
+    else
+    {
+        m_tx.Clear();
+        return;
+    }
 
     sendCommandMessage(containerType);
 }
@@ -452,6 +457,9 @@ void QEmcCommand::setSpindle(QEmcCommand::SpindleMode mode, double velocity = 0.
         break;
     case SpindleConstant:
         containerType = pb::MT_EMC_SPINDLE_CONSTANT;
+    default:
+        m_tx.Clear();
+        return;
     }
 
     sendCommandMessage(containerType);
@@ -666,6 +674,25 @@ void QEmcCommand::commandMessageReceived(const QList<QByteArray> &messageList)
 #ifdef QT_DEBUG
         DEBUG_TAG(2, "command", "ping ack")
 #endif
+        return;
+    }
+    else if (m_rx.type() == pb::MT_ERROR)
+    {
+        QString errorString;
+
+        for (int i = 0; i < m_rx.note_size(); ++i)
+        {
+            errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
+        }
+
+        m_cState = Down;
+        updateError(CommandError, errorString);
+        updateState(Error);
+
+#ifdef QT_DEBUG
+        DEBUG_TAG(1, "command", "error" << errorString)
+#endif
+
         return;
     }
     else
