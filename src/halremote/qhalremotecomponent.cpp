@@ -677,7 +677,7 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
         if (m_rx.has_pparams())
         {
             pb::ProtocolParameters pparams = m_rx.pparams();
-            startHalrcompHeartbeat(pparams.keepalive_timer());
+            startHalrcompHeartbeat(pparams.keepalive_timer() * 2);  // wait double the time of the hearbeat interval
         }
 
         return;
