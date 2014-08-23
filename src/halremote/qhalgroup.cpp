@@ -263,7 +263,7 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
         if (m_rx.has_pparams())
         {
             pb::ProtocolParameters pparams = m_rx.pparams();
-            startHalgroupHeartbeat(pparams.keepalive_timer());
+            startHalgroupHeartbeat(pparams.keepalive_timer() * 2); // wait double the time of the hearbeat interval
         }
 
         return;
