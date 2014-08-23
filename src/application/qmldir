@@ -1,0 +1,4 @@
+module Machinekit.Application
+plugin machinekitapplicationplugin
+classname MachinekitApplicationPlugin
+typeinfo plugins.qmltypes

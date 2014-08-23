@@ -18,7 +18,7 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QEmcStatus : public QQuickItem
+class QApplicationStatus : public QQuickItem
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -37,8 +37,8 @@ class QEmcStatus : public QQuickItem
     Q_FLAGS(StatusChannels)
 
 public:
-    explicit QEmcStatus(QQuickItem *parent = 0);
-    ~QEmcStatus();
+    explicit QApplicationStatus(QQuickItem *parent = 0);
+    ~QApplicationStatus();
 
     enum SocketState {
         Down = 1,

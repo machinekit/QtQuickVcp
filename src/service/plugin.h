@@ -19,38 +19,19 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-import QtQuick 2.0
-import QtQuick.Controls 1.1
-import Machinekit.Controls 1.0
-import Machinekit.HalRemote 1.0
-import Machinekit.HalRemote.Controls 1.0
-import Machinekit.VideoView 1.0
-import Machinekit.PathView 1.0
-import Machinekit.Application 1.0
-import Machinekit.Service 1.0
+#ifndef PLUGIN_H
+#define PLUGIN_H
 
-Item {
-    id: applicationWindow
+#include <QQmlExtensionPlugin>
 
-    visible: true
-    width: 500
-    height: 700
-    property string title: connectionWindow.title
+class MachinekitServicePlugin : public QQmlExtensionPlugin
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
 
-    ConnectionWindow {
-        id: connectionWindow
+public:
+    void registerTypes(const char *uri);
+};
 
-        anchors.fill: parent
-        defaultTitle: qsTr("Machinekit App Discover")
-        remoteVisible: true
-        mode: "remote"
-        autoSelectInstance: false
-        instanceFilter: ServiceDiscoveryFilter{ name: "" }
-        autoSelectApplication: false
-        applications: [
-            ApplicationDescription {
-                sourceDir: "qrc:/AppDiscover.ServiceDisplay"
-            }
-        ]
-    }
-}
+#endif // PLUGIN_H
+

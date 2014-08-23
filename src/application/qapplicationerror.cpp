@@ -1,7 +1,7 @@
-#include "qemcerror.h"
+#include "qapplicationerror.h"
 #include "debughelper.h"
 
-QEmcError::QEmcError(QQuickItem *parent) :
+QApplicationError::QApplicationError(QQuickItem *parent) :
     QQuickItem(parent),
     m_errorUri(""),
     m_ready(false),
@@ -20,13 +20,13 @@ QEmcError::QEmcError(QQuickItem *parent) :
            this, SLOT(errorHeartbeatTimerTick()));
 }
 
-QEmcError::~QEmcError()
+QApplicationError::~QApplicationError()
 {
     disconnectSockets();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
-void QEmcError::componentComplete()
+void QApplicationError::componentComplete()
 {
    m_componentCompleted = true;
 
@@ -38,7 +38,7 @@ void QEmcError::componentComplete()
    QQuickItem::componentComplete();
 }
 
-void QEmcError::start()
+void QApplicationError::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, "error", "start")
@@ -52,7 +52,7 @@ void QEmcError::start()
     }
 }
 
-void QEmcError::stop()
+void QApplicationError::stop()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "error", "stop")
@@ -66,7 +66,7 @@ void QEmcError::stop()
     updateError(NoError, "");   // clear the error here
 }
 
-void QEmcError::startErrorHeartbeat(int interval)
+void QApplicationError::startErrorHeartbeat(int interval)
 {
     m_errorHeartbeatTimer->stop();
     m_errorPingOutstanding = false;
@@ -78,12 +78,12 @@ void QEmcError::startErrorHeartbeat(int interval)
     }
 }
 
-void QEmcError::stopErrorHeartbeat()
+void QApplicationError::stopErrorHeartbeat()
 {
     m_errorHeartbeatTimer->stop();
 }
 
-void QEmcError::refreshErrorHeartbeat()
+void QApplicationError::refreshErrorHeartbeat()
 {
     if (m_errorHeartbeatTimer->isActive())
     {
@@ -92,7 +92,7 @@ void QEmcError::refreshErrorHeartbeat()
     }
 }
 
-void QEmcError::updateState(QEmcError::State state)
+void QApplicationError::updateState(QApplicationError::State state)
 {
     if (state != m_connectionState)
     {
@@ -106,7 +106,7 @@ void QEmcError::updateState(QEmcError::State state)
     }
 }
 
-void QEmcError::updateError(QEmcError::ConnectionError error, const QString &errorString)
+void QApplicationError::updateError(QApplicationError::ConnectionError error, const QString &errorString)
 {
     m_error = error;
     m_errorString = errorString;
@@ -115,7 +115,7 @@ void QEmcError::updateError(QEmcError::ConnectionError error, const QString &err
     emit errorChanged(m_error);
 }
 
-void QEmcError::errorMessageReceived(const QList<QByteArray> &messageList)
+void QApplicationError::errorMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -167,7 +167,7 @@ void QEmcError::errorMessageReceived(const QList<QByteArray> &messageList)
 #endif
 }
 
-void QEmcError::pollError(int errorNum, const QString &errorMsg)
+void QApplicationError::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
@@ -175,7 +175,7 @@ void QEmcError::pollError(int errorNum, const QString &errorMsg)
     updateState(Error);
 }
 
-void QEmcError::errorHeartbeatTimerTick()
+void QApplicationError::errorHeartbeatTimerTick()
 {
     unsubscribe();
     updateError(TimeoutError, "Error service timed out");
@@ -191,7 +191,7 @@ void QEmcError::errorHeartbeatTimerTick()
 }
 
 /** Connects the 0MQ sockets */
-bool QEmcError::connectSockets()
+bool QApplicationError::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, SIGNAL(pollError(int,QString)),
@@ -223,7 +223,7 @@ bool QEmcError::connectSockets()
 }
 
 /** Disconnects the 0MQ sockets */
-void QEmcError::disconnectSockets()
+void QApplicationError::disconnectSockets()
 {
     if (m_errorSocket != NULL)
     {
@@ -240,7 +240,7 @@ void QEmcError::disconnectSockets()
     }
 }
 
-void QEmcError::subscribe()
+void QApplicationError::subscribe()
 {
     m_sState = Trying;
 
@@ -258,7 +258,7 @@ void QEmcError::subscribe()
     }
 }
 
-void QEmcError::unsubscribe()
+void QApplicationError::unsubscribe()
 {
     m_sState = Down;
     foreach (QString subscription, m_subscriptions)
@@ -271,7 +271,7 @@ void QEmcError::unsubscribe()
 /** If the ready property has a rising edge we try to connect
  *  if it is has a falling edge we disconnect and cleanup
  */
-void QEmcError::setReady(bool arg)
+void QApplicationError::setReady(bool arg)
 {
     if (m_ready != arg) {
         m_ready = arg;

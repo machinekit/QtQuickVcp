@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 CONFIG += ordered
-SUBDIRS += halremote controls halremotecontrols videoview pathview
+SUBDIRS += halremote controls halremotecontrols videoview pathview service application

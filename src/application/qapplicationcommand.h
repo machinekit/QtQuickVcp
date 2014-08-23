@@ -8,7 +8,7 @@
 #include "message.pb.h"
 #include "status.pb.h"
 #include "emcclass.pb.h"
-#include "qemcstatus.h"
+#include "qapplicationstatus.h"
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;
@@ -18,7 +18,7 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QEmcCommand : public QQuickItem
+class QApplicationCommand : public QQuickItem
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -31,8 +31,8 @@ class QEmcCommand : public QQuickItem
     Q_ENUMS(State ConnectionError SpindleBrake JogType)
 
 public:
-    explicit QEmcCommand(QQuickItem *parent = 0);
-    ~QEmcCommand();
+    explicit QApplicationCommand(QQuickItem *parent = 0);
+    ~QApplicationCommand();
 
     enum SocketState {
         Down = 1,
@@ -143,7 +143,7 @@ public slots:
     void setMaximumVelocity(double velocity);
     void executeMdi(const QString &command);
     void setMistEnabled(bool enable);
-    void setTaskMode(QEmcStatus::TaskMode mode);
+    void setTaskMode(QApplicationStatus::TaskMode mode);
     void overrideLimits();
     void openProgram(const QString &filePath);
     void resetProgram();
@@ -159,11 +159,11 @@ public slots:
     void setSpindleOverrideEnabled(bool enable);
     void setSpindle(SpindleMode mode, double speed);
     void setSpindleOverride(double scale);
-    void setTaskState(QEmcStatus::TaskState state);
+    void setTaskState(QApplicationStatus::TaskState state);
     void setTeleopEnabled(bool enable);
     void setTeleopVector(double a, double b, double c, double u, double v, double w);
     void setToolOffset(int index, double zOffset, double xOffset, double diameter, double frontangle, double backangle, int orientation);
-    void setTrajectoryMode(QEmcStatus::TrajectoryMode mode);
+    void setTrajectoryMode(QApplicationStatus::TrajectoryMode mode);
     void unhomeAxis(int index);
 private:
 

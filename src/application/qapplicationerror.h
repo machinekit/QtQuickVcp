@@ -15,7 +15,7 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QEmcError : public QQuickItem
+class QApplicationError : public QQuickItem
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -29,8 +29,8 @@ class QEmcError : public QQuickItem
     Q_FLAGS(ErrorChannels)
 
 public:
-    explicit QEmcError(QQuickItem *parent = 0);
-    ~QEmcError();
+    explicit QApplicationError(QQuickItem *parent = 0);
+    ~QApplicationError();
 
     enum SocketState {
         Down = 1,

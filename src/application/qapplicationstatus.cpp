@@ -1,7 +1,7 @@
-#include "qemcstatus.h"
+#include "qapplicationstatus.h"
 #include "debughelper.h"
 
-QEmcStatus::QEmcStatus(QQuickItem *parent) :
+QApplicationStatus::QApplicationStatus(QQuickItem *parent) :
     QQuickItem(parent),
     m_statusUri(""),
     m_ready(false),
@@ -20,13 +20,13 @@ QEmcStatus::QEmcStatus(QQuickItem *parent) :
             this, SLOT(statusHeartbeatTimerTick()));
 }
 
-QEmcStatus::~QEmcStatus()
+QApplicationStatus::~QApplicationStatus()
 {
     disconnectSockets();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
-void QEmcStatus::componentComplete()
+void QApplicationStatus::componentComplete()
 {
     m_componentCompleted = true;
 
@@ -38,7 +38,7 @@ void QEmcStatus::componentComplete()
     QQuickItem::componentComplete();
 }
 
-void QEmcStatus::start()
+void QApplicationStatus::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, "status", "start")
@@ -52,7 +52,7 @@ void QEmcStatus::start()
     }
 }
 
-void QEmcStatus::stop()
+void QApplicationStatus::stop()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "status", "stop")
@@ -66,7 +66,7 @@ void QEmcStatus::stop()
     updateError(NoError, "");   // clear the error here
 }
 
-void QEmcStatus::startStatusHeartbeat(int interval)
+void QApplicationStatus::startStatusHeartbeat(int interval)
 {
     m_statusHeartbeatTimer->stop();
     m_statusPingOutstanding = false;
@@ -78,12 +78,12 @@ void QEmcStatus::startStatusHeartbeat(int interval)
     }
 }
 
-void QEmcStatus::stopStatusHeartbeat()
+void QApplicationStatus::stopStatusHeartbeat()
 {
     m_statusHeartbeatTimer->stop();
 }
 
-void QEmcStatus::refreshStatusHeartbeat()
+void QApplicationStatus::refreshStatusHeartbeat()
 {
     if (m_statusHeartbeatTimer->isActive())
     {
@@ -92,7 +92,7 @@ void QEmcStatus::refreshStatusHeartbeat()
     }
 }
 
-void QEmcStatus::updateState(QEmcStatus::State state)
+void QApplicationStatus::updateState(QApplicationStatus::State state)
 {
     if (state != m_connectionState)
     {
@@ -111,7 +111,7 @@ void QEmcStatus::updateState(QEmcStatus::State state)
     }
 }
 
-void QEmcStatus::updateError(QEmcStatus::ConnectionError error, const QString &errorString)
+void QApplicationStatus::updateError(QApplicationStatus::ConnectionError error, const QString &errorString)
 {
     m_error = error;
     m_errorString = errorString;
@@ -120,7 +120,7 @@ void QEmcStatus::updateError(QEmcStatus::ConnectionError error, const QString &e
     emit errorChanged(m_error);
 }
 
-void QEmcStatus::updatePosition(QJsonObject *object, const QString &baseName, const pb::Position &position)
+void QApplicationStatus::updatePosition(QJsonObject *object, const QString &baseName, const pb::Position &position)
 {
     QJsonObject jsonObject;
 
@@ -177,7 +177,7 @@ void QEmcStatus::updatePosition(QJsonObject *object, const QString &baseName, co
     (*object)[baseName] = jsonObject;
 }
 
-void QEmcStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcStatusMotionAxis &axis)
+void QApplicationStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcStatusMotionAxis &axis)
 {
     if (axis.has_enabled()) {
         (*jsonObject)["enabled"] = (bool)axis.enabled();
@@ -240,7 +240,7 @@ void QEmcStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcStatusMotio
     }
 }
 
-void QEmcStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcStatusConfigAxis &axis)
+void QApplicationStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcStatusConfigAxis &axis)
 {
     if (axis.has_axistype()) {
         (*jsonObject)["axisType"] = (int)axis.axistype();
@@ -271,7 +271,7 @@ void QEmcStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcStatusConfi
     }
 }
 
-void QEmcStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcToolData &toolData)
+void QApplicationStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcToolData &toolData)
 {
     if (toolData.has_id()) {
         (*jsonObject)["id"] = (int)toolData.id();
@@ -331,7 +331,7 @@ void QEmcStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcToolData &t
 }
 
 template<typename ValueType, class Type>
-void QEmcStatus::updateIndexValue(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields)
+void QApplicationStatus::updateIndexValue(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields)
 {
     QJsonArray jsonArray;
 
@@ -360,7 +360,7 @@ void QEmcStatus::updateIndexValue(QJsonObject *object, const QString &baseName, 
     (*object)[baseName] = jsonArray;
 }
 template<typename ValueType, class Type>
-void QEmcStatus::updateIndexMessage(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields)
+void QApplicationStatus::updateIndexMessage(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields)
 {
     QJsonArray jsonArray;
 
@@ -393,7 +393,7 @@ void QEmcStatus::updateIndexMessage(QJsonObject *object, const QString &baseName
 }
 
 
-void QEmcStatus::updateMotion(const pb::EmcStatusMotion &motion)
+void QApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
 {
     if (motion.has_active_queue())
     {
@@ -582,7 +582,7 @@ void QEmcStatus::updateMotion(const pb::EmcStatusMotion &motion)
     emit motionChanged(m_motion);
 }
 
-void QEmcStatus::updateConfig(const pb::EmcStatusConfig &config)
+void QApplicationStatus::updateConfig(const pb::EmcStatusConfig &config)
 {
     if (config.has_acceleration()) {
         m_config["acceleration"] = (double)config.acceleration();
@@ -639,7 +639,7 @@ void QEmcStatus::updateConfig(const pb::EmcStatusConfig &config)
     emit configChanged(m_config);
 }
 
-void QEmcStatus::updateIo(const pb::EmcStatusIo &io)
+void QApplicationStatus::updateIo(const pb::EmcStatusIo &io)
 {
     if (io.has_estop()) {
         m_io["estop"] = (bool)io.estop();
@@ -680,7 +680,7 @@ void QEmcStatus::updateIo(const pb::EmcStatusIo &io)
     emit ioChanged(m_io);
 }
 
-void QEmcStatus::updateTask(const pb::EmcStatusTask &task)
+void QApplicationStatus::updateTask(const pb::EmcStatusTask &task)
 {
     if (task.has_echo_serial_number()) {
         m_task["echoSerialNumber"] = (int)task.echo_serial_number();
@@ -721,7 +721,7 @@ void QEmcStatus::updateTask(const pb::EmcStatusTask &task)
     emit taskChanged(m_task);
 }
 
-void QEmcStatus::updateInterp(const pb::EmcStatusInterp &interp)
+void QApplicationStatus::updateInterp(const pb::EmcStatusInterp &interp)
 {
     if (interp.has_command()) {
         m_interp["command"] = QString::fromStdString(interp.command());
@@ -750,7 +750,7 @@ void QEmcStatus::updateInterp(const pb::EmcStatusInterp &interp)
     emit interpChanged(m_interp);
 }
 
-void QEmcStatus::statusMessageReceived(const QList<QByteArray> &messageList)
+void QApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -821,7 +821,7 @@ void QEmcStatus::statusMessageReceived(const QList<QByteArray> &messageList)
 #endif
 }
 
-void QEmcStatus::pollError(int errorNum, const QString &errorMsg)
+void QApplicationStatus::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
@@ -829,7 +829,7 @@ void QEmcStatus::pollError(int errorNum, const QString &errorMsg)
     updateState(Error);
 }
 
-void QEmcStatus::statusHeartbeatTimerTick()
+void QApplicationStatus::statusHeartbeatTimerTick()
 {
     unsubscribe();
     updateError(TimeoutError, "Status service timed out");
@@ -845,7 +845,7 @@ void QEmcStatus::statusHeartbeatTimerTick()
 }
 
 /** Connects the 0MQ sockets */
-bool QEmcStatus::connectSockets()
+bool QApplicationStatus::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, SIGNAL(pollError(int,QString)),
@@ -877,7 +877,7 @@ bool QEmcStatus::connectSockets()
 }
 
 /** Disconnects the 0MQ sockets */
-void QEmcStatus::disconnectSockets()
+void QApplicationStatus::disconnectSockets()
 {
     if (m_statusSocket != NULL)
     {
@@ -894,7 +894,7 @@ void QEmcStatus::disconnectSockets()
     }
 }
 
-void QEmcStatus::subscribe()
+void QApplicationStatus::subscribe()
 {
     m_sState = Trying;
 
@@ -920,7 +920,7 @@ void QEmcStatus::subscribe()
     }
 }
 
-void QEmcStatus::unsubscribe()
+void QApplicationStatus::unsubscribe()
 {
     m_sState = Down;
     foreach (QString subscription, m_subscriptions)
@@ -949,7 +949,7 @@ void QEmcStatus::unsubscribe()
 /** If the ready property has a rising edge we try to connect
  *  if it is has a falling edge we disconnect and cleanup
  */
-void QEmcStatus::setReady(bool arg)
+void QApplicationStatus::setReady(bool arg)
 {
     if (m_ready != arg) {
         m_ready = arg;
@@ -971,7 +971,7 @@ void QEmcStatus::setReady(bool arg)
     }
 }
 
-void QEmcStatus::clearObject(QEmcStatus::StatusChannel channel)
+void QApplicationStatus::clearObject(QApplicationStatus::StatusChannel channel)
 {
     switch (channel)
     {

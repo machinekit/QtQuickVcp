@@ -19,38 +19,26 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-import QtQuick 2.0
-import QtQuick.Controls 1.1
-import Machinekit.Controls 1.0
-import Machinekit.HalRemote 1.0
-import Machinekit.HalRemote.Controls 1.0
-import Machinekit.VideoView 1.0
-import Machinekit.PathView 1.0
-import Machinekit.Application 1.0
-import Machinekit.Service 1.0
+#include "plugin.h"
+#include "qservice.h"
+#include "qservicelist.h"
+#include "qservicediscovery.h"
+#include "qservicediscoveryitem.h"
+#include "qservicediscoveryfilter.h"
+#include "qnameserver.h"
 
-Item {
-    id: applicationWindow
+#include <qqml.h>
 
-    visible: true
-    width: 500
-    height: 700
-    property string title: connectionWindow.title
+void MachinekitServicePlugin::registerTypes(const char *uri)
+{
 
-    ConnectionWindow {
-        id: connectionWindow
-
-        anchors.fill: parent
-        defaultTitle: qsTr("Machinekit App Discover")
-        remoteVisible: true
-        mode: "remote"
-        autoSelectInstance: false
-        instanceFilter: ServiceDiscoveryFilter{ name: "" }
-        autoSelectApplication: false
-        applications: [
-            ApplicationDescription {
-                sourceDir: "qrc:/AppDiscover.ServiceDisplay"
-            }
-        ]
-    }
+    // @uri Machinekit.Service
+    qmlRegisterType<QService>(uri, 1, 0, "Service");
+    qmlRegisterType<QServiceList>(uri, 1, 0, "ServiceList");
+    qmlRegisterType<QNameServer>(uri, 1, 0, "NameServer");
+    qmlRegisterType<QServiceDiscovery>(uri, 1, 0, "ServiceDiscovery");
+    qmlRegisterType<QServiceDiscoveryItem>(uri, 1, 0, "ServiceDiscoveryItem");
+    qmlRegisterType<QServiceDiscoveryFilter>(uri, 1, 0, "ServiceDiscoveryFilter");
 }
+
+

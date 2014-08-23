@@ -20,24 +20,30 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "qhalpin.h"
-#include "qhalsignal.h"
-#include "qhalgroup.h"
-#include "qhalremotecomponent.h"
+#include "qapplicationconfig.h"
+#include "qapplicationconfigitem.h"
+#include "qapplicationconfigfilter.h"
+#include "qapplicationdescription.h"
+#include "qapplicationstatus.h"
+#include "qapplicationcommand.h"
+#include "qapplicationerror.h"
 
 #include <qqml.h>
 
-void MachinekitHalRemotePlugin::registerTypes(const char *uri)
+void MachinekitApplicationPlugin::registerTypes(const char *uri)
 {
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    // @uri Machinekit.HalRemote
-    qmlRegisterType<QHalRemoteComponent>(uri, 1, 0, "HalRemoteComponent");
-    qmlRegisterType<QHalPin>(uri, 1, 0, "HalPin");
-    qmlRegisterType<QHalGroup>(uri, 1, 0, "HalGroup");
-    qmlRegisterType<QHalSignal>(uri, 1, 0, "HalSignal");
+    // @uri Machinekit.Application
+    qmlRegisterType<QApplicationConfig>(uri, 1, 0, "ApplicationConfig");
+    qmlRegisterType<QApplicationConfigItem>(uri, 1, 0, "ApplicationConfigItem");
+    qmlRegisterType<QApplicationConfigFilter>(uri, 1, 0, "ApplicationConfigFilter");
+    qmlRegisterType<QApplicationDescription>(uri, 1, 0, "ApplicationDescription");
+    qmlRegisterType<QApplicationStatus>(uri, 1, 0, "ApplicationStatus");
+    qmlRegisterType<QApplicationCommand>(uri, 1, 0, "ApplicationCommand");
+    qmlRegisterType<QApplicationError>(uri, 1, 0, "ApplicationError");
 }
 
 

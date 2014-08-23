@@ -25,6 +25,8 @@ import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
 import Machinekit.Controls 1.0
 import Machinekit.HalRemote 1.0
+import Machinekit.Service 1.0
+import Machinekit.Application 1.0
 
 /*!
     \qmltype ConnectionWindow
