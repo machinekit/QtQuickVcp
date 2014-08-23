@@ -224,8 +224,6 @@ public slots:
 
     void setReady(bool arg);
 
-    void clearObject(StatusChannel channel);
-
     void setChannels(StatusChannels arg)
     {
         if (m_channels == arg)
@@ -234,6 +232,8 @@ public slots:
         m_channels = arg;
         emit channelsChanged(arg);
     }
+
+    void clearObject(StatusChannel channel);
 
 private:
     QString         m_statusUri;

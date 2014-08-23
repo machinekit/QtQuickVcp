@@ -798,7 +798,7 @@ void QEmcStatus::statusMessageReceived(const QList<QByteArray> &messageList)
             if (m_rx.has_pparams())
             {
                 pb::ProtocolParameters pparams = m_rx.pparams();
-                startStatusHeartbeat(pparams.keepalive_timer());
+                startStatusHeartbeat(pparams.keepalive_timer() * 2); // wait double the time of the hearbeat interval
             }
         }
         else
@@ -818,7 +818,7 @@ void QEmcStatus::statusMessageReceived(const QList<QByteArray> &messageList)
 #ifdef QT_DEBUG
     gpb::TextFormat::PrintToString(m_rx, &s);
     DEBUG_TAG(1, "status", "update: unknown message type: " << QString::fromStdString(s))
-        #endif
+#endif
 }
 
 void QEmcStatus::pollError(int errorNum, const QString &errorMsg)
@@ -873,7 +873,7 @@ bool QEmcStatus::connectSockets()
     DEBUG_TAG(1, "status", "socket connected" << m_statusUri)
 #endif
 
-            return true;
+    return true;
 }
 
 /** Disconnects the 0MQ sockets */
