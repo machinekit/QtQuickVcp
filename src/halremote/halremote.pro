@@ -30,7 +30,8 @@ SOURCES += \
     qnameserver.cpp \
     qhalgroup.cpp \
     qhalsignal.cpp \
-    qemcstatus.cpp
+    qemcstatus.cpp \
+    qemccommand.cpp
 
 HEADERS += \
     plugin.h \
@@ -49,7 +50,8 @@ HEADERS += \
     qnameserver.h \
     qhalgroup.h \
     qhalsignal.h \
-    qemcstatus.h
+    qemcstatus.h \
+    qemccommand.h
 
 QML_INFRA_FILES = \
     qmldir
