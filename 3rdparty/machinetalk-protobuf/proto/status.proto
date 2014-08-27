@@ -69,6 +69,16 @@ enum EmcAxisType {
     EMC_AXIS_ANGULAR    = 2;
 }
 
+enum EmcPositionOffsetType {
+    EMC_CONFIG_RELATIVE_OFFSET = 1;
+    EMC_CONFIG_MACHINE_OFFSET = 2;
+}
+
+enum EmcPositionFeedbackType {
+    EMC_CONFIG_ACTUAL_FEEDBACK = 1;
+    EMC_CONFIG_RELATIVE_FEEDBACK = 2;
+}
+
 message EmcToolData {
     required int32          index       = 1;
     optional int32          id          = 2;
@@ -117,6 +127,11 @@ message EmcStatusConfigAxis {
     optional double         units               = 8;
 }
 
+message EmcProgramExtension {
+    required int32          index = 1;
+    optional string         extension = 2;
+}
+
 message EmcStatusAnalogIO {
     required int32          index = 1;
     optional double         value = 2;
@@ -148,19 +163,40 @@ message EmcStatusSetting {
 }
 
 message EmcStatusConfig {
-    optional double                 acceleration        = 1;
-    optional double                 angular_units       = 2;
-    optional int32                  axes                = 3;
-    repeated EmcStatusConfigAxis    axis                = 4;
-    optional int32                  axis_mask           = 5;
-    optional double                 cycle_time          = 6;
-    optional int32                  debug               = 7;
-    optional EmcKinematicsType      kinematics_type     = 8;
-    optional double                 linear_units        = 9;
-    optional double                 max_acceleration    = 10;
-    optional double                 max_velocity        = 11;
-    optional EmcCanonUnitsType      program_units       = 12;
-    optional double                 velocity            = 13;
+    optional double                     acceleration             = 1;
+    optional double                     angular_units            = 2;
+    optional int32                      axes                     = 3;
+    repeated EmcStatusConfigAxis        axis                     = 4;
+    optional int32                      axis_mask                = 5;
+    optional double                     cycle_time               = 6;
+    optional int32                      debug                    = 7;
+    optional EmcKinematicsType          kinematics_type          = 8;
+    optional double                     linear_units             = 9;
+    optional double                     max_acceleration         = 10;
+    optional double                     max_velocity             = 11;
+    optional EmcCanonUnitsType          program_units            = 12;
+    optional double                     velocity                 = 13;
+    repeated EmcProgramExtension        program_extension        = 14;
+    optional EmcPositionOffsetType      position_offset          = 15;
+    optional EmcPositionFeedbackType    position_feedback        = 16;
+    optional double                     max_feed_override        = 17;
+    optional double                     min_feed_override        = 18;
+    optional double                     max_spindle_override     = 19;
+    optional double                     min_spindle_override     = 20;
+    optional double                     default_spindle_speed    = 21;
+    optional double                     default_linear_velocity  = 22;
+    optional double                     min_velocity             = 23;
+    optional double                     max_linear_velocity      = 24;
+    optional double                     min_linear_velocity      = 25;
+    optional double                     default_angular_velocity = 26;
+    optional double                     max_angular_velocity     = 27;
+    optional double                     min_angular_velocity     = 28;
+    optional string                     increments               = 29;
+    optional string                     grids                    = 30;
+    optional bool                       lathe                    = 31;
+    optional string                     geometry                 = 32;
+    optional uint32                     arcdivision              = 33;
+    optional bool                       no_force_homing          = 34;
 }
 
 message EmcStatusMotion {
