@@ -76,7 +76,7 @@ enum EmcPositionOffsetType {
 
 enum EmcPositionFeedbackType {
     EMC_CONFIG_ACTUAL_FEEDBACK = 1;
-    EMC_CONFIG_RELATIVE_FEEDBACK = 2;
+    EMC_CONFIG_COMMANDED_FEEDBACK = 2;
 }
 
 message EmcToolData {
