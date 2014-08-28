@@ -21,7 +21,8 @@ SOURCES += \
     qapplicationdescription.cpp \
     qapplicationcommand.cpp \
     qapplicationerror.cpp \
-    qapplicationstatus.cpp
+    qapplicationstatus.cpp \
+    qapplicationfile.cpp
 
 HEADERS += \
     plugin.h \
@@ -32,7 +33,8 @@ HEADERS += \
     qapplicationdescription.h \
     qapplicationcommand.h \
     qapplicationerror.h \
-    qapplicationstatus.h
+    qapplicationstatus.h \
+    qapplicationfile.h
 
 QML_INFRA_FILES = \
     qmldir
