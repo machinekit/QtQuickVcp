@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/Machinekit/Application/Controls">
+        <file>EstopButton.qml</file>
+        <file>EstopAction.qml</file>
+        <file>PowerAction.qml</file>
+        <file>ApplicationNotifications.qml</file>
+        <file>ApplicationFileDialog.qml</file>
+        <file>ApplicationProgressBar.qml</file>
+        <file>OpenAction.qml</file>
+        <file>RunProgramAction.qml</file>
+        <file>StopProgramAction.qml</file>
+        <file>StepProgramAction.qml</file>
+        <file>ReopenAction.qml</file>
+        <file>PauseResumeProgramAction.qml</file>
+    </qresource>
+    <qresource prefix="/Machinekit/Application/Controls/icons">
+        <file alias="process-stop">icons/process-stop.png</file>
+        <file alias="system-shutdown">icons/system-shutdown.png</file>
+        <file alias="document-open">icons/document-open.png</file>
+        <file alias="dialog-cancel">icons/dialog-cancel.png</file>
+        <file alias="dialog-error">icons/dialog-error.png</file>
+        <file alias="dialog-warning">icons/dialog-warning.png</file>
+        <file alias="dialog-information">icons/dialog-information.png</file>
+        <file alias="go-next">icons/go-next.png</file>
+        <file alias="go-next-view">icons/go-next-view.png</file>
+        <file alias="go-pause">icons/go-pause.png</file>
+        <file alias="go-stop">icons/go-stop.png</file>
+        <file alias="view-refresh">icons/view-refresh.png</file>
+    </qresource>
+</RCC>

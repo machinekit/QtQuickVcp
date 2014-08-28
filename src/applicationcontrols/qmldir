@@ -1,0 +1,19 @@
+module Machinekit.Application.Controls
+plugin machinekitapplicationcontrolsplugin
+classname MachinekitApplicationControlsPlugin
+typeinfo plugins.qmltypes
+
+# Workaround: inform Qt Creator about QML files
+# typeinfo plugins.qmltypes does not work
+EstopAction 1.0 EstopAction.qml
+EstopButton 1.0 EstopButton.qml
+PowerAction 1.0 PowerAction.qml
+OpenAction 1.0 OpenAction.qml
+ReopenAction 1.0 ReopenAction.qml
+RunProgramAction 1.0 RunProgramAction.qml
+StepProgramAction 1.0 StepProgramAction.qml
+PauseResumeProgramAction 1.0 PauseResumeProgramAction.qml
+StopProgramAction 1.0 StopProgramAction.qml
+ApplicationNotifications 1.0 ApplicationNotifications.qml
+ApplicationProgressBar 1.0 ApplicationProgressBar.qml
+ApplicationFileDialog 1.0 ApplicationFileDialog.qml
