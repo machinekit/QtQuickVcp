@@ -9,6 +9,7 @@ QApplicationStatus::QApplicationStatus(QQuickItem *parent) :
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
+    m_running(false),
     m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel),
     m_componentCompleted(false),
     m_context(NULL),
@@ -18,6 +19,11 @@ QApplicationStatus::QApplicationStatus(QQuickItem *parent) :
 {
     connect(m_statusHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(statusHeartbeatTimerTick()));
+
+    connect(this, SIGNAL(taskChanged(QJsonObject)),
+            this, SLOT(updateRunning(QJsonObject)));
+    connect(this, SIGNAL(interpChanged(QJsonObject)),
+            this, SLOT(updateRunning(QJsonObject)));
 }
 
 QApplicationStatus::~QApplicationStatus()
@@ -330,6 +336,13 @@ void QApplicationStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcToo
     }
 }
 
+void QApplicationStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcProgramExtension &extension)
+{
+    if (extension.has_extension()) {
+        (*jsonObject)["extension"] = QString::fromStdString(extension.extension());
+    }
+}
+
 template<typename ValueType, class Type>
 void QApplicationStatus::updateIndexValue(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields)
 {
@@ -634,6 +647,90 @@ void QApplicationStatus::updateConfig(const pb::EmcStatusConfig &config)
 
     if (config.has_velocity()) {
         m_config["velocity"] = (int)config.velocity();
+    }
+
+    if (config.program_extension_size() > 0) {
+        updateIndexMessage<pb::EmcProgramExtension>(&m_config, "programExtension", config.program_extension());
+    }
+
+    if (config.has_position_offset()) {
+        m_config["positionOffset"] = (int)config.position_offset();
+    }
+
+    if (config.has_position_feedback()) {
+        m_config["positionFeedback"] = (int)config.position_feedback();
+    }
+
+    if (config.has_max_feed_override()) {
+        m_config["maxFeedOverride"] = (double)config.max_feed_override();
+    }
+
+    if (config.has_min_feed_override()) {
+        m_config["minFeedOverride"] = (double)config.min_feed_override();
+    }
+
+    if (config.has_max_spindle_override()) {
+        m_config["maxSpindleOverride"] = (double)config.max_feed_override();
+    }
+
+    if (config.has_min_spindle_override()) {
+        m_config["minSpindleOverride"] = (double)config.min_spindle_override();
+    }
+
+    if (config.has_default_spindle_speed()) {
+        m_config["defaultSpindleSpeed"] = (double)config.default_spindle_speed();
+    }
+
+    if (config.has_default_linear_velocity()) {
+        m_config["defaultLinearVelocity"] = (double)config.default_linear_velocity();
+    }
+
+    if (config.has_default_angular_velocity()) {
+        m_config["defaultAngularVelocity"] = (double)config.default_angular_velocity();
+    }
+
+    if (config.has_min_velocity()) {
+        m_config["minVelocity"] = (double)config.min_velocity();
+    }
+
+    if (config.has_max_linear_velocity()) {
+        m_config["maxLinearVelocity"] = (double)config.max_linear_velocity();
+    }
+
+    if (config.has_min_linear_velocity()) {
+        m_config["minLinearVelocity"] = (double)config.min_linear_velocity();
+    }
+
+    if (config.has_max_angular_velocity()) {
+        m_config["maxAngularVelocity"] = (double)config.max_angular_velocity();
+    }
+
+    if (config.has_min_angular_velocity()) {
+        m_config["minAngularVelocity"] = (double)config.min_angular_velocity();
+    }
+
+    if (config.has_increments()) {
+        m_config["increments"] = QString::fromStdString(config.increments());
+    }
+
+    if (config.has_grids()) {
+        m_config["grids"] = QString::fromStdString(config.grids());
+    }
+
+    if (config.has_lathe()) {
+        m_config["lathe"] = (bool)config.lathe();
+    }
+
+    if (config.has_geometry()) {
+        m_config["geometry"] = QString::fromStdString(config.geometry());
+    }
+
+    if (config.has_arcdivision()) {
+        m_config["arcdivision"] = (int)config.arcdivision();
+    }
+
+    if (config.has_no_force_homing()) {
+        m_config["noForceHoming"] = (bool)config.no_force_homing();
     }
 
     emit configChanged(m_config);
@@ -944,6 +1041,24 @@ void QApplicationStatus::unsubscribe()
         }
     }
     m_subscriptions.clear();
+}
+
+void QApplicationStatus::updateRunning(const QJsonObject &object)
+{
+    Q_UNUSED(object)
+
+    bool running;
+
+    running = m_task["taskMode"].isDouble()
+            && ((TaskMode)m_task["taskMode"].toDouble() == TaskModeAuto)
+            && m_interp["interpState"].isDouble()
+            && ((InterpreterState)m_interp["interpState"].toDouble() != InterpreterIdle);
+
+    if (running != m_running)
+    {
+        m_running = running;
+        emit runningChanged(running);
+    }
 }
 
 /** If the ready property has a rising edge we try to connect

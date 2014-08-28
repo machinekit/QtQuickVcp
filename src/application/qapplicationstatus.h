@@ -32,8 +32,12 @@ class QApplicationStatus : public QQuickItem
     Q_PROPERTY(QJsonObject io READ io NOTIFY ioChanged)
     Q_PROPERTY(QJsonObject task READ task NOTIFY taskChanged)
     Q_PROPERTY(QJsonObject interp READ interp NOTIFY interpChanged)
+    Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
     Q_PROPERTY(StatusChannels channels READ channels WRITE setChannels NOTIFY channelsChanged)
-    Q_ENUMS(State ConnectionError OriginIndex TrajectoryMode MotionStatus AxisType KinematicsType CanonUnits TaskExecState TaskState TaskMode InterpreterState InterpreterExitCode)
+    Q_ENUMS(State ConnectionError OriginIndex TrajectoryMode MotionStatus
+            AxisType KinematicsType CanonUnits TaskExecState TaskState
+            TaskMode InterpreterState InterpreterExitCode PositionOffset
+            PositionFeedback)
     Q_FLAGS(StatusChannels)
 
 public:
@@ -124,7 +128,7 @@ public:
 
     enum TaskState {
         TaskStateEstop = pb::EMC_TASK_STATE_ESTOP,
-        TaskSateEstopReset = pb::EMC_TASK_STATE_ESTOP_RESET,
+        TaskStateEstopReset = pb::EMC_TASK_STATE_ESTOP_RESET,
         TaskStateOff = pb::EMC_TASK_STATE_OFF,
         TaskStateOn = pb::EMC_TASK_STATE_ON
     };
@@ -143,6 +147,16 @@ public:
         InterpreterExitEndfile = pb::EMC_INTERP_EXIT_ENDFILE,
         InterpreterExitFileNotOpen = pb::EMC_INTERP_EXIT_FILE_NOT_OPEN,
         InterpreterExitError = pb::EMC_INTERP_EXIT_ERROR
+    };
+
+    enum PositionOffset {
+        RelativePositionOffset = pb::EMC_CONFIG_RELATIVE_OFFSET,
+        MachinePositionOffset = pb::EMC_CONFIG_MACHINE_OFFSET
+    };
+
+    enum PositionFeedback {
+        ActualPositionFeedback = pb::EMC_CONFIG_ACTUAL_FEEDBACK,
+        CommandedPositionFeedback = pb::EMC_CONFIG_COMMANDED_FEEDBACK
     };
 
     enum StatusChannel {
@@ -211,6 +225,11 @@ public:
         return m_channels;
     }
 
+    bool isRunning() const
+    {
+        return m_running;
+    }
+
 public slots:
 
     void setStatusUri(QString arg)
@@ -247,6 +266,7 @@ private:
     QJsonObject     m_io;
     QJsonObject     m_task;
     QJsonObject     m_interp;
+    bool            m_running;
     StatusChannels  m_channels;
     bool            m_componentCompleted;
 
@@ -273,6 +293,7 @@ private:
     void updateMessage(QJsonObject *jsonObject, const pb::EmcStatusMotionAxis &axis);
     void updateMessage(QJsonObject *jsonObject, const pb::EmcStatusConfigAxis &axis);
     void updateMessage(QJsonObject *jsonObject, const pb::EmcToolData &toolData);
+    void updateMessage(QJsonObject *jsonObject, const pb::EmcProgramExtension &extension);
     void updateMotion(const pb::EmcStatusMotion &motion);
     void updateConfig(const pb::EmcStatusConfig &config);
     void updateIo(const pb::EmcStatusIo &io);
@@ -289,6 +310,8 @@ private slots:
     void subscribe();
     void unsubscribe();
 
+    void updateRunning(const QJsonObject &object);
+
 signals:
     void statusUriChanged(QString arg);
     void readyChanged(bool arg);
@@ -301,6 +324,7 @@ signals:
     void taskChanged(QJsonObject arg);
     void interpChanged(QJsonObject arg);
     void channelsChanged(StatusChannels arg);
+    void runningChanged(bool arg);
 };
 
 #endif // QEMCSTATUS_H
