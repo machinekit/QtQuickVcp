@@ -261,7 +261,7 @@ void QApplicationCommand::setMistEnabled(bool enable)
     }
 }
 
-void QApplicationCommand::setTaskMode(QApplicationStatus::TaskMode mode)
+void QApplicationCommand::setTaskMode(TaskMode mode)
 {
     if (m_connectionState != Connected) {
         return;
@@ -282,14 +282,14 @@ void QApplicationCommand::overrideLimits()
     sendCommandMessage(pb::MT_EMC_AXIS_OVERRIDE_LIMITS);
 }
 
-void QApplicationCommand::openProgram(const QString &filePath)
+void QApplicationCommand::openProgram(const QString &fileName)
 {
     if (m_connectionState != Connected) {
         return;
     }
 
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_path(filePath.toStdString());
+    commandParams->set_path(fileName.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_OPEN);
 }
@@ -477,7 +477,7 @@ void QApplicationCommand::setSpindleOverride(double scale)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_SPINDLE_SCALE);
 }
 
-void QApplicationCommand::setTaskState(QApplicationStatus::TaskState state)
+void QApplicationCommand::setTaskState(TaskState state)
 {
     if (m_connectionState != Connected) {
         return;

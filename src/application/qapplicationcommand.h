@@ -28,7 +28,7 @@ class QApplicationCommand : public QQuickItem
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_ENUMS(State ConnectionError SpindleBrake JogType)
+    Q_ENUMS(State ConnectionError SpindleBrake JogType TaskState TaskMode)
 
 public:
     explicit QApplicationCommand(QQuickItem *parent = 0);
@@ -72,6 +72,19 @@ public:
         SpindleDecrease,
         SpindleIncrease,
         SpindleConstant
+    };
+
+    enum TaskState {
+        TaskStateEstop = pb::EMC_TASK_STATE_ESTOP,
+        TaskStateEstopReset = pb::EMC_TASK_STATE_ESTOP_RESET,
+        TaskStateOff = pb::EMC_TASK_STATE_OFF,
+        TaskStateOn = pb::EMC_TASK_STATE_ON
+    };
+
+    enum TaskMode {
+        TaskModeManual = pb::EMC_TASK_MODE_MANUAL,
+        TaskModeAuto = pb::EMC_TASK_MODE_AUTO,
+        TaskModeMdi = pb::EMC_TASK_MODE_MDI
     };
 
     virtual void componentComplete();
@@ -143,9 +156,9 @@ public slots:
     void setMaximumVelocity(double velocity);
     void executeMdi(const QString &command);
     void setMistEnabled(bool enable);
-    void setTaskMode(QApplicationStatus::TaskMode mode);
+    void setTaskMode(TaskMode mode);
     void overrideLimits();
-    void openProgram(const QString &filePath);
+    void openProgram(const QString &fileName);
     void resetProgram();
     void setAdaptiveFeedEnabled(bool enable);
     void setAnalogOutput(int index, double value);
@@ -159,7 +172,7 @@ public slots:
     void setSpindleOverrideEnabled(bool enable);
     void setSpindle(SpindleMode mode, double speed);
     void setSpindleOverride(double scale);
-    void setTaskState(QApplicationStatus::TaskState state);
+    void setTaskState(TaskState state);
     void setTeleopEnabled(bool enable);
     void setTeleopVector(double a, double b, double c, double u, double v, double w);
     void setToolOffset(int index, double zOffset, double xOffset, double diameter, double frontangle, double backangle, int orientation);
