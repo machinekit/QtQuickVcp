@@ -104,6 +104,12 @@
     The default value is \c{false}.
 */
 
+/*! \qmlproperty bool HalRemoteComponent::connected
+
+    This property holds wheter the HAL remote component is connected or not. This is the
+    same as \l{connectionState} == \c{HalRemoteComponent.Connected}.
+ */
+
 /*! \qmlproperty enumeration HalRemoteComponent::connectionState
 
     This property holds the connection state of the HAL remote component.
@@ -156,6 +162,7 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
     m_halrcompUri(""),
     m_name("default"),
     m_heartbeatPeriod(3000),
+    m_connected(false),
     m_sState(Down),
     m_cState(Down),
     m_connectionState(Disconnected),
@@ -537,11 +544,19 @@ void QHalRemoteComponent::updateState(State state)
         if (m_connectionState == Connected)
         {
             startHalrcmdHeartbeat();
+            if (m_connected != true) {
+                m_connected = true;
+                emit connectedChanged(true);
+            }
         }
         else
         {
             stopHalrcmdHeartbeat();
             stopHalrcompHeartbeat();
+            if (m_connected != false) {
+                m_connected = false;
+                emit connectedChanged(false);
+            }
         }
     }
 }

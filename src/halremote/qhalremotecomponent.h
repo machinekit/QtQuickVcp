@@ -47,6 +47,7 @@ class QHalRemoteComponent : public QQuickItem
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
+    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
@@ -128,6 +129,11 @@ public:
         return m_errorString;
     }
 
+    bool isConnected() const
+    {
+        return m_connected;
+    }
+
 public slots:
     void pinChange(QVariant value);
 
@@ -181,6 +187,7 @@ private:
     QString     m_halrcompUri;
     QString     m_name;
     int         m_heartbeatPeriod;
+    bool        m_connected;
     SocketState m_sState;
     SocketState m_cState;
     State       m_connectionState;
@@ -244,6 +251,7 @@ signals:
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
+    void connectedChanged(bool arg);
 };
 
 #endif // QCOMPONENT_H
