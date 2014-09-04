@@ -1,11 +1,18 @@
 #include "qhalgroup.h"
 #include "debughelper.h"
 
+/*! \qmlproperty bool HalGroup::connected
+
+    This property hold wheter the HAL group is connected or not. This is the
+    same as \l{connectionState} == \c{HalGroup.Connected}.
+ */
+
 QHalGroup::QHalGroup(QQuickItem *parent) :
     QQuickItem(parent),
     m_halgroupUri(""),
     m_name("default"),
     m_ready(false),
+    m_connected(false),
     m_sState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
@@ -126,6 +133,17 @@ void QHalGroup::updateState(QHalGroup::State state)
         {
             unsyncSignals();
             stopHalgroupHeartbeat();
+            if (m_connected != false) {
+                m_connected = false;
+                emit connectedChanged(m_connected);
+            }
+        }
+        else
+        {
+            if (m_connected != true) {
+                m_connected = true;
+                emit connectedChanged(m_connected);
+            }
         }
 
         m_connectionState = state;

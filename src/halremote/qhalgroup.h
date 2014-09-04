@@ -25,6 +25,7 @@ class QHalGroup : public QQuickItem
     Q_PROPERTY(QString halgroupUri READ halgroupUri WRITE setHalgroupUri NOTIFY halgroupUriChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
+    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
@@ -98,6 +99,11 @@ public:
         return m_values;
     }
 
+    bool isConnected() const
+    {
+        return m_connected;
+    }
+
 public slots:
 
     void setHalgroupUri(QString arg)
@@ -130,6 +136,7 @@ private:
     QString     m_halgroupUri;
     QString     m_name;
     bool        m_ready;
+    bool        m_connected;
     SocketState m_sState;
     State       m_connectionState;
     ConnectionError m_error;
@@ -182,6 +189,7 @@ signals:
     void errorStringChanged(QString arg);
     void containerItemChanged(QQuickItem * arg);
     void valuesChanged(QJsonObject arg);
+    void connectedChanged(bool arg);
 };
 
 #endif // QHALGROUP_H
