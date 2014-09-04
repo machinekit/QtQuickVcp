@@ -6,10 +6,12 @@ QApplicationStatus::QApplicationStatus(QQuickItem *parent) :
     m_statusUri(""),
     m_ready(false),
     m_sState(Down),
+    m_connected(false),
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
     m_running(false),
+    m_synced(false),
     m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel),
     m_componentCompleted(false),
     m_context(NULL),
@@ -105,11 +107,20 @@ void QApplicationStatus::updateState(QApplicationStatus::State state)
         if (m_connectionState == Connected) // we are not connected anymore
         {
             stopStatusHeartbeat();
+            clearSync();
+            if (m_connected != false) {
+                m_connected = false;
+                emit connectedChanged(false);
+            }
             clearObject(MotionChannel);
             clearObject(ConfigChannel);
             clearObject(IoChannel);
             clearObject(TaskChannel);
             clearObject(InterpChannel);
+        }
+        else if (m_connected != true) {
+            m_connected = true;
+            emit connectedChanged(true);
         }
 
         m_connectionState = state;
@@ -124,6 +135,23 @@ void QApplicationStatus::updateError(QApplicationStatus::ConnectionError error, 
 
     emit errorStringChanged(m_errorString);
     emit errorChanged(m_error);
+}
+
+void QApplicationStatus::updateSync(QApplicationStatus::StatusChannel channel)
+{
+    m_syncedChannels |= channel;
+
+    if (m_syncedChannels == m_channels) {
+        m_synced = true;
+        emit syncedChanged(m_synced);
+    }
+}
+
+void QApplicationStatus::clearSync()
+{
+    m_synced = false;
+    m_syncedChannels = 0;
+    emit syncedChanged(m_synced);
 }
 
 void QApplicationStatus::updatePosition(QJsonObject *object, const QString &baseName, const pb::Position &position)
@@ -865,22 +893,37 @@ void QApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageL
     {
         if ((topic == "motion") && m_rx.has_emc_status_motion()) {
             updateMotion(m_rx.emc_status_motion());
+            if (m_rx.type() == pb::MT_EMCSTAT_FULL_UPDATE) {
+                updateSync(MotionChannel);
+            }
         }
 
         if ((topic == "config") && m_rx.has_emc_status_config()) {
             updateConfig(m_rx.emc_status_config());
+            if (m_rx.type() == pb::MT_EMCSTAT_FULL_UPDATE) {
+                updateSync(ConfigChannel);
+            }
         }
 
         if ((topic == "io") && m_rx.has_emc_status_io()) {
             updateIo(m_rx.emc_status_io());
+            if (m_rx.type() == pb::MT_EMCSTAT_FULL_UPDATE) {
+                updateSync(IoChannel);
+            }
         }
 
         if ((topic == "task") && m_rx.has_emc_status_task()) {
             updateTask(m_rx.emc_status_task());
+            if (m_rx.type() == pb::MT_EMCSTAT_FULL_UPDATE) {
+                updateSync(TaskChannel);
+            }
         }
 
         if ((topic == "interp") && m_rx.has_emc_status_interp()) {
             updateInterp(m_rx.emc_status_interp());
+            if (m_rx.type() == pb::MT_EMCSTAT_FULL_UPDATE) {
+                updateSync(InterpChannel);
+            }
         }
 
         if (m_sState != Up)

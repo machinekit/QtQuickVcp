@@ -25,6 +25,7 @@ class QApplicationStatus : public QQuickItem
     Q_PROPERTY(QString statusUri READ statusUri WRITE setStatusUri NOTIFY statusUriChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
+    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QJsonObject config READ config NOTIFY configChanged)
@@ -33,6 +34,7 @@ class QApplicationStatus : public QQuickItem
     Q_PROPERTY(QJsonObject task READ task NOTIFY taskChanged)
     Q_PROPERTY(QJsonObject interp READ interp NOTIFY interpChanged)
     Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
+    Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
     Q_PROPERTY(StatusChannels channels READ channels WRITE setChannels NOTIFY channelsChanged)
     Q_ENUMS(State ConnectionError OriginIndex TrajectoryMode MotionStatus
             AxisType KinematicsType CanonUnits TaskExecState TaskState
@@ -164,7 +166,7 @@ public:
         ConfigChannel = 0x2,
         IoChannel     = 0x4,
         TaskChannel   = 0x8,
-        InterpChannel = 0x16
+        InterpChannel = 0x10
     };
     Q_DECLARE_FLAGS(StatusChannels, StatusChannel)
 
@@ -230,6 +232,16 @@ public:
         return m_running;
     }
 
+    bool isSynced() const
+    {
+        return m_synced;
+    }
+
+    bool isConnected() const
+    {
+        return m_connected;
+    }
+
 public slots:
 
     void setStatusUri(QString arg)
@@ -258,6 +270,7 @@ private:
     QString         m_statusUri;
     bool            m_ready;
     SocketState     m_sState;
+    bool            m_connected;
     State           m_connectionState;
     ConnectionError m_error;
     QString         m_errorString;
@@ -267,6 +280,8 @@ private:
     QJsonObject     m_task;
     QJsonObject     m_interp;
     bool            m_running;
+    bool            m_synced;
+    StatusChannels  m_syncedChannels;
     StatusChannels  m_channels;
     bool            m_componentCompleted;
 
@@ -285,6 +300,8 @@ private:
     void refreshStatusHeartbeat();
     void updateState(State state);
     void updateError(ConnectionError error, const QString &errorString);
+    void updateSync(StatusChannel channel);
+    void clearSync();
     void updatePosition(QJsonObject *object, const QString &baseName, const pb::Position &position);
     template<typename ValueType, class Type>
     void updateIndexValue(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields);
@@ -325,6 +342,8 @@ signals:
     void interpChanged(QJsonObject arg);
     void channelsChanged(StatusChannels arg);
     void runningChanged(bool arg);
+    void syncedChanged(bool arg);
+    void connectedChanged(bool arg);
 };
 
 #endif // QEMCSTATUS_H
