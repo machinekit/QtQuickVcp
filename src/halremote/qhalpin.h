@@ -125,7 +125,7 @@ void setDirection(HalPinDirection arg)
 }
 void setValue(QVariant arg, bool synced = false)
 {
-    if (m_value != arg) {
+    if ((m_value != arg) || (m_value.type() != arg.type())) {
         m_value = arg;
         emit valueChanged(arg);
     }
