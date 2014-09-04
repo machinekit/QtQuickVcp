@@ -84,6 +84,12 @@
     This property holds the config service uri.
 */
 
+/*! \qmlproperty bool ApplicationConfig::connected
+
+    This property holds wheter the component is connected or not. This is the
+    same as \l{connectionState} == \c{ApplicationConfig.Connected}.
+ */
+
 /*! \qmlproperty bool ApplicationConfig::ready
 
     This property holds whether the application config is ready or not.
@@ -157,6 +163,7 @@ QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
      m_componentCompleted(false),
      m_configUri(""),
      m_ready(false),
+     m_connected(false),
      m_connectionState(Disconnected),
      m_error(NoError),
      m_errorString(""),
@@ -272,6 +279,19 @@ void QApplicationConfig::updateState(QApplicationConfig::State state)
     {
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
+
+        if (m_connectionState == Connected)
+        {
+            if (m_connected != true) {
+                m_connected = true;
+                emit connectedChanged(true);
+            }
+        }
+        else if (m_connected != false)
+        {
+            m_connected = false;
+            emit connectedChanged(false);
+        }
     }
 }
 

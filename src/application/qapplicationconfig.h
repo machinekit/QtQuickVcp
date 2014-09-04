@@ -49,6 +49,7 @@ class QApplicationConfig : public QQuickItem
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString configUri READ configUri WRITE setConfigUri NOTIFY configUriChanged)
     Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
+    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
@@ -112,6 +113,11 @@ public:
     int filterCount() const;
     QApplicationConfigFilter* filter(int index) const;
 
+    bool isConnected() const
+    {
+        return m_connected;
+    }
+
 public slots:
 
     void selectConfig(QString name);
@@ -139,6 +145,7 @@ private:
     bool    m_componentCompleted;
     QString m_configUri;
     bool    m_ready;
+    bool    m_connected;
     State   m_connectionState;
     ConnectionError m_error;
     QString m_errorString;
@@ -175,6 +182,7 @@ signals:
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
+    void connectedChanged(bool arg);
 };
 
 #endif // QAPPCONFIG_H
