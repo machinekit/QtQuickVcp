@@ -12,7 +12,7 @@ QApplicationFile::QApplicationFile(QQuickItem *parent) :
     m_componentCompleted(false),
     m_networkManager(NULL),
     m_reply(NULL),
-    m_uploadFile(NULL)
+    m_file(NULL)
 {
     m_networkManager = new QNetworkAccessManager(this);
     connect(m_networkManager, SIGNAL(finished(QNetworkReply*)),
@@ -37,7 +37,7 @@ void QApplicationFile::startUpload()
     QUrl url;
     QFileInfo fileInfo(QUrl(m_localFilePath).toLocalFile());
 
-    if (!m_ready)
+    if (!m_ready || (m_transferState != NoTransfer))
     {
         return;
     }
@@ -46,13 +46,13 @@ void QApplicationFile::startUpload()
     m_fileName = fileInfo.fileName();
     emit fileNameChanged(m_fileName);
 
-    m_uploadFile = new QFile(fileInfo.filePath());
+    m_file = new QFile(fileInfo.filePath());
 
-    if (m_uploadFile->open(QIODevice::ReadOnly))
+    if (m_file->open(QIODevice::ReadOnly))
     {
-        m_reply = m_networkManager->put(QNetworkRequest(url), m_uploadFile);
-        connect(m_reply, SIGNAL(uploadProgress(qint64, qint64)),
-                this,SLOT(uploadProgress(qint64, qint64)));
+        m_reply = m_networkManager->put(QNetworkRequest(url), m_file);
+        connect(m_reply, SIGNAL(uploadProgress(qint64,qint64)),
+                this,SLOT(transferProgress(qint64, qint64)));
         connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
                 this, SLOT(error(QNetworkReply::NetworkError)));
         updateState(UploadRunning);
@@ -61,7 +61,54 @@ void QApplicationFile::startUpload()
     else
     {
         updateState(Error);
-        updateError(FileError, tr("Cannot open file"));
+        updateError(FileError, m_file->errorString());
+    }
+}
+
+void QApplicationFile::startDownload()
+{
+    QUrl url;
+    QDir dir;
+    QString filePath;
+
+    if (!m_ready || (m_transferState != NoTransfer))
+    {
+        return;
+    }
+
+    url.setUrl(m_uri + "/" + m_fileName);
+
+    filePath = applicationFilePath(m_fileName);
+    m_localFilePath = QUrl::fromLocalFile(filePath).toString();
+    emit localFilePathChanged(m_localFilePath);
+
+    QFileInfo fileInfo(filePath);
+
+    if (!dir.mkpath(fileInfo.absolutePath()))
+    {
+        updateState(Error);
+        updateError(FileError, tr("Cannot create directory"));
+        return;
+    }
+
+    m_file = new QFile(filePath);
+
+    if (m_file->open(QIODevice::WriteOnly))
+    {
+        m_reply = m_networkManager->get(QNetworkRequest(url));
+        connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)),
+                this,SLOT(transferProgress(qint64, qint64)));
+        connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
+                this, SLOT(error(QNetworkReply::NetworkError)));
+        connect(m_reply, SIGNAL(readyRead()),
+                this, SLOT(readyRead()));
+        updateState(DownloadRunning);
+        updateError(NoError, "");
+    }
+    else
+    {
+        updateState(Error);
+        updateError(FileError, m_file->errorString());
     }
 }
 
@@ -93,26 +140,44 @@ void QApplicationFile::updateError(QApplicationFile::TransferError error, const 
     emit errorChanged(m_error);
 }
 
+QString QApplicationFile::applicationFilePath(const QString &fileName)
+{
+    return QString("%1/machinekit-%2/%3").arg(QDir::tempPath())
+            .arg(QCoreApplication::applicationPid())
+            .arg(fileName);
+}
+
+void QApplicationFile::readyRead()
+{
+    m_file->write(m_reply->readAll());
+}
+
 void QApplicationFile::replyFinished(QNetworkReply *reply)
 {
     Q_UNUSED(reply)
 
     m_reply->deleteLater();
-    m_uploadFile->close();
-    m_uploadFile->deleteLater();
+    m_file->close();
+    m_file->deleteLater();
     m_reply = NULL;
-    m_uploadFile = NULL;
+    m_file = NULL;
     m_networkManager->clearAccessCache();
 
-    updateState(NoTransfer);
 
     if (m_error == NoError)
     {
-        emit uploadFinished();
+        if (m_transferState == UploadRunning) {
+            emit uploadFinished();
+        }
+        else {
+            emit downloadFinished();
+        }
     }
+
+    updateState(NoTransfer);
 }
 
-void QApplicationFile::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
+void QApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)
 {
     m_progress = (double)bytesSent / (double)bytesTotal;
     emit progressChanged(m_progress);

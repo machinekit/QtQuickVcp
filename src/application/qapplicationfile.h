@@ -6,12 +6,13 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QFileInfo>
+#include <QDir>
 
 class QApplicationFile : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
-    Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
+    Q_PROPERTY(QString fileName READ fileName WRITE setFileName NOTIFY fileNameChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(TransferState transferState READ transferState NOTIFY transferStateChanged)
     Q_PROPERTY(TransferError error READ error NOTIFY errorChanged)
@@ -107,7 +108,17 @@ public slots:
         emit localFilePathChanged(arg);
     }
 
+    void setFileName(QString arg)
+    {
+        if (m_fileName == arg)
+            return;
+
+        m_fileName = arg;
+        emit fileNameChanged(arg);
+    }
+
     void startUpload();
+    void startDownload();
     void abort();
 
 private:
@@ -123,14 +134,16 @@ private:
 
     QNetworkAccessManager   *m_networkManager;
     QNetworkReply           *m_reply;
-    QFile                   *m_uploadFile;
+    QFile                   *m_file;
 
     void updateState(TransferState state);
     void updateError(TransferError error, const QString &errorString);
+    QString applicationFilePath(const QString &fileName);
 
 private slots:
+    void readyRead();
     void replyFinished(QNetworkReply * reply);
-    void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
+    void transferProgress(qint64 bytesSent, qint64 bytesTotal);
     void error(QNetworkReply::NetworkError code);
 
 signals:
@@ -142,6 +155,7 @@ signals:
     void progressChanged(double arg);
     void transferStateChanged(TransferState arg);
     void uploadFinished();
+    void downloadFinished();
     void fileNameChanged(QString arg);
 };
 
