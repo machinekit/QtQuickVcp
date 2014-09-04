@@ -3,8 +3,11 @@ import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
 
 Action {
-    property var status
-    property var command
+    property var status: {"synced": false}
+    property var command: {"connected": false}
+    property var file: {"ready": false}
+
+    property bool _ready: status.synced && command.connected && file.ready
 
     id: openAction
     text: qsTr("Reopen file")
@@ -14,6 +17,8 @@ Action {
     tooltip: qsTr("Reopen curren file") + " [" + shortcut + "]"
     onTriggered: {
         command.resetProgram()
+        command.openProgram(file.fileName)
     }
-    enabled: (status !== undefined) && (command !== undefined) && (status.task.file !== "")
+    enabled: _ready
+             && (status.task.file !== "")
 }

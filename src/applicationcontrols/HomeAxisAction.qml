@@ -5,18 +5,22 @@ import Machinekit.Application 1.0
 Action {
     property var status: {"synced": false}
     property var command: {"connected": false}
+    property int axis: 0
 
     property bool _ready: status.synced && command.connected
 
     id: root
-    text: qsTr("Stop")
-    iconSource: "qrc:Machinekit/Application/Controls/icons/go-stop"
-    shortcut: "Esc"
-    tooltip: qsTr("Stop program execution") + " [" + shortcut + "]"
+    text: qsTr("Home")
+    shortcut: "Ctrl+Home"
+    tooltip: qsTr("Home Axis ") + axis + " [" + shortcut + "]"
     onTriggered: {
-        command.abort()
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
+            command.setTaskMode(ApplicationCommand.TaskModeManual)
+        command.homeAxis(axis)
     }
+
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
-             && status.running
+             && !status.running
 }
+

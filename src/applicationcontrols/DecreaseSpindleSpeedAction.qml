@@ -9,17 +9,19 @@ Action {
     property bool _ready: status.synced && command.connected
 
     id: root
-    text: qsTr("Step")
-    iconSource: "qrc:Machinekit/Application/Controls/icons/go-next"
-    shortcut: "T"
-    tooltip: qsTr("Execute next line") + " [" + shortcut + "]"
+    text: qsTr("-")
+    shortcut: "F11"
+    tooltip: qsTr("Turn spindle slower") + " [" + shortcut + "]"
     onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto)
-            command.setTaskMode(ApplicationCommand.TaskModeAuto)
-        command.stepProgram()
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
+            command.setTaskMode(ApplicationCommand.TaskModeManual)
+        }
+        command.setSpindle(ApplicationCommand.SpindleDecrease)
     }
+
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
-             && (status.task.file !== "")
+             && (status.motion.spindleDirection !== 0)
              && !status.running
 }
+

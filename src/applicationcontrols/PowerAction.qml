@@ -3,7 +3,10 @@ import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
 
 Action {
-    property var status
+    property var status: {"synced": false}
+    property var command: {"connected": false}
+
+    property bool _ready: status.synced && command.connected
 
     id: root
     text: qsTr("Power")
@@ -21,6 +24,6 @@ Action {
         }
     }
 
-    checked: (status !== undefined) && (status.task.taskState !== undefined) && (status.task.taskState === ApplicationStatus.TaskStateOn)
-    enabled: (status !== undefined) && (status.task.taskState !== undefined) && (status.task.taskState !== ApplicationStatus.TaskStateEstop)
+    checked: _ready && (status.task.taskState === ApplicationStatus.TaskStateOn)
+    enabled: _ready && (status.task.taskState !== ApplicationStatus.TaskStateEstop)
 }

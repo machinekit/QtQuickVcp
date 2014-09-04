@@ -13,6 +13,9 @@ ProgressBar {
         if ((file !== undefined) && (file.transferState === ApplicationFile.UploadRunning)) {
             return "upload"
         }
+        else if ((file !== undefined) && (file.transferState === ApplicationFile.DownloadRunning)) {
+            return "download"
+        }
         else {
             return ""
         }
@@ -22,6 +25,9 @@ ProgressBar {
         if (_mode == "upload") {
             return qsTr("Uploading file ") + file.fileName
         }
+        else if (_mode == "download") {
+            return qsTr("Downloading file ") + file.fileName
+        }
         else {
             return ""
         }
@@ -29,6 +35,9 @@ ProgressBar {
 
     function getProgress() {
         if (_mode == "upload") {
+            return applicationFile.progress
+        }
+        else if (_mode == "download") {
             return applicationFile.progress
         }
         else {

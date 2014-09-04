@@ -12,6 +12,24 @@
         <file>StepProgramAction.qml</file>
         <file>ReopenAction.qml</file>
         <file>PauseResumeProgramAction.qml</file>
+        <file>JogStick.qml</file>
+        <file>DigitalReadOut.qml</file>
+        <file>StopSpindleAction.qml</file>
+        <file>SpindlerateSlider.qml</file>
+        <file>SpindleCwAction.qml</file>
+        <file>SpindleCcwAction.qml</file>
+        <file>MdiCommandAction.qml</file>
+        <file>JogAction.qml</file>
+        <file>IncreaseSpindleSpeedAction.qml</file>
+        <file>HomeAxisAction.qml</file>
+        <file>FeedrateSlider.qml</file>
+        <file>DecreaseSpindleSpeedAction.qml</file>
+        <file>MistAction.qml</file>
+        <file>FloodAction.qml</file>
+        <file>MaximumVelocitySlider.qml</file>
+        <file>TouchOffAction.qml</file>
+        <file>TouchOffDialog.qml</file>
+        <file>GCodeLabel.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/Application/Controls/icons">
         <file alias="process-stop">icons/process-stop.png</file>

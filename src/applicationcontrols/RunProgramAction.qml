@@ -3,10 +3,12 @@ import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
 
 Action {
-    property var status
-    property var command
+    property var status: {"synced": false}
+    property var command: {"connected": false}
     property int programStartLine: 0
     property int programResetLine: 0
+
+    property bool _ready: status.synced && command.connected
 
     id: root
     text: qsTr("Run")
@@ -19,10 +21,7 @@ Action {
         command.runProgram(programStartLine)
         programStartLine = programResetLine
     }
-    enabled: (status !== undefined)
-             && (command !== undefined)
-             && (status.connectionState === ApplicationStatus.Connected)
-             && (command.connectionState === ApplicationCommand.Connected)
+    enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && (status.task.file !== "")
              && !status.running

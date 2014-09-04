@@ -3,10 +3,12 @@ import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
 
 Action {
-    property var status
-    property var command
+    property var status: {"synced": false}
+    property var command: {"connected": false}
     property string pauseShortcut: "P"
     property string resumeShortcut: "S"
+
+    property bool _ready: status.synced && command.connected
 
     id: root
     checkable: true
@@ -23,10 +25,7 @@ Action {
             command.resumeProgram();
         }
     }
-    enabled: (status !== undefined)
-             && (command !== undefined)
-             && (status.connectionState === ApplicationStatus.Connected)
-             && (command.connectionState === ApplicationCommand.Connected)
+    enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && status.running
 }

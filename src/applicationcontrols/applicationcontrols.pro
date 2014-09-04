@@ -33,7 +33,25 @@ QML_FILES = \
     PauseResumeProgramAction.qml \
     ApplicationNotifications.qml \
     ApplicationProgressBar.qml \
-    ApplicationFileDialog.qml
+    ApplicationFileDialog.qml \
+    JogStick.qml \
+    DigitalReadOut.qml \
+    FeedrateSlider.qml \
+    SpindlerateSlider.qml \
+    MdiCommandAction.qml \
+    JogAction.qml \
+    SpindleCwAction.qml \
+    SpindleCcwAction.qml \
+    StopSpindleAction.qml \
+    IncreaseSpindleSpeedAction.qml \
+    DecreaseSpindleSpeedAction.qml \
+    HomeAxisAction.qml \
+    MistAction.qml \
+    FloodAction.qml \
+    MaximumVelocitySlider.qml \
+    TouchOffAction.qml \
+    TouchOffDialog.qml \
+    GCodeLabel.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \
@@ -45,6 +63,3 @@ QML_INFRA_FILES = \
 QML_PROPERTY_EDITOR_FILES = 
 
 include(../deployment.pri)
-
-OTHER_FILES +=
-

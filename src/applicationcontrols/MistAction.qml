@@ -9,14 +9,21 @@ Action {
     property bool _ready: status.synced && command.connected
 
     id: root
-    text: qsTr("Stop")
-    iconSource: "qrc:Machinekit/Application/Controls/icons/go-stop"
-    shortcut: "Esc"
-    tooltip: qsTr("Stop program execution") + " [" + shortcut + "]"
+    text: qsTr("Mist")
+    shortcut: ""
+    tooltip: qsTr("Enable mist") + " [" + shortcut + "]"
     onTriggered: {
-        command.abort()
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
+            command.setTaskMode(ApplicationCommand.TaskModeManual)
+        command.setMistEnabled(checked)
     }
+
+    checkable: true
+
+    checked: _ready ? status.io.mist : false
+
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
-             && status.running
+             && !status.running
 }
+

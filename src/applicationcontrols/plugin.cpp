@@ -42,7 +42,25 @@ static const struct {
     { "StopProgramAction", 1, 0 },
     { "ApplicationNotifications", 1, 0 },
     { "ApplicationProgressBar", 1, 0 },
-    { "ApplicationFileDialog", 1, 0}
+    { "ApplicationFileDialog", 1, 0 },
+    { "JogStick", 1, 0 },
+    { "DigitalReadOut", 1, 0 },
+    { "FeedrateSlider", 1, 0 },
+    { "SpindlerateSlider", 1, 0 },
+    { "MdiCommandAction", 1, 0 },
+    { "JogAction", 1, 0 },
+    { "SpindleCwAction", 1, 0 },
+    { "SpindleCcwAction", 1, 0 },
+    { "StopSpindleAction", 1, 0 },
+    { "IncreaseSpindleSpeedAction", 1, 0 },
+    { "DecreaseSpindleSpeedAction", 1, 0 },
+    { "HomeAxisAction", 1, 0 },
+    { "MistAction", 1, 0 },
+    { "FloodAction", 1, 0 },
+    { "MaximumVelocitySlider", 1, 0 },
+    { "TouchOffAction", 1, 0 },
+    { "TouchOffDialog", 1, 0 },
+    { "GCodeLabel", 1, 0 }
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)

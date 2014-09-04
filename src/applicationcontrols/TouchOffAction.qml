@@ -5,18 +5,20 @@ import Machinekit.Application 1.0
 Action {
     property var status: {"synced": false}
     property var command: {"connected": false}
+    property var touchOffDialog
 
     property bool _ready: status.synced && command.connected
 
     id: root
-    text: qsTr("Stop")
-    iconSource: "qrc:Machinekit/Application/Controls/icons/go-stop"
-    shortcut: "Esc"
-    tooltip: qsTr("Stop program execution") + " [" + shortcut + "]"
+    text: qsTr("Touch Off")
+    shortcut: "End"
+    tooltip: qsTr("Set G5x offset for active axis") + " [" + shortcut + "]"
     onTriggered: {
-        command.abort()
+        touchOffDialog.visible = true
     }
+
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
-             && status.running
+             && !status.running
 }
+
