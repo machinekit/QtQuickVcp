@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QFile>
+#include <QUrl>
 #include "qgcodeprogrammodel.h"
 
 class QGCodeProgramLoader : public QObject
@@ -26,8 +27,9 @@ public:
 
 signals:
     void fileNameChanged(QString arg);
-
     void modelChanged(QGCodeProgramModel * arg);
+    void loadingFinished();
+    void loadingFailed();
 
 public slots:
     void load();

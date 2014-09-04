@@ -11,12 +11,18 @@ void QGCodeProgramLoader::load()
 {
     if (m_model == NULL)
     {
+        emit loadingFailed();
         return;
     }
 
-    QFile file(m_fileName);
+    QString filePath = QUrl(m_fileName).toLocalFile();
+
+    QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        emit loadingFailed();
         return;
+    }
 
     int lineNumber = 0;
 
@@ -39,4 +45,5 @@ void QGCodeProgramLoader::load()
     m_model->endUpdate();
 
     file.close();
+    emit loadingFinished();
 }
