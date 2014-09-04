@@ -6,6 +6,7 @@ QApplicationCommand::QApplicationCommand(QQuickItem *parent) :
     m_commandUri(""),
     m_heartbeatPeriod(3000),
     m_ready(false),
+    m_connected(false),
     m_cState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
@@ -179,7 +180,17 @@ void QApplicationCommand::homeAxis(int index)
     sendCommandMessage(pb::MT_EMC_AXIS_HOME);
 }
 
-void QApplicationCommand::jog(QApplicationCommand::JogType type, int axisIndex, double velocity = 0.0, double distance = 0.0)
+void QApplicationCommand::jog(QApplicationCommand::JogType type, int axisIndex)
+{
+    jog(type, axisIndex, 0.0, 0.0);
+}
+
+void QApplicationCommand::jog(QApplicationCommand::JogType type, int axisIndex, double velocity)
+{
+    jog(type, axisIndex, velocity, 0.0);
+}
+
+void QApplicationCommand::jog(QApplicationCommand::JogType type, int axisIndex, double velocity, double distance)
 {
     if (m_connectionState != Connected) {
         return;
@@ -427,6 +438,11 @@ void QApplicationCommand::setSpindleOverrideEnabled(bool enable)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_SO_ENABLE);
 }
 
+void QApplicationCommand::setSpindle(QApplicationCommand::SpindleMode mode)
+{
+    setSpindle(mode, 0.0);
+}
+
 void QApplicationCommand::setSpindle(QApplicationCommand::SpindleMode mode, double velocity = 0.0)
 {
     if (m_connectionState != Connected) {
@@ -617,10 +633,18 @@ void QApplicationCommand::updateState(QApplicationCommand::State state)
         if (m_connectionState == Connected)
         {
             startCommandHeartbeat();
+            if (m_connected != true) {
+                m_connected = true;
+                emit connectedChanged(true);
+            }
         }
         else
         {
             stopCommandHeartbeat();
+            if (m_connected != false) {
+                m_connected = false;
+                emit connectedChanged(m_connected);
+            }
         }
     }
 }

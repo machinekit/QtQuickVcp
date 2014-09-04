@@ -25,10 +25,11 @@ class QApplicationCommand : public QQuickItem
     Q_PROPERTY(QString commandUri READ commandUri WRITE setCommandUri NOTIFY commandUriChanged)
     Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
+    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_ENUMS(State ConnectionError SpindleBrake JogType TaskState TaskMode)
+    Q_ENUMS(State ConnectionError SpindleBrake JogType TaskState TaskMode SpindleMode)
 
 public:
     explicit QApplicationCommand(QQuickItem *parent = 0);
@@ -119,6 +120,11 @@ public:
         return m_ready;
     }
 
+    bool isConnected() const
+    {
+        return m_connected;
+    }
+
 public slots:
 
     void setCommandUri(QString arg)
@@ -151,6 +157,8 @@ public slots:
     void setFeedOverride(double scale);
     void setFloodEnabled(bool enable);
     void homeAxis(int index);
+    void jog(JogType type, int axisIndex);
+    void jog(JogType type, int axisIndex, double velocity);
     void jog(JogType type, int axisIndex, double velocity, double distance);
     void loadToolTable();
     void setMaximumVelocity(double velocity);
@@ -170,6 +178,7 @@ public slots:
     void setAxisMinPositionLimit(int axisIndex, double value);
     void setOptionalStopEnabled(bool enable);
     void setSpindleOverrideEnabled(bool enable);
+    void setSpindle(SpindleMode mode);
     void setSpindle(SpindleMode mode, double speed);
     void setSpindleOverride(double scale);
     void setTaskState(TaskState state);
@@ -183,6 +192,7 @@ private:
     QString         m_commandUri;
     int             m_heartbeatPeriod;
     bool            m_ready;
+    bool            m_connected;
     SocketState     m_cState;
     State           m_connectionState;
     ConnectionError m_error;
@@ -220,6 +230,7 @@ signals:
     void errorStringChanged(QString arg);
     void heartbeatPeriodChanged(int arg);
     void readyChanged(bool arg);
+    void connectedChanged(bool arg);
 };
 
 #endif // QEMCCOMMAND_H
