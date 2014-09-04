@@ -75,7 +75,7 @@ public slots:
 
     void setValue(QVariant arg)
     {
-        if (m_value != arg) {
+        if ((m_value != arg) || (m_value.type() != arg.type())) {
             m_value = arg;
             emit valueChanged(arg);
         }
