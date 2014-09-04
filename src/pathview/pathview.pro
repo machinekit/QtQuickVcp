@@ -55,7 +55,8 @@ QML_FILES = \
     Coordinate3D.qml \
     Grid3D.qml \
     PathView3D.qml \
-    ProgramExtents3D.qml
+    ProgramExtents3D.qml \
+    SourceView.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \

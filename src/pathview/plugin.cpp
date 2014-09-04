@@ -46,7 +46,8 @@ static const struct {
     { "Coordinate3D", 1, 0 },
     { "Grid3D", 1, 0 },
     { "PathView3D", 1, 0 },
-    { "ProgramExtents3D", 1, 0 }
+    { "ProgramExtents3D", 1, 0 },
+    { "SourceView", 1, 0 }
 };
 
 void MachinekitPathViewPlugin::registerTypes(const char *uri)
@@ -90,7 +91,7 @@ QString MachinekitPathViewPlugin::fileLocation() const
 bool MachinekitPathViewPlugin::isLoadedFromResource() const
 {
     // If one file is missing, it will load all the files from the resource
-    QFile file(baseUrl().toLocalFile() + "/ColorPicker.qml");
+    QFile file(baseUrl().toLocalFile() + "/PathView3D.qml");
     if (!file.exists())
         return true;
     return false;
