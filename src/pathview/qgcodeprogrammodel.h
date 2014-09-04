@@ -15,7 +15,9 @@ public:
             LineNumberRole,
             GCodeRole,
             PreviewRole,
-            SelectedRole
+            SelectedRole,
+            ActiveRole,
+            ExecutedRole
         };
 
     explicit QGCodeProgramModel(QObject *parent = 0);

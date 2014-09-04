@@ -25,11 +25,19 @@ public:
     bool selected() const;
     void setSelected(bool selected);
 
+    bool active() const;
+    void setActive(bool active);
+
+    bool executed() const;
+    void setExecuted(bool executed);
+
 private:
     QString m_fileName;
     int m_lineNumber;
     QString m_gcode;
     bool m_selected;
+    bool m_active;
+    bool m_executed;
     QList<pb::Preview> *m_previewList;
 };
 

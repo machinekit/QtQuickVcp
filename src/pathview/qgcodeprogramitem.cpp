@@ -5,6 +5,8 @@ QGCodeProgramItem::QGCodeProgramItem(const QString &fileName, int lineNumber):
     m_lineNumber(lineNumber),
     m_gcode(QString("")),
     m_selected(false),
+    m_active(false),
+    m_executed(false),
     m_previewList(NULL)
 {
 }
@@ -58,6 +60,26 @@ void QGCodeProgramItem::setSelected(bool selected)
 {
     m_selected = selected;
 }
+bool QGCodeProgramItem::active() const
+{
+    return m_active;
+}
+
+void QGCodeProgramItem::setActive(bool active)
+{
+    m_active = active;
+}
+bool QGCodeProgramItem::executed() const
+{
+    return m_executed;
+}
+
+void QGCodeProgramItem::setExecuted(bool executed)
+{
+    m_executed = executed;
+}
+
+
 
 
 

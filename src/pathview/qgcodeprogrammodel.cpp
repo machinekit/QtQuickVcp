@@ -71,6 +71,8 @@ QHash<int, QByteArray> QGCodeProgramModel::roleNames() const
     roles[GCodeRole] = "gcode";
     roles[PreviewRole] = "preview";
     roles[SelectedRole] = "selected";
+    roles[ActiveRole] = "active";
+    roles[ExecutedRole] = "executed";
     return roles;
 }
 
@@ -245,6 +247,10 @@ QVariant QGCodeProgramModel::internalData(const QModelIndex &index, int role) co
         return QVariant::fromValue(static_cast<void*>(item->previewList()));
     case SelectedRole:
         return QVariant(item->selected());
+    case ActiveRole:
+        return QVariant(item->active());
+    case ExecutedRole:
+        return QVariant(item->executed());
     default:
         return QVariant();
     }
@@ -278,6 +284,12 @@ bool QGCodeProgramModel::internalSetData(const QModelIndex &index, const QVarian
         break;
     case SelectedRole:
         item->setSelected(value.toBool());
+        break;
+    case ActiveRole:
+        item->setActive(value.toBool());
+        break;
+    case ExecutedRole:
+        item->setExecuted(value.toBool());
         break;
     default:
         return false;
