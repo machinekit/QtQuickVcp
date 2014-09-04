@@ -21,6 +21,7 @@ class QApplicationError : public QQuickItem
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString errorUri READ errorUri WRITE setErrorUri NOTIFY errorUriChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
+    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
@@ -100,6 +101,11 @@ public:
         return m_channels;
     }
 
+    bool isConnected() const
+    {
+        return m_connected;
+    }
+
 public slots:
 
     void setErrorUri(QString arg)
@@ -125,6 +131,7 @@ public slots:
 private:
     QString         m_errorUri;
     bool            m_ready;
+    bool            m_connected;
     SocketState     m_sState;
     State           m_connectionState;
     ConnectionError m_error;
@@ -166,6 +173,7 @@ signals:
     void errorStringChanged(QString arg);
     void channelsChanged(ErrorChannels arg);
     void messageReceived(ErrorType type, const QString &text);
+    void connectedChanged(bool arg);
 };
 
 #endif // QEMCERROR_H

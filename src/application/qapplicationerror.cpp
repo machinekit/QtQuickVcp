@@ -5,6 +5,7 @@ QApplicationError::QApplicationError(QQuickItem *parent) :
     QQuickItem(parent),
     m_errorUri(""),
     m_ready(false),
+    m_connected(false),
     m_sState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
@@ -99,6 +100,14 @@ void QApplicationError::updateState(QApplicationError::State state)
         if (m_connectionState == Connected) // we are not connected anymore
         {
             stopErrorHeartbeat();
+            if (m_connected != true) {
+                m_connected = true;
+                emit connectedChanged(true);
+            }
+        }
+        else if (m_connected != false) {
+            m_connected = false;
+            emit connectedChanged(false);
         }
 
         m_connectionState = state;
