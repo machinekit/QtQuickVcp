@@ -128,7 +128,7 @@ Rectangle {
         if (objects !== undefined) {
             for (var i = 0; i < objects.length; ++i)
             {
-                if ((objects[i].objectName === name) && (objects[i].required)) {
+                if (objects[i].objectName === name) {
                     list.push(objects[i])
                 }
                 var nestedList = _recurseObjects(objects[i].data)
