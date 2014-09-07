@@ -27,6 +27,7 @@ import Machinekit.HalRemote.Controls 1.0
 import Machinekit.VideoView 1.0
 import Machinekit.PathView 1.0
 import Machinekit.Application 1.0
+import Machinekit.Application.Controls 1.0
 import Machinekit.Service 1.0
 
 Item {
