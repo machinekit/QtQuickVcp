@@ -5,7 +5,6 @@ typeinfo plugins.qmltypes
 
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work
-ConnectionWindow 1.0 ConnectionWindow.qml
 HalApplicationWindow 1.0 HalApplicationWindow.qml
 HalButton 1.0 HalButton.qml
 HalCheckBox 1.0 HalCheckBox.qml

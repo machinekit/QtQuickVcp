@@ -51,7 +51,9 @@ QML_FILES = \
     MaximumVelocitySlider.qml \
     TouchOffAction.qml \
     TouchOffDialog.qml \
-    GCodeLabel.qml
+    GCodeLabel.qml \
+    ConnectionWindow.qml \
+    ServiceWindow.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \

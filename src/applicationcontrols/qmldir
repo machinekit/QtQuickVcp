@@ -5,6 +5,8 @@ typeinfo plugins.qmltypes
 
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work
+ConnectionWindow 1.0 ConnectionWindow.qml
+ServiceWindow 1.0 ServiceWindow.qml
 EstopAction 1.0 EstopAction.qml
 EstopButton 1.0 EstopButton.qml
 PowerAction 1.0 PowerAction.qml

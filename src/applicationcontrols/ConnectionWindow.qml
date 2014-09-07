@@ -24,19 +24,18 @@ import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
 import Machinekit.Controls 1.0
-import Machinekit.HalRemote 1.0
 import Machinekit.Service 1.0
 import Machinekit.Application 1.0
 
 /*!
     \qmltype ConnectionWindow
-    \inqmlmodule Machinekit.HalRemote.Controls
+    \inqmlmodule Machinekit.Application.Controls
     \brief Provides an all in one container item to load and display Machinekit UIs.
-    \ingroup halremotecontrols
+    \ingroup applicationcontrols
 
     This component provides an all in container item to load and display Machinekit UIs.
     It combines service discovery and instance selection for local as well as remote
-    deployed \l{HalApplicationWindow}.
+    deployed \l{HalApplicationWindow}s and \l{ServiceWindow}s.
 
     The following example demonstrates how to use the ConnectionWindow as generic Machinekit
     client.
@@ -61,10 +60,8 @@ import Machinekit.Application 1.0
         anchors.fill: parent
         autoSelectInstance: false
         applications: [
-            HalApplication {
-                source: "qrc:/qml/VideoDemo.qml"
-                name: "VideoDemo"
-                description: qsTr("A demo demonstrating the video service.")
+            ApplicationDescription {
+                sourceDir: "qrc:/AppDiscover.ServiceDisplay"
             }
         ]
     }
@@ -82,13 +79,10 @@ import Machinekit.Application 1.0
         autoSelectInstance: true
         instanceFilter: ServiceDiscoveryFilter{ name: "Development" }
         applications: [
-            HalApplication {
-                source: "qrc:/qml/VideoDemo.qml"
-                name: "VideoDemo"
-                description: qsTr("A demo demonstrating the video service.")
+            ApplicationDescription {
+                sourceDir: "qrc:/AppDiscover.ServiceDisplay"
             }
         ]
-        }
     \endqml
 
     It is also possible to use a combination of both local and remote \l{mode}.
@@ -104,10 +98,8 @@ import Machinekit.Application 1.0
         localVisible: true
         mode: "remote"
         applications: [
-            HalApplication {
-                source: "qrc:/qml/VideoDemo.qml"
-                name: "VideoDemo"
-                description: qsTr("A demo demonstrating the video service.")
+            ApplicationDescription {
+                sourceDir: "qrc:/AppDiscover.ServiceDisplay"
             }
         ]
         }

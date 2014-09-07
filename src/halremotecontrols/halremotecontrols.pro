@@ -22,7 +22,6 @@ RESOURCES += \
     halremotecontrols.qrc
 
 QML_FILES = \
-    ConnectionWindow.qml \
     HalApplicationWindow.qml \
     HalButton.qml \
     HalCheckBox.qml \

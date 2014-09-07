@@ -83,13 +83,42 @@ Rectangle {
         Per default this property is set using the internal services
         if you want to overwrite the services set this property to \c true.
     */
-    property alias ready: remoteComponent.ready
+    property bool ready: remoteComponent.ready && _ready
 
     /*! \qmlproperty list<Service> services
 
         This property holds the services used by the application.
     */
     property var services: []
+
+    /*! \internal */
+    property var _requiredServices: {
+        var required = []
+        for (var i = 0; i < services.length; ++i) {
+            if (services[i].required) {
+                required.push(services[i])
+                services[i].onReadyChanged.connect(_evaluateReady)
+            }
+        }
+
+        return required
+    }
+
+    /*! \internal */
+    property bool _ready: false
+
+    /*! \internal */
+    function _evaluateReady() {
+        for (var i = 0; i < _requiredServices.length; ++i) {
+            if (!_requiredServices[i].ready) {
+                _ready = false
+                return
+            }
+        }
+
+        _ready = true
+        return
+    }
 
     /*! \internal */
     function _recurseObjects(objects, name)
@@ -99,7 +128,7 @@ Rectangle {
         if (objects !== undefined) {
             for (var i = 0; i < objects.length; ++i)
             {
-                if (objects[i].objectName === name) {
+                if ((objects[i].objectName === name) && (objects[i].required)) {
                     list.push(objects[i])
                 }
                 var nestedList = _recurseObjects(objects[i].data)
@@ -166,26 +195,21 @@ Rectangle {
             width: height
         }
 
-        CheckBox {
-            id: halrcompCheck
-
+        Column {
+            id: serviceCheckColumn
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: connectingIndicator.bottom
             anchors.topMargin: Screen.logicalPixelDensity
-            enabled: false
-            text: qsTr("halrcomp service available")
-            checked: halrcompService.ready
-        }
 
-        CheckBox {
-            id: halrcmdCheck
+            Repeater {
+                model: main._requiredServices.length
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: halrcompCheck.bottom
-            anchors.topMargin: Screen.logicalPixelDensity
-            enabled: false
-            text: qsTr("halrcmd service available")
-            checked: halrcmdService.ready
+                CheckBox {
+                    id: checkBox
+                    text: _requiredServices[index].type + qsTr(" service")
+                    checked: _requiredServices[index].ready
+                }
+            }
         }
 
         Label {
@@ -219,11 +243,13 @@ Rectangle {
     Service {
         id: halrcompService
         type: "halrcomp"
+        required: true
     }
 
     Service {
         id: halrcmdService
         type: "halrcmd"
+        required: true
     }
 
     HalRemoteComponent {
@@ -250,7 +276,10 @@ Rectangle {
     state: {
         switch (remoteComponent.connectionState) {
         case HalRemoteComponent.Connected:
-            return "connected"
+            if (_ready)
+                return "connected"
+            else
+                return "disconnected"
         case HalRemoteComponent.Error:
             if (remoteComponent.error == HalRemoteComponent.TimeoutError) {
                 return "timeout"
@@ -267,8 +296,7 @@ Rectangle {
             PropertyChanges { target: discoveryPage; opacity: 1.0; enabled: true }
             PropertyChanges { target: connectingLabel; visible: true }
             PropertyChanges { target: connectingIndicator; visible: true }
-            PropertyChanges { target: halrcompCheck; visible: true }
-            PropertyChanges { target: halrcmdCheck; visible: true }
+            PropertyChanges { target: serviceCheckColumn; visible: true }
             PropertyChanges { target: errorLabel; visible: false }
         },
         State {
@@ -276,8 +304,7 @@ Rectangle {
             PropertyChanges { target: discoveryPage; opacity: 1.0; enabled: true }
             PropertyChanges { target: connectingLabel; visible: false }
             PropertyChanges { target: connectingIndicator; visible: false }
-            PropertyChanges { target: halrcompCheck; visible: false }
-            PropertyChanges { target: halrcmdCheck; visible: false }
+            PropertyChanges { target: serviceCheckColumn; visible: false }
             PropertyChanges { target: errorLabel; visible: true }
         },
         State {
