@@ -4,7 +4,7 @@ import "emcclass.proto";
 
 package pb;
 
-enum EmcTaskState {
+enum EmcTaskExecStateType {
     EMC_TASK_EXEC_ERROR                         = 1;
     EMC_TASK_EXEC_DONE                          = 2;
     EMC_TASK_EXEC_WAITING_FOR_MOTION            = 3;
@@ -69,6 +69,16 @@ enum EmcAxisType {
     EMC_AXIS_ANGULAR    = 2;
 }
 
+enum EmcPositionOffsetType {
+    EMC_CONFIG_RELATIVE_OFFSET = 1;
+    EMC_CONFIG_MACHINE_OFFSET = 2;
+}
+
+enum EmcPositionFeedbackType {
+    EMC_CONFIG_ACTUAL_FEEDBACK = 1;
+    EMC_CONFIG_COMMANDED_FEEDBACK = 2;
+}
+
 message EmcToolData {
     required int32          index       = 1;
     optional int32          id          = 2;
@@ -117,6 +127,11 @@ message EmcStatusConfigAxis {
     optional double         units               = 8;
 }
 
+message EmcProgramExtension {
+    required int32          index = 1;
+    optional string         extension = 2;
+}
+
 message EmcStatusAnalogIO {
     required int32          index = 1;
     optional double         value = 2;
@@ -148,19 +163,40 @@ message EmcStatusSetting {
 }
 
 message EmcStatusConfig {
-    optional double                 acceleration        = 1;
-    optional double                 angular_units       = 2;
-    optional int32                  axes                = 3;
-    repeated EmcStatusConfigAxis    axis                = 4;
-    optional int32                  axis_mask           = 5;
-    optional double                 cycle_time          = 6;
-    optional int32                  debug               = 7;
-    optional EmcKinematicsType      kinematics_type     = 8;
-    optional double                 linear_units        = 9;
-    optional double                 max_acceleration    = 10;
-    optional double                 max_velocity        = 11;
-    optional EmcCanonUnitsType      program_units       = 12;
-    optional double                 velocity            = 13;
+    optional double                     acceleration             = 1;
+    optional double                     angular_units            = 2;
+    optional int32                      axes                     = 3;
+    repeated EmcStatusConfigAxis        axis                     = 4;
+    optional int32                      axis_mask                = 5;
+    optional double                     cycle_time               = 6;
+    optional int32                      debug                    = 7;
+    optional EmcKinematicsType          kinematics_type          = 8;
+    optional double                     linear_units             = 9;
+    optional double                     max_acceleration         = 10;
+    optional double                     max_velocity             = 11;
+    optional EmcCanonUnitsType          program_units            = 12;
+    optional double                     velocity                 = 13;
+    repeated EmcProgramExtension        program_extension        = 14;
+    optional EmcPositionOffsetType      position_offset          = 15;
+    optional EmcPositionFeedbackType    position_feedback        = 16;
+    optional double                     max_feed_override        = 17;
+    optional double                     min_feed_override        = 18;
+    optional double                     max_spindle_override     = 19;
+    optional double                     min_spindle_override     = 20;
+    optional double                     default_spindle_speed    = 21;
+    optional double                     default_linear_velocity  = 22;
+    optional double                     min_velocity             = 23;
+    optional double                     max_linear_velocity      = 24;
+    optional double                     min_linear_velocity      = 25;
+    optional double                     default_angular_velocity = 26;
+    optional double                     max_angular_velocity     = 27;
+    optional double                     min_angular_velocity     = 28;
+    optional string                     increments               = 29;
+    optional string                     grids                    = 30;
+    optional bool                       lathe                    = 31;
+    optional string                     geometry                 = 32;
+    optional uint32                     arcdivision              = 33;
+    optional bool                       no_force_homing          = 34;
 }
 
 message EmcStatusMotion {
@@ -202,9 +238,9 @@ message EmcStatusMotion {
     optional int32                  queue                   = 37;
     optional bool                   queue_full              = 38;
     optional double                 rotation_xy             = 39;
-    optional int32                  spindle_brake           = 40;
+    optional bool                   spindle_brake           = 40;
     optional int32                  spindle_direction       = 41;
-    optional int32                  spindle_enabled         = 42;
+    optional bool                   spindle_enabled         = 42;
     optional int32                  spindle_increasing      = 43;
     optional bool                   spindle_override_enabled = 44;
     optional double                 spindle_speed           = 45;
@@ -213,27 +249,27 @@ message EmcStatusMotion {
 }
 
 message EmcStatusIo {
-    optional int32          estop           = 1;
-    optional int32          flood           = 2;
-    optional int32          lube            = 3;
-    optional int32          lube_level      = 4;
-    optional int32          mist            = 5;
-    optional int32          pocket_prepped  = 6;
-    optional int32          tool_in_spindle = 7;
+    optional bool           estop           = 1;
+    optional bool           flood           = 2;
+    optional bool           lube            = 3;
+    optional bool           lube_level      = 4;
+    optional bool           mist            = 5;
+    optional bool           pocket_prepped  = 6;
+    optional bool           tool_in_spindle = 7;
     optional Position       tool_offset     = 8;
     repeated EmcToolData    tool_table      = 9;
 }
 
 message EmcStatusTask {
-    optional int32              echo_serial_number  = 1;
-    optional EmcTaskState       exec_state          = 2;
-    optional string             file                = 3;
-    optional bool               input_timeout       = 4;
-    optional bool               optional_stop       = 5;
-    optional int32              read_line           = 6;
-    optional EmcTaskModeType    task_mode           = 7;
-    optional int32              task_paused         = 8;
-    optional EmcTaskStateType   task_state          = 9;
+    optional int32                  echo_serial_number  = 1;
+    optional EmcTaskExecStateType   exec_state          = 2;
+    optional string                 file                = 3;
+    optional bool                   input_timeout       = 4;
+    optional bool                   optional_stop       = 5;
+    optional int32                  read_line           = 6;
+    optional EmcTaskModeType        task_mode           = 7;
+    optional int32                  task_paused         = 8;
+    optional EmcTaskStateType       task_state          = 9;
 }
 
 message EmcStatusInterp {
