@@ -1093,7 +1093,8 @@ void QApplicationStatus::updateRunning(const QJsonObject &object)
     bool running;
 
     running = m_task["taskMode"].isDouble()
-            && ((TaskMode)m_task["taskMode"].toDouble() == TaskModeAuto)
+            && (((TaskMode)m_task["taskMode"].toDouble() == TaskModeAuto)
+            || ((TaskMode)m_task["taskMode"].toDouble() == TaskModeMdi))
             && m_interp["interpState"].isDouble()
             && ((InterpreterState)m_interp["interpState"].toDouble() != InterpreterIdle);
 
