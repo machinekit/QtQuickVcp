@@ -38,6 +38,7 @@ class QService : public QObject
     Q_PROPERTY(bool ready READ isReady NOTIFY readyChanged)
     Q_PROPERTY(QServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
     Q_PROPERTY(QQmlListProperty<QServiceDiscoveryItem> items READ items NOTIFY itemsChanged)
+    Q_PROPERTY(bool required READ required WRITE setRequired NOTIFY requiredChanged)
 
 public:
     explicit QService(QObject *parent = 0);
@@ -82,6 +83,11 @@ public:
         return m_uuid;
     }
 
+    bool required() const
+    {
+        return m_required;
+    }
+
 public slots:
     void setType(QString arg)
     {
@@ -99,6 +105,15 @@ public slots:
         }
     }
 
+    void setRequired(bool arg)
+    {
+        if (m_required == arg)
+            return;
+
+        m_required = arg;
+        emit requiredChanged(arg);
+    }
+
 private:
     QString m_type;
     QString m_name;
@@ -108,6 +123,7 @@ private:
     bool m_ready;
     QServiceDiscoveryFilter *m_filter;
     QList<QServiceDiscoveryItem *> m_items;
+    bool m_required;
 
 signals:
     void uriChanged(QString arg);
@@ -118,6 +134,7 @@ signals:
     void itemsChanged(QQmlListProperty<QServiceDiscoveryItem> arg);
     void filterChanged(QServiceDiscoveryFilter *arg);
     void uuidChanged(QString arg);
+    void requiredChanged(bool arg);
 };
 
 #endif // QSERVICE_H

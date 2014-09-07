@@ -101,6 +101,14 @@
     This property holds all discovered service instances.
 */
 
+/*! \qmlproperty bool Service::required
+
+    This property holds whether a service is required. This property is used
+    to visualize that some services are not connected in the user interface.
+
+    The default value is \c{false}.
+*/
+
 QService::QService(QObject *parent) :
     QObject(parent),
     m_type(""),
@@ -109,7 +117,8 @@ QService::QService(QObject *parent) :
     m_uuid(""),
     m_version(0),
     m_ready(false),
-    m_filter(new QServiceDiscoveryFilter(this))
+    m_filter(new QServiceDiscoveryFilter(this)),
+    m_required(false)
 {
     this->setObjectName("Service");
 }
