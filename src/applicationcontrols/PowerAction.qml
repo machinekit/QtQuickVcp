@@ -17,10 +17,10 @@ Action {
     checkable: true
     onTriggered: {
         if (checked) {
-            command.setTaskState(ApplicationCommand.TaskStateOn)
+            command.setTaskState('execute', ApplicationCommand.TaskStateOn)
         }
         else {
-            command.setTaskState(ApplicationCommand.TaskStateOff)
+            command.setTaskState('execute', ApplicationCommand.TaskStateOff)
         }
     }
 

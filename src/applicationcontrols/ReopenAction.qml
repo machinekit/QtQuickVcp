@@ -16,8 +16,8 @@ Action {
     shortcut: "Ctrl+R"
     tooltip: qsTr("Reopen curren file") + " [" + shortcut + "]"
     onTriggered: {
-        command.resetProgram()
-        command.openProgram(file.fileName)
+        command.resetProgram('execute')
+        command.openProgram('execute', file.fileName)
     }
     enabled: _ready
              && (status.task.file !== "")

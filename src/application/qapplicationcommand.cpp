@@ -64,16 +64,18 @@ void QApplicationCommand::setReady(bool arg)
     }
 }
 
-void QApplicationCommand::abort()
+void QApplicationCommand::abort(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
     }
 
+    m_tx.set_interp_name(interpreter.toStdString());
+
     sendCommandMessage(pb::MT_EMC_TASK_ABORT);
 }
 
-void QApplicationCommand::runProgram(int lineNumber = 0)
+void QApplicationCommand::runProgram(const QString &interpreter, int lineNumber = 0)
 {
     if (m_connectionState != Connected) {
         return;
@@ -81,33 +83,40 @@ void QApplicationCommand::runProgram(int lineNumber = 0)
 
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_line_number(lineNumber);
+    m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_RUN);
 }
 
-void QApplicationCommand::pauseProgram()
+void QApplicationCommand::pauseProgram(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
     }
+
+    m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_PAUSE);
 }
 
-void QApplicationCommand::stepProgram()
+void QApplicationCommand::stepProgram(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
     }
+
+    m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_STEP);
 }
 
-void QApplicationCommand::resumeProgram()
+void QApplicationCommand::resumeProgram(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
     }
+
+    m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_RESUME);
 }
@@ -244,7 +253,7 @@ void QApplicationCommand::setMaximumVelocity(double velocity)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_MAX_VELOCITY);
 }
 
-void QApplicationCommand::executeMdi(const QString &command)
+void QApplicationCommand::executeMdi(const QString &interpreter, const QString &command)
 {
     if (m_connectionState != Connected) {
         return;
@@ -252,6 +261,7 @@ void QApplicationCommand::executeMdi(const QString &command)
 
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_command(command.toStdString());
+    m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_EXECUTE);
 }
@@ -272,7 +282,7 @@ void QApplicationCommand::setMistEnabled(bool enable)
     }
 }
 
-void QApplicationCommand::setTaskMode(TaskMode mode)
+void QApplicationCommand::setTaskMode(const QString &interpreter, TaskMode mode)
 {
     if (m_connectionState != Connected) {
         return;
@@ -280,6 +290,7 @@ void QApplicationCommand::setTaskMode(TaskMode mode)
 
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_task_mode((pb::EmcTaskModeType)mode);
+    m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_SET_MODE);
 }
@@ -293,7 +304,7 @@ void QApplicationCommand::overrideLimits()
     sendCommandMessage(pb::MT_EMC_AXIS_OVERRIDE_LIMITS);
 }
 
-void QApplicationCommand::openProgram(const QString &fileName)
+void QApplicationCommand::openProgram(const QString &interpreter, const QString &fileName)
 {
     if (m_connectionState != Connected) {
         return;
@@ -301,15 +312,18 @@ void QApplicationCommand::openProgram(const QString &fileName)
 
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_path(fileName.toStdString());
+    m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_OPEN);
 }
 
-void QApplicationCommand::resetProgram()
+void QApplicationCommand::resetProgram(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
     }
+
+    m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_INIT);
 }
@@ -493,7 +507,7 @@ void QApplicationCommand::setSpindleOverride(double scale)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_SPINDLE_SCALE);
 }
 
-void QApplicationCommand::setTaskState(TaskState state)
+void QApplicationCommand::setTaskState(const QString &interpreter, TaskState state)
 {
     if (m_connectionState != Connected) {
         return;
@@ -501,6 +515,7 @@ void QApplicationCommand::setTaskState(TaskState state)
 
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_task_state((pb::EmcTaskStateType)state);
+    m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_SET_STATE);
 }
@@ -663,6 +678,11 @@ void QApplicationCommand::sendCommandMessage(pb::ContainerType type)
     try {
         m_tx.set_type(type);
         m_commandSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
+#ifdef QT_DEBUG
+    std::string s;
+    gpb::TextFormat::PrintToString(m_tx, &s);
+    DEBUG_TAG(3, "command", "sent message" << QString::fromStdString(s))
+#endif
         m_tx.Clear();
     }
     catch (zmq::error_t e) {

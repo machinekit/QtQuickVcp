@@ -16,8 +16,8 @@ Action {
     tooltip: qsTr("Execute MDI command") + " [" + shortcut + "]"
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeMdi)
-            command.setTaskMode(ApplicationCommand.TaskModeMdi)
-        command.executeMdi(mdiCommand)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeMdi)
+        command.executeMdi('execute', mdiCommand)
     }
 
     //checked: _ready && (status.task.taskState === ApplicationStatus.TaskStateEstop)

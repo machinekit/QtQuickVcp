@@ -18,11 +18,11 @@ Action {
     tooltip: (checked ? qsTr("Pause execution") : qsTr("Resume execution")) + " [" + shortcut + "]"
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeAuto)
-            command.setTaskMode(ApplicationCommand.TaskModeAuto)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)
         if (checked) {
-            command.pauseProgram();
+            command.pauseProgram('execute');
         } else {
-            command.resumeProgram();
+            command.resumeProgram('execute');
         }
     }
     enabled: _ready

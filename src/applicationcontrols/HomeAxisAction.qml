@@ -15,7 +15,7 @@ Action {
     tooltip: qsTr("Home Axis ") + axis + " [" + shortcut + "]"
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
-            command.setTaskMode(ApplicationCommand.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
         command.homeAxis(axis)
     }
 

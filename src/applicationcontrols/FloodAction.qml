@@ -14,7 +14,7 @@ Action {
     tooltip: qsTr("Enable flood") + " [" + shortcut + "]"
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
-            command.setTaskMode(ApplicationCommand.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
         command.setFloodEnabled(checked)
     }
 

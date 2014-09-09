@@ -17,7 +17,7 @@ Action {
     tooltip: qsTr("Jog Axis ") + axis + " [" + shortcut + "]"
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
-            command.setTaskMode(ApplicationCommand.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
         }
         if (velocity !== 0.0) {
             if (distance == 0.0) {

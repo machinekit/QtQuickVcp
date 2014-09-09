@@ -15,8 +15,8 @@ Action {
     tooltip: qsTr("Execute next line") + " [" + shortcut + "]"
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeAuto)
-            command.setTaskMode(ApplicationCommand.TaskModeAuto)
-        command.stepProgram()
+            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)
+        command.stepProgram('execute')
     }
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)

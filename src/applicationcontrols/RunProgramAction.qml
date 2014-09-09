@@ -17,8 +17,8 @@ Action {
     tooltip: qsTr("Begin executing current file") + " [" + shortcut + "]"
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeAuto)
-            command.setTaskMode(ApplicationCommand.TaskModeAuto)
-        command.runProgram(programStartLine)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)
+        command.runProgram('execute', programStartLine)
         programStartLine = programResetLine
     }
     enabled: _ready

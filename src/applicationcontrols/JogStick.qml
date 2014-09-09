@@ -17,7 +17,7 @@ VirtualJoystick {
             return
 
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
-            command.setTaskMode(ApplicationCommand.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
         if (value !== 0.0) {
             command.jog(ApplicationCommand.ContinousJog, axis, value)
         } else {
