@@ -23,17 +23,17 @@ ListView {
         id: notificationDelegate
         Rectangle {
 
-            height: width * 0.4
+            //height: width * 0.4
             width: parent.width
+            height: textLabel.height
             radius: Screen.logicalPixelDensity * 2
             color: systemPalette.light
             border.color: systemPalette.mid
             border.width: 1
 
             Label {
+                id: textLabel
                 anchors.left: typeImage.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
                 anchors.right: parent.right
                 anchors.margins: Screen.logicalPixelDensity * 5
                 horizontalAlignment: Text.AlignHCenter
