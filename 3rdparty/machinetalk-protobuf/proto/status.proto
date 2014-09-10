@@ -197,6 +197,7 @@ message EmcStatusConfig {
     optional string                     geometry                 = 32;
     optional uint32                     arcdivision              = 33;
     optional bool                       no_force_homing          = 34;
+    optional string                     remote_path              = 35;
 }
 
 message EmcStatusMotion {
