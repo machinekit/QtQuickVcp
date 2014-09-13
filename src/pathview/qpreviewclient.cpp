@@ -179,6 +179,11 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
                 m_previewStatus.lineNumber = preview.line_number();
             }
 
+            if (preview.has_filename())
+            {
+                m_previewStatus.fileName = QString::fromStdString(preview.filename());
+            }
+
             previewList = static_cast<QList<pb::Preview>*>(m_model->data(m_previewStatus.fileName,
                                                                          m_previewStatus.lineNumber,
                                                                          QGCodeProgramModel::PreviewRole).value<void*>());
