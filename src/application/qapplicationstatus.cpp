@@ -170,7 +170,6 @@ void QApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
 void QApplicationStatus::updateConfig(const pb::EmcStatusConfig &config)
 {
     recurseMessage(config, &m_config);
-    qDebug() << m_config;
     emit configChanged(m_config);
 }
 
