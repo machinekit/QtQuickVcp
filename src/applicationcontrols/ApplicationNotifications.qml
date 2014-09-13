@@ -4,6 +4,9 @@ import Machinekit.Application 1.0
 import QtQuick.Window 2.0
 
 ListView {
+    property int messageWidth: 100
+
+    id: root
     implicitWidth: 200
     implicitHeight: 200
     verticalLayoutDirection: ListView.BottomToTop
@@ -24,7 +27,8 @@ ListView {
         Rectangle {
 
             //height: width * 0.4
-            width: parent.width
+            anchors.right: parent.right
+            width: root.messageWidth
             height: textLabel.height
             radius: Screen.logicalPixelDensity * 2
             color: systemPalette.light
