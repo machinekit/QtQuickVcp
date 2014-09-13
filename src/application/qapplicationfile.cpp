@@ -3,17 +3,22 @@
 QApplicationFile::QApplicationFile(QQuickItem *parent) :
     QQuickItem(parent),
     m_uri(""),
+    m_localFilePath(""),
+    m_remoteFilePath(""),
+    m_localPath(""),
+    m_remotePath(""),
     m_ready(false),
     m_transferState(NoTransfer),
     m_error(NoError),
     m_errorString(""),
-    m_localFilePath(""),
     m_progress(0.0),
     m_componentCompleted(false),
     m_networkManager(NULL),
     m_reply(NULL),
     m_file(NULL)
 {
+    m_localPath = generateTempPath();
+
     m_networkManager = new QNetworkAccessManager(this);
     connect(m_networkManager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
@@ -21,6 +26,7 @@ QApplicationFile::QApplicationFile(QQuickItem *parent) :
 
 QApplicationFile::~QApplicationFile()
 {
+    cleanupTempPath();
     m_networkManager->deleteLater();
 }
 
@@ -36,6 +42,7 @@ void QApplicationFile::startUpload()
 {
     QUrl url;
     QFileInfo fileInfo(QUrl(m_localFilePath).toLocalFile());
+    QString remotePath;
 
     if (!m_ready || (m_transferState != NoTransfer))
     {
@@ -43,8 +50,9 @@ void QApplicationFile::startUpload()
     }
 
     url.setUrl(m_uri + "/" + fileInfo.fileName());
-    m_fileName = fileInfo.fileName();
-    emit fileNameChanged(m_fileName);
+    remotePath = QUrl(m_remotePath).toLocalFile();
+    m_remoteFilePath = QUrl::fromLocalFile(QDir(remotePath).filePath(fileInfo.fileName())).toString();
+    emit remoteFilePathChanged(m_remoteFilePath);
 
     m_file = new QFile(fileInfo.filePath());
 
@@ -69,20 +77,27 @@ void QApplicationFile::startDownload()
 {
     QUrl url;
     QDir dir;
-    QString filePath;
+    QString localFilePath;
+    QString remoteFilePath;
+    QString remotePath;
+    QString fileName;
 
     if (!m_ready || (m_transferState != NoTransfer))
     {
         return;
     }
 
-    url.setUrl(m_uri + "/" + m_fileName);
+    remoteFilePath = QUrl(m_remoteFilePath).toLocalFile();
+    remotePath = QUrl(m_remotePath).toLocalFile();
+    fileName = remoteFilePath.mid(remotePath.length() + 1);
 
-    filePath = applicationFilePath(m_fileName);
-    m_localFilePath = QUrl::fromLocalFile(filePath).toString();
+    url.setUrl(m_uri + "/" + fileName);
+
+    localFilePath = applicationFilePath(fileName);
+    m_localFilePath = QUrl::fromLocalFile(localFilePath).toString();
     emit localFilePathChanged(m_localFilePath);
 
-    QFileInfo fileInfo(filePath);
+    QFileInfo fileInfo(localFilePath);
 
     if (!dir.mkpath(fileInfo.absolutePath()))
     {
@@ -91,7 +106,7 @@ void QApplicationFile::startDownload()
         return;
     }
 
-    m_file = new QFile(filePath);
+    m_file = new QFile(localFilePath);
 
     if (m_file->open(QIODevice::WriteOnly))
     {
@@ -140,11 +155,22 @@ void QApplicationFile::updateError(QApplicationFile::TransferError error, const 
     emit errorChanged(m_error);
 }
 
+QString QApplicationFile::generateTempPath()
+{
+    return QUrl::fromLocalFile(QString("%1/machinekit-%2").arg(QDir::tempPath())
+            .arg(QCoreApplication::applicationPid())).toString();
+}
+
+void QApplicationFile::cleanupTempPath()
+{
+    QDir dir(m_localPath);
+
+    dir.removeRecursively();
+}
+
 QString QApplicationFile::applicationFilePath(const QString &fileName)
 {
-    return QString("%1/machinekit-%2/%3").arg(QDir::tempPath())
-            .arg(QCoreApplication::applicationPid())
-            .arg(fileName);
+    return QDir(QUrl(m_localPath).toLocalFile()).filePath(fileName);
 }
 
 void QApplicationFile::readyRead()

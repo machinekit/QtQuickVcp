@@ -12,12 +12,14 @@ class QApplicationFile : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
-    Q_PROPERTY(QString fileName READ fileName WRITE setFileName NOTIFY fileNameChanged)
+    Q_PROPERTY(QString remoteFilePath READ remoteFilePath WRITE setRemoteFilePath NOTIFY remoteFilePathChanged)
+    Q_PROPERTY(QString localFilePath READ localFilePath WRITE setLocalFilePath NOTIFY localFilePathChanged)
+    Q_PROPERTY(QString remotePath READ remotePath WRITE setRemotePath NOTIFY remotePathChanged)
+    Q_PROPERTY(QString localPath READ localPath WRITE setLocalPath NOTIFY localPathChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(TransferState transferState READ transferState NOTIFY transferStateChanged)
     Q_PROPERTY(TransferError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_PROPERTY(QString localFilePath READ localFilePath WRITE setLocalFilePath NOTIFY localFilePathChanged)
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
     Q_ENUMS(TransferState TransferError)
 
@@ -65,6 +67,21 @@ public:
         return m_localFilePath;
     }
 
+    QString remoteFilePath() const
+    {
+        return m_remoteFilePath;
+    }
+
+    QString localPath() const
+    {
+        return m_localPath;
+    }
+
+    QString remotePath() const
+    {
+        return m_remotePath;
+    }
+
     double progress() const
     {
         return m_progress;
@@ -73,11 +90,6 @@ public:
     TransferState transferState() const
     {
         return m_transferState;
-    }
-
-    QString fileName() const
-    {
-        return m_fileName;
     }
 
 public slots:
@@ -108,13 +120,31 @@ public slots:
         emit localFilePathChanged(arg);
     }
 
-    void setFileName(QString arg)
+    void setRemoteFilePath(QString arg)
     {
-        if (m_fileName == arg)
+        if (m_remoteFilePath == arg)
             return;
 
-        m_fileName = arg;
-        emit fileNameChanged(arg);
+        m_remoteFilePath = arg;
+        emit remoteFilePathChanged(arg);
+    }
+
+    void setLocalPath(QString arg)
+    {
+        if (m_localPath == arg)
+            return;
+
+        m_localPath = arg;
+        emit localPathChanged(arg);
+    }
+
+    void setRemotePath(QString arg)
+    {
+        if (m_remotePath == arg)
+            return;
+
+        m_remotePath = arg;
+        emit remotePathChanged(arg);
     }
 
     void startUpload();
@@ -123,12 +153,14 @@ public slots:
 
 private:
     QString         m_uri;
-    QString         m_fileName;
+    QString         m_localFilePath;
+    QString         m_remoteFilePath;
+    QString         m_localPath;
+    QString         m_remotePath;
     bool            m_ready;
     TransferState   m_transferState;
     TransferError   m_error;
     QString         m_errorString;
-    QString         m_localFilePath;
     double          m_progress;
     bool            m_componentCompleted;
 
@@ -138,7 +170,9 @@ private:
 
     void updateState(TransferState state);
     void updateError(TransferError error, const QString &errorString);
-    QString applicationFilePath(const QString &fileName);
+    QString generateTempPath();
+    void cleanupTempPath();
+    QString applicationFilePath(const QString &remoteFilePath);
 
 private slots:
     void readyRead();
@@ -152,11 +186,13 @@ signals:
     void errorChanged(TransferError arg);
     void errorStringChanged(QString arg);
     void localFilePathChanged(QString arg);
+    void remoteFilePathChanged(QString arg);
+    void localPathChanged(QString arg);
+    void remotePathChanged(QString arg);
     void progressChanged(double arg);
     void transferStateChanged(TransferState arg);
     void uploadFinished();
     void downloadFinished();
-    void fileNameChanged(QString arg);
 };
 
 #endif // QAPPLICATIONFILE_H

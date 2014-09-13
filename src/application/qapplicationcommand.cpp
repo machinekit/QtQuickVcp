@@ -304,14 +304,14 @@ void QApplicationCommand::overrideLimits()
     sendCommandMessage(pb::MT_EMC_AXIS_OVERRIDE_LIMITS);
 }
 
-void QApplicationCommand::openProgram(const QString &interpreter, const QString &fileName)
+void QApplicationCommand::openProgram(const QString &interpreter, const QString &filePath)
 {
     if (m_connectionState != Connected) {
         return;
     }
 
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_path(fileName.toStdString());
+    commandParams->set_path(QUrl(filePath).toLocalFile().toStdString());
     m_tx.set_interp_name(interpreter.toStdString());
 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_OPEN);

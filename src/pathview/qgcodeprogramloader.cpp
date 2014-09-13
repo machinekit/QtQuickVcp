@@ -2,7 +2,9 @@
 
 QGCodeProgramLoader::QGCodeProgramLoader(QObject *parent) :
     QObject(parent),
-    m_fileName(""),
+    m_localFilePath(""),
+    m_localPath(""),
+    m_remotePath(""),
     m_model(NULL)
 {
 }
@@ -15,9 +17,22 @@ void QGCodeProgramLoader::load()
         return;
     }
 
-    QString filePath = QUrl(m_fileName).toLocalFile();
+    QString localFilePath = QUrl(m_localFilePath).toLocalFile();
+    QString localPath = QUrl(m_localPath).toLocalFile();
+    QString remotePath = QUrl(m_remotePath).toLocalFile();
+    QString remoteFilePath;
 
-    QFile file(filePath);
+    if (localFilePath.indexOf(localPath) == 0)
+    {
+        remoteFilePath = remotePath + localFilePath.mid(localPath.length() + 1);
+    }
+    else
+    {
+        QFileInfo fileInfo(localFilePath);
+        remoteFilePath = QDir(remotePath).filePath(fileInfo.fileName());
+    }
+
+    QFile file(localFilePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         emit loadingFailed();
@@ -32,14 +47,14 @@ void QGCodeProgramLoader::load()
     }
 
     m_model->beginUpdate();
-    m_model->prepareFile(m_fileName, lineNumber);
+    m_model->prepareFile(remoteFilePath, lineNumber);
 
     lineNumber = 0;
     file.reset();
     while (!file.atEnd()) {
         QByteArray line = file.readLine();
         lineNumber++;
-        m_model->setData(m_fileName, lineNumber, QString(line), QGCodeProgramModel::GCodeRole);
+        m_model->setData(remoteFilePath, lineNumber, QString(line), QGCodeProgramModel::GCodeRole);
     }
 
     m_model->endUpdate();
