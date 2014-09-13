@@ -26,6 +26,13 @@ QApplicationStatus::QApplicationStatus(QQuickItem *parent) :
             this, SLOT(updateRunning(QJsonObject)));
     connect(this, SIGNAL(interpChanged(QJsonObject)),
             this, SLOT(updateRunning(QJsonObject)));
+
+
+    initializeObject(MotionChannel);
+    initializeObject(ConfigChannel);
+    initializeObject(IoChannel);
+    initializeObject(TaskChannel);
+    initializeObject(InterpChannel);
 }
 
 QApplicationStatus::~QApplicationStatus()
@@ -112,11 +119,11 @@ void QApplicationStatus::updateState(QApplicationStatus::State state)
                 m_connected = false;
                 emit connectedChanged(false);
             }
-            clearObject(MotionChannel);
-            clearObject(ConfigChannel);
-            clearObject(IoChannel);
-            clearObject(TaskChannel);
-            clearObject(InterpChannel);
+            initializeObject(MotionChannel);
+            initializeObject(ConfigChannel);
+            initializeObject(IoChannel);
+            initializeObject(TaskChannel);
+            initializeObject(InterpChannel);
         }
         else if (m_connected != true) {
             m_connected = true;
@@ -154,725 +161,210 @@ void QApplicationStatus::clearSync()
     emit syncedChanged(m_synced);
 }
 
-void QApplicationStatus::updatePosition(QJsonObject *object, const QString &baseName, const pb::Position &position)
-{
-    QJsonObject jsonObject;
-
-    if (!object->value(baseName).isUndefined())
-    {
-        jsonObject = object->value(baseName).toObject();
-    }
-
-    if (position.has_x())
-    {
-        jsonObject["x"] = (double)position.x();
-    }
-
-    if (position.has_y())
-    {
-        jsonObject["y"] = (double)position.y();
-    }
-
-    if (position.has_z())
-    {
-        jsonObject["z"] = (double)position.z();
-    }
-
-    if (position.has_a())
-    {
-        jsonObject["a"] = (double)position.a();
-    }
-
-    if (position.has_b())
-    {
-        jsonObject["b"] = (double)position.b();
-    }
-
-    if (position.has_c())
-    {
-        jsonObject["c"] = (double)position.c();
-    }
-
-    if (position.has_u())
-    {
-        jsonObject["u"] = (double)position.u();
-    }
-
-    if (position.has_v())
-    {
-        jsonObject["v"] = (double)position.v();
-    }
-
-    if (position.has_w())
-    {
-        jsonObject["w"] = (double)position.w();
-    }
-
-    (*object)[baseName] = jsonObject;
-}
-
-void QApplicationStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcStatusMotionAxis &axis)
-{
-    if (axis.has_enabled()) {
-        (*jsonObject)["enabled"] = (bool)axis.enabled();
-    }
-
-    if (axis.has_fault()) {
-        (*jsonObject)["fault"] = (bool)axis.fault();
-    }
-
-    if (axis.has_ferror_current()) {
-        (*jsonObject)["ferrorCurrent"] = (double)axis.ferror_current();
-    }
-
-    if (axis.has_ferror_highmark()) {
-        (*jsonObject)["ferrorHighmark"] = (double)axis.ferror_highmark();
-    }
-
-    if (axis.has_homed()) {
-        (*jsonObject)["homed"] = (bool)axis.homed();
-    }
-
-    if (axis.has_homing()) {
-        (*jsonObject)["homing"] = (bool)axis.homing();
-    }
-
-    if (axis.has_inpos()) {
-        (*jsonObject)["inpos"] = (bool)axis.inpos();
-    }
-
-    if (axis.has_input()) {
-        (*jsonObject)["input"] = (double)axis.input();
-    }
-
-    if (axis.has_max_hard_limit()) {
-        (*jsonObject)["maxHardLimit"] = (bool)axis.max_hard_limit();
-    }
-
-    if (axis.has_max_soft_limit()) {
-        (*jsonObject)["maxSoftLimit"] = (bool)axis.max_soft_limit();
-    }
-
-    if (axis.has_min_hard_limit()) {
-        (*jsonObject)["minHardLimit"] = (bool)axis.min_hard_limit();
-    }
-
-    if (axis.has_min_soft_limit()) {
-        (*jsonObject)["minSoftLimit"] = (bool)axis.min_soft_limit();
-    }
-
-    if (axis.has_output()) {
-        (*jsonObject)["output"] = (double)axis.output();
-    }
-
-    if (axis.has_override_limits()) {
-        (*jsonObject)["overrideLimits"] = (bool)axis.override_limits();
-    }
-
-    if (axis.has_velocity()) {
-        (*jsonObject)["velocity"] = (double)axis.velocity();
-    }
-}
-
-void QApplicationStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcStatusConfigAxis &axis)
-{
-    if (axis.has_axistype()) {
-        (*jsonObject)["axisType"] = (int)axis.axistype();
-    }
-
-    if (axis.has_backlash()) {
-        (*jsonObject)["backlash"] = (double)axis.backlash();
-    }
-
-    if (axis.has_max_ferror()) {
-        (*jsonObject)["maxFerror"] = (double)axis.max_ferror();
-    }
-
-    if (axis.has_max_position_limit()) {
-        (*jsonObject)["maxPositionLimit"] = (double)axis.max_position_limit();
-    }
-
-    if (axis.has_min_ferror()) {
-        (*jsonObject)["minFerror"] = (double)axis.min_ferror();
-    }
-
-    if (axis.has_min_position_limit()) {
-        (*jsonObject)["minPositionLimit"] = (double)axis.min_position_limit();
-    }
-
-    if (axis.has_units()) {
-        (*jsonObject)["units"] = (double)axis.units();
-    }
-}
-
-void QApplicationStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcToolData &toolData)
-{
-    if (toolData.has_id()) {
-        (*jsonObject)["id"] = (int)toolData.id();
-    }
-
-    if (toolData.has_xoffset()) {
-        (*jsonObject)["xOffset"] = (double)toolData.xoffset();
-    }
-
-    if (toolData.has_yoffset()) {
-        (*jsonObject)["yOffset"] = (double)toolData.yoffset();
-    }
-
-    if (toolData.has_zoffset()) {
-        (*jsonObject)["zOffset"] = (double)toolData.zoffset();
-    }
-
-    if (toolData.has_aoffset()) {
-        (*jsonObject)["aOffset"] = (double)toolData.aoffset();
-    }
-
-    if (toolData.has_boffset()) {
-        (*jsonObject)["bOffset"] = (double)toolData.boffset();
-    }
-
-    if (toolData.has_coffset()) {
-        (*jsonObject)["cOffset"] = (double)toolData.coffset();
-    }
-
-    if (toolData.has_uoffset()) {
-        (*jsonObject)["uOffset"] = (double)toolData.uoffset();
-    }
-
-    if (toolData.has_voffset()) {
-        (*jsonObject)["vOffset"] = (double)toolData.voffset();
-    }
-
-    if (toolData.has_woffset()) {
-        (*jsonObject)["wOffset"] = (double)toolData.woffset();
-    }
-
-    if (toolData.has_diameter()) {
-        (*jsonObject)["diameter"] = (double)toolData.diameter();
-    }
-
-    if (toolData.has_frontangle()) {
-        (*jsonObject)["frontangle"] = (double)toolData.frontangle();
-    }
-
-    if (toolData.has_backangle()) {
-        (*jsonObject)["backangle"] = (double)toolData.backangle();
-    }
-
-    if (toolData.has_orientation()) {
-        (*jsonObject)["orientation"] = (double)toolData.orientation();
-    }
-}
-
-void QApplicationStatus::updateMessage(QJsonObject *jsonObject, const pb::EmcProgramExtension &extension)
-{
-    if (extension.has_extension()) {
-        (*jsonObject)["extension"] = QString::fromStdString(extension.extension());
-    }
-}
-
-template<typename ValueType, class Type>
-void QApplicationStatus::updateIndexValue(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields)
-{
-    QJsonArray jsonArray;
-
-    if (!(*object).value(baseName).isUndefined())
-    {
-        jsonArray = (*object).value(baseName).toArray();
-    }
-
-    for (int i = 0; i < fields.size(); ++i)
-    {
-        Type field = fields.Get(i);
-
-        if (field.has_value())
-        {
-            if (field.index() == jsonArray.size())
-            {
-                jsonArray.append((ValueType)field.value());
-            }
-            else
-            {
-                jsonArray[field.index()] = (ValueType)field.value();
-            }
-        }
-    }
-
-    (*object)[baseName] = jsonArray;
-}
-template<typename ValueType, class Type>
-void QApplicationStatus::updateIndexMessage(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields)
-{
-    QJsonArray jsonArray;
-
-    if (!(*object).value(baseName).isUndefined())
-    {
-        jsonArray = (*object).value(baseName).toArray();
-    }
-
-    for (int i = 0; i < fields.size(); ++i)
-    {
-        QJsonObject jsonObject;
-        Type field = fields.Get(i);
-
-        if (field.index() < jsonArray.size()) {
-            jsonObject = jsonArray.at(field.index()).toObject();
-        }
-
-        updateMessage(&jsonObject, field);
-
-        if (field.index() == jsonArray.size()) {
-            jsonArray.append(jsonObject);
-        }
-        else
-        {
-            jsonArray[field.index()] = jsonObject;
-        }
-    }
-
-    (*object)[baseName] = jsonArray;
-}
-
-
 void QApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
 {
-    if (motion.has_active_queue())
-    {
-        m_motion["activeQueue"] = (int)motion.active_queue();
-    }
-
-    if (motion.has_actual_position()) {
-        updatePosition(&m_motion, "actualPosition", motion.actual_position());
-    }
-
-    if (motion.has_adaptive_feed_enabled()) {
-        m_motion["adaptiveFeedEnabled"] = (bool)motion.adaptive_feed_enabled();
-    }
-
-    if (motion.ain_size() > 0) {
-        updateIndexValue<double>(&m_motion, "ain", motion.ain());
-    }
-
-    if (motion.aout_size() > 0) {
-        updateIndexValue<double>(&m_motion, "aout", motion.aout());
-    }
-
-    if (motion.axis_size() > 0) {
-        updateIndexMessage<pb::EmcStatusMotionAxis>(&m_motion, "axis", motion.axis());
-    }
-
-    if (motion.has_block_delete()) {
-        m_motion["blockDelete"] = (bool)motion.block_delete();
-    }
-
-    if (motion.has_current_line()) {
-        m_motion["currentLine"] = (int)motion.current_line();
-    }
-
-    if (motion.has_current_vel()) {
-        m_motion["currentVel"] = (double)motion.current_vel();
-    }
-
-    if (motion.has_delay_left()) {
-        m_motion["delayLeft"] = (double)motion.delay_left();
-    }
-
-    if (motion.din_size() > 0) {
-        updateIndexValue<bool>(&m_motion, "din", motion.din());
-    }
-
-    if (motion.has_distance_to_go()) {
-        m_motion["distanceToGo"] = (double)motion.distance_to_go();
-    }
-
-    if (motion.dout_size() > 0) {
-        updateIndexValue<bool>(&m_motion, "dout", motion.dout());
-    }
-
-    if (motion.has_dtg()) {
-        updatePosition(&m_motion, "dtg", motion.dtg());
-    }
-
-    if (motion.has_enabled()) {
-        m_motion["enabled"] = (double)motion.enabled();
-    }
-
-    if (motion.has_feed_hold_enabled()) {
-        m_motion["feedHoldEnabled"] = (bool)motion.feed_hold_enabled();
-    }
-
-    if (motion.has_feed_override_enabled()) {
-        m_motion["feedOverrideEnabled"] = (bool)motion.feed_override_enabled();
-    }
-
-    if (motion.has_feedrate()) {
-        m_motion["feedrate"] = (double)motion.feedrate();
-    }
-
-    if (motion.has_g5x_index()) {
-        m_motion["g5xIndex"] = (int)motion.g5x_index();
-    }
-
-    if (motion.has_g5x_offset()) {
-        updatePosition(&m_motion, "g5xOffset", motion.g5x_offset());
-    }
-
-    if (motion.has_g92_offset()) {
-        updatePosition(&m_motion, "g92Offset", motion.g92_offset());
-    }
-
-    if (motion.has_id()) {
-        m_motion["id"] = (int)motion.id();
-    }
-
-    if (motion.has_inpos()) {
-        m_motion["inpos"] = (bool)motion.inpos();
-    }
-
-    if (motion.has_joint_actual_position()) {
-        updatePosition(&m_motion, "jointActualPosition", motion.joint_actual_position());
-    }
-
-    if (motion.has_joint_position()) {
-        updatePosition(&m_motion, "jointPosition", motion.joint_position());
-    }
-
-    if (motion.limit_size() > 0) {
-        updateIndexValue<int>(&m_motion, "limit", motion.limit());
-    }
-
-    if (motion.has_motion_line()) {
-        m_motion["motionLine"] = (int)motion.motion_line();
-    }
-
-    if (motion.has_motion_type()) {
-        m_motion["motionType"] = (int)motion.motion_type();
-    }
-
-    if (motion.has_motion_mode()) {
-        m_motion["motionMode"] = (int)motion.motion_mode();
-    }
-
-    if (motion.has_paused()) {
-        m_motion["paused"] = (bool)motion.paused();
-    }
-
-    if (motion.has_position()) {
-        updatePosition(&m_motion, "position", motion.position());
-    }
-
-    if (motion.has_probe_tripped()) {
-        m_motion["probeTripped"] = (bool)motion.probe_tripped();
-    }
-
-    if (motion.has_probe_val()) {
-        m_motion["probeVal"] = (int)motion.probe_val();
-    }
-
-    if (motion.has_probed_position()) {
-        updatePosition(&m_motion, "probedPosition", motion.probed_position());
-    }
-
-    if (motion.has_probing()) {
-        m_motion["probing"] = (bool)motion.probing();
-    }
-
-    if (motion.has_queue()) {
-        m_motion["queue"] = (int)motion.queue();
-    }
-    if (motion.has_queue_full()) {
-        m_motion["queueFull"] = (bool)motion.queue_full();
-    }
-
-    if (motion.has_rotation_xy()) {
-        m_motion["rotationXY"] = (double)motion.rotation_xy();
-    }
-
-    if (motion.has_spindle_brake()) {
-        m_motion["spindleBrake"] = (bool)motion.spindle_brake();
-    }
-
-    if (motion.has_spindle_direction()) {
-        m_motion["spindleDirection"] = (int)motion.spindle_direction();
-    }
-
-    if (motion.has_spindle_enabled()) {
-        m_motion["spindleEnabled"] = (bool)motion.spindle_enabled();
-    }
-
-    if (motion.has_spindle_increasing()) {
-        m_motion["spindleIncreasing"] = (int)motion.spindle_increasing();
-    }
-
-    if (motion.has_spindle_override_enabled()) {
-        m_motion["spindleOverrideEnabled"] = (bool)motion.spindle_override_enabled();
-    }
-
-    if (motion.has_spindle_speed()) {
-        m_motion["spindleSpeed"] = (double)motion.spindle_speed();
-    }
-
-    if (motion.has_spindlerate()) {
-        m_motion["spindlerate"] = (double)motion.spindlerate();
-    }
-
-    if (motion.has_state()) {
-        m_motion["state"] = (int)motion.state();
-    }
-
+    recurseMessage(motion, &m_motion);
     emit motionChanged(m_motion);
 }
 
 void QApplicationStatus::updateConfig(const pb::EmcStatusConfig &config)
 {
-    if (config.has_acceleration()) {
-        m_config["acceleration"] = (double)config.acceleration();
-    }
-
-    if (config.has_angular_units()) {
-        m_config["angularUnits"] = (double)config.angular_units();
-    }
-
-    if (config.has_axes()) {
-        m_config["axes"] = (int)config.axes();
-    }
-
-    if (config.axis_size() > 0) {
-        updateIndexMessage<pb::EmcStatusConfigAxis>(&m_config, "axis", config.axis());
-    }
-
-    if (config.has_axis_mask()) {
-        m_config["axisMask"] = (int)config.axis_mask();
-    }
-
-    if (config.has_cycle_time()) {
-        m_config["cycleTime"] = (double)config.cycle_time();
-    }
-
-    if (config.has_debug()) {
-        m_config["debug"] = (int)config.debug();
-    }
-
-    if (config.has_kinematics_type()) {
-        m_config["kinematicsType"] = (int)config.kinematics_type();
-    }
-
-    if (config.has_linear_units()) {
-        m_config["linearUnits"] = (int)config.linear_units();
-    }
-
-    if (config.has_max_acceleration()) {
-        m_config["maxAcceleration"] = (double)config.max_acceleration();
-    }
-
-    if (config.has_max_velocity()) {
-        m_config["maxVelocity"] = (double)config.max_velocity();
-    }
-
-    if (config.has_program_units()) {
-        m_config["programUnits"] = (int)config.program_units();
-    }
-
-    if (config.has_velocity()) {
-        m_config["velocity"] = (int)config.velocity();
-    }
-
-    if (config.program_extension_size() > 0) {
-        updateIndexMessage<pb::EmcProgramExtension>(&m_config, "programExtension", config.program_extension());
-    }
-
-    if (config.has_position_offset()) {
-        m_config["positionOffset"] = (int)config.position_offset();
-    }
-
-    if (config.has_position_feedback()) {
-        m_config["positionFeedback"] = (int)config.position_feedback();
-    }
-
-    if (config.has_max_feed_override()) {
-        m_config["maxFeedOverride"] = (double)config.max_feed_override();
-    }
-
-    if (config.has_min_feed_override()) {
-        m_config["minFeedOverride"] = (double)config.min_feed_override();
-    }
-
-    if (config.has_max_spindle_override()) {
-        m_config["maxSpindleOverride"] = (double)config.max_feed_override();
-    }
-
-    if (config.has_min_spindle_override()) {
-        m_config["minSpindleOverride"] = (double)config.min_spindle_override();
-    }
-
-    if (config.has_default_spindle_speed()) {
-        m_config["defaultSpindleSpeed"] = (double)config.default_spindle_speed();
-    }
-
-    if (config.has_default_linear_velocity()) {
-        m_config["defaultLinearVelocity"] = (double)config.default_linear_velocity();
-    }
-
-    if (config.has_default_angular_velocity()) {
-        m_config["defaultAngularVelocity"] = (double)config.default_angular_velocity();
-    }
-
-    if (config.has_min_velocity()) {
-        m_config["minVelocity"] = (double)config.min_velocity();
-    }
-
-    if (config.has_max_linear_velocity()) {
-        m_config["maxLinearVelocity"] = (double)config.max_linear_velocity();
-    }
-
-    if (config.has_min_linear_velocity()) {
-        m_config["minLinearVelocity"] = (double)config.min_linear_velocity();
-    }
-
-    if (config.has_max_angular_velocity()) {
-        m_config["maxAngularVelocity"] = (double)config.max_angular_velocity();
-    }
-
-    if (config.has_min_angular_velocity()) {
-        m_config["minAngularVelocity"] = (double)config.min_angular_velocity();
-    }
-
-    if (config.has_increments()) {
-        m_config["increments"] = QString::fromStdString(config.increments());
-    }
-
-    if (config.has_grids()) {
-        m_config["grids"] = QString::fromStdString(config.grids());
-    }
-
-    if (config.has_lathe()) {
-        m_config["lathe"] = (bool)config.lathe();
-    }
-
-    if (config.has_geometry()) {
-        m_config["geometry"] = QString::fromStdString(config.geometry());
-    }
-
-    if (config.has_arcdivision()) {
-        m_config["arcdivision"] = (int)config.arcdivision();
-    }
-
-    if (config.has_no_force_homing()) {
-        m_config["noForceHoming"] = (bool)config.no_force_homing();
-    }
-
+    recurseMessage(config, &m_config);
+    qDebug() << m_config;
     emit configChanged(m_config);
 }
 
 void QApplicationStatus::updateIo(const pb::EmcStatusIo &io)
 {
-    if (io.has_estop()) {
-        m_io["estop"] = (bool)io.estop();
-    }
-
-    if (io.has_flood()) {
-        m_io["flood"] = (bool)io.flood();
-    }
-
-    if (io.has_lube()) {
-        m_io["lube"] = (bool)io.lube();
-    }
-
-    if (io.has_lube_level()) {
-        m_io["lubeLevel"] = (bool)io.lube_level();
-    }
-
-    if (io.has_mist()) {
-        m_io["mist"] = (bool)io.mist();
-    }
-
-    if (io.has_pocket_prepped()) {
-        m_io["pocketPrepped"] = (bool)io.pocket_prepped();
-    }
-
-    if (io.has_tool_in_spindle()) {
-        m_io["toolInSpindle"] = (bool)io.tool_in_spindle();
-    }
-
-    if (io.has_tool_offset()) {
-        updatePosition(&m_io, "toolOffset", io.tool_offset());
-    }
-
-    if (io.tool_table_size() > 0) {
-        updateIndexMessage<pb::EmcToolData>(&m_io, "toolTable", io.tool_table());
-    }
-
+    recurseMessage(io, &m_io);
     emit ioChanged(m_io);
 }
 
 void QApplicationStatus::updateTask(const pb::EmcStatusTask &task)
 {
-    if (task.has_echo_serial_number()) {
-        m_task["echoSerialNumber"] = (int)task.echo_serial_number();
-    }
-
-    if (task.has_exec_state()) {
-        m_task["execState"] = (int)task.exec_state();
-    }
-
-    if (task.has_file()) {
-        m_task["file"] = QString::fromStdString(task.file());
-    }
-
-    if (task.has_input_timeout()) {
-        m_task["inputTimeout"] = (bool)task.input_timeout();
-    }
-
-    if (task.has_optional_stop()) {
-        m_task["optionalStop"] = (bool)task.optional_stop();
-    }
-
-    if (task.has_read_line()) {
-        m_task["readLine"] = (int)task.read_line();
-    }
-
-    if (task.has_task_mode()) {
-        m_task["taskMode"] = (int)task.task_mode();
-    }
-
-    if (task.has_task_paused()) {
-        m_task["taskPaused"] = (int)task.task_paused();
-    }
-
-    if (task.has_task_state()) {
-        m_task["taskState"] = (int)task.task_state();
-    }
-
+    recurseMessage(task, &m_task);
     emit taskChanged(m_task);
 }
 
 void QApplicationStatus::updateInterp(const pb::EmcStatusInterp &interp)
 {
-    if (interp.has_command()) {
-        m_interp["command"] = QString::fromStdString(interp.command());
-    }
-
-    if (interp.gcodes_size() > 0) {
-        updateIndexValue<int>(&m_interp, "gcodes", interp.gcodes());
-    }
-
-    if (interp.has_interp_state()) {
-        m_interp["interpState"] = (int)interp.interp_state();
-    }
-
-    if (interp.has_interpreter_errcode()) {
-        m_interp["interpreterErrcode"] = (int)interp.interpreter_errcode();
-    }
-
-    if (interp.mcodes_size() > 0) {
-        updateIndexValue<int>(&m_interp, "mcodes", interp.mcodes());
-    }
-
-    if (interp.settings_size() > 0) {
-        updateIndexValue<double>(&m_interp, "settings", interp.settings());
-    }
-
+    recurseMessage(interp, &m_interp);
     emit interpChanged(m_interp);
+}
+
+QString QApplicationStatus::enumNameToCamelCase(const QString &name)
+{
+    QStringList partList;
+
+    partList = name.toLower().split('_');
+
+    for (int i = 0; i < partList.size(); ++i)
+    {
+        partList[i][0] = partList[i][0].toUpper();
+    }
+
+    return partList.join("");
+}
+
+void QApplicationStatus::recurseDescriptor(const google::protobuf::Descriptor *descriptor, QJsonObject *object)
+{
+    for (int i = 0; i < descriptor->field_count(); ++i)
+    {
+        const gpb::FieldDescriptor *field;
+        QString name;
+        QJsonValue jsonValue;
+
+        field = descriptor->field(i);
+        name = QString::fromStdString(field->camelcase_name());
+
+        switch (field->cpp_type())
+        {
+        case gpb::FieldDescriptor::CPPTYPE_BOOL:
+            jsonValue = false;
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_DOUBLE:
+        case gpb::FieldDescriptor::CPPTYPE_FLOAT:
+            jsonValue = 0.0;
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_INT32:
+        case gpb::FieldDescriptor::CPPTYPE_INT64:
+        case gpb::FieldDescriptor::CPPTYPE_UINT32:
+        case gpb::FieldDescriptor::CPPTYPE_UINT64:
+            jsonValue = 0;
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_STRING:
+            jsonValue = "";
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_ENUM:
+            jsonValue = field->enum_type()->value(0)->number();
+            //jsonValue = enumNameToCamelCase(QString::fromStdString(field->enum_type()->value(0)->name()));
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
+            QJsonObject jsonObject;
+            recurseDescriptor(field->message_type(), &jsonObject);
+            jsonValue = jsonObject;
+            break;
+        }
+
+        if (field->is_repeated())
+        {
+            QJsonArray jsonArray;
+            QJsonObject jsonObject = jsonValue.toObject();
+
+            jsonObject.remove("index");
+            if (jsonObject.count() == 1)
+            {
+                jsonValue = jsonObject.value(jsonObject.keys().at(0));
+            }
+            else
+            {
+                jsonValue = jsonObject;
+            }
+            jsonArray.append(jsonValue);
+            object->insert(name, jsonArray);
+        }
+        else
+        {
+            object->insert(name, jsonValue);
+        }
+    }
+}
+
+void QApplicationStatus::recurseMessage(const google::protobuf::Message &message, QJsonObject *object)
+{
+    const gpb::Reflection *reflection = message.GetReflection();
+    gpb::vector< const gpb::FieldDescriptor * > output;
+    reflection->ListFields(message, &output);
+
+    for (int i = 0; i < (int)output.size(); ++i)
+    {
+        QString name;
+        QJsonValue jsonValue;
+        const gpb::FieldDescriptor *field;
+
+        field = output[i];
+        name = QString::fromStdString(field->camelcase_name());
+
+        if (!field->is_repeated())
+        {
+            switch (field->cpp_type())
+            {
+            case gpb::FieldDescriptor::CPPTYPE_BOOL:
+                jsonValue = reflection->GetBool(message, field);
+                break;
+            case gpb::FieldDescriptor::CPPTYPE_DOUBLE:
+                jsonValue = reflection->GetDouble(message, field);
+                break;
+            case gpb::FieldDescriptor::CPPTYPE_FLOAT:
+                jsonValue = (double)reflection->GetFloat(message, field);
+                break;
+            case gpb::FieldDescriptor::CPPTYPE_INT32:
+                jsonValue = (int)reflection->GetInt32(message, field);
+                break;
+            case gpb::FieldDescriptor::CPPTYPE_INT64:
+                jsonValue = (int)reflection->GetInt64(message, field);
+                break;
+            case gpb::FieldDescriptor::CPPTYPE_UINT32:
+                jsonValue = (int)reflection->GetUInt32(message, field);
+                break;
+            case gpb::FieldDescriptor::CPPTYPE_UINT64:
+                jsonValue = (int)reflection->GetUInt64(message, field);
+                break;
+            case gpb::FieldDescriptor::CPPTYPE_STRING:
+                jsonValue = QString::fromStdString(reflection->GetString(message, field));
+                break;
+            case gpb::FieldDescriptor::CPPTYPE_ENUM:
+                jsonValue = reflection->GetEnum(message, field)->number();
+                //jsonValue = enumNameToCamelCase(QString::fromStdString(reflection->GetEnum(message, field)->name()));
+                break;
+            case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
+                QJsonObject jsonObject = object->value(name).toObject();
+                recurseMessage(reflection->GetMessage(message, field), &jsonObject);
+                jsonValue = jsonObject;
+                break;
+            }
+            object->insert(name, jsonValue);
+        }
+        else
+        {
+            if (field->cpp_type() == gpb::FieldDescriptor::CPPTYPE_MESSAGE)
+            {
+                QJsonArray jsonArray = object->value(name).toArray();
+                for (int j = 0; j < reflection->FieldSize(message, field); ++j)
+                {
+                    QJsonObject jsonObject;
+                    QJsonValue jsonValue;
+                    const gpb::Message &subMessage = reflection->GetRepeatedMessage(message, field, j);
+                    const gpb::Descriptor *subDescriptor = subMessage.GetDescriptor();
+                    const gpb::FieldDescriptor *subField = subDescriptor->FindFieldByName("index");
+                    const gpb::Reflection *subReflection = subMessage.GetReflection();
+                    int index = subReflection->GetInt32(subMessage, subField);
+
+                    while (jsonArray.size() < (index + 1))
+                    {
+                        jsonArray.append(QJsonValue());
+                    }
+
+                    if (subDescriptor->field_count() == 2)  // index and value field
+                    {
+                        recurseMessage(subMessage, &jsonObject);
+                        jsonObject.remove("index");
+                        jsonValue = jsonObject.value(jsonObject.keys().at(0));
+                    }
+                    else
+                    {
+                        jsonObject = jsonArray.at(index).toObject(QJsonObject());
+                        recurseMessage(subMessage, &jsonObject);
+                        jsonObject.remove("index");
+                        jsonValue = jsonObject;
+                    }
+
+                    jsonArray.replace(index, jsonValue);
+                }
+                object->insert(name, QJsonValue(jsonArray));
+            }
+        }
+    }
 }
 
 void QApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageList)
@@ -1068,19 +560,19 @@ void QApplicationStatus::unsubscribe()
         m_statusSocket->unsubscribeFrom(subscription);
 
         if (subscription == "motion") {
-            clearObject(MotionChannel);
+            initializeObject(MotionChannel);
         }
         else if (subscription == "config") {
-            clearObject(ConfigChannel);
+            initializeObject(ConfigChannel);
         }
         else if (subscription == "io") {
-            clearObject(IoChannel);
+            initializeObject(IoChannel);
         }
         else if (subscription == "task") {
-            clearObject(TaskChannel);
+            initializeObject(TaskChannel);
         }
         else if (subscription == "interp") {
-            clearObject(InterpChannel);
+            initializeObject(InterpChannel);
         }
     }
     m_subscriptions.clear();
@@ -1130,28 +622,33 @@ void QApplicationStatus::setReady(bool arg)
     }
 }
 
-void QApplicationStatus::clearObject(QApplicationStatus::StatusChannel channel)
+void QApplicationStatus::initializeObject(QApplicationStatus::StatusChannel channel)
 {
     switch (channel)
     {
     case MotionChannel:
         m_motion = QJsonObject();
+        recurseDescriptor(statusMotion.GetDescriptor(), &m_motion);
         emit motionChanged(m_motion);
         return;
     case ConfigChannel:
         m_config = QJsonObject();
+        recurseDescriptor(statusConfig.GetDescriptor(), &m_config);
         emit configChanged(m_config);
         return;
     case IoChannel:
         m_io = QJsonObject();
+        recurseDescriptor(statusIo.GetDescriptor(), &m_io);
         emit ioChanged(m_io);
         return;
     case TaskChannel:
         m_task = QJsonObject();
+        recurseDescriptor(statusTask.GetDescriptor(), &m_task);
         emit taskChanged(m_task);
         return;
     case InterpChannel:
         m_interp = QJsonObject();
+        recurseDescriptor(statusInterp.GetDescriptor(), &m_interp);
         emit interpChanged(m_interp);
         return;
     }

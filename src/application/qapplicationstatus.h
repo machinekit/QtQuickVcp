@@ -10,6 +10,9 @@
 #include "message.pb.h"
 #include "status.pb.h"
 
+#include <google/protobuf/message.h>
+#include <google/protobuf/descriptor.h>
+
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;
 #else
@@ -264,7 +267,7 @@ public slots:
         emit channelsChanged(arg);
     }
 
-    void clearObject(StatusChannel channel);
+    void initializeObject(StatusChannel channel);
 
 private:
     QString         m_statusUri;
@@ -285,6 +288,12 @@ private:
     StatusChannels  m_channels;
     bool            m_componentCompleted;
 
+    pb::EmcStatusMotion statusMotion;
+    pb::EmcStatusConfig statusConfig;
+    pb::EmcStatusIo statusIo;
+    pb::EmcStatusTask statusTask;
+    pb::EmcStatusInterp statusInterp;
+
     PollingZMQContext *m_context;
     ZMQSocket   *m_statusSocket;
     QStringList  m_subscriptions;
@@ -302,20 +311,15 @@ private:
     void updateError(ConnectionError error, const QString &errorString);
     void updateSync(StatusChannel channel);
     void clearSync();
-    void updatePosition(QJsonObject *object, const QString &baseName, const pb::Position &position);
-    template<typename ValueType, class Type>
-    void updateIndexValue(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields);
-    template<typename ValueType, class Type>
-    void updateIndexMessage(QJsonObject *object, const QString &baseName, const gpb::RepeatedPtrField<Type> &fields);
-    void updateMessage(QJsonObject *jsonObject, const pb::EmcStatusMotionAxis &axis);
-    void updateMessage(QJsonObject *jsonObject, const pb::EmcStatusConfigAxis &axis);
-    void updateMessage(QJsonObject *jsonObject, const pb::EmcToolData &toolData);
-    void updateMessage(QJsonObject *jsonObject, const pb::EmcProgramExtension &extension);
     void updateMotion(const pb::EmcStatusMotion &motion);
     void updateConfig(const pb::EmcStatusConfig &config);
     void updateIo(const pb::EmcStatusIo &io);
     void updateTask(const pb::EmcStatusTask &task);
     void updateInterp(const pb::EmcStatusInterp &interp);
+
+    QString enumNameToCamelCase(const QString &name);
+    void recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *object);
+    void recurseMessage(const gpb::Message &message, QJsonObject *object);
 
 private slots:
     void statusMessageReceived(const QList<QByteArray> &messageList);
