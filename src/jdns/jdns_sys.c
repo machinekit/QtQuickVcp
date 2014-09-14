@@ -730,6 +730,10 @@ static int my_res_init()
     defined(JDNS_OS_NETBSD) || defined (JDNS_OS_SOLARIS)
 # define USE_EXTEXT
 #endif
+#if defined(JDNS_OS_OPENBSD)
+# define USE_INDEP_EXT
+
+#endif
 
 static jdns_dnsparams_t *dnsparams_get_unixsys()
 {
@@ -752,6 +756,21 @@ static jdns_dnsparams_t *dnsparams_get_unixsys()
 	if(n == -1)
 		return params;
 
+#ifdef USE_INDEP_EXT
+	for(n = 0; n < MAXNS && n < RESVAR.nscount; ++n)
+	{
+		struct sockaddr_in *sa = (struct sockaddr_in*)&(_res_ext.nsaddr_list[n]);
+		jdns_address_t *addr = jdns_address_new();
+		if (sa->sin_family = AF_INET6) {
+			struct sockaddr_in6 *sa6 = (struct sockaddr_in6 *)sa;
+			jdns_address_set_ipv6(addr, sa6->sin6_addr.s6_addr);
+		} else {
+			jdns_address_set_ipv4(addr, ntohl(sa->sin_addr.s_addr));
+		}
+		jdns_dnsparams_append_nameserver(params, addr, JDNS_UNICAST_PORT);
+		jdns_address_delete(addr);
+	}
+#else
 	// nameservers - ipv6
 #ifdef __GLIBC__
 	for(n = 0; n < MAXNS && n < RESVAR._u._ext.nscount6; ++n)
@@ -788,6 +807,7 @@ static jdns_dnsparams_t *dnsparams_get_unixsys()
 		jdns_dnsparams_append_nameserver(params, addr, JDNS_UNICAST_PORT);
 		jdns_address_delete(addr);
 	}
+#endif
 
 	// domain name
 	if(strlen(RESVAR.defdname) > 0)
