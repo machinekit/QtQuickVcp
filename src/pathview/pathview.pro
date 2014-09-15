@@ -1,13 +1,8 @@
 TEMPLATE = lib
-TARGET = machinekitpathviewplugin
-TARGETPATH = Machinekit/PathView
 QT += qml quick
-CONFIG += qt plugin
-CONFIG -= android_install
 
-TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.PathView
-QMAKE_MOC_OPTIONS += -Muri=$$uri
+include(../plugin.pri)
 
 include(../zeromq.pri)
 include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)

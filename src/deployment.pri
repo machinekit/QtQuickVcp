@@ -1,4 +1,5 @@
 include(../paths.pri)
+TARGETPATH = $$replace(uri, \\., /)
 DESTDIR = $$OUT_PWD/../../imports/$$TARGETPATH
 
 isEmpty(PLUGIN_VERSION): PLUGIN_VERSION = 1.0

@@ -1,13 +1,8 @@
 TEMPLATE = lib
-TARGET = machinekithalremotecontrolsplugin
-TARGETPATH = Machinekit/HalRemote/Controls
 QT += qml quick
-CONFIG += qt plugin
-CONFIG -= android_install
 
-TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.HalRemote.Controls
-QMAKE_MOC_OPTIONS += -Muri=$$uri
+include(../plugin.pri)
 
 # Input
 SOURCES += \

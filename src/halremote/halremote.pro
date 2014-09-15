@@ -1,13 +1,8 @@
 TEMPLATE = lib
-TARGET = machinekithalremoteplugin
-TARGETPATH = Machinekit/HalRemote
 QT += qml quick
-CONFIG += qt plugin
-CONFIG -= android_install
 
-TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.HalRemote
-QMAKE_MOC_OPTIONS += -Muri=$$uri
+include(../plugin.pri)
 
 include(../zeromq.pri)
 include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)

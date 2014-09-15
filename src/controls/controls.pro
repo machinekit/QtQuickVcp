@@ -1,13 +1,8 @@
 TEMPLATE = lib
-TARGET = machinekitcontrolsplugin
-TARGETPATH = Machinekit/Controls
 QT += qml quick
-CONFIG += qt plugin
-CONFIG -= android_install
 
-TARGET = $$qtLibraryTarget($$TARGET)
 uri = Machinekit.Controls
-QMAKE_MOC_OPTIONS += -Muri=$$uri
+include(../plugin.pri)
 
 # Input
 SOURCES += \
