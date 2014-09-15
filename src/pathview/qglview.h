@@ -98,6 +98,9 @@ public slots:
     void removeGlItem(QGLItem *glItem);
     void clearGlItems();
 
+    // loading the correct current drawables list
+    void prepare(QGLItem *glItem);
+
     // removing drawables
     void reset();
 
@@ -370,6 +373,7 @@ private:
     TextParameters *m_textParameters;
     QStack<TextParameters*> m_textParametersStack;
     QList<QStaticText> m_textTextList;
+    QList<QImage> m_textImageList;
     QList<QOpenGLTexture*> m_textTextureList;
     QList<float> m_textAspectRatioList;
 
@@ -409,7 +413,8 @@ private:
     void drawLines();
 
     void drawTexts();
-    void generateTextTexture(const QStaticText &staticText, QFont font);
+    void prepareTextTexture(const QStaticText &staticText, QFont font);
+    void createTextTexture(TextParameters *textParameters);
     void clearTextTextures();
 
     void updateGLItems();

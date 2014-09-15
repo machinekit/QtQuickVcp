@@ -15,9 +15,7 @@ QGLSphereItem::QGLSphereItem(QQuickItem *parent) :
 
 void QGLSphereItem::paint(QGLView *glView)
 {
-    glView->translate(position());
-    glView->rotate(rotation());
-    glView->scale(scale());
+    glView->prepare(this);
 
     glView->reset();
     glView->beginUnion();

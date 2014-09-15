@@ -19,10 +19,8 @@ void QGLPathItem::paint(QGLView *glView)
 {
     if (m_needsFullUpdate)
     {
+        glView->prepare(this);
         glView->reset();
-        glView->translate(position());
-        glView->rotate(rotation());
-        glView->scale(scale());
 
         for (int i = 0; i < m_previewPathItems.size(); ++i)
         {
@@ -315,11 +313,13 @@ void QGLPathItem::processPreview(const pb::Preview &preview)
     case pb::PV_USE_TOOL_OFFSET: processUseToolOffset(preview); return;
     case pb::PV_SET_PARAMS: /*nothing*/ return;
     case pb::PV_SET_FEED_MODE: /*nothing*/ return;
+    case pb::PV_SOURCE_CONTEXT: /*nothing*/ return;
     }
 }
 
 void QGLPathItem::processStraightMove(const pb::Preview &preview, MovementType movementType)
 {
+#ifdef QT_DEBUG
     if (movementType == FeedMove)
     {
         qDebug() << "straight feed";
@@ -328,6 +328,7 @@ void QGLPathItem::processStraightMove(const pb::Preview &preview, MovementType m
     {
         qDebug() << "straight traverse";
     }
+#endif
 
     Position newPosition;
     QVector3D currentVector;
@@ -353,7 +354,9 @@ void QGLPathItem::processStraightMove(const pb::Preview &preview, MovementType m
 
 void QGLPathItem::processArcFeed(const pb::Preview &preview)
 {
+#ifdef QT_DEBUG
     qDebug() << "arc feed";
+#endif
 
     Position newPosition;
     QVector3D currentVector;

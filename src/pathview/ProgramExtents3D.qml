@@ -27,6 +27,7 @@ Canvas3D {
         var lineOffset = root.textSize
         var textOffset = root.textSize/4.0
 
+        context.prepare(this)
         context.reset()
 
         if (root.minimum == root.maximum) {
@@ -133,6 +134,7 @@ Canvas3D {
             }
 
         context.endUnion()
+        context.update()
     }
 
     Component.onCompleted: {

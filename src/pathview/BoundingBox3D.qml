@@ -13,6 +13,7 @@ Canvas3D {
 
     onPaint: {
         var size = Qt.vector3d(maximum.x - minimum.x, maximum.y - minimum.y, maximum.z - minimum.z)
+        context.prepare(this)
         context.reset()
         context.lineStipple(root.lineStipple, root.lineStippleLength)
         context.color(root.color)
@@ -37,6 +38,7 @@ Canvas3D {
                                size.x, 0.0, size.z)
         }
         context.endUnion()
+        context.update()
     }
 
     Component.onCompleted: {

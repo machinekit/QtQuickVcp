@@ -788,9 +788,18 @@ void QGLView::drawTexts()
     {
         TextParameters *textParameters = static_cast<TextParameters*>(parametersList->at(i));
         QStaticText staticText = textParameters->staticText;
-        int textureIndex = m_textTextList.indexOf(staticText);
-        QOpenGLTexture *texture = m_textTextureList.at(textureIndex);
-        float aspectRatio = m_textAspectRatioList.at(textureIndex);
+        int textureIndex;
+        QOpenGLTexture *texture;
+        float aspectRatio;
+
+        textureIndex = m_textTextList.indexOf(staticText);
+        texture = m_textTextureList.at(textureIndex);
+        aspectRatio = m_textAspectRatioList.at(textureIndex);
+
+        if (!texture->isCreated()) // initialize texture on first use
+        {
+            createTextTexture(textParameters);
+        }
 
         m_textProgram->setUniformValue(m_textAspectRatioLocation, aspectRatio);
         m_textProgram->setUniformValue(m_textAlignmentLocation, (GLint)textParameters->alignment);
@@ -815,8 +824,13 @@ void QGLView::drawTexts()
     m_textVertexBuffer->release();
 }
 
-void QGLView::generateTextTexture(const QStaticText &staticText, QFont font)
+void QGLView::prepareTextTexture(const QStaticText &staticText, QFont font)
 {
+    if (m_textTextList.contains(staticText))
+    {
+        return;
+    }
+
     if (m_textTextureList.size() > 100) // maximum of 100 rendered texts TODO: make parameter
     {
         clearTextTextures();
@@ -831,16 +845,23 @@ void QGLView::generateTextTexture(const QStaticText &staticText, QFont font)
     painter.drawStaticText(0, 0, staticText);
 
     QOpenGLTexture *texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-    texture->create();
-    texture->setMinificationFilter(QOpenGLTexture::Nearest);
-    texture->setMagnificationFilter(QOpenGLTexture::Nearest);
-    texture->setData(pixmap.toImage());
-
     float aspectRatio = staticText.size().width()/staticText.size().height();
 
     m_textTextList.append(staticText);
     m_textTextureList.append(texture);
     m_textAspectRatioList.append(aspectRatio);
+    m_textImageList.append(pixmap.toImage());
+}
+
+void QGLView::createTextTexture(TextParameters *textParameters)
+{
+    int textureIndex = m_textTextList.indexOf(textParameters->staticText);
+    QOpenGLTexture *texture = m_textTextureList.at(textureIndex);
+
+    texture->create();
+    texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+    texture->setData(m_textImageList.at(textureIndex));
 }
 
 void QGLView::clearTextTextures()
@@ -870,6 +891,7 @@ void QGLView::clearTextTextures()
             m_textTextureList.at(i)->destroy();
             delete m_textTextureList.at(i);
             m_textTextureList.removeAt(i);
+            m_textImageList.removeAt(i);
         }
     }
 }
@@ -905,9 +927,6 @@ void QGLView::paintGLItem(QGLItem *item)
 {
     if (item->isVisible())
     {
-        m_currentDrawableList = m_drawableListMap.value(item);
-        m_currentGlItem = item;
-        resetTransformations(true); // reset all tranformations for a clean start
         item->paint(this);
     }
     else
@@ -950,7 +969,7 @@ quint32 QGLView::getSelection()
     // find the id that is most common in the selection
     foreach(int id, ids)
     {
-        int count;
+        int count = 0;
         qCount(ids.begin(), ids.end(), id, count);
         if (count > maxCount) {
             sortedIds.prepend(id);
@@ -1024,6 +1043,16 @@ void QGLView::clearGlItems()
     {
         removeGlItem(i);
     }
+}
+
+void QGLView::prepare(QGLItem *glItem)
+{
+    m_currentDrawableList = m_drawableListMap.value(glItem);
+    m_currentGlItem = glItem;
+    resetTransformations(true); // reset all tranformations for a clean start
+    translate(glItem->position());
+    rotate(glItem->rotation());
+    scale(glItem->scale());
 }
 
 QQmlListProperty<QGLItem> QGLView::glItems()
@@ -1378,13 +1407,9 @@ void QGLView::text(QString text, TextAlignment alignment , QFont font)
     font.setPixelSize(100);
     staticText.prepare(QTransform(), font);
 
-    if (!m_textTextList.contains(staticText))
-    {
-        generateTextTexture(staticText, font);
-    }
-
     m_textParameters->staticText = staticText;
     m_textParameters->alignment = alignment;
+    prepareTextTexture(staticText, font);
 
     addDrawableData(m_textParameters);
     resetTransformations();

@@ -13,13 +13,7 @@ void QGLCanvas::paint(QGLView *glView)
         emit contextChanged(glView);
     }
 
-    glView->translate(position());
-    glView->rotate(rotation());
-    glView->scale(scale());
-
-    glView->beginUnion();
     paint();
-    glView->endUnion();
 }
 
 void QGLCanvas::selectDrawable(void *pointer)

@@ -21,9 +21,7 @@ QGLCylinderItem::QGLCylinderItem(QQuickItem *parent) :
 
 void QGLCylinderItem::paint(QGLView *glView)
 {
-    glView->translate(position());
-    glView->rotate(rotation());
-    glView->scale(scale());
+    glView->prepare(this);\
 
     glView->reset();
     glView->beginUnion();

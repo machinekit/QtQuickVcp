@@ -15,6 +15,7 @@ Canvas3D {
         var posX = 0
         var posY = 0
 
+        context.prepare(this)
         context.reset()
         context.color(root.color)
         context.lineWidth(root.lineWidth)
@@ -32,6 +33,7 @@ Canvas3D {
             posY += intervalY
         }
         context.endUnion()
+        context.update()
     }
 
     Component.onCompleted: {

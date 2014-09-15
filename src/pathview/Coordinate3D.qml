@@ -11,6 +11,7 @@ Canvas3D {
 
     id: root
     onPaint: {
+        context.prepare(this)
         context.reset()
 
         context.color(root.xAxisColor)
@@ -44,6 +45,7 @@ Canvas3D {
             context.text("Z", GLView3D.AlignCenter)
             context.endUnion()
         }
+        context.update()
     }
 
     Component.onCompleted: {

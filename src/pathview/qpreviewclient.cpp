@@ -66,9 +66,8 @@ void QPreviewClient::start()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "preview", "start")
-        #endif
-            updateState(Connecting);
-
+#endif
+    updateState(Connecting);
 
     if (connectSockets())
     {
