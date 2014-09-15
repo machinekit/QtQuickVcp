@@ -1,5 +1,6 @@
-QT       -= core gui
+QT     -= core gui
 CONFIG -= android_install
+CONFIG += release
 
 TARGET = machinetalk-protobuf
 TEMPLATE = lib
