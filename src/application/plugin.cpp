@@ -28,6 +28,7 @@
 #include "qapplicationcommand.h"
 #include "qapplicationerror.h"
 #include "qapplicationfile.h"
+#include "qlocalsettings.h"
 
 #include <qqml.h>
 
@@ -46,6 +47,7 @@ void MachinekitApplicationPlugin::registerTypes(const char *uri)
     qmlRegisterType<QApplicationCommand>(uri, 1, 0, "ApplicationCommand");
     qmlRegisterType<QApplicationError>(uri, 1, 0, "ApplicationError");
     qmlRegisterType<QApplicationFile>(uri, 1, 0, "ApplicationFile");
+    qmlRegisterType<QLocalSettings>(uri, 1, 0, "LocalSettings");
 }
 
 
