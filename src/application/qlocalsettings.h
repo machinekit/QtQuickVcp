@@ -49,6 +49,7 @@ public slots:
     void save();
     void load();
     void setValue(const QString &key, const QVariant &value);
+    QJsonValue value(const QString &key);
 
 private:
     QJsonObject m_values;

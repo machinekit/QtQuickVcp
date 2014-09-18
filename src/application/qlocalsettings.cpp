@@ -75,6 +75,44 @@ void QLocalSettings::setValue(const QString &key, const QVariant &value)
     setValue(key, value, true);
 }
 
+QJsonValue QLocalSettings::value(const QString &key)
+{
+    QStringList heritanceList;
+    QJsonObject *parentObject;
+    QList<QJsonObject> objectList;
+
+    heritanceList = key.split('.');
+    parentObject = &m_values;
+
+    for (int i = 0; i < heritanceList.size(); ++i)
+    {
+        QString keyName = heritanceList.at(i);
+        bool isValueKey = (i == (heritanceList.size() - 1));
+
+        if (isValueKey)
+        {
+            return parentObject->value(keyName);
+        }
+        else
+        {
+            QJsonObject object;
+            object = parentObject->value(keyName).toObject();
+
+            if (object.isEmpty())
+            {
+                return QJsonValue();
+            }
+            else
+            {
+                objectList.append(object);
+                parentObject = &objectList.last();
+            }
+        }
+    }
+
+    return QJsonValue();
+}
+
 void QLocalSettings::setValue(const QString &key, const QVariant &value, bool overwrite = true)
 {
     QStringList heritanceList;
