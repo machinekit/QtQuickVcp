@@ -6,5 +6,6 @@
         <file>ProgramExtents3D.qml</file>
         <file>PathView3D.qml</file>
         <file>SourceView.qml</file>
+        <file>GCodeSync.qml</file>
     </qresource>
 </RCC>

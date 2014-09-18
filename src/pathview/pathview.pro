@@ -48,6 +48,7 @@ RESOURCES += \
 QML_FILES = \
     BoundingBox3D.qml \
     Coordinate3D.qml \
+    GCodeSync.qml \
     Grid3D.qml \
     PathView3D.qml \
     ProgramExtents3D.qml \
