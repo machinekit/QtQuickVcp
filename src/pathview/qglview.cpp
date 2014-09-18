@@ -35,13 +35,13 @@ QGLView::QGLView(QQuickItem *parent)
     , m_lineProgram(0)
     , m_textProgram(0)
     , m_projectionAspectRatio(1.0)
+    , m_backgroundColor(QColor(Qt::black))
     , m_pathEnabled(false)
     , m_selectionModeActive(false)
     , m_currentGlItem(NULL)
     , m_propertySignalMapper(new QSignalMapper(this))
     , m_camera(new QGLCamera(this))
     , m_light(new QGLLight(this))
-    , m_backgroundColor(QColor(Qt::black))
 {
     //setFlag(QQuickItem::ItemHasContents, true);
 
