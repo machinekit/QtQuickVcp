@@ -42,7 +42,7 @@ class QApplicationStatus : public QQuickItem
     Q_ENUMS(State ConnectionError OriginIndex TrajectoryMode MotionStatus
             AxisType KinematicsType CanonUnits TaskExecState TaskState
             TaskMode InterpreterState InterpreterExitCode PositionOffset
-            PositionFeedback)
+            PositionFeedback TimeUnits)
     Q_FLAGS(StatusChannels)
 
 public:
@@ -108,9 +108,14 @@ public:
     };
 
     enum CanonUnits {
-        InchesUnits = pb::CANON_UNITS_INCHES,
-        mmUnits = pb::CANON_UNITS_MM,
-        cmUnits = pb::CANON_UNITS_CM
+        CanonUnitsInches = pb::CANON_UNITS_INCHES,
+        CanonUnitsMm = pb::CANON_UNITS_MM,
+        CanonUnitsCm = pb::CANON_UNITS_CM
+    };
+
+    enum TimeUnits {
+        TimeUnitsMinute = pb::TIME_UNITS_MINUTE,
+        TimeUnitsSecond = pb::TIME_UNITS_SECOND
     };
 
     enum TaskExecState {
