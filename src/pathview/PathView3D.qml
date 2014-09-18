@@ -49,6 +49,16 @@ GLView3D {
 
     id: pathView
 
+    function setViewMode(mode) {
+        switch (mode) {
+        case 0:
+            camera.heading = -90
+            camera.pitch = 0.00
+            camera.projectionType = Camera3D.Orthographic
+            break;
+        }
+    }
+
     camera: Camera3D {
         property real heading: 45
         property real pitch: 60
@@ -62,6 +72,8 @@ GLView3D {
         center: lookCenter
         upVector: Qt.vector3d(0, 0, 1)
     }
+
+
 
     light: Light3D {
         id: light
@@ -107,11 +119,11 @@ GLView3D {
         id: boundingBox
         axes: pathView.axes
         minimum.x: _ready ? status.config.axis[0].minPositionLimit : 0
-        minimum.y: _ready ? status.config.axis[1].minPositionLimit : 0
-        minimum.z: _ready ? status.config.axis[2].minPositionLimit : 0
+        minimum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].minPositionLimit : 0
+        minimum.z: (_ready && status.config.axis.length > 2) ? status.config.axis[2].minPositionLimit : 0
         maximum.x: _ready ? status.config.axis[0].maxPositionLimit : 0
-        maximum.y: _ready ? status.config.axis[1].maxPositionLimit : 0
-        maximum.z: _ready ? status.config.axis[2].maxPositionLimit : 0
+        maximum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].maxPositionLimit : 0
+        maximum.z: (_ready && status.config.axis.length > 2) ? status.config.axis[2].maxPositionLimit : 0
     }
 
     ProgramExtents3D {
