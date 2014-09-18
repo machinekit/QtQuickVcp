@@ -74,6 +74,7 @@ void QPreviewClient::start()
         // do something
         m_statusSocket->subscribeTo("status");
         m_previewSocket->subscribeTo("preview");
+        updateState(Connected); //TODO: add something like a ping
     }
 }
 
@@ -101,11 +102,17 @@ void QPreviewClient::updateState(QPreviewClient::State state)
 
 void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString errorString)
 {
-    m_error = error;
-    m_errorString = errorString;
+    if (m_errorString != errorString)
+    {
+        m_errorString = errorString;
+        emit errorStringChanged(m_errorString);
+    }
 
-    emit errorStringChanged(m_errorString);
-    emit errorChanged(m_error);
+    if (m_error != error)
+    {
+        m_error = error;
+        emit errorChanged(m_error);
+    }
 }
 
 /** Processes all message received on the status 0MQ socket */

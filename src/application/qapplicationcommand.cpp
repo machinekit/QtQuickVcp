@@ -666,11 +666,17 @@ void QApplicationCommand::updateState(QApplicationCommand::State state)
 
 void QApplicationCommand::updateError(QApplicationCommand::ConnectionError error, const QString &errorString)
 {
-    m_error = error;
-    m_errorString = errorString;
+    if (m_errorString != errorString)
+    {
+        m_errorString = errorString;
+        emit errorStringChanged(m_errorString);
+    }
 
-    emit errorStringChanged(m_errorString);
-    emit errorChanged(m_error);
+    if (m_error != error)
+    {
+        m_error = error;
+        emit errorChanged(m_error);
+    }
 }
 
 void QApplicationCommand::sendCommandMessage(pb::ContainerType type)
