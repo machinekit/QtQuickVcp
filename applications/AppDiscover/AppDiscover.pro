@@ -23,6 +23,10 @@ ios: {
     LIBS += -lsodium -lzmq -lprotobuf
 }
 
+android: {
+    LIBS += -lmachinetalk-protobuf
+}
+
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 OTHER_FILES += \
