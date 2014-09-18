@@ -34,7 +34,6 @@ static const struct {
     { "ConnectionWindow", 1, 0 },
     { "ServiceWindow", 1, 0 },
     { "EstopAction", 1, 0 },
-    { "EstopButton", 1, 0 },
     { "PowerAction", 1, 0 },
     { "OpenAction", 1, 0 },
     { "ReopenAction", 1, 0 },
@@ -48,7 +47,9 @@ static const struct {
     { "JogStick", 1, 0 },
     { "DigitalReadOut", 1, 0 },
     { "FeedrateSlider", 1, 0 },
+    { "FeedrateHandler", 1, 0 },
     { "SpindlerateSlider", 1, 0 },
+    { "SpindlerateHandler", 1, 0 },
     { "MdiCommandAction", 1, 0 },
     { "JogAction", 1, 0 },
     { "SpindleCwAction", 1, 0 },
@@ -60,9 +61,13 @@ static const struct {
     { "MistAction", 1, 0 },
     { "FloodAction", 1, 0 },
     { "MaximumVelocitySlider", 1, 0 },
+    { "MaximumVelocityHandler", 1, 0 },
     { "TouchOffAction", 1, 0 },
     { "TouchOffDialog", 1, 0 },
-    { "GCodeLabel", 1, 0 }
+    { "GCodeLabel", 1, 0 },
+    { "JogVelocitySlider", 1, 0 },
+    { "UiSettings", 1, 0 },
+    { "UnhomeAxisAction", 1, 0 }
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)
@@ -75,7 +80,7 @@ void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {
         qmlRegisterType(QUrl(filesLocation + "/" + qmldir[i].type + ".qml"), uri, qmldir[i].major, qmldir[i].minor, qmldir[i].type);
-        }
+    }
 }
 
 void MachinekitApplicationControlsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)

@@ -17,7 +17,6 @@ RESOURCES += \
     applicationcontrols.qrc
 
 QML_FILES = \
-    EstopButton.qml \
     EstopAction.qml \
     PowerAction.qml \
     OpenAction.qml \
@@ -44,11 +43,18 @@ QML_FILES = \
     MistAction.qml \
     FloodAction.qml \
     MaximumVelocitySlider.qml \
+    MaximumVelocityHandler.qml \
     TouchOffAction.qml \
     TouchOffDialog.qml \
     GCodeLabel.qml \
     ConnectionWindow.qml \
-    ServiceWindow.qml
+    ServiceWindow.qml \
+    JogVelocitySlider.qml \
+    UiSettings.qml \
+    JogVelocityHandler.qml \
+    SpindlerateHandler.qml \
+    FeedrateHandler.qml \
+    UnhomeAxisAction.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \

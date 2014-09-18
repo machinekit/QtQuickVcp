@@ -50,13 +50,15 @@ Item {
 
 
     id: droRect
-    implicitWidth: dummyLabel.font.pixelSize * 14
-    implicitHeight: dummyLabel.font.pixelSize * 14
+    implicitWidth: positionLayout.width + dtgLayout.width + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
+    implicitHeight: positionLayout.height + g5xLayout.height + g92Layout.height + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
+    width: implicitWidth
+    height: implicitHeight
 
     Label {
         id: dummyLabel
         font.bold: true
-        font.pointSize: 10
+        //font.pointSize: 10
     }
 
     Component {
@@ -189,7 +191,7 @@ Item {
                     item.title = Qt.binding(function(){return droRect.axisNames[index]})
                     item.type = ""
                     item.value = Qt.binding(function(){return droRect.position[droRect._axisNames[index]]})
-                    item.homed = Qt.binding(function(){return droRect.axisHomed[index].homed})
+                    item.homed = Qt.binding(function(){return ((index < droRect.axisHomed.length) && droRect.axisHomed[index].homed)})
                 }
             }
         }
@@ -199,9 +201,11 @@ Item {
             onLoaded: {
                 item.title = "Vel:"
                 item.type = ""
+                item.homed = false
                 item.value = Qt.binding(function(){return droRect.velocity})
             }
-            active: !droRect.offsetsVisible
+            active: true
+            visible: !droRect.offsetsVisible
         }
     }
 

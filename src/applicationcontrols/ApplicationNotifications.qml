@@ -7,7 +7,7 @@ ListView {
     property int messageWidth: 100
 
     id: root
-    implicitWidth: 200
+    implicitWidth: 0
     implicitHeight: 200
     verticalLayoutDirection: ListView.BottomToTop
     model: notificationModel

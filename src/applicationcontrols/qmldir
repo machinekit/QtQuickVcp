@@ -8,7 +8,6 @@ typeinfo plugins.qmltypes
 ConnectionWindow 1.0 ConnectionWindow.qml
 ServiceWindow 1.0 ServiceWindow.qml
 EstopAction 1.0 EstopAction.qml
-EstopButton 1.0 EstopButton.qml
 PowerAction 1.0 PowerAction.qml
 OpenAction 1.0 OpenAction.qml
 ReopenAction 1.0 ReopenAction.qml
@@ -22,7 +21,9 @@ ApplicationFileDialog 1.0 ApplicationFileDialog.qml
 JogStick 1.0 JogStick.qml
 DigitalReadOut 1.0 DigitalReadOut.qml
 FeedrateSlider 1.0 FeedrateSlider.qml
+FeedrateHandler 1.0 FeedrateHandler.qml
 SpindlerateSlider 1.0 SpindlerateSlider.qml
+SpindlerateHandler 1.0 SpindlerateHandler.qml
 MdiCommandAction 1.0 MdiCommandAction.qml
 JogAction 1.0 JogAction.qml
 SpindleCwAction 1.0 SpindleCwAction.qml
@@ -33,7 +34,11 @@ DecreaseSpindleSpeedAction 1.0 DecreaseSpindleSpeedAction.qml
 HomeAxisAction 1.0 HomeAxisAction.qml
 MistAction 1.0 MistAction.qml
 FloodAction 1.0 FloodAction.qml
-MaximumVelocity 1.0 MaximumVelocitySlider.qml
+MaximumVelocitySlider 1.0 MaximumVelocitySlider.qml
+MaximumVelocityHandler 1.0 MaximumVelocityHandler.qml
 TouchOffAction 1.0 TouchOffAction.qml
 TouchOffDialog 1.0 TouchOffDialog.qml
 GCodeLabel 1.0 GCodeLabel.qml
+JogVelocitySlider 1.0 JogVelocitySlider.qml
+UiSettings 1.0 UiSettings.qml
+UnhomeAxisAction 1.0 UnhomeAxisAction.qml

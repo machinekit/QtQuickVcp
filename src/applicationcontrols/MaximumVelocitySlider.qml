@@ -1,36 +1,23 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
+import Machinekit.Application.Controls 1.0
 
 Slider {
-    property var status: {"synced": false}
-    property var command: {"connected": false}
+    property alias status: handler.status
+    property alias command: handler.command
+    property alias displayValue: handler.displayValue
+    property alias units: handler.units
 
-    property bool _ready: status.synced && command.connected
+    id: root
+    minimumValue: handler.minimumValue
+    maximumValue: handler.maximumValue
+    enabled: handler.enabled
 
-    minimumValue: _ready ? status.config.minVelocity : 0
-    maximumValue: _ready ? status.config.maxVelocity : 100
-    stepSize: 0.01
-    enabled: _ready
-
-
-    onValueChanged: {
-        if (_ready && (value !== status.config.velocity)) {
-            command.setMaximumVelocity(value)
-        }
+    MaximumVelocityHandler {
+        id: handler
     }
 
-    on_ReadyChanged: {
-        if (_ready) {
-            _update()
-            status.onConfigChanged.connect(_update)
-        }
-        else {
-            status.onConfigChanged.disconnect(_update)
-        }
-    }
-
-    function _update() {
-        value = status.config.velocity
-    }
+    Binding { target: root; property: "value"; value: handler.value }
+    Binding { target: handler; property: "value"; value: root.value }
 }
