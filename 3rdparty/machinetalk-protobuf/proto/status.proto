@@ -130,6 +130,7 @@ message EmcStatusConfigAxis {
     optional double         min_ferror          = 6;
     optional double         min_position_limit  = 7;
     optional double         units               = 8;
+    optional int32          home_sequence       = 9;
 }
 
 message EmcProgramExtension {
