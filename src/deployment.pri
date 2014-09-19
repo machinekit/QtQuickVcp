@@ -40,7 +40,7 @@ QMAKE_CLEAN += -r $$OUT_PWD/../../imports/$$TARGETPATH/
     copypluginqmltypes.CONFIG = no_files no_path
     copypluginqmltypes.extra = $$QMAKE_MKDIR $$[QT_INSTALL_QML]/$$TARGETPATH/ $$escape_expand(\n\t) \
                                $$QMAKE_COPY $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes $$[QT_INSTALL_QML]/$$TARGETPATH/plugins.qmltypes
-    copypluginqmltypes.path = none
+    #copypluginqmltypes.path = none
     INSTALLS += copypluginqmltypes
 }
 
