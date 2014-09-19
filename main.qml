@@ -37,6 +37,9 @@ Item {
     width: 500
     height: 700
     property string title: connectionWindow.title
+    property Item toolBar: connectionWindow.toolBar
+    property Item statusBar: connectionWindow.statusBar
+    property MenuBar menuBar: connectionWindow.menuBar
 
     ConnectionWindow {
         id: connectionWindow
