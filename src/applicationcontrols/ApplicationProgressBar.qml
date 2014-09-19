@@ -35,10 +35,10 @@ ProgressBar {
 
     function getProgress() {
         if (_mode == "upload") {
-            return applicationFile.progress
+            return file.progress
         }
         else if (_mode == "download") {
-            return applicationFile.progress
+            return file.progress
         }
         else {
             return 0.0
