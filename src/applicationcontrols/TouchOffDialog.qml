@@ -30,7 +30,7 @@ Dialog {
     onAccepted: {
         if (_ready && !_done) {
             if (status.task.taskMode !== ApplicationStatus.TaskModeMdi) {
-                command.setTaskMode(ApplicationCommand.TaskModeMdi)
+                command.setTaskMode('execute', ApplicationCommand.TaskModeMdi)
             }
             var axisName = _axisNames[axis]
             var position = status.motion.position[axisName] - status.motion.g92Offset[axisName] - status.io.toolOffset[axisName]
