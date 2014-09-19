@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/Machinekit/Application">
+        <file>ApplicationCore.qml</file>
+        <file>ApplicationSettings.qml</file>
+    </qresource>
+</RCC>

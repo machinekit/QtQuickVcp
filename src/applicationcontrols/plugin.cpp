@@ -66,7 +66,6 @@ static const struct {
     { "TouchOffDialog", 1, 0 },
     { "GCodeLabel", 1, 0 },
     { "JogVelocitySlider", 1, 0 },
-    { "UiSettings", 1, 0 },
     { "UnhomeAxisAction", 1, 0 }
 };
 
@@ -101,7 +100,7 @@ QString MachinekitApplicationControlsPlugin::fileLocation() const
 bool MachinekitApplicationControlsPlugin::isLoadedFromResource() const
 {
     // If one file is missing, it will load all the files from the resource
-    QFile file(baseUrl().toLocalFile() + "/EstopButton.qml");
+    QFile file(baseUrl().toLocalFile() + "/EstopAction.qml");
     if (!file.exists())
         return true;
     return false;

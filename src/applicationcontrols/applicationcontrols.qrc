@@ -31,7 +31,6 @@
         <file>GCodeLabel.qml</file>
         <file>ConnectionWindow.qml</file>
         <file>ServiceWindow.qml</file>
-        <file>UiSettings.qml</file>
         <file>JogVelocitySlider.qml</file>
         <file>MaximumVelocityHandler.qml</file>
         <file>FeedrateHandler.qml</file>

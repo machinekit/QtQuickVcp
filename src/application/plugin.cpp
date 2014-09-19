@@ -32,8 +32,23 @@
 
 #include <qqml.h>
 
+static void initResources()
+{
+    Q_INIT_RESOURCE(application);
+}
+
+static const struct {
+    const char *type;
+    int major, minor;
+} qmldir [] = {
+    { "ApplicationCore", 1, 0 },
+    { "ApplicationSettings", 1, 0 }
+};
+
 void MachinekitApplicationPlugin::registerTypes(const char *uri)
 {
+    initResources();
+
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -48,6 +63,35 @@ void MachinekitApplicationPlugin::registerTypes(const char *uri)
     qmlRegisterType<QApplicationError>(uri, 1, 0, "ApplicationError");
     qmlRegisterType<QApplicationFile>(uri, 1, 0, "ApplicationFile");
     qmlRegisterType<QLocalSettings>(uri, 1, 0, "LocalSettings");
+
+    const QString filesLocation = fileLocation();
+    for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {
+        qmlRegisterType(QUrl(filesLocation + "/" + qmldir[i].type + ".qml"), uri, qmldir[i].major, qmldir[i].minor, qmldir[i].type);
+    }
+}
+
+void MachinekitApplicationPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
+{
+    Q_UNUSED(uri);
+
+    if (isLoadedFromResource())
+        engine->addImportPath(QStringLiteral("qrc:/"));
+}
+
+QString MachinekitApplicationPlugin::fileLocation() const
+{
+    if (isLoadedFromResource())
+        return "qrc:/Machinekit/Application";
+    return baseUrl().toString();
+}
+
+bool MachinekitApplicationPlugin::isLoadedFromResource() const
+{
+    // If one file is missing, it will load all the files from the resource
+    QFile file(baseUrl().toLocalFile() + "/ApplicationCore.qml");
+    if (!file.exists())
+        return true;
+    return false;
 }
 
 

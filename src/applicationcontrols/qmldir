@@ -40,5 +40,4 @@ TouchOffAction 1.0 TouchOffAction.qml
 TouchOffDialog 1.0 TouchOffDialog.qml
 GCodeLabel 1.0 GCodeLabel.qml
 JogVelocitySlider 1.0 JogVelocitySlider.qml
-UiSettings 1.0 UiSettings.qml
 UnhomeAxisAction 1.0 UnhomeAxisAction.qml

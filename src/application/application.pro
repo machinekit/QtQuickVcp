@@ -33,7 +33,15 @@ HEADERS += \
     qapplicationfile.h \
     qlocalsettings.h
 
+RESOURCES += \
+    application.qrc
+
+QML_FILES = \
+    ApplicationCore.qml \
+    ApplicationSettings.qml
+
 QML_INFRA_FILES = \
+    $$QML_FILES \
     qmldir
 
 include(../deployment.pri)

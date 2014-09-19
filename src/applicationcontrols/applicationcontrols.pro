@@ -50,7 +50,6 @@ QML_FILES = \
     ConnectionWindow.qml \
     ServiceWindow.qml \
     JogVelocitySlider.qml \
-    UiSettings.qml \
     JogVelocityHandler.qml \
     SpindlerateHandler.qml \
     FeedrateHandler.qml \
