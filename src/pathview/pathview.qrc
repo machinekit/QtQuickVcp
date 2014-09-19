@@ -7,5 +7,6 @@
         <file>PathView3D.qml</file>
         <file>SourceView.qml</file>
         <file>GCodeSync.qml</file>
+        <file>PathViewCore.qml</file>
     </qresource>
 </RCC>

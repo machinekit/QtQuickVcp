@@ -47,6 +47,7 @@ static const struct {
     { "GCodeSync", 1, 0 },
     { "Grid3D", 1, 0 },
     { "PathView3D", 1, 0 },
+    { "PathViewCore", 1, 0 },
     { "ProgramExtents3D", 1, 0 },
     { "SourceView", 1, 0 }
 };

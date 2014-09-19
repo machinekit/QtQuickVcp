@@ -51,6 +51,7 @@ QML_FILES = \
     GCodeSync.qml \
     Grid3D.qml \
     PathView3D.qml \
+    PathViewCore.qml \
     ProgramExtents3D.qml \
     SourceView.qml
 
