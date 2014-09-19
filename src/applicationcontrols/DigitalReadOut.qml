@@ -6,6 +6,7 @@ import Machinekit.Application 1.0
 
 Item {
     property var status: {"synced": false}
+    property var settings: {"initialized": false}
     property alias textColor: dummyLabel.color
     property alias font: dummyLabel.font
     property int decimals: 4
@@ -22,7 +23,7 @@ Item {
     property var g92Offset: _ready ? status.motion.g92Offset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
     property var toolOffset: _ready ? status.io.toolOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
     property double velocity: _ready ? status.motion.currentVel : 15.4
-    property bool offsetsVisible: true
+    property bool offsetsVisible: settings.initialized && settings.values.dro.showOffsets
     property int positionFeedback: _ready ? status.config.positionFeedback : ApplicationStatus.ActualPositionFeedback
     property int positionOffset: _ready ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
 
@@ -47,7 +48,6 @@ Item {
 
         return basePosition
     }
-
 
     id: droRect
     implicitWidth: positionLayout.width + dtgLayout.width + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
