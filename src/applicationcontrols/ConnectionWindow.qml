@@ -167,6 +167,33 @@ Rectangle {
     */
     property list<ApplicationDescription> applications
 
+    /*!
+        \qmlproperty Item toolBar
+
+        This property holds the toolbar \l Item.
+
+        This property is set by the connection window.
+    */
+    property Item toolBar
+
+    /*!
+        \qmlproperty Item statusBar
+
+        This property holds the status bar \l Item.
+
+        This property is set by the connection window.
+    */
+    property Item statusBar
+
+    /*!
+        \qmlproperty MenuBar menuBar
+
+        This property holds the \l MenuBar.
+
+        This property is set by the connection window.
+    */
+    property MenuBar menuBar
+
     id: mainWindow
 
     color: systemPalette.window
@@ -679,13 +706,29 @@ Rectangle {
             }
 
             onLoaded: {
-                console.log("Window " + applicationLoader.item.name + " loaded")
+                console.log("Window " + applicationLoader.item.title + " loaded")
                 applicationServiceList.services = Qt.binding(
                             function()
                             {
                                 return (((applicationLoader.item != null) && (applicationLoader.item.services !== undefined)) ? applicationLoader.item.services : [])
                             })
+                mainWindow.toolBar = Qt.binding(
+                            function()
+                            {
+                                return ((applicationLoader.item != null) ? applicationLoader.item.toolBar : null)
+                            })
+                mainWindow.statusBar = Qt.binding(
+                            function()
+                            {
+                                return ((applicationLoader.item != null) ? applicationLoader.item.statusBar : null)
+                            })
+                mainWindow.menuBar = Qt.binding(
+                            function()
+                            {
+                                return ((applicationLoader.item != null) ? applicationLoader.item.menuBar : null)
+                            })
                 serviceDiscovery.updateServices()
+                applicationLoader.item.onServicesChanged.connect(serviceDiscovery.updateServices)
             }
         }
     }

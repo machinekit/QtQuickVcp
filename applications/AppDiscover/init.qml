@@ -8,6 +8,9 @@ ApplicationWindow {
     width: 500
     height: 700
     title: (mainAppLoader.item != undefined) ? mainAppLoader.item.title : "Loading"
+    toolBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.toolBar : null
+    statusBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.statusBar : null
+    menuBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.menuBar : null
 
     // Loaders for the main application and the splash screen.
     Loader {

@@ -21,6 +21,39 @@ Rectangle {
     */
     property var services: []
 
+    /*!
+        \qmlproperty Item toolBar
+
+        This property holds the toolbar \l Item.
+
+        It can be set to any Item type, but is generally used with \l ToolBar.
+
+        By default, this value is not set. When you set the toolbar item, it will
+        be anchored automatically into the application window.
+    */
+    property Item toolBar
+
+    /*!
+        \qmlproperty Item statusBar
+
+        This property holds the status bar \l Item.
+
+        It can be set to any Item type, but is generally used with \l StatusBar.
+
+        By default, this value is not set. When you set the status bar item, it
+        will be anchored automatically into the application window.
+    */
+    property Item statusBar
+
+    /*!
+        \qmlproperty MenuBar menuBar
+
+        This property holds the \l MenuBar.
+
+        By default, this value is not set.
+    */
+    property MenuBar menuBar
+
     /*! \internal */
     property var _requiredServices: {
         var required = []
@@ -58,7 +91,7 @@ Rectangle {
                 if (objects[i].objectName === name) {
                     list.push(objects[i])
                 }
-                var nestedList = _recurseObjects(objects[i].data)
+                var nestedList = _recurseObjects(objects[i].data, name)
                 if (nestedList.length > 0) {
                     list = list.concat(nestedList)
                 }
