@@ -23,6 +23,7 @@ class QPreviewClient : public QQuickItem
     Q_PROPERTY(QString previewUri READ previewUri WRITE setPreviewUri NOTIFY previewUriChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
+    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
@@ -104,6 +105,11 @@ public:
         return m_interpreterNote;
     }
 
+    bool isConnected() const
+    {
+        return m_connected;
+    }
+
 public slots:
 
     void setStatusUri(QString arg)
@@ -141,11 +147,12 @@ private:
     QString m_statusUri;
     QString m_previewUri;
     bool    m_ready;
-    State       m_connectionState;
-    ConnectionError       m_error;
-    QString m_errorString;
-    QGCodeProgramModel * m_model;
-    InterpreterState m_interpreterState;
+    State   m_connectionState;
+    bool    m_connected;
+    ConnectionError     m_error;
+    QString             m_errorString;
+    QGCodeProgramModel *m_model;
+    InterpreterState    m_interpreterState;
     QString m_interpreterNote;
     bool    m_componentCompleted;
 
@@ -181,6 +188,7 @@ signals:
     void modelChanged(QGCodeProgramModel * arg);
     void interpreterStateChanged(InterpreterState arg);
     void interpreterNoteChanged(QString arg);
+    void connectedChanged(bool arg);
 };
 
 #endif // QPREVIEWCLIENT_H

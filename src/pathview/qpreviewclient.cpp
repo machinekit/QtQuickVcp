@@ -7,6 +7,7 @@ QPreviewClient::QPreviewClient(QQuickItem *parent) :
     m_previewUri(""),
     m_ready(false),
     m_connectionState(Disconnected),
+    m_connected(false),
     m_error(NoError),
     m_errorString(""),
     m_model(NULL),
@@ -95,6 +96,11 @@ void QPreviewClient::updateState(QPreviewClient::State state)
 {
     if (state != m_connectionState)
     {
+        if (m_connected != (state == Connected)) {
+            m_connected = (state == Connected);
+            emit connectedChanged(m_connected);
+        }
+
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
     }
