@@ -252,8 +252,16 @@ Item {
 
         onWheel: {
             var sign = (wheel.angleDelta.y < 0) ? -1 : 1
-            timeSpan *= (1-sign*scrollZoomFactor)
-            showMessage(qsTr("Timespan: ") + timeSpan + "ms")
+            var tempTimeSpan = timeSpan * (1-sign*scrollZoomFactor)
+            if (tempTimeSpan > 1000) {
+                tempTimeSpan = Math.round(tempTimeSpan / 1000) * 1000
+                showMessage(qsTr("Timespan: ") + (tempTimeSpan / 1000) + "s")
+            }
+            else {
+                showMessage(qsTr("Timespan: ") + tempTimeSpan + "ms")
+            }
+
+            timeSpan = tempTimeSpan
         }
     }
     Label {
@@ -271,14 +279,16 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: leftText.anchors.leftMargin
         anchors.top: parent.top
+        height: (leftText.visible || rightText.visible) ? implicitHeight : 0    // hides top bar if no label visible
         text: qsTr("Target: <br>") + "<b>" + chart.prefix + ((valueModel != null) ? valueModel.targetValue.toFixed(chart.decimals) : 0) + chart.suffix + "</b>"
     }
 
     Label {
         id: messageText
-        color: chart.textColor
+        color: (rightText.height == 0) ? chart.signalColor : chart.textColor
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
+        z: canvas.z + 1
         text: "<b>" + "blablabla" + "</b>"
         font.bold: true
         visible: false
