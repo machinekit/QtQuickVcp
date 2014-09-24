@@ -111,27 +111,28 @@ void QApplicationStatus::updateState(QApplicationStatus::State state)
 {
     if (state != m_connectionState)
     {
-        if (m_connectionState == Connected) // we are not connected anymore
+        if (m_connected) // we are not connected anymore
         {
             stopStatusHeartbeat();
             clearSync();
-            if (m_connected != false) {
-                m_connected = false;
-                emit connectedChanged(false);
-            }
-            initializeObject(MotionChannel);
-            initializeObject(ConfigChannel);
-            initializeObject(IoChannel);
-            initializeObject(TaskChannel);
-            initializeObject(InterpChannel);
+            m_connected = false;
+            emit connectedChanged(false);
         }
-        else if (m_connected != true) {
+        else if (state == Connected) {
             m_connected = true;
             emit connectedChanged(true);
         }
 
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
+
+        if (!m_connected) {
+            initializeObject(MotionChannel);
+            initializeObject(ConfigChannel);
+            initializeObject(IoChannel);
+            initializeObject(TaskChannel);
+            initializeObject(InterpChannel);
+        }
     }
 }
 
