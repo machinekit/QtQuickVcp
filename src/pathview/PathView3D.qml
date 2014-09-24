@@ -1,10 +1,11 @@
 import QtQuick 2.0
 import QtQuick.Window 2.0
+import Machinekit.Application 1.0
 import Machinekit.PathView 1.0
 
 GLView3D {
-    property var status: {"synced": false}
-    property alias model: path.model
+    property alias status: object.status
+    property alias model: pathViewObject.gcodeProgramModel
     property var colors: {
         "tool_diffuse": Qt.rgba(0.6, 0.6, 0.6, 1.0),
         "tool_ambient": Qt.rgba(0.4, 0.4, 0.4, 0.5),
@@ -85,6 +86,14 @@ GLView3D {
         attenuation: 0.01
     }
 
+    ApplicationObject {
+        id: object
+    }
+
+    PathViewObject {
+        id: pathViewObject
+    }
+
     Sphere3D {
         id: smallOrigin
         radius: 0.05
@@ -156,6 +165,7 @@ GLView3D {
         straightFeedColor: pathView.colors["straight_feed"]
         traverseColor: pathView.colors["traverse"]
         selectedColor: pathView.colors["selected"]
+        model: pathView.model
     }
 
     PinchArea {

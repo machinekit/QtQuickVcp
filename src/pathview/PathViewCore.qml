@@ -3,11 +3,7 @@ import Machinekit.Service 1.0
 import Machinekit.PathView 1.0
 import Machinekit.Application 1.0
 
-Item {
-    property var status: {"synced": false}
-    property var command: {"connected": false}
-    property var file: {"localPath":"", "remotePath":"", "localFilePath":"", "ready":false}
-    property var settings: {"initialized": false}
+ApplicationItem {
     property alias gcodeProgramModel: gcodeProgramModel
     property alias gcodeProgramLoader: gcodeProgramLoader
 

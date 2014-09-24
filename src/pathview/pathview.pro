@@ -52,6 +52,7 @@ QML_FILES = \
     Grid3D.qml \
     PathView3D.qml \
     PathViewCore.qml \
+    PathViewObject.qml \
     ProgramExtents3D.qml \
     SourceView.qml
 
