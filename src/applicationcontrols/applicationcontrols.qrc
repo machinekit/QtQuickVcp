@@ -37,6 +37,8 @@
         <file>SpindlerateHandler.qml</file>
         <file>JogVelocityHandler.qml</file>
         <file>UnhomeAxisAction.qml</file>
+        <file>MdiHistoryTable.qml</file>
+        <file>MdiCommandEdit.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/Application/Controls/icons">
         <file alias="process-stop">icons/process-stop.png</file>

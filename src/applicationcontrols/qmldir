@@ -41,3 +41,5 @@ TouchOffDialog 1.0 TouchOffDialog.qml
 GCodeLabel 1.0 GCodeLabel.qml
 JogVelocitySlider 1.0 JogVelocitySlider.qml
 UnhomeAxisAction 1.0 UnhomeAxisAction.qml
+MdiHistoryTable 1.0 MdiHistoryTable.qml
+MdiCommandEdit 1.0 MdiCommandEdit.qml

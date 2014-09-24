@@ -53,7 +53,9 @@ QML_FILES = \
     JogVelocityHandler.qml \
     SpindlerateHandler.qml \
     FeedrateHandler.qml \
-    UnhomeAxisAction.qml
+    UnhomeAxisAction.qml \
+    MdiHistoryTable.qml \
+    MdiCommandEdit.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \

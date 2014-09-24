@@ -66,7 +66,9 @@ static const struct {
     { "TouchOffDialog", 1, 0 },
     { "GCodeLabel", 1, 0 },
     { "JogVelocitySlider", 1, 0 },
-    { "UnhomeAxisAction", 1, 0 }
+    { "UnhomeAxisAction", 1, 0 },
+    { "MdiHistoryTable", 1, 0 },
+    { "MdiCommandEdit", 1, 0 }
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)
