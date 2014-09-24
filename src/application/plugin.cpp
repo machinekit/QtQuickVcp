@@ -41,8 +41,12 @@ static const struct {
     const char *type;
     int major, minor;
 } qmldir [] = {
+    { "ApplicationAction", 1, 0 },
     { "ApplicationCore", 1, 0 },
-    { "ApplicationSettings", 1, 0 }
+    { "ApplicationItem", 1, 0 },
+    { "ApplicationObject", 1, 0 },
+    { "ApplicationSettings", 1, 0 },
+    { "MdiHistory", 1, 0 }
 };
 
 void MachinekitApplicationPlugin::registerTypes(const char *uri)

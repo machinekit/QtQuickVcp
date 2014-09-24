@@ -20,6 +20,7 @@ LocalSettings {
                 setValue("axis" + i + ".jogVelocity", status.config.defaultVelocity, false)
             }
             setValue("dro.showOffsets", false, false)
+            setValue("mdi.history", [], false)
             initialized = true
         }
     }

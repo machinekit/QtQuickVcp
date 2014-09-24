@@ -8,6 +8,7 @@ Item {
     property ApplicationFile file: applicationFile //{""}
     property ApplicationError error: applicationError //{"connected": false}
     property ApplicationSettings settings: uiSettings //{"initialized": false}
+    property MdiHistory mdiHistory: mdiHistory
     property Item notifications: null
 
     id: applicationCore
@@ -125,5 +126,10 @@ Item {
     ApplicationSettings {
         id: uiSettings
         status: applicationStatus
+    }
+
+    MdiHistory {
+        id: mdiHistory
+        settings: uiSettings
     }
 }

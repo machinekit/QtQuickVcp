@@ -37,8 +37,12 @@ RESOURCES += \
     application.qrc
 
 QML_FILES = \
+    ApplicationAction.qml \
     ApplicationCore.qml \
-    ApplicationSettings.qml
+    ApplicationItem.qml \
+    ApplicationObject.qml \
+    ApplicationSettings.qml \
+    MdiHistory.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \
