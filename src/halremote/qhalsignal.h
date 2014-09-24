@@ -57,53 +57,12 @@ public:
     }
 
 public slots:
-    void setName(QString arg)
-    {
-        if (m_name != arg) {
-            m_name = arg;
-            emit nameChanged(arg);
-        }
-    }
-
-    void setType(ValueType arg)
-    {
-        if (m_type != arg) {
-            m_type = arg;
-            emit typeChanged(arg);
-        }
-    }
-
-    void setValue(QVariant arg)
-    {
-        if ((m_value != arg) || (m_value.type() != arg.type())) {
-            m_value = arg;
-            emit valueChanged(arg);
-        }
-    }
-
-    void setHandle(int arg)
-    {
-        if (m_handle != arg) {
-            m_handle = arg;
-            emit handleChanged(arg);
-        }
-    }
-
-    void setEnabled(bool arg)
-    {
-        if (m_enabled != arg) {
-            m_enabled = arg;
-            emit enabledChanged(arg);
-        }
-    }
-
-    void setSynced(bool arg)
-    {
-        if (m_synced != arg) {
-            m_synced = arg;
-            emit syncedChanged(arg);
-        }
-    }
+    void setName(QString arg);
+    void setType(ValueType arg);
+    void setValue(QVariant arg);
+    void setHandle(int arg);
+    void setEnabled(bool arg);
+    void setSynced(bool arg);
 
 signals:
     void nameChanged(QString arg);

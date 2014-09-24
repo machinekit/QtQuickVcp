@@ -102,69 +102,13 @@ signals:
 
 public slots:
 
-void setType(ValueType arg)
-{
-    if (m_type != arg) {
-        m_type = arg;
-        emit typeChanged(arg);
-    }
-}
-void setName(QString arg)
-{
-    if (m_name != arg) {
-        m_name = arg;
-        emit nameChanged(arg);
-    }
-}
-void setDirection(HalPinDirection arg)
-{
-    if (m_direction != arg) {
-        m_direction = arg;
-        emit directionChanged(arg);
-    }
-}
-void setValue(QVariant arg, bool synced = false)
-{
-    if ((m_value != arg) || (m_value.type() != arg.type())) {
-        m_value = arg;
-        emit valueChanged(arg);
-    }
-
-    if (synced == true) {
-        m_syncValue = arg;  // save the sync point
-    } else if (arg == m_syncValue) {
-        synced = true;  // if value is same as sync point synced is always true
-    }
-
-    if (m_synced != synced) {
-        m_synced = synced;
-        emit syncedChanged(synced);
-    }
-}
-
-void setHandle(int arg)
-{
-    if (m_handle != arg) {
-        m_handle = arg;
-        emit handleChanged(arg);
-    }
-}
-
-void setEnabled(bool arg)
-{
-    if (m_enabled != arg) {
-        m_enabled = arg;
-        emit enabledChanged(arg);
-    }
-}
-
-void setSynced(bool arg)
-{
-    if (m_synced != arg) {
-        m_synced = arg;
-        emit syncedChanged(arg);
-    }
-}
+void setType(ValueType arg);
+void setName(QString arg);
+void setDirection(HalPinDirection arg);
+void setValue(QVariant arg, bool synced = false);
+void setHandle(int arg);
+void setEnabled(bool arg);
+void setSynced(bool arg);
 
 private:
     QString         m_name;

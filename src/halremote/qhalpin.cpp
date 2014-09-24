@@ -134,3 +134,86 @@ QHalPin::QHalPin(QObject *parent) :
     m_synced(false)
 {
 }
+
+void QHalPin::setType(QHalPin::ValueType arg)
+{
+    if (m_type != arg) {
+        m_type = arg;
+        emit typeChanged(arg);
+
+        switch (m_type) {
+        case Bit:
+            m_value = m_value.toBool();
+            break;
+        case Float:
+            m_value = m_value.toDouble();
+            break;
+        case S32:
+            m_value = m_value.toInt();
+            break;
+        case U32:
+            m_value = m_value.toUInt();
+            break;
+        }
+        emit valueChanged(m_value);
+    }
+}
+
+void QHalPin::setName(QString arg)
+{
+    if (m_name != arg) {
+        m_name = arg;
+        emit nameChanged(arg);
+    }
+}
+
+void QHalPin::setDirection(QHalPin::HalPinDirection arg)
+{
+    if (m_direction != arg) {
+        m_direction = arg;
+        emit directionChanged(arg);
+    }
+}
+
+void QHalPin::setValue(QVariant arg, bool synced)
+{
+    if ((m_value != arg) || (m_value.type() != arg.type())) {
+        m_value = arg;
+        emit valueChanged(arg);
+    }
+
+    if (synced == true) {
+        m_syncValue = arg;  // save the sync point
+    } else if (arg == m_syncValue) {
+        synced = true;  // if value is same as sync point synced is always true
+    }
+
+    if (m_synced != synced) {
+        m_synced = synced;
+        emit syncedChanged(synced);
+    }
+}
+
+void QHalPin::setHandle(int arg)
+{
+    if (m_handle != arg) {
+        m_handle = arg;
+        emit handleChanged(arg);
+    }
+}
+
+void QHalPin::setEnabled(bool arg)
+{
+    if (m_enabled != arg) {
+        m_enabled = arg;
+        emit enabledChanged(arg);
+    }
+}
+
+void QHalPin::setSynced(bool arg)
+{
+    if (m_synced != arg) {
+        m_synced = arg;
+        emit syncedChanged(arg);
+    }
+}
