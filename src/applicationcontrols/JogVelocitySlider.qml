@@ -4,6 +4,7 @@ import Machinekit.Application 1.0
 import Machinekit.Application.Controls 1.0
 
 Slider {
+    property alias core: handler.core
     property alias status: handler.status
     property alias settings: handler.settings
     property alias axis: handler.axis

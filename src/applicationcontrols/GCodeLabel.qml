@@ -3,7 +3,8 @@ import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
 
 Label {
-    property var status: {"synced": false}
+    property alias core: object.core
+    property alias status: object.status
 
     property bool _ready: status.synced
     property var _mcodes: _ready ? status.interp.mcodes : []
@@ -23,5 +24,9 @@ Label {
             }
         }
         return gcodes + mcodes
+    }
+
+    ApplicationObject {
+        id: object
     }
 }

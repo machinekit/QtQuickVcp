@@ -4,9 +4,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
 import Machinekit.Application 1.0
 
-Item {
-    property var status: {"synced": false}
-    property var settings: {"initialized": false}
+ApplicationItem {
     property alias textColor: dummyLabel.color
     property alias font: dummyLabel.font
     property int decimals: 4

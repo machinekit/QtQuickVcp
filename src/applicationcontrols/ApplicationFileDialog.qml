@@ -3,8 +3,9 @@ import QtQuick.Dialogs 1.2
 import Machinekit.Application 1.0
 
 FileDialog {
-    property var file
-    property var status
+    property var core: null
+    property var status: core === null ? {"synced": false} : core.status
+    property var file: core === null ? {"localPath":"", "remotePath":"", "localFilePath":"", "ready":false} : core.file
 
     id: fileDialog
     title: qsTr("Please choose a file")
@@ -17,7 +18,7 @@ FileDialog {
         var filters = []
         var allExtensions = ["*.ngc"]
 
-        if ((status !== undefined) && (status.config.programExtension !== undefined))
+        if ((status.synced) && (status.config.programExtension !== undefined))
         {
             for (var i = 0; i < status.config.programExtension.length; ++i)
             {
@@ -39,5 +40,17 @@ FileDialog {
         filters.push(qsTr("rs274ngc files") + " (*.ngc)")
         filters.push(qsTr("All files") + " (*)")
         return filters
+    }
+
+    Component.onCompleted: {
+        if (core == null)
+        {
+            try {
+                var x = applicationCore
+                core = Qt.binding(function() {return x})
+            }
+            catch (err) {
+            }
+        }
     }
 }

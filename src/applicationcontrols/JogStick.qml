@@ -3,8 +3,9 @@ import Machinekit.Controls 1.0
 import Machinekit.Application 1.0
 
 VirtualJoystick {
-    property var status: {"synced": false}
-    property var command: {"connected": false}
+    property alias core: object.core
+    property alias status: object.status
+    property alias command: object.command
     property int xAxis: 0
     property int yAxis: 1
 
@@ -32,4 +33,8 @@ VirtualJoystick {
     onXValueChanged: _jog(xAxis, xValue)
 
     onYValueChanged: _jog(yAxis, yValue)
+
+    ApplicationObject {
+        id: object
+    }
 }

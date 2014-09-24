@@ -2,8 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
 
-Action {
-    property var file: {"ready" : false}
+ApplicationAction {
     property var fileDialog
 
     property bool _ready: file.ready && (file.transferState === ApplicationFile.NoTransfer)

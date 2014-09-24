@@ -3,7 +3,8 @@ import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
 
 ProgressBar {
-    property var file
+    property alias core: object.core
+    property alias file: object.file
     property string _mode: getMode()
 
     id: progressBar
@@ -66,5 +67,9 @@ ProgressBar {
         onClicked: {
             parent.file.abort()
         }
+    }
+
+    ApplicationObject {
+        id: object
     }
 }

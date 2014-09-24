@@ -5,8 +5,9 @@ import QtQuick.Dialogs 1.2
 import Machinekit.Application 1.0
 
 Dialog {
-    property var status: {"synced": false}
-    property var command: {"connected": false}
+    property alias core: object.core
+    property alias status: object.status
+    property alias command: object.command
     property int axis: 0
     property var axisNames: ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
     property var _axisNames: ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
@@ -72,5 +73,9 @@ Dialog {
                 }
             }
         }
+    }
+
+    ApplicationObject {
+        id: object
     }
 }
