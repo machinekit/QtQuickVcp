@@ -52,6 +52,8 @@ static const struct {
     { "SpindlerateHandler", 1, 0 },
     { "MdiCommandAction", 1, 0 },
     { "JogAction", 1, 0 },
+    { "JogButton", 1, 0 },
+    { "JogDistanceComboBox", 1, 0 },
     { "SpindleCwAction", 1, 0 },
     { "SpindleCcwAction", 1, 0 },
     { "StopSpindleAction", 1, 0 },
@@ -68,7 +70,9 @@ static const struct {
     { "JogVelocitySlider", 1, 0 },
     { "UnhomeAxisAction", 1, 0 },
     { "MdiHistoryTable", 1, 0 },
-    { "MdiCommandEdit", 1, 0 }
+    { "MdiCommandEdit", 1, 0 },
+    { "AxisRadioGroup", 1, 0 },
+    { "AxisComboBox", 1, 0 }
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)

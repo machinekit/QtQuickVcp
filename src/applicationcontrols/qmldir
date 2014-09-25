@@ -26,6 +26,8 @@ SpindlerateSlider 1.0 SpindlerateSlider.qml
 SpindlerateHandler 1.0 SpindlerateHandler.qml
 MdiCommandAction 1.0 MdiCommandAction.qml
 JogAction 1.0 JogAction.qml
+JogButton 1.0 JogButton.qml
+JogDistanceComboBox 1.0 JogDistanceComboBox.qml
 SpindleCwAction 1.0 SpindleCwAction.qml
 SpindleCcwAction 1.0 SpindleCcwAction.qml
 StopSpindleAction 1.0 StopSpindleAction.qml
@@ -43,3 +45,5 @@ JogVelocitySlider 1.0 JogVelocitySlider.qml
 UnhomeAxisAction 1.0 UnhomeAxisAction.qml
 MdiHistoryTable 1.0 MdiHistoryTable.qml
 MdiCommandEdit 1.0 MdiCommandEdit.qml
+AxisRadioGroup 1.0 AxisRadioGroup.qml
+AxisComboBox 1.0 AxisComboBox.qml

@@ -34,6 +34,8 @@ QML_FILES = \
     SpindlerateSlider.qml \
     MdiCommandAction.qml \
     JogAction.qml \
+    JogButton.qml \
+    JogDistanceComboBox.qml \
     SpindleCwAction.qml \
     SpindleCcwAction.qml \
     StopSpindleAction.qml \
@@ -55,7 +57,9 @@ QML_FILES = \
     FeedrateHandler.qml \
     UnhomeAxisAction.qml \
     MdiHistoryTable.qml \
-    MdiCommandEdit.qml
+    MdiCommandEdit.qml \
+    AxisRadioGroup.qml \
+    AxisComboBox.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \
