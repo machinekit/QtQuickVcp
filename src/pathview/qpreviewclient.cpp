@@ -1,11 +1,10 @@
 #include "qpreviewclient.h"
 #include "debughelper.h"
 
-QPreviewClient::QPreviewClient(QQuickItem *parent) :
-    QQuickItem(parent),
+QPreviewClient::QPreviewClient(QObject *parent) :
+    AbstractServiceImplementation(parent),
     m_statusUri(""),
     m_previewUri(""),
-    m_ready(false),
     m_connectionState(Disconnected),
     m_connected(false),
     m_error(NoError),
@@ -13,7 +12,6 @@ QPreviewClient::QPreviewClient(QQuickItem *parent) :
     m_model(NULL),
     m_interpreterState(InterpreterStateUnset),
     m_interpreterNote(""),
-    m_componentCompleted(false),
     m_context(NULL),
     m_statusSocket(NULL),
     m_previewSocket(NULL),
@@ -26,41 +24,6 @@ QPreviewClient::QPreviewClient(QQuickItem *parent) :
 QPreviewClient::~QPreviewClient()
 {
     disconnectSockets();
-}
-
-/** componentComplete is executed when the QML component is fully loaded */
-void QPreviewClient::componentComplete()
-{
-    m_componentCompleted = true;
-
-    if (m_ready == true)    // the component was set to ready before it was completed
-    {
-        start();
-    }
-
-    QQuickItem::componentComplete();
-}
-
-void QPreviewClient::setReady(bool arg)
-{
-    if (m_ready != arg) {
-        m_ready = arg;
-        emit readyChanged(arg);
-
-        if (m_componentCompleted == false)
-        {
-            return;
-        }
-
-        if (m_ready)
-        {
-            start();
-        }
-        else
-        {
-            stop();
-        }
-    }
 }
 
 void QPreviewClient::start()

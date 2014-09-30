@@ -1,7 +1,7 @@
 #ifndef QPREVIEWCLIENT_H
 #define QPREVIEWCLIENT_H
 
-#include <QQuickItem>
+#include <abstractserviceimplementation.h>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
 #include "message.pb.h"
@@ -15,13 +15,12 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QPreviewClient : public QQuickItem
+class QPreviewClient : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString statusUri READ statusUri WRITE setStatusUri NOTIFY statusUriChanged)
     Q_PROPERTY(QString previewUri READ previewUri WRITE setPreviewUri NOTIFY previewUriChanged)
-    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
@@ -32,7 +31,7 @@ class QPreviewClient : public QQuickItem
     Q_ENUMS(State ConnectionError InterpreterState)
 
 public:
-    explicit QPreviewClient(QQuickItem *parent = 0);
+    explicit QPreviewClient(QObject *parent = 0);
     ~QPreviewClient();
 
     enum State {
@@ -58,8 +57,6 @@ public:
         InterpreterStateUnset = pb::INTERP_STATE_UNSET
     };
 
-    virtual void componentComplete();
-
     QString statusUri() const
     {
         return m_statusUri;
@@ -68,11 +65,6 @@ public:
     QString previewUri() const
     {
         return m_previewUri;
-    }
-
-    bool ready() const
-    {
-        return m_ready;
     }
 
     State connectionState() const
@@ -128,8 +120,6 @@ public slots:
         }
     }
 
-    void setReady(bool arg);
-
     void setModel(QGCodeProgramModel * arg)
     {
         if (m_model != arg) {
@@ -146,7 +136,6 @@ private:
 
     QString m_statusUri;
     QString m_previewUri;
-    bool    m_ready;
     State   m_connectionState;
     bool    m_connected;
     ConnectionError     m_error;
@@ -154,7 +143,6 @@ private:
     QGCodeProgramModel *m_model;
     InterpreterState    m_interpreterState;
     QString m_interpreterNote;
-    bool    m_componentCompleted;
 
     PollingZMQContext *m_context;
     ZMQSocket  *m_statusSocket;
@@ -181,7 +169,6 @@ private slots:
 signals:
     void statusUriChanged(QString arg);
     void previewUriChanged(QString arg);
-    void readyChanged(bool arg);
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
