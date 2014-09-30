@@ -1,17 +1,15 @@
 #include "qapplicationcommand.h"
 #include "debughelper.h"
 
-QApplicationCommand::QApplicationCommand(QQuickItem *parent) :
-    QQuickItem(parent),
+QApplicationCommand::QApplicationCommand(QObject *parent) :
+    AbstractServiceImplementation(parent),
     m_commandUri(""),
     m_heartbeatPeriod(3000),
-    m_ready(false),
     m_connected(false),
     m_cState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
-    m_componentCompleted(false),
     m_context(NULL),
     m_commandSocket(NULL),
     m_commandHeartbeatTimer(new QTimer(this)),
@@ -24,44 +22,6 @@ QApplicationCommand::QApplicationCommand(QQuickItem *parent) :
 QApplicationCommand::~QApplicationCommand()
 {
     disconnectSockets();
-}
-
-/** componentComplete is executed when the QML component is fully loaded */
-void QApplicationCommand::componentComplete()
-{
-    m_componentCompleted = true;
-
-    if (m_ready == true)    // the component was set to ready before it was completed
-    {
-        start();
-    }
-
-    QQuickItem::componentComplete();
-}
-
-/** If the ready property has a rising edge we try to connect
- *  if it is has a falling edge we disconnect and cleanup
- */
-void QApplicationCommand::setReady(bool arg)
-{
-    if (m_ready != arg) {
-        m_ready = arg;
-        emit readyChanged(arg);
-
-        if (m_componentCompleted == false)
-        {
-            return;
-        }
-
-        if (m_ready)
-        {
-            start();
-        }
-        else
-        {
-            stop();
-        }
-    }
 }
 
 void QApplicationCommand::abort(const QString &interpreter)

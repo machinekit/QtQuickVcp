@@ -1,18 +1,16 @@
 #include "qapplicationfile.h"
 
-QApplicationFile::QApplicationFile(QQuickItem *parent) :
-    QQuickItem(parent),
+QApplicationFile::QApplicationFile(QObject *parent) :
+    AbstractServiceImplementation(parent),
     m_uri(""),
     m_localFilePath(""),
     m_remoteFilePath(""),
     m_localPath(""),
     m_remotePath(""),
-    m_ready(false),
     m_transferState(NoTransfer),
     m_error(NoError),
     m_errorString(""),
     m_progress(0.0),
-    m_componentCompleted(false),
     m_networkManager(NULL),
     m_reply(NULL),
     m_file(NULL)
@@ -30,21 +28,13 @@ QApplicationFile::~QApplicationFile()
     m_networkManager->deleteLater();
 }
 
-/** componentComplete is executed when the QML component is fully loaded */
-void QApplicationFile::componentComplete()
-{
-    m_componentCompleted = true;
-
-    QQuickItem::componentComplete();
-}
-
 void QApplicationFile::startUpload()
 {
     QUrl url;
     QFileInfo fileInfo(QUrl(m_localFilePath).toLocalFile());
     QString remotePath;
 
-    if (!m_ready || (m_transferState != NoTransfer))
+    if (!ready() || (m_transferState != NoTransfer))
     {
         return;
     }
@@ -82,7 +72,7 @@ void QApplicationFile::startDownload()
     QString remotePath;
     QString fileName;
 
-    if (!m_ready || (m_transferState != NoTransfer))
+    if (!ready() || (m_transferState != NoTransfer))
     {
         return;
     }

@@ -1,17 +1,15 @@
 #include "qapplicationerror.h"
 #include "debughelper.h"
 
-QApplicationError::QApplicationError(QQuickItem *parent) :
-    QQuickItem(parent),
+QApplicationError::QApplicationError(QObject *parent) :
+    AbstractServiceImplementation(parent),
     m_errorUri(""),
-    m_ready(false),
     m_connected(false),
     m_sState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
     m_channels(ErrorChannel | TextChannel | DisplayChannel),
-    m_componentCompleted(false),
     m_context(NULL),
     m_errorSocket(NULL),
     m_errorHeartbeatTimer(new QTimer(this)),
@@ -26,26 +24,12 @@ QApplicationError::~QApplicationError()
     disconnectSockets();
 }
 
-/** componentComplete is executed when the QML component is fully loaded */
-void QApplicationError::componentComplete()
-{
-   m_componentCompleted = true;
-
-   if (m_ready == true)    // the component was set to ready before it was completed
-   {
-       start();
-   }
-
-   QQuickItem::componentComplete();
-}
-
 void QApplicationError::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, "error", "start")
 #endif
     updateState(Connecting);
-
 
     if (connectSockets())
     {
@@ -281,29 +265,4 @@ void QApplicationError::unsubscribe()
         m_errorSocket->unsubscribeFrom(subscription);
     }
     m_subscriptions.clear();
-}
-
-/** If the ready property has a rising edge we try to connect
- *  if it is has a falling edge we disconnect and cleanup
- */
-void QApplicationError::setReady(bool arg)
-{
-    if (m_ready != arg) {
-        m_ready = arg;
-        emit readyChanged(arg);
-
-        if (m_componentCompleted == false)
-        {
-            return;
-        }
-
-        if (m_ready)
-        {
-            start();
-        }
-        else
-        {
-            stop();
-        }
-    };
 }

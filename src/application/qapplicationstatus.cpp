@@ -1,10 +1,9 @@
 #include "qapplicationstatus.h"
 #include "debughelper.h"
 
-QApplicationStatus::QApplicationStatus(QQuickItem *parent) :
-    QQuickItem(parent),
+QApplicationStatus::QApplicationStatus(QObject *parent) :
+    AbstractServiceImplementation(parent),
     m_statusUri(""),
-    m_ready(false),
     m_sState(Down),
     m_connected(false),
     m_connectionState(Disconnected),
@@ -13,7 +12,6 @@ QApplicationStatus::QApplicationStatus(QQuickItem *parent) :
     m_running(false),
     m_synced(false),
     m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel),
-    m_componentCompleted(false),
     m_context(NULL),
     m_statusSocket(NULL),
     m_statusHeartbeatTimer(new QTimer(this)),
@@ -40,26 +38,12 @@ QApplicationStatus::~QApplicationStatus()
     disconnectSockets();
 }
 
-/** componentComplete is executed when the QML component is fully loaded */
-void QApplicationStatus::componentComplete()
-{
-    m_componentCompleted = true;
-
-    if (m_ready == true)    // the component was set to ready before it was completed
-    {
-        start();
-    }
-
-    QQuickItem::componentComplete();
-}
-
 void QApplicationStatus::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, "status", "start")
 #endif
     updateState(Connecting);
-
 
     if (connectSockets())
     {
@@ -600,31 +584,6 @@ void QApplicationStatus::updateRunning(const QJsonObject &object)
     {
         m_running = running;
         emit runningChanged(running);
-    }
-}
-
-/** If the ready property has a rising edge we try to connect
- *  if it is has a falling edge we disconnect and cleanup
- */
-void QApplicationStatus::setReady(bool arg)
-{
-    if (m_ready != arg) {
-        m_ready = arg;
-        emit readyChanged(arg);
-
-        if (m_componentCompleted == false)
-        {
-            return;
-        }
-
-        if (m_ready)
-        {
-            start();
-        }
-        else
-        {
-            stop();
-        }
     }
 }
 

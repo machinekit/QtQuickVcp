@@ -1,8 +1,10 @@
 #ifndef QEMCCOMMAND_H
 #define QEMCCOMMAND_H
 
-#include <QQuickItem>
+#include <abstractserviceimplementation.h>
 #include <QTimer>
+#include <QUrl>
+#include <QCoreApplication>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
 #include "message.pb.h"
@@ -18,13 +20,11 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QApplicationCommand : public QQuickItem
+class QApplicationCommand : public AbstractServiceImplementation
 {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString commandUri READ commandUri WRITE setCommandUri NOTIFY commandUriChanged)
     Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
-    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
@@ -32,7 +32,7 @@ class QApplicationCommand : public QQuickItem
     Q_ENUMS(State ConnectionError SpindleBrake JogType TaskState TaskMode SpindleMode)
 
 public:
-    explicit QApplicationCommand(QQuickItem *parent = 0);
+    explicit QApplicationCommand(QObject *parent = 0);
     ~QApplicationCommand();
 
     enum SocketState {
@@ -88,8 +88,6 @@ public:
         TaskModeMdi = pb::EMC_TASK_MODE_MDI
     };
 
-    virtual void componentComplete();
-
     QString commandUri() const
     {
         return m_commandUri;
@@ -113,11 +111,6 @@ public:
     int heartbeatPeriod() const
     {
         return m_heartbeatPeriod;
-    }
-
-    bool ready() const
-    {
-        return m_ready;
     }
 
     bool isConnected() const
@@ -144,8 +137,6 @@ public slots:
         m_heartbeatPeriod = arg;
         emit heartbeatPeriodChanged(arg);
     }
-
-    void setReady(bool arg);
 
     void abort(const QString &interpreter);
     void runProgram(const QString &interpreter, int lineNumber);
@@ -191,13 +182,11 @@ private:
 
     QString         m_commandUri;
     int             m_heartbeatPeriod;
-    bool            m_ready;
     bool            m_connected;
     SocketState     m_cState;
     State           m_connectionState;
     ConnectionError m_error;
     QString         m_errorString;
-    bool            m_componentCompleted;
 
     PollingZMQContext *m_context;
     ZMQSocket   *m_commandSocket;
@@ -229,7 +218,6 @@ signals:
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
     void heartbeatPeriodChanged(int arg);
-    void readyChanged(bool arg);
     void connectedChanged(bool arg);
 };
 

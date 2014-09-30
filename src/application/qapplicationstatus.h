@@ -1,7 +1,8 @@
 #ifndef QEMCSTATUS_H
 #define QEMCSTATUS_H
 
-#include <QQuickItem>
+#include <abstractserviceimplementation.h>
+#include <QStringList>
 #include <QTimer>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -21,12 +22,10 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QApplicationStatus : public QQuickItem
+class QApplicationStatus : public AbstractServiceImplementation
 {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString statusUri READ statusUri WRITE setStatusUri NOTIFY statusUriChanged)
-    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
@@ -46,7 +45,7 @@ class QApplicationStatus : public QQuickItem
     Q_FLAGS(StatusChannels)
 
 public:
-    explicit QApplicationStatus(QQuickItem *parent = 0);
+    explicit QApplicationStatus(QObject *parent = 0);
     ~QApplicationStatus();
 
     enum SocketState {
@@ -178,16 +177,9 @@ public:
     };
     Q_DECLARE_FLAGS(StatusChannels, StatusChannel)
 
-    virtual void componentComplete();
-
     QString statusUri() const
     {
         return m_statusUri;
-    }
-
-    bool ready() const
-    {
-        return m_ready;
     }
 
     State connectionState() const
@@ -261,8 +253,6 @@ public slots:
         emit statusUriChanged(arg);
     }
 
-    void setReady(bool arg);
-
     void setChannels(StatusChannels arg)
     {
         if (m_channels == arg)
@@ -276,7 +266,6 @@ public slots:
 
 private:
     QString         m_statusUri;
-    bool            m_ready;
     SocketState     m_sState;
     bool            m_connected;
     State           m_connectionState;
@@ -291,7 +280,6 @@ private:
     bool            m_synced;
     StatusChannels  m_syncedChannels;
     StatusChannels  m_channels;
-    bool            m_componentCompleted;
 
     pb::EmcStatusMotion statusMotion;
     pb::EmcStatusConfig statusConfig;
@@ -340,7 +328,6 @@ private slots:
 
 signals:
     void statusUriChanged(QString arg);
-    void readyChanged(bool arg);
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);

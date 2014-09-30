@@ -1,14 +1,15 @@
 #ifndef QAPPLICATIONFILE_H
 #define QAPPLICATIONFILE_H
 
-#include <QQuickItem>
+#include <abstractserviceimplementation.h>
+#include <QCoreApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QFileInfo>
 #include <QDir>
 
-class QApplicationFile : public QQuickItem
+class QApplicationFile : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
@@ -16,7 +17,6 @@ class QApplicationFile : public QQuickItem
     Q_PROPERTY(QString localFilePath READ localFilePath WRITE setLocalFilePath NOTIFY localFilePathChanged)
     Q_PROPERTY(QString remotePath READ remotePath WRITE setRemotePath NOTIFY remotePathChanged)
     Q_PROPERTY(QString localPath READ localPath WRITE setLocalPath NOTIFY localPathChanged)
-    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(TransferState transferState READ transferState NOTIFY transferStateChanged)
     Q_PROPERTY(TransferError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
@@ -24,7 +24,7 @@ class QApplicationFile : public QQuickItem
     Q_ENUMS(TransferState TransferError)
 
 public:
-    explicit QApplicationFile(QQuickItem *parent = 0);
+    explicit QApplicationFile(QObject *parent = 0);
     ~QApplicationFile();
 
     enum TransferState {
@@ -40,16 +40,9 @@ public:
         FileError = 2
     };
 
-    virtual void componentComplete();
-
     QString uri() const
     {
         return m_uri;
-    }
-
-    bool ready() const
-    {
-        return m_ready;
     }
 
     TransferError error() const
@@ -102,15 +95,6 @@ public slots:
         emit uriChanged(arg);
     }
 
-    void setReady(bool arg)
-    {
-        if (m_ready == arg)
-            return;
-
-        m_ready = arg;
-        emit readyChanged(arg);
-    }
-
     void setLocalFilePath(QString arg)
     {
         if (m_localFilePath == arg)
@@ -157,17 +141,17 @@ private:
     QString         m_remoteFilePath;
     QString         m_localPath;
     QString         m_remotePath;
-    bool            m_ready;
     TransferState   m_transferState;
     TransferError   m_error;
     QString         m_errorString;
     double          m_progress;
-    bool            m_componentCompleted;
 
     QNetworkAccessManager   *m_networkManager;
     QNetworkReply           *m_reply;
     QFile                   *m_file;
 
+    void start() {}
+    void stop() {}
     void updateState(TransferState state);
     void updateError(TransferError error, const QString &errorString);
     QString generateTempPath();
@@ -182,7 +166,6 @@ private slots:
 
 signals:
     void uriChanged(QString arg);
-    void readyChanged(bool arg);
     void errorChanged(TransferError arg);
     void errorStringChanged(QString arg);
     void localFilePathChanged(QString arg);

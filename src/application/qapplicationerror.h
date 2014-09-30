@@ -1,7 +1,8 @@
 #ifndef QEMCERROR_H
 #define QEMCERROR_H
 
-#include <QQuickItem>
+#include <abstractserviceimplementation.h>
+#include <QStringList>
 #include <QTimer>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
@@ -15,12 +16,10 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QApplicationError : public QQuickItem
+class QApplicationError : public AbstractServiceImplementation
 {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString errorUri READ errorUri WRITE setErrorUri NOTIFY errorUriChanged)
-    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
@@ -30,7 +29,7 @@ class QApplicationError : public QQuickItem
     Q_FLAGS(ErrorChannels)
 
 public:
-    explicit QApplicationError(QQuickItem *parent = 0);
+    explicit QApplicationError(QObject *parent = 0);
     ~QApplicationError();
 
     enum SocketState {
@@ -69,16 +68,9 @@ public:
     };
     Q_DECLARE_FLAGS(ErrorChannels, ErrorChannelEnum)
 
-    virtual void componentComplete();
-
     QString errorUri() const
     {
         return m_errorUri;
-    }
-
-    bool ready() const
-    {
-        return m_ready;
     }
 
     State connectionState() const
@@ -117,8 +109,6 @@ public slots:
         emit errorUriChanged(arg);
     }
 
-    void setReady(bool arg);
-
     void setChannels(ErrorChannels arg)
     {
         if (m_channels == arg)
@@ -130,14 +120,12 @@ public slots:
 
 private:
     QString         m_errorUri;
-    bool            m_ready;
     bool            m_connected;
     SocketState     m_sState;
     State           m_connectionState;
     ConnectionError m_error;
     QString         m_errorString;
     ErrorChannels   m_channels;
-    bool            m_componentCompleted;
 
     PollingZMQContext *m_context;
     ZMQSocket   *m_errorSocket;
@@ -167,7 +155,6 @@ private slots:
 
 signals:
     void errorUriChanged(QString arg);
-    void readyChanged(bool arg);
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
