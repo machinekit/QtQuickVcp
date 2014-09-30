@@ -50,9 +50,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \class QGLCamera
     \brief The QGLCamera class defines the projection to apply to simulate a camera's position, orientation, and optics.
-    \since 4.8
-    \ingroup qt3d
-    \ingroup qt3d::viewing
+    \inmodule pathview
 
     \section1 Modelview and projection transformations
 
@@ -300,8 +298,7 @@ QT_BEGIN_NAMESPACE
     \qmltype Camera
     \instantiates QGLCamera
     \brief The Camera item defines the viewing position and projection for a 3D scene.
-    \since 4.8
-    \ingroup qt3d::qml3d
+    \inmodule pathview
 
     Camera instances are defined on a \l Viewport item using the
     Viewport::camera property:
