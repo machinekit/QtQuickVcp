@@ -78,8 +78,8 @@
     This property holds the TXT records of the service.
 */
 
-QServiceDiscoveryItem::QServiceDiscoveryItem(QQuickItem *parent) :
-    QQuickItem(parent),
+QServiceDiscoveryItem::QServiceDiscoveryItem(QObject *parent) :
+    QObject(parent),
     m_name(""),
     m_type(""),
     m_uri(""),

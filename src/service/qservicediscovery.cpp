@@ -237,8 +237,9 @@
     Clears the list of \l{nameServers}.
 */
 
-QServiceDiscovery::QServiceDiscovery(QQuickItem *parent) :
-    QQuickItem(parent),
+QServiceDiscovery::QServiceDiscovery(QObject *parent) :
+    QObject(parent),
+    QQmlParserStatus(),
     m_componentCompleted(false),
     m_serviceType("machinekit"),
     m_domain("local"),
@@ -269,8 +270,6 @@ void QServiceDiscovery::componentComplete()
     m_componentCompleted = true;
 
     initializeNetworkSession();
-
-    QQuickItem::componentComplete();
 }
 
 void QServiceDiscovery::initializeNetworkSession()

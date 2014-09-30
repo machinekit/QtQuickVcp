@@ -22,7 +22,8 @@
 #ifndef QAPPDISCOVERY_H
 #define QAPPDISCOVERY_H
 
-#include <QQuickItem>
+#include <QObject>
+#include <QQmlParserStatus>
 #include <qjdns.h>
 #include <qjdnsshared.h>
 #include "qservicediscoveryitem.h"
@@ -31,7 +32,7 @@
 #include "qservicediscoveryfilter.h"
 #include "qnameserver.h"
 
-class QServiceDiscovery : public QQuickItem
+class QServiceDiscovery : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -54,9 +55,10 @@ public:
         UnicastDNS
     };
 
-    explicit QServiceDiscovery(QQuickItem *parent = 0);
+    explicit QServiceDiscovery(QObject *parent = 0);
 
-    virtual void componentComplete();
+    void classBegin() {}
+    void componentComplete();
 
     QString serviceType() const
     {

@@ -22,11 +22,11 @@
 #ifndef QAPPDISCOVERYITEM_H
 #define QAPPDISCOVERYITEM_H
 
-#include <QQuickItem>
+#include <QObject>
 #include <QHostAddress>
 #include <QDateTime>
 
-class QServiceDiscoveryItem : public QQuickItem
+class QServiceDiscoveryItem : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString type READ type NOTIFY typeChanged)
@@ -40,7 +40,7 @@ class QServiceDiscoveryItem : public QQuickItem
     Q_PROPERTY(bool updated READ updated WRITE setUpdated NOTIFY updatedChanged)
 
 public:
-    explicit QServiceDiscoveryItem(QQuickItem *parent = 0);
+    explicit QServiceDiscoveryItem(QObject *parent = 0);
 
 
 QString uri() const
