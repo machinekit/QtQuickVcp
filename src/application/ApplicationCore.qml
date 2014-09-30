@@ -2,7 +2,7 @@ import QtQuick 2.0
 import Machinekit.Service 1.0
 import Machinekit.Application 1.0
 
-Item {
+QtObject {
     property ApplicationStatus status: applicationStatus //{"synced": false}
     property ApplicationCommand command: applicationCommand //{"connected": false}
     property ApplicationFile file: applicationFile //{""}
