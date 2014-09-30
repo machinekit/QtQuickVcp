@@ -72,6 +72,26 @@ Rectangle {
     */
     property double yValue: 0
 
+    /*! This property holds whether the x axis should be enabled or not.
+        The joystick will not move on this axis if disabled.
+
+        The default value is \c{true}.
+    */
+    property bool xEnabled: true
+
+    /*! This property holds whether the x axis should be enabled or not.
+        The joystick will not move on this axis if disabled.
+
+        The default value is \c{true}.
+    */
+    property bool yEnabled: true
+
+    /*! This property holds whether the pattern should be visible or not.
+
+        The default value is \c{true}.
+    */
+    property bool patternVisible: true
+
     /*! \internal */
     readonly property double _centeredX: main.width/2 - control.width/2
 
@@ -92,45 +112,57 @@ Rectangle {
     readonly property double _maxControlY: control.height/2 - main.height/2
 
     /*! \internal */
+    readonly property double _biggerSide: (height > width) ? height : width
+
+    /*! \internal */
+    readonly property double _smallerSide: (height > width) ? width : height
+
+    /*! \internal */
     function calculateNewX()
     {
-        var newControlX = 0
-
-        newControlX = controlArea.mouseX - control.width/2
-        if (newControlX > _maxX)
+        if (xEnabled)
         {
-            newControlX = _maxX
-        }
-        else if (newControlX < 0)
-        {
-            newControlX = 0
-        }
+            var newControlX = 0
 
-        control.x = newControlX
+            newControlX = controlArea.mouseX - control.width/2
+            if (newControlX > _maxX)
+            {
+                newControlX = _maxX
+            }
+            else if (newControlX < 0)
+            {
+                newControlX = 0
+            }
+
+            control.x = newControlX
+        }
     }
 
     /*! \internal */
     function calculateNewY()
     {
-        var newControlY = 0
-
-        newControlY = controlArea.mouseY - control.height/2
-        if (newControlY > _maxY)
+        if (yEnabled)
         {
-            newControlY = _maxY
-        }
-        else if (newControlY < 0)
-        {
-            newControlY = 0
-        }
+            var newControlY = 0
 
-        control.y = newControlY
+            newControlY = controlArea.mouseY - control.height/2
+            if (newControlY > _maxY)
+            {
+                newControlY = _maxY
+            }
+            else if (newControlY < 0)
+            {
+                newControlY = 0
+            }
+
+            control.y = newControlY
+        }
     }
 
     id: main
 
-    width: 150; height: 150
-    implicitWidth: 150; implicitHeight: 150
+    width: implicitWidth; height: implicitHeight
+    implicitWidth: xEnabled ? 150: 30; implicitHeight: yEnabled ? 150 : 30
     color: "#00000000"
 
     Binding {
@@ -168,25 +200,27 @@ Rectangle {
 
         width: parent.width; height: parent.height
         anchors.centerIn: parent
-        radius: width / 2
+        radius: (width < height) ? width / 2 : height / 2
         clip: true
         color: systemPalette.highlight
 
         Rectangle {
             id: circle2
 
-            width: main.width * 0.8; height: main.width * 0.8
+            visible: patternVisible
+            width: main.width * 0.8; height: main.height * 0.8
             anchors.centerIn: parent
-            radius: width / 2
+            radius: (width < height) ? width / 2 : height / 2
             clip: true
             color: systemPalette.window
 
             Rectangle {
                 id: circle3
 
-                width: main.width * 0.6; height: main.width * 0.6
+                visible: patternVisible
+                width: main.width * 0.6; height: main.height * 0.6
                 anchors.centerIn: parent
-                radius: width / 2
+                radius: (width < height) ? width / 2 : height / 2
                 clip: true
                 color: systemPalette.highlight
             }
@@ -197,8 +231,10 @@ Rectangle {
         id: control
 
         property bool movable: false
+        property double baseSide: _biggerSide * 0.3
+        property double side: (baseSide > _smallerSide) ? _smallerSide * 1.5 : baseSide
 
-        width: main.width * 0.3; height: main.width * 0.3
+        width: side; height: side
         x: _centeredX; y: _centeredY; z: 1
         radius: width / 2
         clip: true
@@ -208,8 +244,15 @@ Rectangle {
             else
                 systemPalette.midlight
         }
+    }
 
+    Line {
+        id: line
 
+        x1: main.width/2; y1: main.height/2
+        x2: control.x + control.width/2; y2: control.y + control.height/2
+        lineWidth: control.width * 0.4
+        color: systemPalette.dark
     }
 
     MouseArea {
@@ -238,15 +281,6 @@ Rectangle {
                 calculateNewY()
             }
         }
-    }
-
-    Line {
-        id: line
-
-        x1: main.width/2; y1: main.height/2
-        x2: control.x + control.width/2; y2: control.y + control.height/2
-        lineWidth: 14
-        color: systemPalette.dark
     }
 
     /*onYVelocityChanged: {
