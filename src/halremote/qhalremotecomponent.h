@@ -22,7 +22,8 @@
 #ifndef QCOMPONENT_H
 #define QCOMPONENT_H
 
-#include <QQuickItem>
+#include <abstractserviceimplementation.h>
+#include <QCoreApplication>
 #include <QHash>
 #include <QTimer>
 #include "qhalpin.h"
@@ -38,7 +39,7 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QHalRemoteComponent : public QQuickItem
+class QHalRemoteComponent : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -46,18 +47,17 @@ class QHalRemoteComponent : public QQuickItem
     Q_PROPERTY(QString halrcompUri READ halrcompUri WRITE setHalrcompUri NOTIFY halrcompUriChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
-    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_PROPERTY(QQuickItem *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
+    Q_PROPERTY(QObject *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
     Q_ENUMS(SocketState)
     Q_ENUMS(State)
     Q_ENUMS(ConnectionError)
 
 public:
-    explicit QHalRemoteComponent(QQuickItem *parent = 0);
+    explicit QHalRemoteComponent(QObject *parent = 0);
     ~QHalRemoteComponent();
 
     enum SocketState {
@@ -82,8 +82,6 @@ public:
         SocketError = 5
     };
 
-    virtual void componentComplete();
-
     QString halrcmdUri() const
     {
         return m_halrcmdUri;
@@ -104,12 +102,7 @@ public:
         return m_heartbeatPeriod;
     }
 
-    bool ready() const
-    {
-        return m_ready;
-    }
-
-    QQuickItem *containerItem() const
+    QObject *containerItem() const
     {
         return m_containerItem;
     }
@@ -172,9 +165,7 @@ public slots:
         }
     }
 
-    void setReady(bool arg);
-
-    void setContainerItem(QQuickItem *arg)
+    void setContainerItem(QObject *arg)
     {
         if (m_containerItem != arg) {
             m_containerItem = arg;
@@ -193,9 +184,7 @@ private:
     State       m_connectionState;
     ConnectionError       m_error;
     QString     m_errorString;
-    bool        m_ready;
-    QQuickItem  *m_containerItem;
-    bool        m_componentCompleted;
+    QObject     *m_containerItem;
 
     PollingZMQContext *m_context;
     ZMQSocket  *m_halrcompSocket;
@@ -246,8 +235,7 @@ signals:
     void halrcompUriChanged(QString arg);
     void nameChanged(QString arg);
     void heartbeatPeriodChanged(int arg);
-    void readyChanged(bool arg);
-    void containerItemChanged(QQuickItem *arg);
+    void containerItemChanged(QObject *arg);
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);

@@ -7,18 +7,16 @@
     same as \l{connectionState} == \c{HalGroup.Connected}.
  */
 
-QHalGroup::QHalGroup(QQuickItem *parent) :
-    QQuickItem(parent),
+QHalGroup::QHalGroup(QObject *parent) :
+    AbstractServiceImplementation(parent),
     m_halgroupUri(""),
     m_name("default"),
-    m_ready(false),
     m_connected(false),
     m_sState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
     m_containerItem(this),
-    m_componentCompleted(false),
     m_context(NULL),
     m_halgroupSocket(NULL),
     m_halgroupHeartbeatTimer(new QTimer(this)),
@@ -31,19 +29,6 @@ QHalGroup::QHalGroup(QQuickItem *parent) :
 QHalGroup::~QHalGroup()
 {
     disconnectSockets();
-}
-
-/** componentComplete is executed when the QML component is fully loaded */
-void QHalGroup::componentComplete()
-{
-    m_componentCompleted = true;
-
-    if (m_ready == true)    // the component was set to ready before it was completed
-    {
-        start();
-    }
-
-    QQuickItem::componentComplete();
 }
 
 /** Recurses through a list of objects */
@@ -458,29 +443,4 @@ void QHalGroup::unsubscribe()
 {
     m_sState = Down;
     m_halgroupSocket->unsubscribeFrom(m_name.toLocal8Bit());
-}
-
-/** If the ready property has a rising edge we try to connect
- *  if it is has a falling edge we disconnect and cleanup
- */
-void QHalGroup::setReady(bool arg)
-{
-    if (m_ready != arg) {
-        m_ready = arg;
-        emit readyChanged(arg);
-
-        if (m_componentCompleted == false)
-        {
-            return;
-        }
-
-        if (m_ready)
-        {
-            start();
-        }
-        else
-        {
-            stop();
-        }
-    }
 }

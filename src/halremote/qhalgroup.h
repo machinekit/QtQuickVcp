@@ -1,7 +1,7 @@
 #ifndef QHALGROUP_H
 #define QHALGROUP_H
 
-#include <QQuickItem>
+#include <abstractserviceimplementation.h>
 #include <QHash>
 #include <QTimer>
 #include <QJsonObject>
@@ -18,23 +18,21 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QHalGroup : public QQuickItem
+class QHalGroup : public AbstractServiceImplementation
 {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString halgroupUri READ halgroupUri WRITE setHalgroupUri NOTIFY halgroupUriChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_PROPERTY(QQuickItem *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
+    Q_PROPERTY(QObject *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
     Q_PROPERTY(QJsonObject values READ values NOTIFY valuesChanged)
     Q_ENUMS(State ConnectionError)
 
 public:
-    explicit QHalGroup(QQuickItem *parent = 0);
+    explicit QHalGroup(QObject *parent = 0);
     ~QHalGroup();
 
     enum SocketState {
@@ -57,8 +55,6 @@ public:
         SocketError = 3
     };
 
-    virtual void componentComplete();
-
     QString halgroupUri() const
     {
         return m_halgroupUri;
@@ -67,11 +63,6 @@ public:
     QString name() const
     {
         return m_name;
-    }
-
-    bool ready() const
-    {
-        return m_ready;
     }
 
     State connectionState() const
@@ -89,7 +80,7 @@ public:
         return m_errorString;
     }
 
-    QQuickItem * containerItem() const
+    QObject * containerItem() const
     {
         return m_containerItem;
     }
@@ -122,9 +113,7 @@ public slots:
         }
     }
 
-    void setReady(bool arg);
-
-    void setContainerItem(QQuickItem * arg)
+    void setContainerItem(QObject * arg)
     {
         if (m_containerItem != arg) {
             m_containerItem = arg;
@@ -135,15 +124,13 @@ public slots:
 private:
     QString     m_halgroupUri;
     QString     m_name;
-    bool        m_ready;
     bool        m_connected;
     SocketState m_sState;
     State       m_connectionState;
     ConnectionError m_error;
     QString     m_errorString;
-    QQuickItem  *m_containerItem;
+    QObject     *m_containerItem;
     QJsonObject m_values;
-    bool        m_componentCompleted;
 
     PollingZMQContext *m_context;
     ZMQSocket   *m_halgroupSocket;
@@ -183,11 +170,10 @@ private slots:
 signals:
     void halgroupUriChanged(QString arg);
     void nameChanged(QString arg);
-    void readyChanged(bool arg);
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
-    void containerItemChanged(QQuickItem * arg);
+    void containerItemChanged(QObject * arg);
     void valuesChanged(QJsonObject arg);
     void connectedChanged(bool arg);
 };

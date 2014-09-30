@@ -156,8 +156,8 @@
 */
 
 /** Remote HAL Component implementation for use with C++ and QML */
-QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
-    QQuickItem(parent),
+QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
+    AbstractServiceImplementation(parent),
     m_halrcmdUri(""),
     m_halrcompUri(""),
     m_name("default"),
@@ -168,9 +168,7 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
-    m_ready(false),
     m_containerItem(this),
-    m_componentCompleted(false),
     m_context(NULL),
     m_halrcompSocket(NULL),
     m_halrcmdSocket(NULL),
@@ -188,19 +186,6 @@ QHalRemoteComponent::QHalRemoteComponent(QQuickItem *parent) :
 QHalRemoteComponent::~QHalRemoteComponent()
 {
     disconnectSockets();
-}
-
-/** componentComplete is executed when the QML component is fully loaded */
-void QHalRemoteComponent::componentComplete()
-{
-    m_componentCompleted = true;
-
-    if (m_ready == true)    // the component was set to ready before it was completed
-    {
-        start();
-    }
-
-    QQuickItem::componentComplete();
 }
 
 /** Scans all children of the container item for pins and adds them to a map */
@@ -582,31 +567,6 @@ void QHalRemoteComponent::pollError(int errorNum, const QString &errorMsg)
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
     updateError(SocketError, errorString);
     updateState(Error);
-}
-
-/** If the ready property has a rising edge we try to connect
- *  if it is has a falling edge we disconnect and cleanup
- */
-void QHalRemoteComponent::setReady(bool arg)
-{
-    if (m_ready != arg) {
-        m_ready = arg;
-        emit readyChanged(arg);
-
-        if (m_componentCompleted == false)
-        {
-            return;
-        }
-
-        if (m_ready)
-        {
-            start();
-        }
-        else
-        {
-            stop();
-        }
-    }
 }
 
 /** Recurses through a list of objects */
