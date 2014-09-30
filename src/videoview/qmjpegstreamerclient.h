@@ -22,7 +22,6 @@
 #ifndef MJPEGSTREAMER2_H
 #define MJPEGSTREAMER2_H
 
-#include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
 #include <QNetworkAccessManager>

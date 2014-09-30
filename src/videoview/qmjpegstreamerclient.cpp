@@ -129,7 +129,7 @@ void QMjpegStreamerClient::componentComplete()
         start();
     }
 
-    QQuickItem::componentComplete();
+    QQuickPaintedItem::componentComplete();
 }
 
 void QMjpegStreamerClient::paint(QPainter *painter)
