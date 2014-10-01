@@ -13,7 +13,6 @@ ApplicationObject {
 
     onValueChanged: {
         if (_ready && !_remoteUpdate) {
-            console.log("update")
             command.setFeedOverride(value)
             synced = false
         }
