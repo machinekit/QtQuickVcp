@@ -10,6 +10,7 @@ Item {
     property ApplicationSettings settings: uiSettings //{"initialized": false}
     property MdiHistory mdiHistory: mdiHistory
     property Item notifications: null
+    property string applicationName: "machinekit"
 
     id: applicationCore
 
@@ -106,9 +107,20 @@ Item {
     }
 
     ApplicationCommand {
+        property bool _connected: false
+
         id: applicationCommand
         commandUri: commandService.uri
-        ready: (commandService.ready || connected)
+        ready: (commandService.ready || _connected)
+
+        onConnectedChanged: delayTimer.running = true
+    }
+
+    Timer { // workaround for binding loop
+        id: delayTimer
+        interval: 10
+        repeat: false
+        onTriggered: applicationCommand._connected = applicationCommand.connected
     }
 
     ApplicationError {
@@ -126,6 +138,7 @@ Item {
     ApplicationSettings {
         id: uiSettings
         status: applicationStatus
+        application: applicationName
     }
 
     MdiHistory {
