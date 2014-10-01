@@ -6,6 +6,8 @@ LocalSettings {
     property bool initialized: false
     property bool _ready: status.synced
 
+    name: "settings"
+
     id: localSettings
     Component.onCompleted: {
         load()
