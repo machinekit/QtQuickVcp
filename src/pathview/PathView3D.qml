@@ -165,7 +165,11 @@ GLView3D {
         straightFeedColor: pathView.colors["straight_feed"]
         traverseColor: pathView.colors["traverse"]
         selectedColor: pathView.colors["selected"]
-        model: pathView.model
+        model: (pathView.model !== undefined) ? pathView.model : tmpModel
+    }
+
+    GCodeProgramModel {
+        id: tmpModel
     }
 
     PinchArea {
