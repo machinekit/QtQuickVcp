@@ -18,7 +18,7 @@ Label {
             }
         }
         var gcodes = ""
-        for (var i = 1; i < _gcodes.length; ++i) {
+        for (i = 1; i < _gcodes.length; ++i) {
             if (_gcodes[i] > -1) {
                 gcodes += "G" + (_gcodes[i]/10).toString() + " "
             }

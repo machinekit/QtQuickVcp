@@ -30,7 +30,7 @@ QtObject {
                 _lastLine = currentLine
             }
 
-            for (var line = _lastLine; line < currentLine; ++line) {
+            for (line = _lastLine; line < currentLine; ++line) {
                 model.setData(file, line, true, GCodeProgramModel.ExecutedRole)
                 model.setData(file, line, false, GCodeProgramModel.ActiveRole)
             }

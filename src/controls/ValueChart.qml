@@ -238,7 +238,7 @@ Item {
         onMouseXChanged: {
             endTimestamp = Math.min(startEndTimestamp + (pressStart-mouseX)/chart.width*timeSpan, valueModel.endTimestamp)
 
-            if (endTimestamp == valueModel.endTimestamp)    // enable autoscrolling if someone moves to the end
+            if (endTimestamp === valueModel.endTimestamp)    // enable autoscrolling if someone moves to the end
             {
                 autoScroll = true
                 showMessage(qsTr("Autoscroll enabled"))
