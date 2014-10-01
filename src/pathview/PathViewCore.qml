@@ -40,10 +40,22 @@ ApplicationItem {
     }
 
     PreviewClient {
+        property bool _connected: false
+
+        id: previewClient
         statusUri: previewStatusService.uri
         previewUri: previewService.uri
-        ready: ((previewService.ready && previewStatusService.ready) || connected)
+        ready: ((previewService.ready && previewStatusService.ready) || _connected)
         model: gcodeProgramModel
+
+        onConnectedChanged: delayTimer.running = true
+    }
+
+    Timer { // workaround for binding loop
+        id: delayTimer
+        interval: 10
+        repeat: false
+        onTriggered: previewClient._connected = previewClient.connected
     }
 
     GCodeProgramModel {
