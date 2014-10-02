@@ -41,6 +41,7 @@ MaximumVelocityHandler 1.0 MaximumVelocityHandler.qml
 TouchOffAction 1.0 TouchOffAction.qml
 TouchOffDialog 1.0 TouchOffDialog.qml
 GCodeLabel 1.0 GCodeLabel.qml
+JogVelocityHandler 1.0 JogVelocityHandler.qml
 JogVelocitySlider 1.0 JogVelocitySlider.qml
 UnhomeAxisAction 1.0 UnhomeAxisAction.qml
 MdiHistoryTable 1.0 MdiHistoryTable.qml

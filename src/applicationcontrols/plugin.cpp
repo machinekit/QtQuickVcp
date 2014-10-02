@@ -67,6 +67,7 @@ static const struct {
     { "TouchOffAction", 1, 0 },
     { "TouchOffDialog", 1, 0 },
     { "GCodeLabel", 1, 0 },
+    { "JogVelocityHandler", 1, 0 },
     { "JogVelocitySlider", 1, 0 },
     { "UnhomeAxisAction", 1, 0 },
     { "MdiHistoryTable", 1, 0 },
