@@ -27,7 +27,7 @@ import Machinekit.Application 1.0
 ApplicationAction {
     property var fileDialog
 
-    property bool _ready: file.ready && (file.transferState === ApplicationFile.NoTransfer)
+    property bool _ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
 
     id: openAction
     text: qsTr("Open file")
