@@ -1,19 +1,19 @@
 // global
-uniform mat4 projectionMatrix;    // projection matrix
-uniform mat4 viewMatrix;          // view matrix
+uniform highp mat4 projectionMatrix;    // projection matrix
+uniform highp mat4 viewMatrix;          // view matrix
 
 // model specific
-uniform mat4 modelMatrix;         // model matrix
-uniform vec4 color;               // per-vertex color
-uniform float aspectRatio;        // aspect ratio
-uniform int alignment;            // text alignment
+uniform highp mat4 modelMatrix;         // model matrix
+uniform lowp vec4 color;               // per-vertex color
+uniform mediump float aspectRatio;        // aspect ratio
+uniform lowp int alignment;            // text alignment
 
 // vertex specific
-attribute vec4 position;          // per-vertex position
-attribute vec2 texCoordinate;     // per-vertex texture coordinate
+attribute highp vec4 position;          // per-vertex position
+attribute mediump vec2 texCoordinate;     // per-vertex texture coordinate
 
-varying vec4 destinationColor;         // the output colors
-varying vec2 destinationTexCoordinate; // the output texture coordinate
+varying lowp vec4 destinationColor;         // the output colors
+varying mediump vec2 destinationTexCoordinate; // the output texture coordinate
 
 void main(void)
 {

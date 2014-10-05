@@ -1,10 +1,10 @@
-uniform sampler2D texture;             // The input texture.
+uniform lowp sampler2D texture;             // The input texture.
 
-varying vec4 destinationColor;         // the output colors
-varying vec2 destinationTexCoordinate; // the output texture coordinate
+varying lowp vec4 destinationColor;         // the output colors
+varying mediump vec2 destinationTexCoordinate; // the output texture coordinate
 
 // selection mode
-uniform vec4 idColor;             // color to be used for selection mode
+uniform lowp vec4 idColor;             // color to be used for selection mode
 uniform bool selectionMode;       // enables or disables the selection mode
 
 void main(void)
