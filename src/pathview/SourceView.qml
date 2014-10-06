@@ -26,7 +26,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
 
 Item {
-    property alias model: listView.model
+    property alias model: object.gcodeProgramModel
     property color selectedColor: "lightblue"
     property color activeColor: "lightcoral"
     property color executedColor: "lightgreen"
@@ -35,6 +35,10 @@ Item {
     id: root
 
     SystemPalette { id: systemPalette }
+
+    PathViewObject {
+        id: object
+    }
 
     Rectangle {
         id: lineNumberBackground
@@ -65,6 +69,7 @@ Item {
         ListView {
             id: listView
             anchors.fill: parent
+            model: object.gcodeProgramModel
             delegate:
                 Item {
                     property bool lineActive: active
