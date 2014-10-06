@@ -44,7 +44,8 @@ QML_FILES = \
     ApplicationItem.qml \
     ApplicationObject.qml \
     ApplicationSettings.qml \
-    MdiHistory.qml
+    MdiHistory.qml \
+    HomeAllAxesHelper.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \

@@ -31,6 +31,7 @@ Item {
     property ApplicationError error: applicationError //{"connected": false}
     property ApplicationSettings settings: uiSettings //{"initialized": false}
     property MdiHistory mdiHistory: mdiHistory
+    property HomeAllAxesHelper homeAllAxesHelper: homeAllAxesHelper
     property Item notifications: null
     property string applicationName: "machinekit"
 
@@ -166,5 +167,11 @@ Item {
     MdiHistory {
         id: mdiHistory
         settings: uiSettings
+    }
+
+    HomeAllAxesHelper {
+        id: homeAllAxesHelper
+        status: applicationStatus
+        command: applicationCommand
     }
 }

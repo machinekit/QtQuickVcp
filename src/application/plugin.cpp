@@ -46,7 +46,8 @@ static const struct {
     { "ApplicationItem", 1, 0 },
     { "ApplicationObject", 1, 0 },
     { "ApplicationSettings", 1, 0 },
-    { "MdiHistory", 1, 0 }
+    { "MdiHistory", 1, 0 },
+    { "HomeAllAxesHelper", 1, 0 }
 };
 
 void MachinekitApplicationPlugin::registerTypes(const char *uri)

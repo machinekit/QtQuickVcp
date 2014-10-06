@@ -8,3 +8,4 @@ ApplicationItem 1.0 ApplicationItem.qml
 ApplicationObject 1.0 ApplicationObject.qml
 ApplicationSettings 1.0 ApplicationSettings.qml
 MdiHistory 1.0 MdiHistory.qml
+HomeAllAxesHelper 1.0 HomeAllAxesHelper.qml

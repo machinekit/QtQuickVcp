@@ -31,6 +31,7 @@ Item {
     property alias file: object.file
     property alias error: object.error
     property alias mdiHistory: object.mdiHistory
+    property alias homeAllAxesHelper: object.homeAllAxesHelper
 
     ApplicationObject {
         id: object
