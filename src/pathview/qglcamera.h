@@ -61,7 +61,7 @@ class QGLCamera : public QObject
     Q_PROPERTY(float fieldOfView READ fieldOfView WRITE setFieldOfView NOTIFY projectionChanged)
     Q_PROPERTY(float nearPlane READ nearPlane WRITE setNearPlane NOTIFY projectionChanged)
     Q_PROPERTY(float farPlane READ farPlane WRITE setFarPlane NOTIFY projectionChanged)
-    Q_PROPERTY(QSizeF viewSize READ viewSize WRITE setViewSize NOTIFY projectionChanged SCRIPTABLE false)
+    Q_PROPERTY(QSizeF viewSize READ viewSize WRITE setViewSize NOTIFY projectionChanged ) //SCRIPTABLE false)
     Q_PROPERTY(QSizeF minViewSize READ minViewSize WRITE setMinViewSize NOTIFY projectionChanged SCRIPTABLE false)
     Q_PROPERTY(int screenRotation READ screenRotation WRITE setScreenRotation NOTIFY projectionChanged SCRIPTABLE false)
     Q_PROPERTY(QVector3D eye READ eye WRITE setEye NOTIFY viewChanged)

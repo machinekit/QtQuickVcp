@@ -30,6 +30,9 @@ Canvas3D {
     property color xAxisColor: "red"
     property color yAxisColor: "green"
     property color zAxisColor: "blue"
+    property real xAxisRotation: 0.0
+    property real yAxisRotation: 0.0
+    property real zAxisRotation: 0.0
 
     id: root
     onPaint: {
@@ -37,6 +40,7 @@ Canvas3D {
         context.reset()
 
         context.color(root.xAxisColor)
+        context.rotate(xAxisRotation, 1.0, 0.0, 0.0)
         context.beginUnion()
         context.line(root.axesLength, 0.0, 0.0)
         context.translate(root.axesLength, -root.textSize/2.0, 0.0)
@@ -47,6 +51,7 @@ Canvas3D {
         if (axes > 1)
         {
             context.color(root.yAxisColor)
+            context.rotate(yAxisRotation, 0.0, 1.0, 0.0)
             context.beginUnion()
             context.line(0.0, root.axesLength, 0.0)
             context.translate(root.textSize/2.0, root.axesLength, 0.0)
@@ -59,6 +64,7 @@ Canvas3D {
         if (axes > 2)
         {
             context.color(root.zAxisColor)
+            context.rotate(zAxisRotation, 0.0, 0.0, 1.0)
             context.beginUnion()
             context.line(0.0, 0.0, root.axesLength)
             context.translate(0.0, 0.0, root.axesLength)
@@ -77,5 +83,8 @@ Canvas3D {
         onXAxisColorChanged.connect(needsUpdate)
         onYAxisColorChanged.connect(needsUpdate)
         onZAxisColorChanged.connect(needsUpdate)
+        onXAxisRotationChanged.connect(needsUpdate)
+        onYAxisRotationChanged.connect(needsUpdate)
+        onZAxisRotationChanged.connect(needsUpdate)
     }
 }

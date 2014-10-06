@@ -33,6 +33,7 @@ GLView3D {
         "tool_ambient": Qt.rgba(0.4, 0.4, 0.4, 0.5),
         "background": Qt.rgba(0.0, 0.0, 0.0, 1.0),
         "grid": Qt.rgba(0.15, 0.15, 0.15, 1.0),
+        "grid_min": Qt.rgba(0.05, 0.05, 0.05, 1.0),
         "small_origin": Qt.rgba(0.0, 1.0, 1.0, 0.5),
         "cone": Qt.rgba(1.0, 1.0, 1.0, 1.0),
         "cone_xy": Qt.rgba(0.0, 1.0, 0.0, 1.0),
@@ -65,44 +66,97 @@ GLView3D {
         "backplotfeed": Qt.rgba(0.75, 0.25, 0.25, 0.75)
     }
     property int axes: _ready ? status.config.axes : 3
-
+    property string viewMode: "Perspective"
+    property real zoom: 0.95
 
     property bool _ready: status.synced
     property var _axisNames: ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
 
     id: pathView
 
-    function setViewMode(mode) {
-        switch (mode) {
-        case 0:
-            camera.heading = -90
-            camera.pitch = 0.00
-            camera.projectionType = Camera3D.Orthographic
-            break;
-        }
-    }
-
     camera: Camera3D {
-        property real heading: 45
+        property real heading: -135
         property real pitch: 60
-        property real distance: 200
-        property vector3d lookCenter: Qt.vector3d((programExtents.maximum.x - programExtents.minimum.x)/2.0, (programExtents.maximum.y - programExtents.minimum.y)/2.0, 0)
+        property real distance: boundingBox.size.length() * 4.5
+
         id: camera
-        projectionType: Camera3D.Perspective
-        eye: Qt.vector3d(distance * Math.sin(Math.PI*pitch/180) * Math.cos(Math.PI*heading/180) + lookCenter.x,
-                         distance * Math.sin(Math.PI*pitch/180) * Math.sin(Math.PI*heading/180) + lookCenter.y,
-                         distance * Math.cos(Math.PI*pitch/180))
-        center: lookCenter
-        upVector: Qt.vector3d(0, 0, 1)
+        projectionType: {
+            switch (pathView.viewMode) {
+            case "Top":
+            case "RotatedTop":
+            case "Front":
+            case "Side":
+                return Camera3D.Orthographic
+            case "Perspective":
+                return Camera3D.Perspective
+            default:
+                return Camera3D.Perspective
+            }
+        }
+        eye: {
+            switch (pathView.viewMode) {
+            case "Top":
+            case "RotatedTop":
+                return Qt.vector3d(boundingBox.center.x, boundingBox.center.y, 1000)
+            case "Front":
+                return Qt.vector3d(boundingBox.center.x, -1000, boundingBox.center.z)
+            case "Side":
+                return Qt.vector3d(1000, boundingBox.center.y, boundingBox.center.z)
+            case "Perspective":
+                return Qt.vector3d(distance * Math.sin(Math.PI*pitch/180) * Math.cos(Math.PI*heading/180) / pathView.zoom + boundingBox.center.x,
+                                   distance * Math.sin(Math.PI*pitch/180) * Math.sin(Math.PI*heading/180) / pathView.zoom + boundingBox.center.y,
+                                   distance * Math.cos(Math.PI*pitch/180) / pathView.zoom + boundingBox.center.z)
+            default:
+                return  Qt.vector3d(0,0,0)
+            }
+        }
+        center: {
+            switch (pathView.viewMode) {
+            case "Top":
+            case "RotatedTop":
+            case "Perspective":
+                return boundingBox.center //Qt.vector3d(boundingBox.center.x, boundingBox.center.y, 0)
+            case "Front":
+                return Qt.vector3d(boundingBox.center.x, 0, boundingBox.center.z)
+            case "Side":
+                return Qt.vector3d(0, boundingBox.center.y, boundingBox.center.z)
+            default:
+                return Qt.vector3d(0,0,0)
+            }
+        }
+        upVector: {
+            switch (pathView.viewMode) {
+            case "Top":
+                return Qt.vector3d(0, 1, 0)
+            case "RotatedTop":
+                return Qt.vector3d(-1, 0, 0)
+            default: Qt.vector3d(0, 0, 1)
+            }
+        }
+        viewSize: {
+            var side
+            switch (pathView.viewMode) {
+            case "Top":
+            case "RotatedTop":
+                side = Math.max(boundingBox.size.x, boundingBox.size.y) / pathView.zoom
+                return Qt.size(side, side)
+            case "Front":
+                side = Math.max(boundingBox.size.x, boundingBox.size.z) / pathView.zoom
+                return Qt.size(side, side)
+            case "Side":
+                side = Math.max(boundingBox.size.y, boundingBox.size.z) / pathView.zoom
+                return Qt.size(side, side)
+            default:
+                return Qt.size(1,1)
+            }
+        }
+        nearPlane: 5.0
+        farPlane: 100000.0
     }
-
-
 
     light: Light3D {
         id: light
-        position.x: camera.lookCenter.x
-        position.y: camera.lookCenter.y
-        position.z: 2*boundingBox.maximum.z - boundingBox.minimum.z
+        position: boundingBox.center
         intensities: Qt.vector3d(1.0, 1.0, 1.0)
         ambientCoefficient: 0.7
         attenuation: 0.01
@@ -137,13 +191,35 @@ GLView3D {
     }
 
     Grid3D {
-        color: pathView.colors["grid"]
-        minimum.x: boundingBox.minimum.x
-        minimum.y: boundingBox.minimum.y
-        minimum.z: 0.0
+        colorAxis1: pathView.colors["grid"]
+        colorAxis1Min: pathView.colors["grid_min"]
+        colorAxis2: pathView.colors["grid"]
+        colorAxis2Min: pathView.colors["grid_min"]
+        minimum: (plane == "XZ") ? Qt.vector3d(boundingBox.minimum.x,
+                                               boundingBox.maximum.y,
+                                               boundingBox.minimum.z) :
+                                   boundingBox.minimum
         maximum: boundingBox.maximum
-        intervalX: 5
-        intervalY: 5
+        intervalAxis1: 5
+        intervalAxis1Min: intervalAxis1 / 5
+        intervalAxis2: 5
+        intervalAxis2Min: intervalAxis2 / 5
+        plane: {
+            switch (pathView.viewMode) {
+            case "Top":
+            case "RotatedTop":
+                return "XY"
+            case "Front":
+                return "XZ"
+            case "Side":
+                return "YZ"
+            default:
+                return "XZ"
+            }
+        }
+        visible: pathView.viewMode != "Perspective"
+
+        onPaint: coordinates.requestPaint()
     }
 
     BoundingBox3D {
@@ -155,6 +231,7 @@ GLView3D {
         maximum.x: _ready ? status.config.axis[0].maxPositionLimit : 0
         maximum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].maxPositionLimit : 0
         maximum.z: (_ready && status.config.axis.length > 2) ? status.config.axis[2].maxPositionLimit : 0
+        visible: pathView.viewMode == "Perspective"
     }
 
     ProgramExtents3D {
@@ -171,14 +248,14 @@ GLView3D {
     Coordinate3D {
         id: coordinates
         axes: pathView.axes
-        //position.x: boundingBox.minimum.x - 3
-        //position.y: boundingBox.minimum.y - 3
-        //position.z: boundingBox.minimum.z
         position: Qt.vector3d(0.0, 0.0, 0.0)
         textSize: 3
         xAxisColor: pathView.colors["axis_x"]
         yAxisColor: pathView.colors["axis_y"]
         zAxisColor: pathView.colors["axis_z"]
+        xAxisRotation: (pathView.viewMode == "Front") ? 90 : 0
+        yAxisRotation: (pathView.viewMode == "Side") ? 90 : 0
+        zAxisRotation: (pathView.viewMode == "Side") ? 90 : 0
     }
 
     Path3D {
@@ -195,15 +272,15 @@ GLView3D {
     }
 
     PinchArea {
-        property real startDistance: 0
+        property real startZoom: 0
         anchors.fill: parent
 
-        onPinchStarted: startDistance = camera.distance
-        onPinchUpdated: camera.distance = startDistance * pinch.scale
+        onPinchStarted: startZoom = pathView.zoom
+        onPinchUpdated: pathView.zoom = startZoom * pinch.scale
 
         MouseArea {
             anchors.fill: parent
-            onWheel: camera.distance -= wheel.angleDelta.y/60
+            onWheel: pathView.zoom *= (1 + wheel.angleDelta.y/1200)
 
             property int lastY: 0
             property int lastX: 0

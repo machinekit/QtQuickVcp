@@ -27,9 +27,11 @@ Canvas3D {
     property int axes: 3
     property vector3d minimum: Qt.vector3d(0.0, 0.0, 0.0)
     property vector3d maximum: Qt.vector3d(10.0, 10.0, 10.0)
+    readonly property vector3d size: maximum.minus(minimum)
+    readonly property vector3d center: minimum.plus(maximum).times(0.5)
     property color color: "red"
     property bool lineStipple: true
-    property real lineStippleLength: (maximum.x - minimum.x)  / 10.0
+    property real lineStippleLength: (size.length()  / 20.0)
 
     id: root
 

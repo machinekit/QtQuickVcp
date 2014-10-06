@@ -55,7 +55,11 @@ QML_FILES = \
     PathViewCore.qml \
     PathViewObject.qml \
     ProgramExtents3D.qml \
-    SourceView.qml
+    SourceView.qml \
+    ViewModeAction.qml \
+    ZoomInAction.qml \
+    ZoomOutAction.qml \
+    ZoomOriginalAction.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \
