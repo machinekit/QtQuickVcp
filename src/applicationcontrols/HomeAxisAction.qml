@@ -32,15 +32,20 @@ ApplicationAction {
     id: root
     text: qsTr("Home")
     shortcut: "Ctrl+Home"
-    tooltip: qsTr("Home Axis ") + axis + " [" + shortcut + "]"
-    onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
-        command.homeAxis(axis)
-    }
-
+    tooltip: ((axis > -1) ? (qsTr("Home axis ") + axis) : qsTr("Home all axes")) + " [" + shortcut + "]"
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && !status.running
+    onTriggered: {
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
+
+        if (axis > -1) {
+            command.homeAxis(axis)
+        }
+        else {
+            homeAllAxesHelper.trigger()
+        }
+    }
 }
 
