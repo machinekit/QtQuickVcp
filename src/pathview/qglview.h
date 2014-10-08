@@ -43,6 +43,7 @@ class QGLView : public QQuickPaintedItem
 {
     Q_OBJECT
 
+    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QGLCamera *camera READ camera WRITE setCamera NOTIFY cameraChanged)
     Q_PROPERTY(QGLLight *light READ light WRITE setLight NOTIFY lightChanged)

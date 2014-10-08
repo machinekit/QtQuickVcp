@@ -77,45 +77,64 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
         // Connect the beforeRendering signal to our paint function.
         // Since this call is executed on the rendering thread it must be
         // a Qt::DirectConnection
-        //connect(win, SIGNAL(afterRendering()), this, SLOT(paint()), Qt::DirectConnection);
         connect(win, SIGNAL(beforeSynchronizing()), this, SLOT(sync()), Qt::DirectConnection);
-        //connect(win, SIGNAL(frameSwapped()), win, SLOT(update()));  // repaint every frame
-        connect(win, SIGNAL(widthChanged(int)), this, SLOT(updatePerspectiveAspectRatio()));
-        connect(win, SIGNAL(heightChanged(int)), this, SLOT(updatePerspectiveAspectRatio()));
+        connect(this, SIGNAL(widthChanged()), this, SLOT(updatePerspectiveAspectRatio()));
+        connect(this, SIGNAL(heightChanged()), this, SLOT(updatePerspectiveAspectRatio()));
 
         // If we allow QML to do the clearing, they would clear what we paint
         // and nothing would show.
         //win->setClearBeforeRendering(true);
-
-        updatePerspectiveAspectRatio();
     }
 }
 
 void QGLView::updatePerspectiveAspectRatio()
 {
-    qreal ratio = window()->devicePixelRatio();
-    int w = int(ratio * this->width());
-    int h = int(ratio * this->height());
-    m_projectionAspectRatio = (float)w/(float)h;
+    qreal ratio;
+    int w;
+    int h;
+
+    if (window() != NULL) {
+        ratio = window()->devicePixelRatio();
+    }
+    else {
+        ratio = 1.0f;
+    }
+
+    w = int(ratio * this->width());
+    h = int(ratio * this->height());
+
+    if ((w > 0) && (h > 0)) // avoid division by zero
+    {
+        m_projectionAspectRatio = (float)w/(float)h;
+    }
+    else {
+        m_projectionAspectRatio = 1.0f;
+    }
+
     updateProjectionMatrix();
 }
 
 void QGLView::updateViewMatrix()
 {
     m_viewMatrix = m_camera->modelViewMatrix();
-    update();
+
+    if (m_initialized) {
+        update();
+    }
 }
 
 void QGLView::updateProjectionMatrix()
 {
     m_projectionMatrix = m_camera->projectionMatrix(m_projectionAspectRatio);
-    update();
+
+    if (m_initialized) {
+        update();
+    }
 }
 
 void QGLView::updateItems()
 {
-    if (!m_initialized)
-    {
+    if (!m_initialized) {
         return;
     }
 
