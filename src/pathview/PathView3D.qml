@@ -29,7 +29,7 @@ GLView3D {
     property alias status: object.status
     property alias model: pathViewObject.gcodeProgramModel
     property var colors: {
-        "tool_diffuse": Qt.rgba(0.6, 0.6, 0.6, 1.0),
+        "tool_diffuse": Qt.rgba(0.6, 0.6, 0.6, 0.8),
         "tool_ambient": Qt.rgba(0.4, 0.4, 0.4, 0.5),
         "background": Qt.rgba(0.0, 0.0, 0.0, 1.0),
         "grid": Qt.rgba(0.15, 0.15, 0.15, 1.0),
@@ -68,6 +68,18 @@ GLView3D {
     property int axes: _ready ? status.config.axes : 3
     property string viewMode: "Perspective"
     property real zoom: 0.95
+    property real sizeFactor: _ready ? status.config.linearUnits: 1
+
+    property bool programVisible: true
+    property bool gridVisible: true
+    property bool rapidsVisible: true
+    property bool alphaBlendProgram: true
+    property bool livePlotVisible: true
+    property bool toolVisible: true
+    property bool programExtentsVisible: true
+    property bool machineLimitsVisible: true
+    property bool coordinateVisible: true
+    property bool offsetsVisible: object.settings.initialized && object.settings.values.dro.showOffsets
 
     property bool _ready: status.synced
     property var _axisNames: ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
@@ -77,7 +89,7 @@ GLView3D {
     camera: Camera3D {
         property real heading: -135
         property real pitch: 60
-        property real distance: boundingBox.size.length() * 4.5
+        property real distance: (programExtents.valid ? (programExtents.size.length() + 40 * sizeFactor) : boundingBox.size.length()) * 4.5
 
         id: camera
         projectionType: {
@@ -97,29 +109,68 @@ GLView3D {
             switch (pathView.viewMode) {
             case "Top":
             case "RotatedTop":
-                return Qt.vector3d(boundingBox.center.x, boundingBox.center.y, 1000)
+                if (programExtents.valid) {
+                    return Qt.vector3d(programExtents.center.x + programExtents.position.x,
+                                       programExtents.center.y + programExtents.position.y,
+                                       1000)
+                } else {
+                    return Qt.vector3d(boundingBox.center.x, boundingBox.center.y, 1000)
+                }
             case "Front":
-                return Qt.vector3d(boundingBox.center.x, -1000, boundingBox.center.z)
+                if (programExtents.valid) {
+                    return Qt.vector3d(programExtents.center.x + programExtents.position.x,
+                                       -1000,
+                                       programExtents.center.z + programExtents.position.z)
+                } else {
+                    return Qt.vector3d(boundingBox.center.x, -1000, boundingBox.center.z)
+                }
             case "Side":
-                return Qt.vector3d(1000, boundingBox.center.y, boundingBox.center.z)
+                if (programExtents.valid) {
+                    return Qt.vector3d(1000,
+                                       programExtents.center.y + programExtents.position.y,
+                                       programExtents.center.z + programExtents.position.z)
+                } else {
+                    return Qt.vector3d(1000, boundingBox.center.y, boundingBox.center.z)
+                }
             case "Perspective":
-                return Qt.vector3d(distance * Math.sin(Math.PI*pitch/180) * Math.cos(Math.PI*heading/180) / pathView.zoom + boundingBox.center.x,
-                                   distance * Math.sin(Math.PI*pitch/180) * Math.sin(Math.PI*heading/180) / pathView.zoom + boundingBox.center.y,
-                                   distance * Math.cos(Math.PI*pitch/180) / pathView.zoom + boundingBox.center.z)
+                var center
+                if (programExtents.valid) {
+                    center = programExtents.center.plus(programExtents.position)
+                } else {
+                    center = boundingBox.center
+                }
+                return Qt.vector3d(distance * Math.sin(Math.PI*pitch/180) * Math.cos(Math.PI*heading/180) / pathView.zoom + center.x,
+                                   distance * Math.sin(Math.PI*pitch/180) * Math.sin(Math.PI*heading/180) / pathView.zoom + center.y,
+                                   distance * Math.cos(Math.PI*pitch/180) / pathView.zoom + center.z)
             default:
                 return  Qt.vector3d(0,0,0)
             }
         }
         center: {
+            var center
             switch (pathView.viewMode) {
             case "Top":
             case "RotatedTop":
             case "Perspective":
-                return boundingBox.center //Qt.vector3d(boundingBox.center.x, boundingBox.center.y, 0)
+                if (programExtents.valid) {
+                    return programExtents.center.plus(programExtents.position)
+                } else {
+                    return boundingBox.center
+                }
             case "Front":
-                return Qt.vector3d(boundingBox.center.x, 0, boundingBox.center.z)
+                if (programExtents.valid) {
+                    center = programExtents.center.plus(programExtents.position)
+                    return Qt.vector3d(center.x, 0, center.z)
+                } else {
+                    return Qt.vector3d(boundingBox.center.x, 0, boundingBox.center.z)
+                }
             case "Side":
-                return Qt.vector3d(0, boundingBox.center.y, boundingBox.center.z)
+                if (programExtents.valid) {
+                    center = programExtents.center.plus(programExtents.position)
+                    return Qt.vector3d(0, center.y, center.z)
+                } else {
+                    return Qt.vector3d(0, boundingBox.center.y, boundingBox.center.z)
+                }
             default:
                 return Qt.vector3d(0,0,0)
             }
@@ -135,16 +186,33 @@ GLView3D {
         }
         viewSize: {
             var side
+            var u
+            var v
+            var viewRatio
+            var objectRatio
+
             switch (pathView.viewMode) {
             case "Top":
             case "RotatedTop":
-                side = Math.max(boundingBox.size.x, boundingBox.size.y) / pathView.zoom
+                if (programExtents.valid) {
+                    side = (Math.max(programExtents.size.x, programExtents.size.y) + 40 * sizeFactor) / pathView.zoom
+                } else {
+                    side = Math.max(boundingBox.size.x, boundingBox.size.y) / pathView.zoom
+                }
                 return Qt.size(side, side)
             case "Front":
-                side = Math.max(boundingBox.size.x, boundingBox.size.z) / pathView.zoom
+                if (programExtents.valid) {
+                    side = (Math.max(programExtents.size.x, programExtents.size.z)  + 40 * sizeFactor) / pathView.zoom
+                } else {
+                    side = Math.max(boundingBox.size.x, boundingBox.size.z) / pathView.zoom
+                }
                 return Qt.size(side, side)
             case "Side":
-                side = Math.max(boundingBox.size.y, boundingBox.size.z) / pathView.zoom
+                if (programExtents.valid) {
+                    side = (Math.max(programExtents.size.y, programExtents.size.z)  + 40 * sizeFactor) / pathView.zoom
+                } else {
+                    side = Math.max(boundingBox.size.y, boundingBox.size.z) / pathView.zoom
+                }
                 return Qt.size(side, side)
             default:
                 return Qt.size(1,1)
@@ -170,27 +238,23 @@ GLView3D {
         id: pathViewObject
     }
 
-    Sphere3D {
-        id: smallOrigin
-        radius: 0.05
-        position: Qt.vector3d(2.0, 2.4, 0.2)
-        color: pathView.colors["small_origin"]
-    }
-
     Cylinder3D {
         id: tool
-        position.x: _ready ? status.motion.position.x : 0
-        position.y: _ready ? status.motion.position.y : 0
-        position.z: (_ready ? status.motion.position.z : 0) + height
+        visible: pathView.toolVisible
+        position.x: _ready ? status.motion.position.x - status.io.toolOffset.x : 0
+        position.y: _ready ? status.motion.position.y - status.io.toolOffset.y : 0
+        position.z: (_ready ? status.motion.position.z - status.io.toolOffset.z : 0) + height
+
         cone: true
-        radius: 3
-        height: 8
+        radius: 5 * pathView.sizeFactor
+        height: 15 * pathView.sizeFactor
         color: pathView.colors["tool_diffuse"]
         rotationAngle: 180
         rotationAxis: Qt.vector3d(1,0,0)
     }
 
     Grid3D {
+        visible: pathView.gridVisible && (pathView.viewMode != "Perspective")
         colorAxis1: pathView.colors["grid"]
         colorAxis1Min: pathView.colors["grid_min"]
         colorAxis2: pathView.colors["grid"]
@@ -200,9 +264,9 @@ GLView3D {
                                                boundingBox.minimum.z) :
                                    boundingBox.minimum
         maximum: boundingBox.maximum
-        intervalAxis1: 5
+        intervalAxis1: 10 * sizeFactor
         intervalAxis1Min: intervalAxis1 / 5
-        intervalAxis2: 5
+        intervalAxis2: 10 * sizeFactor
         intervalAxis2Min: intervalAxis2 / 5
         plane: {
             switch (pathView.viewMode) {
@@ -217,49 +281,97 @@ GLView3D {
                 return "XZ"
             }
         }
-        visible: pathView.viewMode != "Perspective"
 
         onPaint: coordinates.requestPaint()
     }
 
     BoundingBox3D {
         id: boundingBox
+        visible: pathView.machineLimitsVisible
         axes: pathView.axes
+        lineStippleLength: (pathView.viewMode == "Perspective") ? 0.02 * camera.distance / pathView.zoom : 0.02
         minimum.x: _ready ? status.config.axis[0].minPositionLimit : 0
         minimum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].minPositionLimit : 0
         minimum.z: (_ready && status.config.axis.length > 2) ? status.config.axis[2].minPositionLimit : 0
         maximum.x: _ready ? status.config.axis[0].maxPositionLimit : 0
         maximum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].maxPositionLimit : 0
         maximum.z: (_ready && status.config.axis.length > 2) ? status.config.axis[2].maxPositionLimit : 0
-        visible: pathView.viewMode == "Perspective"
     }
 
     ProgramExtents3D {
         id: programExtents
+        visible: pathView.programVisible && pathView.programExtentsVisible
+        position: coordinates.position
         axes: pathView.axes
         maximum: path.maximumExtents
         minimum: path.minimumExtents
-        textSize: 5
+        limitMinimum: boundingBox.minimum.minus(position)
+        limitMaximum: boundingBox.maximum.minus(position)
+        textSize: 8 * pathView.sizeFactor
         decimals: 2
         color: pathView.colors["label_ok"]
         limitColor: pathView.colors["label_limit"]
+        viewMode: pathView.viewMode
     }
 
     Coordinate3D {
+        property var g5xOffset: status.synced ? status.motion.g5xOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
+        property var g92Offset: status.synced ? status.motion.g92Offset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
+        property int positionOffset: status.synced ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
+
         id: coordinates
+        visible: pathView.coordinateVisible
         axes: pathView.axes
-        position: Qt.vector3d(0.0, 0.0, 0.0)
-        textSize: 3
+        position: getPosition()
+        textSize: 14 * pathView.sizeFactor
+        axesLength: 25 * pathView.sizeFactor
         xAxisColor: pathView.colors["axis_x"]
         yAxisColor: pathView.colors["axis_y"]
         zAxisColor: pathView.colors["axis_z"]
         xAxisRotation: (pathView.viewMode == "Front") ? 90 : 0
         yAxisRotation: (pathView.viewMode == "Side") ? 90 : 0
         zAxisRotation: (pathView.viewMode == "Side") ? 90 : 0
+
+        function getPosition() {
+            var positionVector = Qt.vector3d(0.0, 0.0, 0.0)
+
+            if (positionOffset == ApplicationStatus.RelativePositionOffset)
+            {
+                positionVector.x = g5xOffset.x + g92Offset.x
+                if (axes > 1) {
+                    positionVector.y = g5xOffset.y + g92Offset.y
+                }
+                if (axes > 2) {
+                    positionVector.z = g5xOffset.z + g92Offset.z
+                }
+            }
+
+            return positionVector
+        }
+    }
+
+    ProgramOffsets3D {
+        id: programOffsets
+        textSize: 14 * sizeFactor
+        color: pathView.colors["small_origin"]
+        g5xIndex: status.synced ? status.motion.g5xIndex : 1
+        g5xOffset: status.synced ? status.motion.g5xOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
+        g92Offset: status.synced ? status.motion.g92Offset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
+        visible: pathView.offsetsVisible && (status.config.positionOffset === ApplicationStatus.RelativePositionOffset)
+    }
+
+    Sphere3D {
+        id: smallOrigin
+        visible: pathView.offsetsVisible
+        radius: 2 * sizeFactor
+        position: Qt.vector3d(0.0, 0.0, 0.0)
+        color: pathView.colors["small_origin"]
     }
 
     Path3D {
         id: path
+        visible: pathView.programVisible
+        position: coordinates.position
         arcFeedColor: pathView.colors["arc_feed"]
         straightFeedColor: pathView.colors["straight_feed"]
         traverseColor: pathView.colors["traverse"]
@@ -302,9 +414,19 @@ GLView3D {
                 var xOffset = lastX - mouseX
                 var yOffset = lastY - mouseY
 
-                camera.heading += xOffset*2 / Screen.pixelDensity
-                camera.pitch += yOffset*2 / Screen.pixelDensity
-
+                switch (pathView.viewMode)
+                {
+                case "Perspective":
+                    camera.heading += xOffset*2 / Screen.pixelDensity
+                    camera.pitch += yOffset*2 / Screen.pixelDensity
+                    break
+                case "Front":
+                    console.log("X " + xOffset)
+                    console.log("Y " + yOffset)
+                    break
+                default:
+                    break
+                }
                 lastY = mouseY
                 lastX = mouseX
             }
