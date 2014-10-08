@@ -43,6 +43,7 @@ void QGLPathItem::paint(QGLView *glView)
     {
         glView->prepare(this);
         glView->reset();
+        glView->beginUnion();
 
         for (int i = 0; i < m_previewPathItems.size(); ++i)
         {
@@ -90,6 +91,8 @@ void QGLPathItem::paint(QGLView *glView)
             }
 
         }
+
+        glView->endUnion();
 
         m_needsFullUpdate = false;
     }
