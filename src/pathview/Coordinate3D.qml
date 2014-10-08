@@ -38,6 +38,7 @@ Canvas3D {
     onPaint: {
         context.prepare(this)
         context.reset()
+        context.beginUnion()
 
         context.color(root.xAxisColor)
         context.rotate(xAxisRotation, 1.0, 0.0, 0.0)
@@ -73,6 +74,8 @@ Canvas3D {
             context.text("Z", GLView3D.AlignCenter)
             context.endUnion()
         }
+
+        context.endUnion()
         context.update()
     }
 
