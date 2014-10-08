@@ -44,6 +44,8 @@ LocalSettings {
                 setValue("axis" + i + ".jogVelocity", status.config.defaultVelocity, false)
             }
             setValue("dro.showOffsets", false, false)
+            setValue("dro.showVelocity", true, false)
+            setValue("dro.showDistanceToGo", true, false)
             setValue("mdi.history", [], false)
             initialized = true
         }
