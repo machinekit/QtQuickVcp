@@ -24,6 +24,7 @@
 #define DEBUGHELPER_H
 
 #ifdef QT_DEBUG
+#include <QDebug>
 
 const int debugLevel = 1;
 
