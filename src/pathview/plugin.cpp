@@ -50,6 +50,7 @@ static const struct {
     { "PathViewCore", 1, 0 },
     { "PathViewObject", 1, 0 },
     { "ProgramExtents3D", 1, 0 },
+    { "ProgramOffsets3D", 1, 0 },
     { "SourceView", 1, 0 },
     { "ViewModeAction", 1, 0 },
     { "ZoomInAction", 1, 0 },

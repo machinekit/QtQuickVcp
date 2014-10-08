@@ -13,6 +13,7 @@
         <file>ZoomInAction.qml</file>
         <file>ZoomOutAction.qml</file>
         <file>ZoomOriginalAction.qml</file>
+        <file>ProgramOffsets3D.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/PathView/icons">
         <file alias="view-mode-front">icons/view-mode-front.png</file>
