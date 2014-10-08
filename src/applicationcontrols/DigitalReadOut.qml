@@ -43,7 +43,10 @@ ApplicationItem {
     property var g92Offset: _ready ? status.motion.g92Offset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
     property var toolOffset: _ready ? status.io.toolOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
     property double velocity: _ready ? status.motion.currentVel : 15.4
+    property double distanceToGo: _ready ? status.motion.distanceToGo : 10.2
     property bool offsetsVisible: settings.initialized && settings.values.dro.showOffsets
+    property bool velocityVisible: settings.initialized && settings.values.dro.showVelocity
+    property bool distanceToGoVisible: settings.initialized && settings.values.dro.showDistanceToGo
     property int positionFeedback: _ready ? status.config.positionFeedback : ApplicationStatus.ActualPositionFeedback
     property int positionOffset: _ready ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
 
@@ -71,14 +74,13 @@ ApplicationItem {
 
     id: droRect
     implicitWidth: positionLayout.width + dtgLayout.width + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
-    implicitHeight: positionLayout.height + g5xLayout.height + g92Layout.height + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
+    implicitHeight: positionLayout.height + extraLayout.height + g5xLayout.height + g92Layout.height + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
     width: implicitWidth
     height: implicitHeight
 
     Label {
         id: dummyLabel
         font.bold: true
-        //font.pointSize: 10
     }
 
     Component {
@@ -215,6 +217,16 @@ ApplicationItem {
                 }
             }
         }
+    }
+
+    ColumnLayout {
+        id: extraLayout
+        anchors.left: parent.left
+        anchors.top: positionLayout.bottom
+        anchors.leftMargin: Screen.pixelDensity
+        anchors.topMargin: Screen.pixelDensity * 0.7
+        spacing: Screen.pixelDensity * 0.7
+        visible: !droRect.offsetsVisible
 
         Loader {
             sourceComponent: textLine
@@ -225,7 +237,19 @@ ApplicationItem {
                 item.value = Qt.binding(function(){return droRect.velocity})
             }
             active: true
-            visible: !droRect.offsetsVisible
+            visible: !droRect.offsetsVisible && velocityVisible
+        }
+
+        Loader {
+            sourceComponent: textLine
+            onLoaded: {
+                item.title = "DTG:"
+                item.type = ""
+                item.homed = false
+                item.value = Qt.binding(function(){return droRect.distanceToGo})
+            }
+            active: true
+            visible: !droRect.offsetsVisible && distanceToGoVisible
         }
     }
 
