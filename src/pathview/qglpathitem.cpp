@@ -35,6 +35,22 @@ QGLPathItem::QGLPathItem(QQuickItem *parent) :
     m_minimumExtents(QVector3D(0, 0, 0)),
     m_maximumExtents(QVector3D(0, 0, 0))
 {
+    connect(this, SIGNAL(visibleChanged()),
+            this, SLOT(triggerFullUpdate()));
+    connect(this, SIGNAL(positionChanged(QVector3D)),
+            this, SLOT(triggerFullUpdate()));
+    connect(this, SIGNAL(positionChanged(QVector3D)),
+            this, SLOT(triggerFullUpdate()));
+    connect(this, SIGNAL(scaleChanged()),
+            this, SLOT(triggerFullUpdate()));
+    connect(this, SIGNAL(rotationChanged(QQuaternion)),
+            this, SLOT(triggerFullUpdate()));
+    connect(this, SIGNAL(rotationAngleChanged(float)),
+            this, SLOT(triggerFullUpdate()));
+    connect(this, SIGNAL(rotationAxisChanged(QVector3D)),
+            this, SLOT(triggerFullUpdate()));
+    connect(this, SIGNAL(visibleChanged()),
+            this, SLOT(triggerFullUpdate()));
 }
 
 void QGLPathItem::paint(QGLView *glView)
@@ -761,4 +777,9 @@ void QGLPathItem::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
             emit needsUpdate();
         }
     }
+}
+
+void QGLPathItem::triggerFullUpdate()
+{
+    m_needsFullUpdate = true;
 }

@@ -178,6 +178,7 @@ private:
 private slots:
     void drawPath();
     void modelDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles);
+    void triggerFullUpdate();
 
 signals:
     void modelChanged(QGCodeProgramModel * arg);
