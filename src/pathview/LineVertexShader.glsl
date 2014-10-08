@@ -11,8 +11,8 @@ attribute highp vec4 position;    // per-vertex position
 uniform bool stipple;       // enable or disable stippling
 
 varying lowp vec4 destinationColor;
-varying lowp vec4 currentPosition;
-varying lowp vec4 sourcePosition;
+varying highp vec4 currentPosition;
+varying highp vec4 sourcePosition;
 
 void main() {
     highp mat4 modelviewMatrix = viewMatrix * modelMatrix;
