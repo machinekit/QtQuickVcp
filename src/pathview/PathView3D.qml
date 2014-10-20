@@ -67,7 +67,10 @@ GLView3D {
     }
     property int axes: _ready ? status.config.axes : 3
     property string viewMode: "Perspective"
-    property real zoom: 0.95
+    property real cameraZoom: 0.95
+    property vector3d cameraOffset: Qt.vector3d(0, 0, 0)
+    property real cameraHeading: -135
+    property real cameraPitch: 60
     property real sizeFactor: _ready ? status.config.linearUnits: 1
 
     property bool programVisible: true
@@ -87,9 +90,10 @@ GLView3D {
     id: pathView
 
     camera: Camera3D {
-        property real heading: -135
-        property real pitch: 60
+        property real heading: pathView.cameraHeading
+        property real pitch: pathView.cameraPitch
         property real distance: (programExtents.valid ? (programExtents.size.length() + 40 * sizeFactor) : boundingBox.size.length()) * 4.5
+        property vector3d centerOffset: pathView.cameraOffset
 
         id: camera
         projectionType: {
@@ -106,74 +110,107 @@ GLView3D {
             }
         }
         eye: {
+            var x = camera.centerOffset.x
+            var y = camera.centerOffset.y
+            var z = camera.centerOffset.z
+
             switch (pathView.viewMode) {
             case "Top":
             case "RotatedTop":
+                z = 1000
                 if (programExtents.valid) {
-                    return Qt.vector3d(programExtents.center.x + programExtents.position.x,
-                                       programExtents.center.y + programExtents.position.y,
-                                       1000)
+                    x += programExtents.center.x + programExtents.position.x
+                    y += programExtents.center.y + programExtents.position.y
                 } else {
-                    return Qt.vector3d(boundingBox.center.x, boundingBox.center.y, 1000)
+                    x += boundingBox.center.x
+                    y += boundingBox.center.y
                 }
+                break
             case "Front":
+                y = -1000
                 if (programExtents.valid) {
-                    return Qt.vector3d(programExtents.center.x + programExtents.position.x,
-                                       -1000,
-                                       programExtents.center.z + programExtents.position.z)
+                    x += programExtents.center.x + programExtents.position.x
+                    z += programExtents.center.z + programExtents.position.z
                 } else {
-                    return Qt.vector3d(boundingBox.center.x, -1000, boundingBox.center.z)
+                    x += boundingBox.center.x
+                    z += boundingBox.center.z
                 }
+                break
             case "Side":
+                x = 1000
                 if (programExtents.valid) {
-                    return Qt.vector3d(1000,
-                                       programExtents.center.y + programExtents.position.y,
-                                       programExtents.center.z + programExtents.position.z)
+                    y += programExtents.center.y + programExtents.position.y
+                    z += programExtents.center.z + programExtents.position.z
                 } else {
-                    return Qt.vector3d(1000, boundingBox.center.y, boundingBox.center.z)
+                    y += boundingBox.center.y
+                    z += boundingBox.center.z
                 }
+                break
             case "Perspective":
-                var center
                 if (programExtents.valid) {
-                    center = programExtents.center.plus(programExtents.position)
+                    x += programExtents.center.x + programExtents.position.x
+                    y += programExtents.center.y + programExtents.position.y
+                    z += programExtents.center.z + programExtents.position.z
                 } else {
-                    center = boundingBox.center
+                    x += boundingBox.center.x
+                    y += boundingBox.center.y
+                    z += boundingBox.center.z
                 }
-                return Qt.vector3d(distance * Math.sin(Math.PI*pitch/180) * Math.cos(Math.PI*heading/180) / pathView.zoom + center.x,
-                                   distance * Math.sin(Math.PI*pitch/180) * Math.sin(Math.PI*heading/180) / pathView.zoom + center.y,
-                                   distance * Math.cos(Math.PI*pitch/180) / pathView.zoom + center.z)
+                x += distance * Math.sin(Math.PI*pitch/180) * Math.cos(Math.PI*heading/180) / pathView.cameraZoom
+                y += distance * Math.sin(Math.PI*pitch/180) * Math.sin(Math.PI*heading/180) / pathView.cameraZoom
+                z += distance * Math.cos(Math.PI*pitch/180) / pathView.cameraZoom
+                break
             default:
-                return  Qt.vector3d(0,0,0)
+                break
             }
+
+            return Qt.vector3d(x,y,z)
         }
         center: {
-            var center
+            var x = camera.centerOffset.x
+            var y = camera.centerOffset.y
+            var z = camera.centerOffset.z
+
+
             switch (pathView.viewMode) {
             case "Top":
             case "RotatedTop":
             case "Perspective":
                 if (programExtents.valid) {
-                    return programExtents.center.plus(programExtents.position)
+                    x += programExtents.center.x +  programExtents.position.x
+                    y += programExtents.center.y +  programExtents.position.y
+                    z += programExtents.center.z +  programExtents.position.z
                 } else {
-                    return boundingBox.center
+                    x += boundingBox.center.x
+                    y += boundingBox.center.y
+                    z += boundingBox.center.z
                 }
+                break
             case "Front":
+                y = 0
                 if (programExtents.valid) {
-                    center = programExtents.center.plus(programExtents.position)
-                    return Qt.vector3d(center.x, 0, center.z)
+                    x += programExtents.center.x + programExtents.position.x
+                    z += programExtents.center.z + programExtents.position.z
                 } else {
-                    return Qt.vector3d(boundingBox.center.x, 0, boundingBox.center.z)
+                    x += boundingBox.center.x
+                    z += boundingBox.center.z
                 }
+                break
             case "Side":
+                x = 0
                 if (programExtents.valid) {
-                    center = programExtents.center.plus(programExtents.position)
-                    return Qt.vector3d(0, center.y, center.z)
+                    y = programExtents.center.y + programExtents.position.y
+                    z = programExtents.center.z + programExtents.position.z
                 } else {
-                    return Qt.vector3d(0, boundingBox.center.y, boundingBox.center.z)
+                    y += boundingBox.center.y
+                    z += boundingBox.center.z
                 }
+                break
             default:
-                return Qt.vector3d(0,0,0)
+                break
             }
+
+            return Qt.vector3d(x,y,z)
         }
         upVector: {
             switch (pathView.viewMode) {
@@ -195,23 +232,23 @@ GLView3D {
             case "Top":
             case "RotatedTop":
                 if (programExtents.valid) {
-                    side = (Math.max(programExtents.size.x, programExtents.size.y) + 40 * sizeFactor) / pathView.zoom
+                    side = (Math.max(programExtents.size.x, programExtents.size.y) + 40 * sizeFactor) / pathView.cameraZoom
                 } else {
-                    side = Math.max(boundingBox.size.x, boundingBox.size.y) / pathView.zoom
+                    side = Math.max(boundingBox.size.x, boundingBox.size.y) / pathView.cameraZoom
                 }
                 return Qt.size(side, side)
             case "Front":
                 if (programExtents.valid) {
-                    side = (Math.max(programExtents.size.x, programExtents.size.z)  + 40 * sizeFactor) / pathView.zoom
+                    side = (Math.max(programExtents.size.x, programExtents.size.z)  + 40 * sizeFactor) / pathView.cameraZoom
                 } else {
-                    side = Math.max(boundingBox.size.x, boundingBox.size.z) / pathView.zoom
+                    side = Math.max(boundingBox.size.x, boundingBox.size.z) / pathView.cameraZoom
                 }
                 return Qt.size(side, side)
             case "Side":
                 if (programExtents.valid) {
-                    side = (Math.max(programExtents.size.y, programExtents.size.z)  + 40 * sizeFactor) / pathView.zoom
+                    side = (Math.max(programExtents.size.y, programExtents.size.z)  + 40 * sizeFactor) / pathView.cameraZoom
                 } else {
-                    side = Math.max(boundingBox.size.y, boundingBox.size.z) / pathView.zoom
+                    side = Math.max(boundingBox.size.y, boundingBox.size.z) / pathView.cameraZoom
                 }
                 return Qt.size(side, side)
             default:
@@ -289,7 +326,7 @@ GLView3D {
         id: boundingBox
         visible: pathView.machineLimitsVisible
         axes: pathView.axes
-        lineStippleLength: (pathView.viewMode == "Perspective") ? 0.02 * camera.distance / pathView.zoom : 0.02
+        lineStippleLength: (pathView.viewMode == "Perspective") ? 0.02 * camera.distance / pathView.cameraZoom : 0.02
         minimum.x: _ready ? status.config.axis[0].minPositionLimit : 0
         minimum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].minPositionLimit : 0
         minimum.z: (_ready && status.config.axis.length > 2) ? status.config.axis[2].minPositionLimit : 0
@@ -387,12 +424,12 @@ GLView3D {
         property real startZoom: 0
         anchors.fill: parent
 
-        onPinchStarted: startZoom = pathView.zoom
-        onPinchUpdated: pathView.zoom = startZoom * pinch.scale
+        onPinchStarted: startZoom = pathView.cameraZoom
+        onPinchUpdated: pathView.cameraZoom = startZoom * pinch.scale
 
         MouseArea {
             anchors.fill: parent
-            onWheel: pathView.zoom *= (1 + wheel.angleDelta.y/1200)
+            onWheel: pathView.cameraZoom *= (1 + wheel.angleDelta.y/1200)
 
             property int lastY: 0
             property int lastX: 0
@@ -411,18 +448,31 @@ GLView3D {
                 if (!pressed)
                     return
 
-                var xOffset = lastX - mouseX
-                var yOffset = lastY - mouseY
+                var scaleFactor = camera.viewSize.height/pathView.height
+                var xOffset = lastX - Math.floor(mouseX)
+                var yOffset = lastY - Math.floor(mouseY)
 
                 switch (pathView.viewMode)
                 {
                 case "Perspective":
-                    camera.heading += xOffset*2 / Screen.pixelDensity
-                    camera.pitch += yOffset*2 / Screen.pixelDensity
+                    pathView.cameraHeading += xOffset * 2 / Screen.pixelDensity
+                    pathView.cameraPitch += yOffset * 2 / Screen.pixelDensity
                     break
                 case "Front":
-                    console.log("X " + xOffset)
-                    console.log("Y " + yOffset)
+                    pathView.cameraOffset.x += xOffset * scaleFactor
+                    pathView.cameraOffset.z -= yOffset * scaleFactor
+                    break
+                case "Side":
+                    pathView.cameraOffset.y += xOffset * scaleFactor
+                    pathView.cameraOffset.z -= yOffset * scaleFactor
+                    break
+                case "Top":
+                    pathView.cameraOffset.x += xOffset * scaleFactor
+                    pathView.cameraOffset.y -= yOffset * scaleFactor
+                    break
+                case "RotatedTop":
+                    pathView.cameraOffset.y += xOffset * scaleFactor
+                    pathView.cameraOffset.x += yOffset * scaleFactor
                     break
                 default:
                     break
