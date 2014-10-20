@@ -73,8 +73,14 @@ ApplicationItem {
     }
 
     id: droRect
-    implicitWidth: positionLayout.width + dtgLayout.width + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
-    implicitHeight: positionLayout.height + extraLayout.height + g5xLayout.height + g92Layout.height + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
+    implicitWidth: positionLayout.width
+                   + dtgLayout.visible * dtgLayout.width
+                   + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
+    implicitHeight: positionLayout.height
+                    + extraLayout.visible * extraLayout.height
+                    + g5xLayout.visible * g5xLayout.height
+                    + g92Layout.visible * g92Layout.height
+                    + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
     width: implicitWidth
     height: implicitHeight
 
