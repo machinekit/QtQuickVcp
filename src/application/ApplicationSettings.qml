@@ -46,6 +46,15 @@ LocalSettings {
             setValue("dro.showOffsets", false, false)
             setValue("dro.showVelocity", true, false)
             setValue("dro.showDistanceToGo", true, false)
+            setValue("preview.showMachineLimits", true, false)
+            setValue("preview.showProgram", true, false)
+            setValue("preview.showProgramRapids", true, false)
+            setValue("preview.showLivePlot", true, false)
+            setValue("preview.showTool", true, false)
+            setValue("preview.showProgramExtents", true, false)
+            setValue("preview.showMachineLimits", true, false)
+            setValue("preview.alphaBlendProgram", false, false)
+            setValue("preview.showCoordinate", true, false)
             setValue("mdi.history", [], false)
             initialized = true
         }
