@@ -607,10 +607,10 @@ void QServiceDiscovery::setUnicastLookupInterval(int arg)
 
 void QServiceDiscovery::setLookupMode(QServiceDiscovery::LookupMode arg)
 {
-    bool ready;
-
     if (m_lookupMode != arg)
     {
+        bool ready;
+
         if (m_lookupReady)
         {
             deinitializeMdns();
@@ -1052,12 +1052,12 @@ QString QServiceDiscovery::composeSdString(QString subType, QString type, QStrin
 void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 {
     int type;
-    QServiceDiscoveryItem * item;
 
     type = m_queryTypeMap.value(id);
 
     foreach(QJDns::Record r, results.answerRecords)
     {
+        QServiceDiscoveryItem * item;
         int newId;
 
         item = NULL;

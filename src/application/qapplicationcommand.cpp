@@ -673,7 +673,7 @@ void QApplicationCommand::sendCommandMessage(pb::ContainerType type)
 #endif
         m_tx.Clear();
     }
-    catch (zmq::error_t e) {
+    catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         updateError(SocketError, errorString);
@@ -780,7 +780,7 @@ bool QApplicationCommand::connectSockets()
     try {
         m_commandSocket->connectTo(m_commandUri);
     }
-    catch (zmq::error_t e) {
+    catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         updateError(SocketError, errorString);

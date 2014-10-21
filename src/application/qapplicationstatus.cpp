@@ -502,7 +502,7 @@ bool QApplicationStatus::connectSockets()
     try {
         m_statusSocket->connectTo(m_statusUri);
     }
-    catch (zmq::error_t e) {
+    catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         updateError(SocketError, errorString);

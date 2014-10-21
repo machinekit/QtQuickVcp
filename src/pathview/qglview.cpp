@@ -157,11 +157,11 @@ void QGLView::updateChildren()
 {
     QList<QGLItem*> newItems;
     QList<QQuickItem*> objectChildren = childItems();
-    QGLItem* glItem;
 
     // get all GL items
     for (int i = 0; i < objectChildren.size(); ++i)
     {
+        QGLItem* glItem;
         glItem = qobject_cast<QGLItem*>(objectChildren.at(i));
         if (glItem != NULL)
         {

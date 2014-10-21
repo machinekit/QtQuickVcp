@@ -261,7 +261,7 @@ bool QPreviewClient::connectSockets()
         m_statusSocket->connectTo(m_statusUri);
         m_previewSocket->connectTo(m_previewUri);
     }
-    catch (zmq::error_t e) {
+    catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         updateError(SocketError, errorString);

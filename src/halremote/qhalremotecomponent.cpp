@@ -258,7 +258,7 @@ bool QHalRemoteComponent::connectSockets()
         m_halrcmdSocket->connectTo(m_halrcmdUri);
         m_halrcompSocket->connectTo(m_halrcompUri);
     }
-    catch (zmq::error_t e) {
+    catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         updateError(SocketError, errorString);
@@ -782,7 +782,7 @@ void QHalRemoteComponent::sendHalrcmdMessage(const QByteArray &data)
     try {
         m_halrcmdSocket->sendMessage(data);
     }
-    catch (zmq::error_t e) {
+    catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         updateError(SocketError, errorString);

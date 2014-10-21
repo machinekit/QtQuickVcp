@@ -498,6 +498,7 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     bool point2 = false;    // phi=pi/2
     bool point3 = false;    // phi=pi
     bool point4 = false;    // phi=3pi/2
+    // TODO implement all possible arc
 
     if (!anticlockwise) {
         firstAngle = startAngle;

@@ -124,7 +124,15 @@ private:
 
     class ArcPathItem: public PathItem {
     public:
-        ArcPathItem(): PathItem() {
+        ArcPathItem():
+            PathItem(),
+            helixOffset(0.0),
+            radius(0.0),
+            startAngle(0.0),
+            endAngle(0.0),
+            anticlockwise(false),
+            rotationPlane(XYPlane)
+        {
             pathType = Arc;
         }
 

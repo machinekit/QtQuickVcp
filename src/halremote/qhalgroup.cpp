@@ -419,7 +419,7 @@ bool QHalGroup::connectSockets()
     try {
         m_halgroupSocket->connectTo(m_halgroupUri);
     }
-    catch (zmq::error_t e) {
+    catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         updateError(SocketError, errorString);

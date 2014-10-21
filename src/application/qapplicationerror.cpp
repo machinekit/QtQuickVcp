@@ -153,8 +153,7 @@ void QApplicationError::errorMessageReceived(const QList<QByteArray> &messageLis
         || (m_rx.type() == pb::MT_EMC_NML_TEXT)
         || (m_rx.type() == pb::MT_EMC_NML_DISPLAY)
         || (m_rx.type() == pb::MT_EMC_OPERATOR_TEXT)
-        || (m_rx.type() == pb::MT_EMC_OPERATOR_ERROR)
-        || (m_rx.type() == pb::MT_EMC_OPERATOR_TEXT))
+        || (m_rx.type() == pb::MT_EMC_OPERATOR_ERROR))
     {
         for (int i = 0; i < m_rx.note_size(); ++i)
         {
@@ -225,7 +224,7 @@ bool QApplicationError::connectSockets()
     try {
         m_errorSocket->connectTo(m_errorUri);
     }
-    catch (zmq::error_t e) {
+    catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         updateError(SocketError, errorString);
