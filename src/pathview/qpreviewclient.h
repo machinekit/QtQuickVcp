@@ -50,7 +50,8 @@ class QPreviewClient : public AbstractServiceImplementation
     Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(InterpreterState interpreterState READ interpreterState NOTIFY interpreterStateChanged)
     Q_PROPERTY(QString interpreterNote READ interpreterNote NOTIFY interpreterNoteChanged)
-    Q_ENUMS(State ConnectionError InterpreterState)
+    Q_PROPERTY(CanonUnits units READ units WRITE setUnits NOTIFY unitsChanged)
+    Q_ENUMS(State ConnectionError InterpreterState CanonUnits)
 
 public:
     explicit QPreviewClient(QObject *parent = 0);
@@ -77,6 +78,12 @@ public:
         InterpreterSyncWait = pb::INTERP_SYNC_WAIT,
         InterpreterAbortWait = pb::INTERP_ABORT_WAIT,
         InterpreterStateUnset = pb::INTERP_STATE_UNSET
+    };
+
+    enum CanonUnits {
+        CanonUnitsInches = pb::CANON_UNITS_INCHES,
+        CanonUnitsMm = pb::CANON_UNITS_MM,
+        CanonUnitsCm = pb::CANON_UNITS_CM
     };
 
     QString statusUri() const
@@ -124,6 +131,11 @@ public:
         return m_connected;
     }
 
+    CanonUnits units() const
+    {
+        return m_units;
+    }
+
 public slots:
 
     void setStatusUri(QString arg)
@@ -150,6 +162,15 @@ public slots:
         }
     }
 
+    void setUnits(CanonUnits arg)
+    {
+        if (m_units == arg)
+            return;
+
+        m_units = arg;
+        emit unitsChanged(arg);
+    }
+
 private:
     typedef struct {
         QString fileName;
@@ -165,6 +186,7 @@ private:
     QGCodeProgramModel *m_model;
     InterpreterState    m_interpreterState;
     QString m_interpreterNote;
+    CanonUnits          m_units;
 
     PollingZMQContext *m_context;
     ZMQSocket  *m_statusSocket;
@@ -179,6 +201,8 @@ private:
     void stop();
     void updateState(State state);
     void updateError(ConnectionError error, QString errorString);
+
+    void convertPos(pb::Position *position);
 
 private slots:
     void statusMessageReceived(QList<QByteArray> messageList);
@@ -198,6 +222,7 @@ signals:
     void interpreterStateChanged(InterpreterState arg);
     void interpreterNoteChanged(QString arg);
     void connectedChanged(bool arg);
+    void unitsChanged(CanonUnits arg);
 };
 
 #endif // QPREVIEWCLIENT_H

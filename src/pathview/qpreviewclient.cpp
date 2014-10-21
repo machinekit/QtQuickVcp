@@ -34,6 +34,7 @@ QPreviewClient::QPreviewClient(QObject *parent) :
     m_model(NULL),
     m_interpreterState(InterpreterStateUnset),
     m_interpreterNote(""),
+    m_units(CanonUnitsInches),
     m_context(NULL),
     m_statusSocket(NULL),
     m_previewSocket(NULL),
@@ -104,6 +105,35 @@ void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString 
         m_error = error;
         emit errorChanged(m_error);
     }
+}
+
+void QPreviewClient::convertPos(pb::Position *position)
+{
+    double convertFactor;
+
+    switch (m_units) {
+    case CanonUnitsInches:
+        convertFactor = 1.0;
+        break;
+    case CanonUnitsMm:
+        convertFactor = 25.4;
+        break;
+    case CanonUnitsCm:
+        convertFactor = 2.54;
+        break;
+    default:
+        convertFactor = 1.0;
+    }
+
+    position->set_x(position->x() * convertFactor);
+    position->set_y(position->y() * convertFactor);
+    position->set_z(position->z() * convertFactor);
+    position->set_a(position->a() * convertFactor);
+    position->set_b(position->b() * convertFactor);
+    position->set_c(position->c() * convertFactor);
+    position->set_u(position->u() * convertFactor);
+    position->set_v(position->v() * convertFactor);
+    position->set_w(position->w() * convertFactor);
 }
 
 /** Processes all message received on the status 0MQ socket */
@@ -179,6 +209,11 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
             if (preview.has_filename())
             {
                 m_previewStatus.fileName = QString::fromStdString(preview.filename());
+            }
+
+            if (preview.has_pos())
+            {
+                convertPos(preview.mutable_pos());  // messages come always with unit inches
             }
 
             previewList = static_cast<QList<pb::Preview>*>(m_model->data(m_previewStatus.fileName,
