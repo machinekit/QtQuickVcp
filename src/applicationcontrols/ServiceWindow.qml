@@ -79,12 +79,16 @@ Rectangle {
     /*! \internal */
     property var _requiredServices: {
         var required = []
+        var newReady = true
         for (var i = 0; i < services.length; ++i) {
             if (services[i].required) {
                 required.push(services[i])
+                newReady = newReady && services[i].ready
                 services[i].onReadyChanged.connect(_evaluateReady)
             }
         }
+
+        ready = newReady  // if no required service we are ready
 
         return required
     }
