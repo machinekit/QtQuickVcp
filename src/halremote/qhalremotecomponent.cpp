@@ -576,7 +576,9 @@ QObjectList QHalRemoteComponent::recurseObjects(const QObjectList &list)
 
     foreach (QObject *object, list)
     {
-        if (object->inherits("QHalPin"))
+        QHalPin *halPin;
+        halPin = qobject_cast<QHalPin *>(object);
+        if (halPin != NULL)
         {
             halObjects.append(object);
         }
