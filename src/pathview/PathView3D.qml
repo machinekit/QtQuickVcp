@@ -73,15 +73,15 @@ GLView3D {
     property real cameraPitch: 60
     property real sizeFactor: _ready ? status.config.linearUnits: 1
 
-    property bool programVisible: true
+    property bool programVisible: object.settings.initialized && object.settings.values.preview.showProgram
     property bool gridVisible: true
-    property bool rapidsVisible: true
-    property bool alphaBlendProgram: true
-    property bool livePlotVisible: true
-    property bool toolVisible: true
-    property bool programExtentsVisible: true
-    property bool machineLimitsVisible: true
-    property bool coordinateVisible: true
+    property bool programRapidsVisible: object.settings.initialized && object.settings.values.preview.showProgramRapids
+    property bool alphaBlendProgram: object.settings.initialized && object.settings.values.preview.alphaBlendProgram
+    property bool livePlotVisible: object.settings.initialized && object.settings.values.preview.showLivePlot
+    property bool toolVisible: object.settings.initialized && object.settings.values.preview.showTool
+    property bool programExtentsVisible: object.settings.initialized && object.settings.values.preview.showProgramExtents
+    property bool machineLimitsVisible: object.settings.initialized && object.settings.values.preview.showMachineLimits
+    property bool coordinateVisible: object.settings.initialized && object.settings.values.preview.showCoordinate
     property bool offsetsVisible: object.settings.initialized && object.settings.values.dro.showOffsets
 
     property bool _ready: status.synced
