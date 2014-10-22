@@ -153,6 +153,10 @@ Rectangle {
     */
     property alias lookupMode: serviceDiscovery.lookupMode
 
+    /*! This property holds wheter the service discovery configuration should be stored or not
+    */
+    property bool autoSaveConfiguration: true
+
     /*! This property holds the title of the window.
     */
     readonly property string title: (applicationLoader.active && (applicationLoader.item != null))
@@ -506,24 +510,32 @@ Rectangle {
                                         Layout.fillHeight: true
                                         font.pointSize: dummyText.font.pointSize * 1.2
                                         onEditingFinished: {
-                                            if (text != "") {
-                                                dnsServerView.model[index].hostName = text
-                                                serviceDiscovery.updateNameServers()
-                                                mainWindow.forceActiveFocus()
-                                            }
-                                            else {
-                                                serviceDiscovery.removeNameServer(index)
-                                            }
+                                            dnsServerView.model[index].hostName = text
+                                            serviceDiscovery.updateNameServers()
+                                            serviceDiscovery.updateConfig() // nameServers have changed but are not updated
+
+                                            mainWindow.forceActiveFocus()   // remove the focus
                                         }
-                                        Binding { target: dnsServerTextField; property: "text"; value: dnsServerView.model[index].hostName }
+
+                                        Binding {
+                                            target: dnsServerTextField;
+                                            property: "text";
+                                            value: (dnsServerView.model[index] !== null) ? dnsServerView.model[index].hostName : ""
+                                        }
                                     }
 
                                     Button {
                                         Layout.fillHeight: true
-                                        text: "+"
-                                        visible: index === (dnsServerView.model.length - 1)   // last item
+                                        text: (dnsServerTextField.text !== "") ? "+" : "-"
+                                        visible: (index === (dnsServerView.model.length - 1)) && (index < 2)   // last item, limited to 3 items due to bug => TODO
                                         onClicked: {
-                                            serviceDiscovery.addNameServer(nameServer.createObject(serviceDiscovery, {}))
+                                            mainWindow.forceActiveFocus()   // accept changes on text edit
+
+                                            if (dnsServerTextField.text && dnsServerView.model[index].hostName)
+                                            {
+                                                var nameServerObject = nameServerComponent.createObject(null, {})
+                                                serviceDiscovery.addNameServer(nameServerObject)
+                                            }
                                         }
 
                                         Label {
@@ -543,7 +555,7 @@ Rectangle {
                         Layout.preferredHeight: dummyButon.height * 1.5
                         visible: dnsServerView.model.length === 0
                         onClicked: {
-                            serviceDiscovery.addNameServer(nameServer.createObject(serviceDiscovery, {}))
+                            serviceDiscovery.addNameServer(nameServerComponent.createObject(null, {}))
                         }
 
                         Label {
@@ -554,11 +566,6 @@ Rectangle {
                             verticalAlignment: Text.AlignVCenter
                             text: "+"
                         }
-                    }
-
-                    Component {
-                        id: nameServer
-                        NameServer { }
                     }
                 }
             }
@@ -791,6 +798,84 @@ Rectangle {
                 id: applicationServiceList
             }
         ]
+
+        onNameServersChanged: if (autoSaveConfiguration) updateConfig()
+        onLookupModeChanged: if (autoSaveConfiguration) updateConfig()
+
+        function updateConfig() {
+            var nameServerList = []
+            var nameServer
+
+            if (!sdSettings.initialized) {
+                return
+            }
+
+            for (var i = 0; i < serviceDiscovery.nameServers.length; ++i) {
+                nameServer = {"hostName": "", "port": 0}
+                nameServer.hostName = serviceDiscovery.nameServers[i].hostName
+                nameServer.port = serviceDiscovery.nameServers[i].port
+                if (nameServer.hostName !== "") {
+                    nameServerList.push(nameServer)
+                }
+            }
+
+            sdSettings.setValue("nameServers", nameServerList)
+            sdSettings.setValue("lookupMode", serviceDiscovery.lookupMode)
+            sdSettings.save()
+        }
+    }
+
+    LocalSettings {
+        property bool initialized: false
+
+        id: sdSettings
+
+        application: "machinekit"
+        name: "service-discovery"
+
+        Component.onCompleted: {
+            if (!autoSaveConfiguration) {
+                return
+            }
+
+            load()
+            sdSettings.setValue("nameServers", [], false)
+            sdSettings.setValue("lookupMode", serviceDiscovery.lookupMode, false)
+
+            // add stored name servers
+            var nameServers = sdSettings.values.nameServers
+            var currentNameServers = serviceDiscovery.nameServers
+            for (var i = 0; i < nameServers.length; ++i)
+            {
+                var found = false
+                for (var j = 0; j < currentNameServers.length; ++j)     // avoid duplicates
+                {
+                    if ((nameServers[i].hostName === currentNameServers[j].hostName)
+                            && (nameServers[i].port === currentNameServers[j].port))
+                    {
+                        found = true
+                        break
+                    }
+                }
+
+                if (!found && (serviceDiscovery.nameServers.length < 3)) // limit to 3 name servers => TODO
+                {
+                    var nameServerObject = nameServerComponent.createObject(null, {})
+                    nameServerObject.hostName = nameServers[i].hostName
+                    nameServerObject.port = nameServers[i].port
+                    serviceDiscovery.addNameServer(nameServerObject)
+                }
+            }
+
+            serviceDiscovery.lookupMode = sdSettings.values.lookupMode
+
+            initialized = true
+        }
+    }
+
+    Component {
+        id: nameServerComponent
+        NameServer { }
     }
 
     state: {
