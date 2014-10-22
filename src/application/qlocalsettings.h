@@ -65,12 +65,12 @@ signals:
 
 public slots:
     void setValues(QJsonObject arg);
-    void setValue(const QString &key, const QVariant &value, bool overwrite);
+    void setValue(const QString &key, const QJsonValue &value, bool overwrite);
     void setApplication(QString arg);
     void setName(QString arg);
     void save();
     void load();
-    void setValue(const QString &key, const QVariant &value);
+    void setValue(const QString &key, const QJsonValue &value);
     QJsonValue value(const QString &key);
 
 private:

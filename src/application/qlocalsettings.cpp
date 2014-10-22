@@ -92,11 +92,6 @@ void QLocalSettings::load()
     loadSettings();
 }
 
-void QLocalSettings::setValue(const QString &key, const QVariant &value)
-{
-    setValue(key, value, true);
-}
-
 QJsonValue QLocalSettings::value(const QString &key)
 {
     QStringList heritanceList;
@@ -135,7 +130,12 @@ QJsonValue QLocalSettings::value(const QString &key)
     return QJsonValue();
 }
 
-void QLocalSettings::setValue(const QString &key, const QVariant &value, bool overwrite = true)
+void QLocalSettings::setValue(const QString &key, const QJsonValue &value)
+{
+    setValue(key, value, true);
+}
+
+void QLocalSettings::setValue(const QString &key, const QJsonValue &value, bool overwrite = true)
 {
     QStringList heritanceList;
     QJsonObject *parentObject;
@@ -156,7 +156,7 @@ void QLocalSettings::setValue(const QString &key, const QVariant &value, bool ov
                 continue;
             }
 
-            valueRef = QJsonValue::fromVariant(value);
+            valueRef = value;
         }
         else
         {
