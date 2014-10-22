@@ -262,6 +262,9 @@ QServiceDiscovery::QServiceDiscovery(QObject *parent) :
     m_unicastLookupTimer->setInterval(m_unicastLookupInterval);
     connect(m_unicastLookupTimer, SIGNAL(timeout()),
             this, SLOT(unicastLookup()));
+
+    connect(this, SIGNAL(nameServersChanged(QQmlListProperty<QNameServer>)),
+            this, SLOT(updateNameServers()));
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
