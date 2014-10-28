@@ -46,7 +46,7 @@ void QGCodeProgramLoader::load()
 
     if (localFilePath.indexOf(localPath) == 0)
     {
-        remoteFilePath = remotePath + localFilePath.mid(localPath.length() + 1);
+        remoteFilePath = QDir(remotePath).filePath(localFilePath.mid(localPath.length() + 1));
     }
     else
     {
