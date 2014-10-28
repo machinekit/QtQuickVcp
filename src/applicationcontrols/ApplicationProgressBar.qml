@@ -22,6 +22,7 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 1.2
+import Machinekit.Controls 1.0
 import Machinekit.Application 1.0
 
 ProgressBar {
@@ -79,7 +80,7 @@ ProgressBar {
         text: parent.getText()
     }
 
-    ToolButton {
+    TouchButton {
         id: cancelButton
         anchors.right: parent.right
         anchors.bottom: parent.bottom
