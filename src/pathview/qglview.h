@@ -52,6 +52,7 @@ class QGLView : public QQuickPaintedItem
 
 public:
     QGLView(QQuickItem *parent = 0);
+    ~QGLView();
 
     enum TextAlignment {
         AlignLeft = 0,

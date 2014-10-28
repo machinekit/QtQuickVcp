@@ -55,6 +55,12 @@ QGLView::QGLView(QQuickItem *parent)
     //setAntialiasing(true);
 }
 
+QGLView::~QGLView()
+{
+    clearDrawables();
+    qDeleteAll(m_drawableMap);
+}
+
 void QGLView::setBackgroundColor(const QColor &t)
 {
     if (t == m_backgroundColor)
@@ -80,6 +86,8 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
         connect(win, SIGNAL(beforeSynchronizing()), this, SLOT(sync()), Qt::DirectConnection);
         connect(this, SIGNAL(widthChanged()), this, SLOT(updatePerspectiveAspectRatio()));
         connect(this, SIGNAL(heightChanged()), this, SLOT(updatePerspectiveAspectRatio()));
+
+        updatePerspectiveAspectRatio(); // set current aspect ratio since signals will only be handled on change
 
         // If we allow QML to do the clearing, they would clear what we paint
         // and nothing would show.
