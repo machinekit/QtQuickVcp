@@ -89,6 +89,9 @@ GLView3D {
 
     id: pathView
 
+    enabled: object.settings.initialized && object.settings.values.preview.enable
+    visible: enabled
+
     camera: Camera3D {
         property real heading: pathView.cameraHeading
         property real pitch: pathView.cameraPitch
