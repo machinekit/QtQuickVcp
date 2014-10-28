@@ -40,6 +40,7 @@ class QGLPathItem : public QGLItem
 
 public:
     explicit QGLPathItem(QQuickItem *parent = 0);
+    ~QGLPathItem();
 
     virtual void paint(QGLView *glView);
 

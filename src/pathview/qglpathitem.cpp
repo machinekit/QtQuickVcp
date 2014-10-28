@@ -53,6 +53,11 @@ QGLPathItem::QGLPathItem(QQuickItem *parent) :
             this, SLOT(triggerFullUpdate()));
 }
 
+QGLPathItem::~QGLPathItem()
+{
+    qDeleteAll(m_previewPathItems);
+}
+
 void QGLPathItem::paint(QGLView *glView)
 {
     if (m_needsFullUpdate)
@@ -217,10 +222,18 @@ void QGLPathItem::setModel(QGCodeProgramModel *arg)
         m_model = arg;
         emit modelChanged(arg);
 
-        connect(m_model, SIGNAL(modelReset()),
-                this, SLOT(drawPath()));
-        connect(m_model, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
-                this, SLOT(modelDataChanged(QModelIndex,QModelIndex,QVector<int>)));
+        if (m_model != NULL)
+        {
+            connect(m_model, SIGNAL(modelReset()),
+                    this, SLOT(drawPath()));
+            connect(m_model, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
+                    this, SLOT(modelDataChanged(QModelIndex,QModelIndex,QVector<int>)));
+
+            if (m_model->rowCount() > 0)
+            {
+                drawPath();     // draw model when set
+            }
+        }
     }
 }
 
@@ -728,6 +741,7 @@ void QGLPathItem::drawPath()
     }
 
     qDeleteAll(m_previewPathItems); // clear the list of preview path items
+    m_previewPathItems.clear();
     resetActiveOffsets(); // clear the offsets
     resetActivePlane();
     resetCurrentPosition(); // reset position
