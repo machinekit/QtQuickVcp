@@ -52,7 +52,6 @@ class QApplicationError : public AbstractServiceImplementation
 
 public:
     explicit QApplicationError(QObject *parent = 0);
-    ~QApplicationError();
 
     enum SocketState {
         Down = 1,
@@ -64,14 +63,14 @@ public:
         Disconnected = 0,
         Connecting = 1,
         Connected = 2,
-        Error = 3
+        Timeout = 3,
+        Error = 4
     };
 
     enum ConnectionError {
         NoError = 0,
         ServiceError = 1,
-        TimeoutError = 2,
-        SocketError = 3
+        SocketError = 2
     };
 
     enum ErrorType {
@@ -143,7 +142,7 @@ public slots:
 private:
     QString         m_errorUri;
     bool            m_connected;
-    SocketState     m_sState;
+    SocketState     m_errorSocketState;
     State           m_connectionState;
     ConnectionError m_error;
     QString         m_errorString;
@@ -153,16 +152,17 @@ private:
     ZMQSocket   *m_errorSocket;
     QStringList  m_subscriptions;
     QTimer      *m_errorHeartbeatTimer;
-    bool         m_errorPingOutstanding;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
 
     void start();
     void stop();
+    void cleanup();
     void startErrorHeartbeat(int interval);
     void stopErrorHeartbeat();
     void refreshErrorHeartbeat();
     void updateState(State state);
+    void updateState(State state, ConnectionError error, const QString &errorString);
     void updateError(ConnectionError error, const QString &errorString);
 
 private slots:

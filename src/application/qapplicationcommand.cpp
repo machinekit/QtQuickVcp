@@ -28,7 +28,7 @@ QApplicationCommand::QApplicationCommand(QObject *parent) :
     m_commandUri(""),
     m_heartbeatPeriod(3000),
     m_connected(false),
-    m_cState(Down),
+    m_commandSocketState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
@@ -39,11 +39,6 @@ QApplicationCommand::QApplicationCommand(QObject *parent) :
 {
     connect(m_commandHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(commandHeartbeatTimerTick()));
-}
-
-QApplicationCommand::~QApplicationCommand()
-{
-    disconnectSockets();
 }
 
 void QApplicationCommand::abort(const QString &interpreter)
@@ -580,13 +575,14 @@ void QApplicationCommand::start()
 #ifdef QT_DEBUG
    DEBUG_TAG(1, "command", "start")
 #endif
-    m_cState = Trying;
+    m_commandSocketState = Trying;
     updateState(Connecting);
 
 
     if (connectSockets())
     {
-        updateState(Connected);
+        startCommandHeartbeat();
+        sendCommandMessage(pb::MT_PING);
     }
 }
 
@@ -596,12 +592,16 @@ void QApplicationCommand::stop()
     DEBUG_TAG(1, "command", "stop")
 #endif
 
-    // cleanup here
-    stopCommandHeartbeat();
-    disconnectSockets();
+    cleanup();
 
     updateState(Disconnected);
     updateError(NoError, "");   // clear the error here
+}
+
+void QApplicationCommand::cleanup()
+{
+    stopCommandHeartbeat();
+    disconnectSockets();
 }
 
 void QApplicationCommand::startCommandHeartbeat()
@@ -622,6 +622,13 @@ void QApplicationCommand::stopCommandHeartbeat()
 
 void QApplicationCommand::updateState(QApplicationCommand::State state)
 {
+    updateState(state, NoError, "");
+}
+
+void QApplicationCommand::updateState(QApplicationCommand::State state, QApplicationCommand::ConnectionError error, const QString &errorString)
+{
+    updateError(error, errorString);
+
     if (state != m_connectionState)
     {
         m_connectionState = state;
@@ -629,7 +636,6 @@ void QApplicationCommand::updateState(QApplicationCommand::State state)
 
         if (m_connectionState == Connected)
         {
-            startCommandHeartbeat();
             if (m_connected != true) {
                 m_connected = true;
                 emit connectedChanged(true);
@@ -637,7 +643,6 @@ void QApplicationCommand::updateState(QApplicationCommand::State state)
         }
         else
         {
-            stopCommandHeartbeat();
             if (m_connected != false) {
                 m_connected = false;
                 emit connectedChanged(m_connected);
@@ -656,6 +661,10 @@ void QApplicationCommand::updateError(QApplicationCommand::ConnectionError error
 
     if (m_error != error)
     {
+        if (error != NoError)
+        {
+            cleanup();
+        }
         m_error = error;
         emit errorChanged(m_error);
     }
@@ -676,8 +685,7 @@ void QApplicationCommand::sendCommandMessage(pb::ContainerType type)
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateError(SocketError, errorString);
-        updateState(Error);
+        updateState(Error, SocketError, errorString);
     }
 }
 
@@ -694,12 +702,11 @@ void QApplicationCommand::commandMessageReceived(const QList<QByteArray> &messag
 
     if (m_rx.type() == pb::MT_PING_ACKNOWLEDGE)
     {
-        m_cState = Up;
         m_commandPingOutstanding = false;
 
-        if ((m_connectionState == Error) && (m_error == TimeoutError))   // recover from a timeout
+        if (m_commandSocketState != Up)
         {
-            updateError(NoError, "");
+            m_commandSocketState = Up;
             updateState(Connected);
         }
 
@@ -717,9 +724,8 @@ void QApplicationCommand::commandMessageReceived(const QList<QByteArray> &messag
             errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
         }
 
-        m_cState = Down;
-        updateError(CommandError, errorString);
-        updateState(Error);
+        m_commandSocketState = Down;
+        updateState(Error, ServiceError, errorString);
 
 #ifdef QT_DEBUG
         DEBUG_TAG(1, "command", "error" << errorString)
@@ -739,17 +745,15 @@ void QApplicationCommand::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
-    updateError(SocketError, errorString);
-    updateState(Error);
+    updateState(Error, SocketError, errorString);
 }
 
 void QApplicationCommand::commandHeartbeatTimerTick()
 {
     if (m_commandPingOutstanding)
     {
-        m_cState = Trying;
-        updateError(TimeoutError, "Command service timed out");
-        updateState(Error);
+        m_commandSocketState = Trying;
+        updateState(Timeout);
 
 #ifdef QT_DEBUG
         DEBUG_TAG(1, "command", "timeout")
@@ -762,7 +766,7 @@ void QApplicationCommand::commandHeartbeatTimerTick()
 
 #ifdef QT_DEBUG
     DEBUG_TAG(2, "command", "ping")
-        #endif
+#endif
 }
 
 /** Connects the 0MQ sockets */
@@ -783,8 +787,7 @@ bool QApplicationCommand::connectSockets()
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateError(SocketError, errorString);
-        updateState(Error);
+        updateState(Error, SocketError, errorString);
         return false;
     }
 
@@ -801,6 +804,8 @@ bool QApplicationCommand::connectSockets()
 /** Disconnects the 0MQ sockets */
 void QApplicationCommand::disconnectSockets()
 {
+    m_commandSocketState = Down;
+
     if (m_commandSocket != NULL)
     {
         m_commandSocket->close();

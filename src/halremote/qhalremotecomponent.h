@@ -58,7 +58,6 @@ class QHalRemoteComponent : public AbstractServiceImplementation
 
 public:
     explicit QHalRemoteComponent(QObject *parent = 0);
-    ~QHalRemoteComponent();
 
     enum SocketState {
         Down = 1,
@@ -70,7 +69,8 @@ public:
         Disconnected = 0,
         Connecting = 1,
         Connected = 2,
-        Error = 3
+        Timeout = 3,
+        Error = 4
     };
 
     enum ConnectionError {
@@ -78,8 +78,7 @@ public:
         BindError = 1,
         PinChangeError = 2,
         CommandError = 3,
-        TimeoutError = 4,
-        SocketError = 5
+        SocketError = 4
     };
 
     QString halrcmdUri() const
@@ -179,8 +178,8 @@ private:
     QString     m_name;
     int         m_heartbeatPeriod;
     bool        m_connected;
-    SocketState m_sState;
-    SocketState m_cState;
+    SocketState m_halrcompSocketState;
+    SocketState m_halrcmdSocketState;
     State       m_connectionState;
     ConnectionError       m_error;
     QString     m_errorString;
@@ -192,7 +191,6 @@ private:
     QTimer     *m_halrcmdHeartbeatTimer;
     QTimer     *m_halrcompHeartbeatTimer;
     bool        m_halrcmdPingOutstanding;
-    bool        m_halrcompPingOutstanding;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;
@@ -203,14 +201,16 @@ private:
     QObjectList recurseObjects(const QObjectList &list);
     void start();
     void stop();
+    void cleanup();
     void startHalrcmdHeartbeat();
     void stopHalrcmdHeartbeat();
     void startHalrcompHeartbeat(int interval);
     void stopHalrcompHeartbeat();
     void refreshHalrcompHeartbeat();
     void updateState(State state);
+    void updateState(State state, ConnectionError error, QString errorString);
     void updateError(ConnectionError error, QString errorString);
-    void sendHalrcmdMessage(const QByteArray &data);
+    void sendHalrcmdMessage(pb::ContainerType type);
 
 private slots:
     void pinUpdate(const pb::Pin &remotePin, QHalPin *localPin);

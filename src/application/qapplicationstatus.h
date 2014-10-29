@@ -68,7 +68,6 @@ class QApplicationStatus : public AbstractServiceImplementation
 
 public:
     explicit QApplicationStatus(QObject *parent = 0);
-    ~QApplicationStatus();
 
     enum SocketState {
         Down = 1,
@@ -80,14 +79,14 @@ public:
         Disconnected = 0,
         Connecting = 1,
         Connected = 2,
-        Error = 3
+        Timeout = 3,
+        Error = 4
     };
 
     enum ConnectionError {
         NoError = 0,
-        StatusError = 1,
-        TimeoutError = 2,
-        SocketError = 3
+        ServiceError = 1,
+        SocketError = 2
     };
 
     enum OriginIndex {
@@ -288,7 +287,7 @@ public slots:
 
 private:
     QString         m_statusUri;
-    SocketState     m_sState;
+    SocketState     m_statusSocketState;
     bool            m_connected;
     State           m_connectionState;
     ConnectionError m_error;
@@ -313,16 +312,17 @@ private:
     ZMQSocket   *m_statusSocket;
     QStringList  m_subscriptions;
     QTimer      *m_statusHeartbeatTimer;
-    bool         m_statusPingOutstanding;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
 
     void start();
     void stop();
+    void cleanup();
     void startStatusHeartbeat(int interval);
     void stopStatusHeartbeat();
     void refreshStatusHeartbeat();
     void updateState(State state);
+    void updateState(State state, ConnectionError error, const QString &errorString);
     void updateError(ConnectionError error, const QString &errorString);
     void updateSync(StatusChannel channel);
     void clearSync();

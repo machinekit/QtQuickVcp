@@ -55,7 +55,6 @@ class QHalGroup : public AbstractServiceImplementation
 
 public:
     explicit QHalGroup(QObject *parent = 0);
-    ~QHalGroup();
 
     enum SocketState {
         Down = 1,
@@ -67,14 +66,14 @@ public:
         Disconnected = 0,
         Connecting = 1,
         Connected = 2,
-        Error = 3
+        Timeout = 3,
+        Error = 4
     };
 
     enum ConnectionError {
         NoError = 0,
         HalGroupError = 1,
-        TimeoutError = 2,
-        SocketError = 3
+        SocketError = 2
     };
 
     QString halgroupUri() const
@@ -147,7 +146,7 @@ private:
     QString     m_halgroupUri;
     QString     m_name;
     bool        m_connected;
-    SocketState m_sState;
+    SocketState m_halgroupSocketState;
     State       m_connectionState;
     ConnectionError m_error;
     QString     m_errorString;
@@ -157,7 +156,6 @@ private:
     PollingZMQContext *m_context;
     ZMQSocket   *m_halgroupSocket;
     QTimer      *m_halgroupHeartbeatTimer;
-    bool        m_halgroupPingOutstanding;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;
@@ -168,10 +166,12 @@ private:
     QList<QHalSignal*> recurseObjects(const QObjectList &list) const;
     void start();
     void stop();
+    void cleanup();
     void startHalgroupHeartbeat(int interval);
     void stopHalgroupHeartbeat();
     void refreshHalgroupHeartbeat();
     void updateState(State state);
+    void updateState(State state, ConnectionError error, const QString &errorString);
     void updateError(ConnectionError error, const QString &errorString);
 
 private slots:

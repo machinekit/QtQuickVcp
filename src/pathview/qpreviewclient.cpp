@@ -44,11 +44,6 @@ QPreviewClient::QPreviewClient(QObject *parent) :
     m_previewStatus.lineNumber = 0;
 }
 
-QPreviewClient::~QPreviewClient()
-{
-    disconnectSockets();
-}
-
 void QPreviewClient::start()
 {
 #ifdef QT_DEBUG
@@ -58,7 +53,6 @@ void QPreviewClient::start()
 
     if (connectSockets())
     {
-        // do something
         m_statusSocket->subscribeTo("status");
         m_previewSocket->subscribeTo("preview");
         updateState(Connected); //TODO: add something like a ping
@@ -71,15 +65,24 @@ void QPreviewClient::stop()
     DEBUG_TAG(1, "preview", "stop")
 #endif
 
-    // cleanup here
-    disconnectSockets();
+    cleanup();
+    updateState(Disconnected);  // clears the error
+}
 
-    updateState(Disconnected);
-    updateError(NoError, "");   // clear the error here
+void QPreviewClient::cleanup()
+{
+    disconnectSockets();
 }
 
 void QPreviewClient::updateState(QPreviewClient::State state)
 {
+    updateState(state, NoError, "");
+}
+
+void QPreviewClient::updateState(QPreviewClient::State state, QPreviewClient::ConnectionError error, QString errorString)
+{
+    updateError(error, errorString);
+
     if (state != m_connectionState)
     {
         if (m_connected != (state == Connected)) {
@@ -102,6 +105,10 @@ void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString 
 
     if (m_error != error)
     {
+        if (error != NoError)
+        {
+            cleanup();
+        }
         m_error = error;
         emit errorChanged(m_error);
     }
@@ -239,8 +246,7 @@ void QPreviewClient::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
-    updateError(SocketError, errorString);
-    updateState(Error);
+    updateState(Error, SocketError, errorString);
 }
 
 /** Connects the 0MQ sockets */
@@ -264,8 +270,7 @@ bool QPreviewClient::connectSockets()
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateError(SocketError, errorString);
-        updateState(Error);
+        updateState(Error, SocketError, errorString);
         return false;
     }
 

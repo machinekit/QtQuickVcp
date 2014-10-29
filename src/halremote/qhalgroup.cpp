@@ -34,23 +34,17 @@ QHalGroup::QHalGroup(QObject *parent) :
     m_halgroupUri(""),
     m_name("default"),
     m_connected(false),
-    m_sState(Down),
+    m_halgroupSocketState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
     m_containerItem(this),
     m_context(NULL),
     m_halgroupSocket(NULL),
-    m_halgroupHeartbeatTimer(new QTimer(this)),
-    m_halgroupPingOutstanding(false)
+    m_halgroupHeartbeatTimer(new QTimer(this))
 {
     connect(m_halgroupHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(halgroupHeartbeatTimerTick()));
-}
-
-QHalGroup::~QHalGroup()
-{
-    disconnectSockets();
 }
 
 /** Recurses through a list of objects */
@@ -97,19 +91,24 @@ void QHalGroup::stop()
     DEBUG_TAG(1, m_name, "stop")
 #endif
 
-    // cleanup here
-    stopHalgroupHeartbeat();
+    cleanup();
+
+    updateState(Disconnected);  // clears also the error
+}
+
+void QHalGroup::cleanup()
+{
+    if (m_connected)
+    {
+        unsubscribe();
+    }
     disconnectSockets();
     removeSignals();
-
-    updateState(Disconnected);
-    updateError(NoError, "");   // clear the error here
 }
 
 void QHalGroup::startHalgroupHeartbeat(int interval)
 {
     m_halgroupHeartbeatTimer->stop();
-    m_halgroupPingOutstanding = false;
 
     if (interval > 0)
     {
@@ -134,6 +133,13 @@ void QHalGroup::refreshHalgroupHeartbeat()
 
 void QHalGroup::updateState(QHalGroup::State state)
 {
+    updateState(state, NoError, "");
+}
+
+void QHalGroup::updateState(QHalGroup::State state, ConnectionError error, const QString &errorString)
+{
+    updateError(error, errorString);
+
     if (state != m_connectionState)
     {
         if (m_connectionState == Connected) // we are not connected anymore
@@ -168,6 +174,11 @@ void QHalGroup::updateError(QHalGroup::ConnectionError error, const QString &err
 
     if (m_error != error)
     {
+        if (error != NoError)
+        {
+            cleanup();
+        }
+
         m_error = error;
         emit errorChanged(m_error);
     }
@@ -241,13 +252,6 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
             signalUpdate(remoteSignal, localSignal);
         }
 
-        if (m_sState != Up)
-        {
-            m_sState = Up;
-            updateError(NoError, "");
-            updateState(Connected);
-        }
-
         refreshHalgroupHeartbeat();
 
         return;
@@ -283,10 +287,9 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
                 }
             }
 
-            if (m_sState != Up) // will be executed only once
+            if (m_halgroupSocketState != Up) // will be executed only once
             {
-                m_sState = Up;
-                updateError(NoError, "");
+                m_halgroupSocketState = Up;
                 updateState(Connected);
             }
         }
@@ -301,7 +304,16 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
     }
     else if (m_rx.type() == pb::MT_PING)
     {
-        refreshHalgroupHeartbeat();
+        if (m_halgroupSocketState == Up)
+        {
+            refreshHalgroupHeartbeat();
+        }
+        else
+        {
+            updateState(Connecting);
+            unsubscribe();  // clean up previous subscription
+            subscribe();    // trigger a fresh subscribe -> full update
+        }
 
         return;
     }
@@ -314,9 +326,8 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
             errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
         }
 
-        m_sState = Down;
-        updateError(HalGroupError, errorString);
-        updateState(Error);
+        m_halgroupSocketState = Down;
+        updateState(Error, HalGroupError, errorString);
 
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_name, "proto error on subscribe" << errorString)
@@ -335,23 +346,17 @@ void QHalGroup::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
-    updateError(SocketError, errorString);
-    updateState(Error);
+    updateState(Error, SocketError, errorString);
 }
 
 void QHalGroup::halgroupHeartbeatTimerTick()
 {
-    unsubscribe();
-    updateError(TimeoutError, "Halgroup service timed out");
-    updateState(Error);
+    m_halgroupSocketState = Down;
+    updateState(Timeout);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_name, "halcmd timeout")
 #endif
-
-    subscribe();    // trigger a fresh subscribe
-
-    m_halgroupPingOutstanding = true;
 }
 
 /** Scans all children of the container item for signals and adds them to a map */
@@ -422,8 +427,7 @@ bool QHalGroup::connectSockets()
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateError(SocketError, errorString);
-        updateState(Error);
+        updateState(Error, SocketError, errorString);
         return false;
     }
 
@@ -440,6 +444,8 @@ bool QHalGroup::connectSockets()
 /** Disconnects the 0MQ sockets */
 void QHalGroup::disconnectSockets()
 {
+    m_halgroupSocketState = Down;
+
     if (m_halgroupSocket != NULL)
     {
         m_halgroupSocket->close();
@@ -457,12 +463,12 @@ void QHalGroup::disconnectSockets()
 
 void QHalGroup::subscribe()
 {
-    m_sState = Trying;
+    m_halgroupSocketState = Trying;
     m_halgroupSocket->subscribeTo(m_name.toLocal8Bit());
 }
 
 void QHalGroup::unsubscribe()
 {
-    m_sState = Down;
+    m_halgroupSocketState = Down;
     m_halgroupSocket->unsubscribeFrom(m_name.toLocal8Bit());
 }

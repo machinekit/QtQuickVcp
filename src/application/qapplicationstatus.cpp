@@ -26,7 +26,7 @@
 QApplicationStatus::QApplicationStatus(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_statusUri(""),
-    m_sState(Down),
+    m_statusSocketState(Down),
     m_connected(false),
     m_connectionState(Disconnected),
     m_error(NoError),
@@ -36,8 +36,7 @@ QApplicationStatus::QApplicationStatus(QObject *parent) :
     m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel),
     m_context(NULL),
     m_statusSocket(NULL),
-    m_statusHeartbeatTimer(new QTimer(this)),
-    m_statusPingOutstanding(false)
+    m_statusHeartbeatTimer(new QTimer(this))
 {
     connect(m_statusHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(statusHeartbeatTimerTick()));
@@ -53,11 +52,6 @@ QApplicationStatus::QApplicationStatus(QObject *parent) :
     initializeObject(IoChannel);
     initializeObject(TaskChannel);
     initializeObject(InterpChannel);
-}
-
-QApplicationStatus::~QApplicationStatus()
-{
-    disconnectSockets();
 }
 
 void QApplicationStatus::start()
@@ -79,18 +73,23 @@ void QApplicationStatus::stop()
     DEBUG_TAG(1, "status", "stop")
 #endif
 
-    // cleanup here
-    stopStatusHeartbeat();
-    disconnectSockets();
+    cleanup();
+    updateState(Disconnected);  // clears also the error
+}
 
-    updateState(Disconnected);
-    updateError(NoError, "");   // clear the error here
+void QApplicationStatus::cleanup()
+{
+    if (m_connected)
+    {
+        unsubscribe();
+    }
+    disconnectSockets();
+    m_subscriptions.clear();
 }
 
 void QApplicationStatus::startStatusHeartbeat(int interval)
 {
     m_statusHeartbeatTimer->stop();
-    m_statusPingOutstanding = false;
 
     if (interval > 0)
     {
@@ -115,6 +114,13 @@ void QApplicationStatus::refreshStatusHeartbeat()
 
 void QApplicationStatus::updateState(QApplicationStatus::State state)
 {
+    updateState(state, NoError, "");
+}
+
+void QApplicationStatus::updateState(QApplicationStatus::State state, QApplicationStatus::ConnectionError error, const QString &errorString)
+{
+    updateError(error, errorString);
+
     if (state != m_connectionState)
     {
         if (m_connected) // we are not connected anymore
@@ -132,7 +138,7 @@ void QApplicationStatus::updateState(QApplicationStatus::State state)
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
 
-        if (!m_connected) {
+        if ((state == Disconnected) || (state == Error)) {
             initializeObject(MotionChannel);
             initializeObject(ConfigChannel);
             initializeObject(IoChannel);
@@ -152,6 +158,11 @@ void QApplicationStatus::updateError(QApplicationStatus::ConnectionError error, 
 
     if (m_error != error)
     {
+        if (error != NoError)
+        {
+            cleanup();
+        }
+
         m_error = error;
         emit errorChanged(m_error);
     }
@@ -430,15 +441,14 @@ void QApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageL
             }
         }
 
-        if (m_sState != Up)
-        {
-            m_sState = Up;
-            updateError(NoError, "");
-            updateState(Connected);
-        }
-
         if (m_rx.type() == pb::MT_EMCSTAT_FULL_UPDATE)
         {
+            if (m_statusSocketState != Up)
+            {
+                m_statusSocketState = Up;
+                updateState(Connected);
+            }
+
             if (m_rx.has_pparams())
             {
                 pb::ProtocolParameters pparams = m_rx.pparams();
@@ -454,7 +464,16 @@ void QApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageL
     }
     else if (m_rx.type() == pb::MT_PING)
     {
-        refreshStatusHeartbeat();
+        if (m_statusSocketState == Up)
+        {
+            refreshStatusHeartbeat();
+        }
+        else
+        {
+            updateState(Connecting);
+            unsubscribe();  // clean up previous subscription
+            subscribe();    // trigger a fresh subscribe
+        }
 
         return;
     }
@@ -469,23 +488,17 @@ void QApplicationStatus::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
-    updateError(SocketError, errorString);
-    updateState(Error);
+    updateState(Error, SocketError, errorString);
 }
 
 void QApplicationStatus::statusHeartbeatTimerTick()
 {
-    unsubscribe();
-    updateError(TimeoutError, "Status service timed out");
-    updateState(Error);
+    m_statusSocketState = Down;
+    updateState(Timeout);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "status", "timeout")
 #endif
-
-    subscribe();    // trigger a fresh subscribe
-
-    m_statusPingOutstanding = true;
 }
 
 /** Connects the 0MQ sockets */
@@ -505,8 +518,7 @@ bool QApplicationStatus::connectSockets()
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateError(SocketError, errorString);
-        updateState(Error);
+        updateState(Error, SocketError, errorString);
         return false;
     }
 
@@ -523,6 +535,8 @@ bool QApplicationStatus::connectSockets()
 /** Disconnects the 0MQ sockets */
 void QApplicationStatus::disconnectSockets()
 {
+    m_statusSocketState = Down;
+
     if (m_statusSocket != NULL)
     {
         m_statusSocket->close();
@@ -540,7 +554,7 @@ void QApplicationStatus::disconnectSockets()
 
 void QApplicationStatus::subscribe()
 {
-    m_sState = Trying;
+    m_statusSocketState = Trying;
 
     if (m_channels | MotionChannel) {
         m_statusSocket->subscribeTo("motion");
@@ -566,7 +580,8 @@ void QApplicationStatus::subscribe()
 
 void QApplicationStatus::unsubscribe()
 {
-    m_sState = Down;
+    m_statusSocketState = Down;
+
     foreach (QString subscription, m_subscriptions)
     {
         m_statusSocket->unsubscribeFrom(subscription);

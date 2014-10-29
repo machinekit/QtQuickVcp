@@ -55,7 +55,6 @@ class QApplicationCommand : public AbstractServiceImplementation
 
 public:
     explicit QApplicationCommand(QObject *parent = 0);
-    ~QApplicationCommand();
 
     enum SocketState {
         Down = 1,
@@ -67,14 +66,14 @@ public:
         Disconnected = 0,
         Connecting = 1,
         Connected = 2,
-        Error = 3
+        Timeout = 3,
+        Error = 4
     };
 
     enum ConnectionError {
         NoError = 0,
-        CommandError = 1,
-        TimeoutError = 2,
-        SocketError = 3
+        ServiceError = 1,
+        SocketError = 2
     };
 
     enum SpindleBrake {
@@ -205,7 +204,7 @@ private:
     QString         m_commandUri;
     int             m_heartbeatPeriod;
     bool            m_connected;
-    SocketState     m_cState;
+    SocketState     m_commandSocketState;
     State           m_connectionState;
     ConnectionError m_error;
     QString         m_errorString;
@@ -220,9 +219,11 @@ private:
 
     void start();
     void stop();
+    void cleanup();
     void startCommandHeartbeat();
     void stopCommandHeartbeat();
     void updateState(State state);
+    void updateState(State state, ConnectionError error, const QString &errorString);
     void updateError(ConnectionError error, const QString &errorString);
     void sendCommandMessage(pb::ContainerType type);
 

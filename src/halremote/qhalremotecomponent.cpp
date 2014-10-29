@@ -163,8 +163,8 @@ QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
     m_name("default"),
     m_heartbeatPeriod(3000),
     m_connected(false),
-    m_sState(Down),
-    m_cState(Down),
+    m_halrcompSocketState(Down),
+    m_halrcmdSocketState(Down),
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
@@ -174,18 +174,12 @@ QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
     m_halrcmdSocket(NULL),
     m_halrcmdHeartbeatTimer(new QTimer(this)),
     m_halrcompHeartbeatTimer(new QTimer(this)),
-    m_halrcmdPingOutstanding(false),
-    m_halrcompPingOutstanding(false)
+    m_halrcmdPingOutstanding(false)
 {
     connect(m_halrcmdHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(halrcmdHeartbeatTimerTick()));
     connect(m_halrcompHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(halrcompHeartbeatTimerTick()));
-}
-
-QHalRemoteComponent::~QHalRemoteComponent()
-{
-    disconnectSockets();
 }
 
 /** Scans all children of the container item for pins and adds them to a map */
@@ -261,8 +255,7 @@ bool QHalRemoteComponent::connectSockets()
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateError(SocketError, errorString);
-        updateState(Error);
+        updateState(Error, SocketError, errorString);
         return false;
     }
 
@@ -281,6 +274,9 @@ bool QHalRemoteComponent::connectSockets()
 /** Disconnects the 0MQ sockets */
 void QHalRemoteComponent::disconnectSockets()
 {
+    m_halrcmdSocketState = Down;
+    m_halrcompSocketState = Down;
+
     if (m_halrcmdSocket != NULL)
     {
         m_halrcmdSocket->close();
@@ -308,7 +304,6 @@ void QHalRemoteComponent::bind()
 {
     pb::Component *component;
 
-    m_tx.set_type(pb::MT_HALRCOMP_BIND);
     component = m_tx.add_comp();
     component->set_name(m_name.toStdString());
     foreach (QHalPin *pin, m_pinsByName)
@@ -342,19 +337,18 @@ void QHalRemoteComponent::bind()
     DEBUG_TAG(3, m_name, QString::fromStdString(s))
 #endif
 
-    sendHalrcmdMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
-    m_tx.Clear();
+    sendHalrcmdMessage(pb::MT_HALRCOMP_BIND);
 }
 
 void QHalRemoteComponent::subscribe()
 {
-    m_sState = Trying;
+    m_halrcompSocketState = Trying;
     m_halrcompSocket->subscribeTo(m_name.toLocal8Bit());
 }
 
 void QHalRemoteComponent::unsubscribe()
 {
-    m_sState = Down;
+    m_halrcompSocketState = Down;
     m_halrcompSocket->unsubscribeFrom(m_name.toLocal8Bit());
 }
 
@@ -406,8 +400,6 @@ void QHalRemoteComponent::pinChange(QVariant value)
     DEBUG_TAG(2, m_name,  "pin change" << pin->name() << pin->value())
 #endif
 
-    m_tx.set_type(pb::MT_HALRCOMP_SET);
-
     // This message MUST carry a Pin message for each pin which has
     // changed value since the last message of this type.
     // Each Pin message MUST carry the handle field.
@@ -436,8 +428,7 @@ void QHalRemoteComponent::pinChange(QVariant value)
         halPin->set_halu32(pin->value().toUInt());
     }
 
-    sendHalrcmdMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
-    m_tx.Clear();
+    sendHalrcmdMessage(pb::MT_HALRCOMP_SET);
 }
 
 void QHalRemoteComponent::start()
@@ -445,14 +436,14 @@ void QHalRemoteComponent::start()
 #ifdef QT_DEBUG
    DEBUG_TAG(1, m_name, "start")
 #endif
-    m_cState = Trying;
+    m_halrcmdSocketState = Trying;
     updateState(Connecting);
-
 
     if (connectSockets())
     {
         addPins();
-        bind();
+        startHalrcmdHeartbeat();
+        sendHalrcmdMessage(pb::MT_PING);
     }
 }
 
@@ -462,14 +453,20 @@ void QHalRemoteComponent::stop()
     DEBUG_TAG(1, m_name, "stop")
 #endif
 
-    // cleanup here
+    cleanup();
+
+    updateState(Disconnected);  // clears also the error
+}
+
+void QHalRemoteComponent::cleanup()
+{
+    if (m_connected)
+    {
+        unsubscribe();
+    }
     stopHalrcmdHeartbeat();
-    stopHalrcompHeartbeat();
     disconnectSockets();
     removePins();
-
-    updateState(Disconnected);
-    updateError(NoError, "");   // clear the error here
 }
 
 void QHalRemoteComponent::startHalrcmdHeartbeat()
@@ -491,7 +488,6 @@ void QHalRemoteComponent::stopHalrcmdHeartbeat()
 void QHalRemoteComponent::startHalrcompHeartbeat(int interval)
 {
     m_halrcompHeartbeatTimer->stop();
-    m_halrcompPingOutstanding = false;
 
     if (interval > 0)
     {
@@ -514,8 +510,15 @@ void QHalRemoteComponent::refreshHalrcompHeartbeat()
     }
 }
 
-void QHalRemoteComponent::updateState(State state)
+void QHalRemoteComponent::updateState(QHalRemoteComponent::State state)
 {
+    updateState(state, NoError, "");
+}
+
+void QHalRemoteComponent::updateState(State state, QHalRemoteComponent::ConnectionError error, QString errorString)
+{
+    updateError(error, errorString);
+
     if (state != m_connectionState)
     {
         if (m_connectionState == Connected) // we are not connected anymore
@@ -528,7 +531,6 @@ void QHalRemoteComponent::updateState(State state)
 
         if (m_connectionState == Connected)
         {
-            startHalrcmdHeartbeat();
             if (m_connected != true) {
                 m_connected = true;
                 emit connectedChanged(true);
@@ -536,7 +538,6 @@ void QHalRemoteComponent::updateState(State state)
         }
         else
         {
-            stopHalrcmdHeartbeat();
             stopHalrcompHeartbeat();
             if (m_connected != false) {
                 m_connected = false;
@@ -556,6 +557,10 @@ void QHalRemoteComponent::updateError(QHalRemoteComponent::ConnectionError error
 
     if (m_error != error)
     {
+        if (error != NoError)
+        {
+            cleanup();
+        }
         m_error = error;
         emit errorChanged(m_error);
     }
@@ -565,8 +570,7 @@ void QHalRemoteComponent::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
-    updateError(SocketError, errorString);
-    updateState(Error);
+    updateState(Error, SocketError, errorString);
 }
 
 /** Recurses through a list of objects */
@@ -615,13 +619,6 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
             pinUpdate(remotePin, localPin);
         }
 
-        if (m_sState != Up)
-        {
-            m_sState = Up;
-            updateError(NoError, "");
-            updateState(Connected);
-        }
-
         refreshHalrcompHeartbeat();
 
         return;
@@ -649,10 +646,9 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
                 pinUpdate(remotePin, localPin);
             }
 
-            if (m_sState != Up) // will be executed only once
+            if (m_halrcompSocketState != Up) // will be executed only once
             {
-                m_sState = Up;
-                updateError(NoError, "");
+                m_halrcompSocketState = Up;
                 updateState(Connected);
             }
         }
@@ -667,7 +663,16 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
     }
     else if (m_rx.type() == pb::MT_PING)
     {
-        refreshHalrcompHeartbeat();
+        if (m_halrcompSocketState == Up)
+        {
+            refreshHalrcompHeartbeat();
+        }
+        else
+        {
+            updateState(Connecting);
+            unsubscribe();  // clean up previous subscription
+            subscribe();    // trigger a fresh subscribe -> full update
+        }
 
         return;
     }
@@ -680,9 +685,8 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
             errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
         }
 
-        m_sState = Down;
-        updateError(CommandError, errorString);
-        updateState(Error);
+        m_halrcompSocketState = Down;
+        updateState(Error, CommandError, errorString);
 
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_name, "proto error on subscribe" << errorString)
@@ -710,14 +714,12 @@ void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
 
     if (m_rx.type() == pb::MT_PING_ACKNOWLEDGE)
     {
-        m_cState = Up;
         m_halrcmdPingOutstanding = false;
 
-        if ((m_connectionState == Error) && (m_error == TimeoutError))   // recover from a timeout
+        if (m_halrcmdSocketState == Trying)
         {
-            updateError(NoError, "");
-            updateState(Connected);
-            subscribe();    // trigger a full update
+            updateState(Connecting);
+            bind();
         }
 
 #ifdef QT_DEBUG
@@ -731,8 +733,9 @@ void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_name,  "bind confirmed")
 #endif
-        m_cState = Up;
-        subscribe();
+        m_halrcmdSocketState = Up;
+        unsubscribe();  // clear previous subscription
+        subscribe();    // trigger full update
 
         return;
     }
@@ -746,18 +749,16 @@ void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
             errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
         }
 
-        m_cState = Down;
+        m_halrcmdSocketState = Down;
 
         if (m_rx.type() == pb::MT_HALRCOMP_BIND_REJECT)
         {
-            updateError(BindError, errorString);
+            updateState(Error, BindError, errorString);
         }
         else
         {
-            updateError(PinChangeError, errorString);
+            updateState(Error, PinChangeError, errorString);
         }
-        updateState(Error);
-
 
 #ifdef QT_DEBUG
         if (m_rx.type() == pb::MT_HALRCOMP_BIND_REJECT) {
@@ -777,16 +778,17 @@ void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
     }
 }
 
-void QHalRemoteComponent::sendHalrcmdMessage(const QByteArray &data)
+void QHalRemoteComponent::sendHalrcmdMessage(pb::ContainerType type)
 {
     try {
-        m_halrcmdSocket->sendMessage(data);
+        m_tx.set_type(type);
+        m_halrcmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
+        m_tx.Clear();
     }
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateError(SocketError, errorString);
-        updateState(Error);
+        updateState(Error, SocketError, errorString);
     }
 }
 
@@ -794,19 +796,15 @@ void QHalRemoteComponent::halrcmdHeartbeatTimerTick()
 {
     if (m_halrcmdPingOutstanding)
     {
-        m_cState = Trying;
-        unsubscribe();
-        updateError(TimeoutError, "Halrcmd service timed out");
-        updateState(Error);
+        m_halrcmdSocketState = Trying;
+        updateState(Timeout);
 
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_name, "halcmd timeout")
 #endif
     }
 
-    m_tx.set_type(pb::MT_PING);
-    sendHalrcmdMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
-    m_tx.Clear();
+    sendHalrcmdMessage(pb::MT_PING);
 
     m_halrcmdPingOutstanding = true;
 
@@ -817,23 +815,11 @@ void QHalRemoteComponent::halrcmdHeartbeatTimerTick()
 
 void QHalRemoteComponent::halrcompHeartbeatTimerTick()
 {
-    m_cState = Trying;
-    unsubscribe();
-    updateError(TimeoutError, "Halrcomp service timed out");
-    updateState(Error);
+    m_halrcompSocketState = Down;
+    updateState(Timeout);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_name, "halcmd timeout")
-#endif
-
-    m_tx.set_type(pb::MT_PING);
-    sendHalrcmdMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
-    m_tx.Clear();
-
-    m_halrcompPingOutstanding = true;
-
-#ifdef QT_DEBUG
-    DEBUG_TAG(2, m_name, "ping")
 #endif
 }
 

@@ -55,13 +55,13 @@ class QPreviewClient : public AbstractServiceImplementation
 
 public:
     explicit QPreviewClient(QObject *parent = 0);
-    ~QPreviewClient();
 
     enum State {
         Disconnected = 0,
         Connecting = 1,
         Connected = 2,
-        Error = 3
+        Timeout = 3,
+        Error = 4
     };
 
     enum ConnectionError {
@@ -199,7 +199,9 @@ private:
 
     void start();
     void stop();
+    void cleanup();
     void updateState(State state);
+    void updateState(State state, ConnectionError error, QString errorString);
     void updateError(ConnectionError error, QString errorString);
 
     void convertPos(pb::Position *position);
