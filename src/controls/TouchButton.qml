@@ -26,16 +26,18 @@ import QtQuick.Controls.Styles 1.2
 
 ToolButton {
     style: ButtonStyle {
+        property bool hovered : (Qt.platform.os == "android") ? false : control.hovered
             background: Rectangle {
-                border.color: (control.pressed || control.checked || control.hovered) ? systemPalette.shadow : "#00000000"
+                border.color: (control.pressed || control.checked || hovered) ? systemPalette.shadow : "#00000000"
+                border.width: hovered ? 2 : 1
                 radius: height * 0.08
-                color: (control.pressed || control.checked) ? systemPalette.highlight : (control.hovered) ? systemPalette.button : "#00000000"
+                color: (control.pressed || control.checked) ? systemPalette.highlight : (hovered) ? systemPalette.button : "#00000000"
             }
             label: Image {
                 source: control.iconSource
                 opacity: control.enabled ? 1.0 : 0.3
                 smooth: true
-                sourceSize: Qt.size(width, height)
+                sourceSize: Qt.size(control.width, control.height)
             }
         }
 
