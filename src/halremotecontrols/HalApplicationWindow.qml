@@ -267,7 +267,6 @@ Rectangle {
                 case HalRemoteComponent.BindError: headerText = qsTr("Bind rejected error:"); break;
                 case HalRemoteComponent.PinChange: headerText = qsTr("Pin change rejected error:"); break;
                 case HalRemoteComponent.CommandError: headerText = qsTr("Command error:"); break;
-                case HalRemoteComponent.TimeoutError: headerText = qsTr("Timeout error:"); break;
                 case HalRemoteComponent.SocketError: headerText = qsTr("Socket error:"); break;
                 default: headerText = qsTr("No error")
                 }
@@ -318,10 +317,9 @@ Rectangle {
             else
                 return "disconnected"
         case HalRemoteComponent.Error:
-            if (remoteComponent.error == HalRemoteComponent.TimeoutError) {
-                return "timeout"
-            } else
                 return "error"
+        case HalRemoteComponent.Timeout:
+            return "timeout"
         default:
             return "disconnected"
         }
