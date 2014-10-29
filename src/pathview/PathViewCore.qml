@@ -30,6 +30,7 @@ ApplicationItem {
     property alias gcodeProgramLoader: gcodeProgramLoader
 
     property bool _ready: file.ready
+    property bool _previewEnabled: settings.initialized && settings.values.preview.enable
 
     id: pathViewCore
 
@@ -43,13 +44,30 @@ ApplicationItem {
     function fileUploadFinished() {
         gcodeProgramModel.clear()
         gcodeProgramLoader.load()
-        command.openProgram('preview', file.remoteFilePath)
-        command.runProgram('preview', 0)
+        if (_previewEnabled) {
+            executePreview()
+        }
     }
 
     function fileDownloadFinished() {
         gcodeProgramModel.clear()
         gcodeProgramLoader.load()
+        if (_previewEnabled) {
+            executePreview()
+        }
+    }
+
+    on_PreviewEnabledChanged: {
+        if (_previewEnabled && (file.remoteFilePath !== "file://")) {
+            gcodeProgramModel.clear()
+            gcodeProgramLoader.load()
+            executePreview()
+        }
+    }
+
+    function executePreview() {
+        command.openProgram('preview', file.remoteFilePath)
+        command.runProgram('preview', 0)
     }
 
     Service {
