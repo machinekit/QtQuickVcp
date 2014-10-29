@@ -888,6 +888,7 @@ void QGLView::createTextTexture(TextParameters *textParameters)
     texture->create();
     texture->setMinificationFilter(QOpenGLTexture::Nearest);
     texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+    texture->setWrapMode(QOpenGLTexture::ClampToEdge);
     texture->setData(m_textImageList.at(textureIndex));
 }
 
