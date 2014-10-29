@@ -39,6 +39,7 @@ class AbstractServiceImplementation : public QObject, public QQmlParserStatus
 
 public:
     explicit AbstractServiceImplementation(QObject *parent = 0);
+    ~AbstractServiceImplementation();
 
     /*enum State {
         Disconnected = 0,
@@ -91,6 +92,7 @@ private:
 
     virtual void start() = 0;
     virtual void stop() = 0;
+    virtual void cleanup() {}
 
 private slots:
 

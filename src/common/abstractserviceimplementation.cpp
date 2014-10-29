@@ -31,6 +31,11 @@ AbstractServiceImplementation::AbstractServiceImplementation(QObject *parent) :
 {
 }
 
+AbstractServiceImplementation::~AbstractServiceImplementation()
+{
+    cleanup();
+}
+
 /** componentComplete is executed when the QML component is fully loaded */
 void AbstractServiceImplementation::componentComplete()
 {
