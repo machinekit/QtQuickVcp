@@ -25,11 +25,11 @@ import Machinekit.Service 1.0
 import Machinekit.Application 1.0
 
 Item {
-    property ApplicationStatus status: applicationStatus //{"synced": false}
-    property ApplicationCommand command: applicationCommand //{"connected": false}
-    property ApplicationFile file: applicationFile //{""}
-    property ApplicationError error: applicationError //{"connected": false}
-    property ApplicationSettings settings: uiSettings //{"initialized": false}
+    property ApplicationStatus status: applicationStatus
+    property ApplicationCommand command: applicationCommand
+    property ApplicationFile file: applicationFile
+    property ApplicationError error: applicationError
+    property ApplicationSettings settings: uiSettings
     property MdiHistory mdiHistory: mdiHistory
     property HomeAllAxesHelper homeAllAxesHelper: homeAllAxesHelper
     property Item notifications: null
@@ -130,20 +130,9 @@ Item {
     }
 
     ApplicationCommand {
-        property bool _connected: false
-
         id: applicationCommand
         commandUri: commandService.uri
-        ready: (commandService.ready || _connected)
-
-        onConnectedChanged: delayTimer.running = true
-    }
-
-    Timer { // workaround for binding loop
-        id: delayTimer
-        interval: 10
-        repeat: false
-        onTriggered: applicationCommand._connected = applicationCommand.connected
+        ready: (commandService.ready || connected)
     }
 
     ApplicationError {
