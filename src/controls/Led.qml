@@ -107,6 +107,7 @@ Rectangle {
     radius: width/2
     border.color: "black"
     color: (value && (helpItem.blinkHelper || !blink))?onColor:offColor
+    opacity: enabled ? 1.0 : 0.3
 
     Rectangle {
         x: parent.width*0.15
