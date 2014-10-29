@@ -416,7 +416,8 @@ Item {
                     sourceComponent: numberBox;
                     Layout.fillWidth: true;
                     Layout.fillHeight: false
-                    onLoaded: { item.caption = "B"; item.min = 0; item.max = 255 }
+                    visible: alphaVisible
+                    onLoaded: { item.caption = "A"; item.min = 0; item.max = 255 }
                     Binding { target: aBox.item; property: "value"; value: Math.ceil(colorPicker.colorValue.a * 255) }
                 }
 
