@@ -29,14 +29,14 @@ copyqmlpropertyeditor.CONFIG += no_link no_clean
 copyqmlpropertyeditor.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmlpropertyeditor
 
-!android: !ios: {
-    QMAKE_POST_LINK += $$dirname(QMAKE_QMAKE)/qmlplugindump "$$uri $$PLUGIN_VERSION $$OUT_PWD/../../imports/ > $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes"
-}
-
 QMAKE_CLEAN += -r $$OUT_PWD/../../imports/$$TARGETPATH/
 
 # ========== install additional files ==========
 !android: !ios: {
+    dumppluginqmltypes.CONFIG = no_files no_path
+    dumppluginqmltypes.commands = $$dirname(QMAKE_QMAKE)/qmlplugindump "$$uri $$PLUGIN_VERSION $$OUT_PWD/../../imports/ > $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes"
+    INSTALLS += dumppluginqmltypes
+
     copypluginqmltypes.CONFIG = no_files no_path
     copypluginqmltypes.extra = $$QMAKE_MKDIR $$[QT_INSTALL_QML]/$$TARGETPATH/ $$escape_expand(\n\t) \
                                $$QMAKE_COPY $$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes $$[QT_INSTALL_QML]/$$TARGETPATH/plugins.qmltypes
