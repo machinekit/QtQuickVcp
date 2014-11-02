@@ -229,7 +229,7 @@ QString QApplicationStatus::enumNameToCamelCase(const QString &name)
     return partList.join("");
 }
 
-void QApplicationStatus::recurseDescriptor(const google::protobuf::Descriptor *descriptor, QJsonObject *object)
+void QApplicationStatus::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *object)
 {
     for (int i = 0; i < descriptor->field_count(); ++i)
     {
@@ -293,7 +293,7 @@ void QApplicationStatus::recurseDescriptor(const google::protobuf::Descriptor *d
     }
 }
 
-void QApplicationStatus::recurseMessage(const google::protobuf::Message &message, QJsonObject *object)
+void QApplicationStatus::recurseMessage(const gpb::Message &message, QJsonObject *object)
 {
     const gpb::Reflection *reflection = message.GetReflection();
     gpb::vector< const gpb::FieldDescriptor * > output;
