@@ -4,8 +4,7 @@ MACHINETALK_DIR = $$PWD/../machinetalk-protobuf
     machinetalk-protobuf.commands = $(MAKE) all -C $$MACHINETALK_DIR \
         -e CXXGEN=$$OUT_PWD/generated \
         -e PYGEN=$$OUT_PWD/python \
-        -e OBJDIR=$$OUT_PWD/objects \
-        -e PROTOJS=""
+        -e OBJDIR=$$OUT_PWD/objects
     machinetalk-protobuf.CONFIG += no_link no_clean
     !isEmpty(PROTOBUF_INCLUDE_PATH): machinetalk-protobuf.commands += -e GPBINCLUDE=$$PROTOBUF_INCLUDE_PATH
     !isEmpty(PROTOBUF_PROTOC): machinetalk-protobuf.commands += -e PROTOC=$$PROTOBUF_PROTOC
