@@ -2,5 +2,13 @@ MACHINETALK_PATH = $$OUT_PWD/../../3rdparty/machinetalk-protobuf-qt
 INCLUDEPATH += $$MACHINETALK_PATH/generated
 !isEmpty(PROTOBUF_INCLUDE_PATH): INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH
 
-LIBS += -L$$MACHINETALK_PATH
+!win32 {
+    LIBS += -L$$MACHINETALK_PATH
+} else {
+    LIBS += -L$$MACHINETALK_PATH/release
+    LIBS += -L$$MACHINETALK_PATH/debug
+    !isEmpty(PROTOBUF_LIB_PATH): LIBS += -L$$PROTOBUF_LIB_PATH
+    !isEmpty(PROTOBUF_LIB_FLAGS): LIBS += $$PROTOBUF_LIB_FLAGS
+    LIBS += -lprotobuf
+}
 LIBS += -lmachinetalk-protobuf

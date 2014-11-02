@@ -26,6 +26,13 @@ macx: {
     PROTOBUF_INCLUDE_PATH = /opt/local/include
     PROTOBUF_LIB_PATH = /opt/local/lib
 }
+win32: {
+    ZEROMQ_INCLUDE_PATH = E:\MinGW\include
+    ZEROMQ_LIB_PATH = E:\MinGW\lib
+    PROTOBUF_INCLUDE_PATH =  E:\MinGW\include
+    PROTOBUF_LIB_PATH =  E:\MinGW\lib
+    PROTOBUF_PROTOC =  E:\MinGW\bin\protoc
+}
 
 # Qt SDK directory - autodetected based on qmake path
 QTSDK_DIR=$$absolute_path($$[QT_INSTALL_PREFIX]/../..)

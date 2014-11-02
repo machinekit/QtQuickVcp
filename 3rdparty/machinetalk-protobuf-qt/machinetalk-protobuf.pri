@@ -1,13 +1,25 @@
 # Build machinetalk protobuf files with dependencies
 MACHINETALK_DIR = $$PWD/../machinetalk-protobuf
-machinetalk-protobuf.commands = $(MAKE) all -C $$MACHINETALK_DIR CXXGEN=$$OUT_PWD/generated PYGEN=$$OUT_PWD/python OBJDIR=$$OUT_PWD/objects
-machinetalk-protobuf.CONFIG += no_link no_clean
-!isEmpty(PROTOBUF_INCLUDE_PATH): machinetalk-protobuf.commands += GPBINCLUDE=$$PROTOBUF_INCLUDE_PATH
-!isEmpty(PROTOBUF_PROTOC): machinetalk-protobuf.commands += PROTOC=$$PROTOBUF_PROTOC
-ios: machinetalk-protobuf.commands += ios_replace
+!win32 {
+    machinetalk-protobuf.commands = $(MAKE) all -C $$MACHINETALK_DIR \
+        -e CXXGEN=$$OUT_PWD/generated \
+        -e PYGEN=$$OUT_PWD/python \
+        -e OBJDIR=$$OUT_PWD/objects \
+        -e PROTOJS=""
+    machinetalk-protobuf.CONFIG += no_link no_clean
+    !isEmpty(PROTOBUF_INCLUDE_PATH): machinetalk-protobuf.commands += -e GPBINCLUDE=$$PROTOBUF_INCLUDE_PATH
+    !isEmpty(PROTOBUF_PROTOC): machinetalk-protobuf.commands += -e PROTOC=$$PROTOBUF_PROTOC
+    ios: machinetalk-protobuf.commands += ios_replace
+} else {
+    machinetalk-protobuf.commands = $(COPY_DIR) $$shell_path($$MACHINETALK_DIR/generated) $$shell_path($$OUT_PWD/generated/)
+    machinetalk-protobuf.CONFIG += no_link no_clean
+}
 QMAKE_EXTRA_TARGETS += machinetalk-protobuf
 PRE_TARGETDEPS += machinetalk-protobuf
-QMAKE_CLEAN += -r $$OUT_PWD/generated/ $$OUT_PWD/objects/ $$OUT_PWD/python/
+
+win32:QMAKE_DEL_FILE = del /q
+!win32:QMAKE_DEL_FILE = rm -r
+QMAKE_CLEAN += $$OUT_PWD/generated $$OUT_PWD/object $$OUT_PWD/python
 
 INCLUDEPATH += $$OUT_PWD/generated
 
@@ -60,7 +72,7 @@ OTHER_FILES += \
     $$MACHINETALK_DIR/proto/message.proto \
     $$MACHINETALK_DIR/proto/motcmds.proto \
     $$MACHINETALK_DIR/proto/nanopb.proto \
-    $$MACHINETALK_DIRf/proto/object.proto \
+    $$MACHINETALK_DIR/proto/object.proto \
     $$MACHINETALK_DIR/proto/preview.proto \
     $$MACHINETALK_DIR/proto/rtapi_message.proto \
     $$MACHINETALK_DIR/proto/rtapicommand.proto \

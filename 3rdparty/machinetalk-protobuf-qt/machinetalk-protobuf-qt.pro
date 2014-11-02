@@ -8,5 +8,6 @@ TEMPLATE = lib
 include(../../paths.pri)
 include(machinetalk-protobuf.pri)
 
-target.path = $$[QT_INSTALL_LIBS]
+win32: target.path = $$[QT_INSTALL_BINS]
+!win32: target.path = $$[QT_INSTALL_LIBS]
 INSTALLS += target
