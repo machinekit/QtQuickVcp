@@ -691,6 +691,7 @@ void QServiceDiscovery::stopQuery(QString type)
     int queryId;
     bool found;
 
+    found = false;
     QMapIterator<int, QString> i(m_queryServiceMap);
     while (i.hasNext()) {
         i.next();
@@ -723,6 +724,7 @@ void QServiceDiscovery::refreshQuery(QString type)
     bool found;
     QString queryString;
 
+    found = false;
     QMapIterator<int, QString> i(m_queryServiceMap);
     while (i.hasNext()) {
         i.next();
