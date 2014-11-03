@@ -17,7 +17,7 @@ QMAKE_EXTRA_TARGETS += machinetalk-protobuf
 PRE_TARGETDEPS += machinetalk-protobuf
 
 win32:QMAKE_DEL_FILE = del /q
-!win32:QMAKE_DEL_FILE = rm -r
+!win32:QMAKE_DEL_FILE = rm -r -f
 QMAKE_CLEAN += $$OUT_PWD/generated $$OUT_PWD/object $$OUT_PWD/python
 
 INCLUDEPATH += $$OUT_PWD/generated
