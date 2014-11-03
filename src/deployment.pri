@@ -29,7 +29,7 @@ copyqmlpropertyeditor.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmlpropertyeditor
 
 win32: QMAKE_DEL_FILE = del /q
-!win32:QMAKE_DEL_FILE = rm -r
+!win32:QMAKE_DEL_FILE = rm -r -f
 QMAKE_CLEAN += $$OUT_PWD/../../imports/$$TARGETPATH/
 
 # ========== install additional files ==========
