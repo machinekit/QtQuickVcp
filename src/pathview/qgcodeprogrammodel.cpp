@@ -62,8 +62,10 @@ QModelIndex QGCodeProgramModel::index(const QString &fileName, int lineNumber) c
     return createIndex(fileIndex.index + (lineNumber-1), 0);
 }
 
-QModelIndex QGCodeProgramModel::index(int row)
+QModelIndex QGCodeProgramModel::index(int row, int column, const QModelIndex &parent) const
 {
+    Q_UNUSED(column)
+    Q_UNUSED(parent)
     return createIndex(row, 0);
 }
 
