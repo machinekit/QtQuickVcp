@@ -995,7 +995,7 @@ quint32 QGLView::getSelection()
     int maxCount = 0;
 
     // find the id that is most common in the selection
-    foreach(int id, ids)
+    foreach(quint32 id, ids)
     {
         int count = 0;
         qCount(ids.begin(), ids.end(), id, count);
