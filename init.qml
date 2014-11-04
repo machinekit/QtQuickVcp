@@ -26,6 +26,7 @@ import QtQuick.Controls 1.1
 ApplicationWindow {
     id: appWindow
 
+    visibility: (Qt.platform.os == "android") ? "FullScreen" : "AutomaticVisibility"
     visible: true
     width: 500
     height: 700
