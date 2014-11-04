@@ -58,7 +58,7 @@ ApplicationItem {
     }
 
     on_PreviewEnabledChanged: {
-        if (_previewEnabled && (file.remoteFilePath !== "file://")) {
+        if (_previewEnabled && (file.remoteFilePath !== "")) {
             gcodeProgramModel.clear()
             gcodeProgramLoader.load()
             executePreview()
