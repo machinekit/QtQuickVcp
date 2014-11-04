@@ -19,8 +19,16 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-import QtQuick 2.0
-import QtQuick.Controls 1.1
+// import all available plugins
+import QtQuick 2.3
+import QtQuick.Controls 1.2
+import QtQuick.Dialogs 1.2
+import QtQuick.Window 2.0
+import QtQuick.Layouts 1.1
+import QtQuick.Controls.Styles 1.2
+import QtQuick.LocalStorage 2.0
+import QtQuick.Particles 2.0
+import QtQuick.XmlListModel 2.0
 import Machinekit.Controls 1.0
 import Machinekit.HalRemote 1.0
 import Machinekit.HalRemote.Controls 1.0
@@ -33,7 +41,6 @@ import Machinekit.Service 1.0
 Item {
     id: applicationWindow
 
-    visible: true
     width: 500
     height: 700
     property string title: connectionWindow.title
