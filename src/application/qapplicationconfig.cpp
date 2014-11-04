@@ -176,6 +176,7 @@ QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
 QApplicationConfig::~QApplicationConfig()
 {
     disconnectSocket();
+    cleanupFiles();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
@@ -433,7 +434,7 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                     }
 
 #ifdef QT_DEBUG
-                        qDebug() << "base file path:" << baseFilePath;
+                    qDebug() << "base file path:" << baseFilePath;
 #endif
 
                     for (int j = 0; j < app.file_size(); ++j)
@@ -444,6 +445,13 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
 
                         file = app.file(j);
                         filePath = baseFilePath + QString::fromStdString(file.name());
+
+                        QFileInfo fileInfo(filePath);
+                        if (!dir.mkpath(fileInfo.absolutePath()))
+                        {
+                            qDebug() << "not able to create directory";
+                        }
+
                         QFile localFile(filePath);
                         if (!localFile.open(QIODevice::WriteOnly))
                         {
@@ -451,7 +459,7 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                             continue;
                         }
 
-                        data = QByteArray(file.blob().data(), file.blob().size());//QString::fromStdString(file.blob()).toLocal8Bit();
+                        data = QByteArray(file.blob().data(), file.blob().size());
 
                         if (file.encoding() == pb::ZLIB)
                         {
@@ -465,10 +473,6 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                             localFile.close();
                             continue;
                         }
-
-                        //QByteArray testData =  qCompress(data);
-                        //quint32 test = ((quint32)testData.at(0) << 24) + ((quint32)testData.at(1) << 16) + ((quint32)testData.at(2) << 8) + ((quint32)testData.at(3) << 0);
-                        //qDebug() << test << (quint8)testData.at(0) << (quint8)testData.at(1) << (quint8)testData.at(2) << (quint8)testData.at(3);
 
                         localFile.write(data);
                         localFile.close();
@@ -514,6 +518,16 @@ QString QApplicationConfig::applicationFilePath(const QString &name)
             .arg(name);
 }
 
+void QApplicationConfig::cleanupFiles()
+{
+    if (!m_selectedConfig->name().isEmpty())
+    {
+        QString path = applicationFilePath(m_selectedConfig->name());
+        QDir dir(path);
+        dir.removeRecursively();
+    }
+}
+
 void QApplicationConfig::request(pb::ContainerType type)
 {
     m_tx.set_type(type);
@@ -540,8 +554,7 @@ void QApplicationConfig::selectConfig(QString name)
 
 void QApplicationConfig::unselectConfig()
 {
-    QDir dir(applicationFilePath(m_selectedConfig->name()));
-    dir.removeRecursively();
+    cleanupFiles();
 
     m_selectedConfig->setName("");
     m_selectedConfig->setDescription("");
