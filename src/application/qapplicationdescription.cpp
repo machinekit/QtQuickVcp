@@ -85,7 +85,15 @@ bool QApplicationDescription::refresh()
     QString description;
     QString mainFile;
 
-    sourcePath = m_sourceDir.toString(QUrl::RemoveScheme);  // for local operation we must convert the url
+    // for local operation we must convert the url
+    if (m_sourceDir.isLocalFile())
+    {
+        sourcePath = m_sourceDir.toLocalFile();
+    }
+    else
+    {
+        sourcePath = m_sourceDir.toString(QUrl::RemoveScheme);
+    }
 
     if (m_sourceDir.scheme() == "qrc")  // if qrc we must prepend the :
     {
@@ -133,14 +141,17 @@ bool QApplicationDescription::refresh()
         mainFile = getMainFile(fileList, baseFilePath, name);   // if no main file is specified we try to figure it out
     }
 
-    if (mainFile.indexOf(':') != 0) // the local string must be converted back to an url
+    if (m_sourceDir.isLocalFile())
     {
-        mainFile.prepend(':');
+        m_mainFile = QUrl::fromLocalFile(mainFile);
+    }
+    else
+    {
+        m_mainFile = QUrl(m_sourceDir.scheme() + mainFile);
     }
 
     m_name = name;
     m_description = description;
-    m_mainFile = QUrl(m_sourceDir.scheme() + mainFile);
     emit nameChanged(name);
     emit descriptionChanged(description);
     emit mainFileChanged(mainFile);
