@@ -2,6 +2,8 @@ TEMPLATE = app
 
 TARGET = machinekit-client
 
+CONFIG += console
+
 QT += qml quick widgets
 
 SOURCES += main.cpp
@@ -28,6 +30,10 @@ android: {
 }
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+windows {
+    RC_FILE = icon.rc
+}
 
 OTHER_FILES += \
     android/AndroidManifest.xml
