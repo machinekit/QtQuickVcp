@@ -22,14 +22,15 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 1.1
+import QtQuick.Window 2.0
 
 ApplicationWindow {
     id: appWindow
 
     visibility: (Qt.platform.os == "android") ? "FullScreen" : "AutomaticVisibility"
     visible: true
-    width: 500
-    height: 700
+    width: Screen.width * 0.7
+    height: Screen.height * 0.7
     title: (mainAppLoader.item != undefined) ? mainAppLoader.item.title : "Loading"
     toolBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.toolBar : null
     statusBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.statusBar : null
