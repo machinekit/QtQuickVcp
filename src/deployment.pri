@@ -28,12 +28,12 @@ copyqmlpropertyeditor.CONFIG += no_link no_clean
 copyqmlpropertyeditor.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmlpropertyeditor
 
-win32: QMAKE_DEL_FILE = del /q
+win32: QMAKE_DEL_FILE = del /q /f
 !win32:QMAKE_DEL_FILE = rm -r -f
 QMAKE_CLEAN += $$OUT_PWD/../../imports/$$TARGETPATH/
 
 # ========== install additional files ==========
-!android: !ios: {
+!android: !ios: !debug: {
     dumppluginqmltypes.CONFIG = no_files no_path
     dumppluginqmltypes.commands = $$dirname(QMAKE_QMAKE)/qmlplugindump "$$uri $$PLUGIN_VERSION $$shell_path($$OUT_PWD/../../imports/) > $$shell_path($$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes)"
     INSTALLS += dumppluginqmltypes

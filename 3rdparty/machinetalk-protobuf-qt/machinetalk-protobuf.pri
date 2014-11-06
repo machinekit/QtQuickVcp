@@ -1,6 +1,6 @@
 # Build machinetalk protobuf files with dependencies
 MACHINETALK_DIR = $$PWD/../machinetalk-protobuf
-!win32 {
+!win32: {
     machinetalk-protobuf.commands = $(MAKE) all -C $$MACHINETALK_DIR \
         -e CXXGEN=$$OUT_PWD/generated \
         -e PYGEN=$$OUT_PWD/python \
@@ -16,7 +16,7 @@ MACHINETALK_DIR = $$PWD/../machinetalk-protobuf
 QMAKE_EXTRA_TARGETS += machinetalk-protobuf
 PRE_TARGETDEPS += machinetalk-protobuf
 
-win32:QMAKE_DEL_FILE = del /q
+win32:QMAKE_DEL_FILE = del /q /f
 !win32:QMAKE_DEL_FILE = rm -r -f
 QMAKE_CLEAN += $$OUT_PWD/generated $$OUT_PWD/object $$OUT_PWD/python
 
