@@ -2,7 +2,7 @@ TEMPLATE = app
 
 TARGET = machinekit-client
 
-CONFIG += console
+# CONFIG += console
 
 QT += qml quick widgets
 
