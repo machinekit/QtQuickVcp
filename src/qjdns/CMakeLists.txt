@@ -32,7 +32,7 @@ else(Qt5Core_FOUND)
 endif(Qt5Core_FOUND)
 target_link_libraries(qjdns jdns)
 
-if(NOT android)
+if(NOT ANDROID)
   set_target_properties(qjdns PROPERTIES
                         VERSION ${JDNS_LIB_MAJOR_VERSION}.${JDNS_LIB_MINOR_VERSION}.${JDNS_LIB_PATCH_VERSION}
                         SOVERSION ${JDNS_LIB_MAJOR_VERSION}

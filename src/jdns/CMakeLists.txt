@@ -24,7 +24,7 @@ if(WIN32)
   target_link_libraries(jdns Ws2_32 Advapi32)
 endif(WIN32)
 
-if(NOT android)
+if(NOT ANDROID)
   set_target_properties(jdns PROPERTIES
                         VERSION ${JDNS_LIB_MAJOR_VERSION}.${JDNS_LIB_MINOR_VERSION}.${JDNS_LIB_PATCH_VERSION}
                         SOVERSION ${JDNS_LIB_MAJOR_VERSION}
