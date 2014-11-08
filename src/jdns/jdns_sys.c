@@ -124,6 +124,28 @@ read /etc/hosts manually:
 # include <dlfcn.h>
 #endif
 
+// Android uses clipped resolv.h we must provide own stuff
+#ifdef ANDROID
+#include <sys/system_properties.h>
+
+#undef _res
+#define MAXNS 3
+	struct __res_state
+	{
+		int	nscount;		/* number of name servers */
+		struct sockaddr_in nsaddr_list[MAXNS];	/* address of name server */
+		char defdname[256];		/* default domain (deprecated) */
+		union
+		{
+			struct
+			{
+				u_int16_t nscount;
+				struct sockaddr_in6	*nsaddrs[MAXNS];
+			} _ext;
+	   } _u;
+	} _res;
+#endif
+
 #define string_indexOf jdns_string_indexOf
 #define string_split jdns_string_split
 
@@ -716,6 +738,27 @@ static int my_res_init()
 	if(!mac_res_init)
 		return -1;
 	return mac_res_init();
+#elif defined ANDROID
+	memset(&_res, 0, sizeof(_res));
+	char prop_value[PROP_VALUE_MAX];
+	char prop_name[PROP_NAME_MAX];
+	int i = 0;
+	int readed = 0;
+	do
+	{
+		// net.dns properties starts with 1
+		sprintf(prop_name, "net.dns%d", i + 1);
+		readed = __system_property_get(prop_name, prop_value);
+		if (readed)
+		{
+			if (!inet_aton(prop_value, &_res.nsaddr_list[i].sin_addr))
+				break;
+			i++;
+		}
+	} while (readed && i < MAXNS);
+	_res.nscount = i;
+
+	return 0;
 #else
 	return res_init();
 #endif
