@@ -14,13 +14,15 @@ attribute highp vec3 normal;      // per-vertex normal information
 //uniform vec3 lightPos;            // position of the light source
 //uniform bool enableLighting;      // whether lighting is enabled or not
 
-uniform struct Light {
-   highp vec3 position;       // position of the light source
-   lowp vec3 intensities;    //a.k.a the color of the light
-   lowp float attenuation;
-   lowp float ambientCoefficient;
-   bool enabled;         // whether lighting is enabled or not
-} light;
+struct Light {
+    highp vec3 position;       // position of the light source
+    lowp vec3 intensities;    //a.k.a the color of the light
+    lowp float attenuation;
+    lowp float ambientCoefficient;
+    bool enabled;         // whether lighting is enabled or not
+};
+
+uniform Light light;
 
 // selection mode
 uniform lowp vec4 idColor;             // color to be used for selection mode
