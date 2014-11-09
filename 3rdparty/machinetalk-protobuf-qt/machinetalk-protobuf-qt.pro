@@ -2,6 +2,10 @@ QT     -= core gui
 CONFIG -= android_install
 CONFIG += release
 
+win32: {
+    CONFIG += static
+}
+
 TARGET = machinetalk-protobuf
 TEMPLATE = lib
 

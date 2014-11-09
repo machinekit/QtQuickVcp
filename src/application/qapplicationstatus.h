@@ -30,11 +30,10 @@
 #include <QJsonArray>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
-#include "message.pb.h"
-#include "status.pb.h"
-
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
+#include "message.pb.h"
+#include "status.pb.h"
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;

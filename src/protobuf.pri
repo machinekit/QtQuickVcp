@@ -44,9 +44,6 @@ INCLUDEPATH += $$OUT_PWD/$$PROTOGEN
 !isEmpty(PROTOBUF_INCLUDE_PATH): INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH
 !isEmpty(PROTOBUF_LIB_PATH): LIBS += -L$$PROTOBUF_LIB_PATH
 !isEmpty(PROTOBUF_LIB_FLAGS): LIBS += $$PROTOBUF_LIB_FLAGS
-!win32: {
-LIBS += -lprotobuf
-}
-else {
-LIBS += -lprotobuf
-}
+
+!win32: LIBS += -lprotobuf
+win32:  LIBS += -llibprotobuf

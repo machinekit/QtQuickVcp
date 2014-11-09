@@ -23,11 +23,11 @@
 #ifndef QPREVIEWCLIENT_H
 #define QPREVIEWCLIENT_H
 
+#include <google/protobuf/text_format.h>
 #include <abstractserviceimplementation.h>
 #include <nzmqt/nzmqt.hpp>
-#include <google/protobuf/text_format.h>
-#include "message.pb.h"
 #include "qgcodeprogrammodel.h"
+#include "message.pb.h"
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;

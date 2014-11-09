@@ -1,5 +1,5 @@
 TEMPLATE = lib
-QT += qml quick
+QT += qml quick network
 
 uri = Machinekit.VideoView
 include(../plugin.pri)

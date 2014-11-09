@@ -20,6 +20,7 @@
 **
 ****************************************************************************/
 #include "plugin.h"
+#include "qpreviewclient.h"
 #include "qglitem.h"
 #include "qglview.h"
 #include "qglcubeitem.h"
@@ -29,7 +30,6 @@
 #include "qglpathitem.h"
 #include "qgllight.h"
 #include "qglcanvas.h"
-#include "qpreviewclient.h"
 #include "qgcodeprogrammodel.h"
 #include "qgcodeprogramloader.h"
 

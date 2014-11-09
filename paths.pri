@@ -26,12 +26,19 @@ macx: {
     PROTOBUF_INCLUDE_PATH = /opt/local/include
     PROTOBUF_LIB_PATH = /opt/local/lib
 }
-win32: {
+win32-msvc2013: {
+    ZEROMQ_LIB_PATH = "E:\zeromq-4.0.5\lib\Win32"
+    ZEROMQ_INCLUDE_PATH = "E:\zeromq-4.0.5\include"
+    PROTOBUF_INCLUDE_PATH = E:\protobuf-2.6.1\src
+    PROTOBUF_LIB_PATH = E:\protobuf-2.6.1\vsprojects\Release
+    PROTOBUF_PROTOC = E:\protobuf-2.6.1\vsprojects\Release\protoc.exe
+}
+win32-g++: {
     ZEROMQ_INCLUDE_PATH = E:\MinGW\include
     ZEROMQ_LIB_PATH = E:\MinGW\lib
     PROTOBUF_INCLUDE_PATH =  E:\MinGW\include
     PROTOBUF_LIB_PATH =  E:\MinGW\lib
-    PROTOBUF_PROTOC =  E:\MinGW\bin\protoc
+    PROTOBUF_PROTOC =  E:\MinGW\bin\protoc.exe
 }
 linux: {
     PROTOBUF_INCLUDE_PATH=/usr/include

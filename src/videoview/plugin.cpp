@@ -21,7 +21,6 @@
 ****************************************************************************/
 #include "plugin.h"
 #include "qmjpegstreamerclient.h"
-#include <qqml.h>
 
 void MachinekitVideoViewPlugin::registerTypes(const char *uri)
 {

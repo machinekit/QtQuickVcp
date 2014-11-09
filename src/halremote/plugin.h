@@ -22,7 +22,7 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
-#include <QQmlExtensionPlugin>
+#include <QtQml>
 
 class MachinekitHalRemotePlugin : public QQmlExtensionPlugin
 {

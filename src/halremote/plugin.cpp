@@ -25,8 +25,6 @@
 #include "qhalgroup.h"
 #include "qhalremotecomponent.h"
 
-#include <qqml.h>
-
 void MachinekitHalRemotePlugin::registerTypes(const char *uri)
 {
     // Verify that the version of the library that we linked against is

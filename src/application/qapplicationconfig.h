@@ -28,12 +28,12 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <nzmqt/nzmqt.hpp>
+#include <google/protobuf/text_format.h>
 #include "qapplicationconfigitem.h"
 #include "qapplicationconfigfilter.h"
 #include "qapplicationdescription.h"
 #include "message.pb.h"
 #include "types.pb.h"
-#include <google/protobuf/text_format.h>
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;

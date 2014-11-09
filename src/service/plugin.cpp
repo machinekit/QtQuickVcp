@@ -27,8 +27,6 @@
 #include "qservicediscoveryfilter.h"
 #include "qnameserver.h"
 
-#include <qqml.h>
-
 void MachinekitServicePlugin::registerTypes(const char *uri)
 {
 

@@ -30,8 +30,6 @@
 #include "qapplicationfile.h"
 #include "qlocalsettings.h"
 
-#include <qqml.h>
-
 static void initResources()
 {
     Q_INIT_RESOURCE(application);

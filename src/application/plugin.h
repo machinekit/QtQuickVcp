@@ -22,9 +22,7 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
-#include <QtQml/qqmlextensionplugin.h>
-#include <QtQml/qqml.h>
-#include <QtQml/qqmlengine.h>
+#include <QtQml>
 #include <QFile>
 
 class MachinekitApplicationPlugin : public QQmlExtensionPlugin
