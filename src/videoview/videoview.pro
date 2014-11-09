@@ -8,7 +8,7 @@ include(../zeromq.pri)
 
 # Protobuf
 PROTOPATH += $$PWD/proto
-PROTOS_IN += proto/package.proto
+PROTOS += proto/package.proto
 include(../protobuf.pri)
 
 # Input

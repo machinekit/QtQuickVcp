@@ -33,6 +33,9 @@ win32: {
     PROTOBUF_LIB_PATH =  E:\MinGW\lib
     PROTOBUF_PROTOC =  E:\MinGW\bin\protoc
 }
+linux: {
+    PROTOBUF_INCLUDE_PATH=/usr/include
+}
 
 # Qt SDK directory - autodetected based on qmake path
 QTSDK_DIR=$$absolute_path($$[QT_INSTALL_PREFIX]/../..)
