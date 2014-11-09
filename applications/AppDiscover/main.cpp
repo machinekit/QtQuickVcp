@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
-    engine.addImportPath(QStringLiteral("imports"));
-    engine.addImportPath(QStringLiteral("assets:/imports"));
+    engine.addImportPath(QStringLiteral("qml"));
+    engine.addImportPath(QStringLiteral("assets:/qml"));
     engine.load(QUrl(QStringLiteral("qrc:///init.qml")));
 
     return app.exec();
