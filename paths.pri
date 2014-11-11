@@ -23,8 +23,11 @@ ios: {
 macx: {
     ZEROMQ_INCLUDE_PATH = /opt/local/include
     ZEROMQ_LIB_PATH = /opt/local/lib
+    ZEROMQ_LIB_FLAGS = -Bstatic
     PROTOBUF_INCLUDE_PATH = /opt/local/include
     PROTOBUF_LIB_PATH = /opt/local/lib
+    PROTOBUF_PROTOC = /opt/local/bin/protoc
+    PROTOBUF_LIB_FLAGS = -Bstatic
 }
 win32-msvc2013: {
     ZEROMQ_LIB_PATH = "E:\zeromq-4.0.5\lib\Win32"

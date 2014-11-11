@@ -1192,14 +1192,21 @@ void QServiceDiscovery::openNetworkSession()
         foreach (QNetworkConfiguration config, m_networkConfigManager->allConfigurations(QNetworkConfiguration::Discovered))
         {
             if ((config.bearerType() == QNetworkConfiguration::BearerEthernet) ||
-                    (config.bearerType() == QNetworkConfiguration::BearerWLAN))
+                    (config.bearerType() == QNetworkConfiguration::BearerWLAN) ||
+                    (config.bearerType() == QNetworkConfiguration::BearerUnknown))  // unknown is usually ethernet or any other local network
             {
                 networkConfig = config;
 
 #ifdef QT_DEBUG
-                DEBUG_TAG(2, "SD", "network configs: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
+                DEBUG_TAG(2, "SD", "network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
 #endif
             }
+#ifdef QT_DEBUG
+            else
+            {
+                DEBUG_TAG(2, "SD", "unsupported network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
+            }
+#endif
         }
     }
 

@@ -11,4 +11,10 @@ INCLUDEPATH += $$MACHINETALK_PATH/generated
     !isEmpty(PROTOBUF_LIB_FLAGS): LIBS += $$PROTOBUF_LIB_FLAGS
     LIBS += -llibprotobuf
 }
+macx: {
+    !isEmpty(PROTOBUF_LIB_PATH): LIBS += -L$$PROTOBUF_LIB_PATH
+    !isEmpty(PROTOBUF_LIB_FLAGS): LIBS += $$PROTOBUF_LIB_FLAGS
+    LIBS += -lprotobuf
+    LIBS += -Bstatic
+}
 LIBS += -lmachinetalk-protobuf
