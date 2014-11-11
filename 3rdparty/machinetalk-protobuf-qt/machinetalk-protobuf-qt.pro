@@ -13,7 +13,6 @@ include(../../paths.pri)
 
 # Protobuf
 MACHINETALK_DIR = $$PWD/../machinetalk-protobuf
-PROTOPATH = $$PWD/proto
 PROTOS += \
     $$MACHINETALK_DIR/proto/nanopb.proto \
     $$MACHINETALK_DIR/proto/types.proto \

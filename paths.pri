@@ -40,7 +40,7 @@ win32-g++: {
     PROTOBUF_LIB_PATH =  E:\MinGW\lib
     PROTOBUF_PROTOC =  E:\MinGW\bin\protoc.exe
 }
-linux: {
+linux: !android: {
     PROTOBUF_INCLUDE_PATH=/usr/include
 }
 
