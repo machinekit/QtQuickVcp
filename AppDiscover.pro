@@ -23,6 +23,7 @@ ios: {
     LIBS += -L$$ZEROMQ_LIB_PATH
     LIBS += -L$$LIBSODIUM_LIB_PATH
     LIBS += -lsodium -lzmq -lprotobuf
+    LIBS += -lmachinetalk-protobuf
 }
 
 android: {
