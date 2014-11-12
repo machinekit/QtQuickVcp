@@ -29,8 +29,8 @@ ApplicationWindow {
 
     visibility: (Qt.platform.os == "android") ? "FullScreen" : "AutomaticVisibility"
     visible: true
-    width: Screen.width * 0.7
-    height: Screen.height * 0.7
+    width: (Qt.platform.os == "android") ? Screen.width : Screen.width * 0.7
+    height: (Qt.platform.os == "android") ? Screen.height : Screen.height * 0.7
     title: (mainAppLoader.item != undefined) ? mainAppLoader.item.title : "Loading"
     toolBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.toolBar : null
     statusBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.statusBar : null
