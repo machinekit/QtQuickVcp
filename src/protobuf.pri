@@ -28,6 +28,11 @@ protobuf_decl.name = protobuf headers
 protobuf_decl.input = PROTOS
 protobuf_decl.output = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.pb.h
 protobuf_decl.commands = $$PROTOBUF_PROTOC --cpp_out=$$OUT_PWD/$$PROTOGEN/ --proto_path=${QMAKE_FILE_IN_PATH} $$PROTOPATHS ${QMAKE_FILE_NAME}
+ios: {
+    protobuf_decl.commands += $$escape_expand(\n\t)
+    protobuf_decl.commands += sed -i \'\' -e \'s/namespace\ google /namespace\ google_public /g\' ${QMAKE_FILE_OUT} $$escape_expand(\n\t)
+    protobuf_decl.commands += sed -i \'\' -e \'s/google::protobuf/google_public::protobuf/g\' ${QMAKE_FILE_OUT}
+}
 protobuf_decl.variable_out = HEADERS
 QMAKE_EXTRA_COMPILERS += protobuf_decl
 
@@ -35,7 +40,13 @@ protobuf_impl.name = protobuf sources
 protobuf_impl.input = PROTOS
 protobuf_impl.output = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.pb.cc
 protobuf_impl.depends = $$OUT_PWD/$$PROTOGEN/${QMAKE_FILE_BASE}.pb.h
-protobuf_impl.commands = $$escape_expand(\n)
+ios: {
+    protobuf_impl.commands += sed -i \'\' -e \'s/namespace\ google /namespace\ google_public /g\' ${QMAKE_FILE_OUT} $$escape_expand(\n\t)
+    protobuf_impl.commands += sed -i \'\' -e \'s/google::protobuf/google_public::protobuf/g\' ${QMAKE_FILE_OUT}
+}
+else {
+    protobuf_impl.commands = $$escape_expand(\n)
+}
 protobuf_impl.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += protobuf_impl
 
