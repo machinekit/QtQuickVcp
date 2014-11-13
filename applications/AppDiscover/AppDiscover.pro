@@ -24,6 +24,8 @@ ios: {
     LIBS += -L$$LIBSODIUM_LIB_PATH
     LIBS += -lsodium -lzmq -lprotobuf
     LIBS += -lmachinetalk-protobuf
+    QMAKE_INFO_PLIST = Info.plist
+    QMAKE_POST_LINK += cp -n $$PWD/icons/machinekit2.iconset/* $${OUT_PWD}/.
 }
 
 android: {
@@ -32,9 +34,14 @@ android: {
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
-windows {
+windows: {
     RC_FILE = icon.rc
 }
 
+macx: {
+    ICON = icons/machinekit.icns
+}
+
 OTHER_FILES += \
-    android/AndroidManifest.xml
+    android/AndroidManifest.xml \
+    Info.plist
