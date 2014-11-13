@@ -30,11 +30,18 @@ macx: {
     PROTOBUF_LIB_FLAGS = -Bstatic
 }
 win32-msvc2013: {
-    ZEROMQ_LIB_PATH = "E:\zeromq-4.0.5\lib\Win32"
-    ZEROMQ_INCLUDE_PATH = "E:\zeromq-4.0.5\include"
-    PROTOBUF_INCLUDE_PATH = E:\protobuf-2.6.1\src
-    PROTOBUF_LIB_PATH = E:\protobuf-2.6.1\vsprojects\Release
-    PROTOBUF_PROTOC = E:\protobuf-2.6.1\vsprojects\Release\protoc.exe
+    PROTOBUF_INCLUDE_PATH = E:\protobuf\src
+    ZEROMQ_INCLUDE_PATH = "E:\zeromq4-x\include"
+    contains(QMAKE_TARGET.arch, x86_64) {
+        ZEROMQ_LIB_PATH = "E:\zeromq4-x\lib\x64"
+        PROTOBUF_LIB_PATH = E:\protobuf\vsprojects\x64\Release
+        PROTOBUF_PROTOC = E:\protobuf-x64\vsprojects\x64\Release\protoc.exe
+    }
+    else {
+        ZEROMQ_LIB_PATH = "E:\zeromq4-x\lib\Win32"
+        PROTOBUF_LIB_PATH = E:\protobuf\vsprojects\Release
+        PROTOBUF_PROTOC = E:\protobuf\vsprojects\Release\protoc.exe
+    }
 }
 win32-g++: {
     ZEROMQ_INCLUDE_PATH = E:\MinGW\include
