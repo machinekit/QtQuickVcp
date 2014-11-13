@@ -39,9 +39,13 @@ windows: {
 }
 
 macx: {
-    ICON = icons/machinekit.icns
+    QMAKE_INFO_PLIST = mac_Info.plist
+    ICON = $$PWD/icons/machinekit.icns
+    QMAKE_POST_LINK += $$QMAKE_COPY $$PWD/$${QMAKE_INFO_PLIST} $${TARGET}.app/Contents/Info.plist $$escape_expand(\n\t)
+    QMAKE_POST_LINK += $$QMAKE_COPY $$ICON $${TARGET}.app/Contents/Resources/machinekit.icns
 }
 
 OTHER_FILES += \
     android/AndroidManifest.xml \
-    Info.plist
+    Info.plist \
+    mac_Info.plist
