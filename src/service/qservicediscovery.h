@@ -190,6 +190,7 @@ private slots:
     void deinitializeMdns();
     void networkSessionOpened();
     void networkSessionClosed();
+    void networkSessionError(QNetworkSession::SessionError error);
     void unicastLookup();
 };
 

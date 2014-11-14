@@ -278,7 +278,7 @@ void QServiceDiscovery::componentComplete()
 void QServiceDiscovery::initializeNetworkSession()
 {
     // now begin the process of opening the network link
-    m_networkConfigManager = new QNetworkConfigurationManager;
+    m_networkConfigManager = new QNetworkConfigurationManager(this);
     connect(m_networkConfigManager, SIGNAL(updateCompleted()),
             this, SLOT(openNetworkSession()));
     m_networkConfigManager->updateConfigurations();
@@ -394,9 +394,15 @@ void QServiceDiscovery::networkSessionClosed()
     emit networkReadyChanged(m_networkReady);
 }
 
+void QServiceDiscovery::networkSessionError(QNetworkSession::SessionError error)
+{
+#ifdef QT_DEBUG
+    WARNING_TAG(1, "SD", "network session error:" << error << m_networkSession->errorString());
+#endif
+}
+
 void QServiceDiscovery::unicastLookup()
 {
-    // TODO
     QMapIterator<int, QString> i(m_queryServiceMap);
     while (i.hasNext()) {
         i.next();
@@ -1179,56 +1185,55 @@ void QServiceDiscovery::error(int id, QJDns::Error e)
 
 void QServiceDiscovery::openNetworkSession()
 {
+#ifdef QT_DEBUG
+                DEBUG_TAG(3, "SD", "trying to open network session");
+#endif
+
     // use the default network configuration and make sure that the link is open
-    QNetworkConfiguration networkConfig;
+    QList<QNetworkConfiguration> availableConfigs;
 
-    if ((m_networkConfigManager->defaultConfiguration().bearerType() == QNetworkConfiguration::BearerEthernet)
-            || (m_networkConfigManager->defaultConfiguration().bearerType() == QNetworkConfiguration::BearerWLAN))
+    availableConfigs.append(m_networkConfigManager->defaultConfiguration());
+    availableConfigs.append(m_networkConfigManager->allConfigurations(QNetworkConfiguration::Discovered));
+
+#ifdef QT_DEBUG
+    DEBUG_TAG(2, "SD", "number of configs: " << availableConfigs.size());
+#endif
+
+    for (int i = 0; i < availableConfigs.size(); ++i)
     {
-        networkConfig = m_networkConfigManager->defaultConfiguration();
-    }
-    else
-    {
-        foreach (QNetworkConfiguration config, m_networkConfigManager->allConfigurations(QNetworkConfiguration::Discovered))
+        QNetworkConfiguration config = availableConfigs.at(i);
+        if (config.isValid()
+            && ((config.bearerType() == QNetworkConfiguration::BearerEthernet)
+            || (config.bearerType() == QNetworkConfiguration::BearerWLAN)
+            || (config.bearerType() == QNetworkConfiguration::BearerUnknown)))  // unknown is usually ethernet or any other local network
         {
-            if ((config.bearerType() == QNetworkConfiguration::BearerEthernet) ||
-                    (config.bearerType() == QNetworkConfiguration::BearerWLAN) ||
-                    (config.bearerType() == QNetworkConfiguration::BearerUnknown))  // unknown is usually ethernet or any other local network
+#ifdef QT_DEBUG
+            DEBUG_TAG(2, "SD", "network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
+#endif
+            if (m_networkSession != NULL)
             {
-                networkConfig = config;
+                m_networkSession->deleteLater();
+            }
 
-#ifdef QT_DEBUG
-                DEBUG_TAG(2, "SD", "network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
-#endif
-            }
-#ifdef QT_DEBUG
-            else
-            {
-                DEBUG_TAG(2, "SD", "unsupported network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
-            }
-#endif
+            m_networkSession = new QNetworkSession(config, this);
+
+            connect(m_networkSession, SIGNAL(opened()),
+                    this, SLOT(networkSessionOpened()));
+            connect(m_networkSession, SIGNAL(closed()),
+                    this, SLOT(networkSessionClosed()));
+            connect(m_networkSession, SIGNAL(error(QNetworkSession::SessionError)),
+                    this, SLOT(networkSessionError(QNetworkSession::SessionError)));
+
+            m_networkSession->open();
+
+            return;
         }
-    }
-
-    if (networkConfig.isValid())
-    {
 #ifdef QT_DEBUG
-        DEBUG_TAG(2, "SD", "network config: " << networkConfig.bearerTypeName() << networkConfig.bearerTypeFamily() << networkConfig.name() << networkConfig.state());
-#endif
-
-        if (m_networkSession != NULL)
+        else
         {
-            m_networkSession->deleteLater();
+            DEBUG_TAG(2, "SD", "unsupported network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
         }
-
-        m_networkSession = new QNetworkSession(networkConfig);
-
-        connect(m_networkSession, SIGNAL(opened()),
-                this, SLOT(networkSessionOpened()));
-        connect(m_networkSession, SIGNAL(closed()),
-                this, SLOT(networkSessionClosed()));
-
-        m_networkSession->open();
+#endif
     }
 }
 
