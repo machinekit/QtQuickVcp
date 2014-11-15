@@ -398,6 +398,8 @@ void QServiceDiscovery::networkSessionError(QNetworkSession::SessionError error)
 {
 #ifdef QT_DEBUG
     WARNING_TAG(1, "SD", "network session error:" << error << m_networkSession->errorString());
+#else
+    Q_UNUSED(error)
 #endif
 }
 
