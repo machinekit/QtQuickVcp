@@ -46,8 +46,24 @@
     \endlist
 */
 
+/*! \qmlproperty string ApplicationConfigFilter::name
+
+    Application configuration names will be filtered with this property.
+    Only configurations with a name that matches this string will be accepted.
+    If this property is empty the configuration name will not be filtered.
+*/
+
+/*! \qmlproperty string ApplicationConfigFilter::description
+
+    Application configuration descriptions will be filtered with this property.
+    Only configurations with a description that contains this string will be accepted.
+    If this property is empty the configuration description will not be filtered.
+*/
+
 QApplicationConfigFilter::QApplicationConfigFilter(QObject *parent) :
     QObject(parent),
-    m_type(QApplicationConfigItem::Qt5QmlApplication)
+    m_type(QApplicationConfigItem::Qt5QmlApplication),
+    m_name(""),
+    m_description("")
 {
 }

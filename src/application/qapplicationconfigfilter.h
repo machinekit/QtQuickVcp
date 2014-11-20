@@ -29,6 +29,8 @@ class QApplicationConfigFilter : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QApplicationConfigItem::ApplicationType type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
 
 public:
     explicit QApplicationConfigFilter(QObject *parent = 0);
@@ -36,6 +38,16 @@ public:
     QApplicationConfigItem::ApplicationType type() const
     {
         return m_type;
+    }
+
+    QString name() const
+    {
+        return m_name;
+    }
+
+    QString description() const
+    {
+        return m_description;
     }
 
 public slots:
@@ -48,12 +60,33 @@ public slots:
         }
     }
 
+    void setName(QString arg)
+    {
+        if (m_name == arg)
+            return;
+
+        m_name = arg;
+        emit nameChanged(arg);
+    }
+
+    void setDescription(QString arg)
+    {
+        if (m_description == arg)
+            return;
+
+        m_description = arg;
+        emit descriptionChanged(arg);
+    }
+
 private:
     QApplicationConfigItem::ApplicationType m_type;
+    QString m_name;
+    QString m_description;
 
 signals:
-
     void typeChanged(QApplicationConfigItem::ApplicationType arg);
+    void nameChanged(QString arg);
+    void descriptionChanged(QString arg);
 };
 
 #endif // QAPPCONFIGFILTER_H
