@@ -133,6 +133,12 @@ Rectangle {
     */
     property alias instanceFilter: configService.filter
 
+    /*! \qmlproperty ApplicationConfigFilter applicationFilters
+
+        This property can be used to filter all available application configurations for type, name or description.
+    */
+    property alias applicationFilter: applicationConfig.filter
+
     /*! \qmlproperty list<NameServer> nameServers
 
         This property holds a list of name servers. Name servers have to specified
@@ -156,6 +162,12 @@ Rectangle {
     /*! This property holds wheter the service discovery configuration should be stored or not
     */
     property bool autoSaveConfiguration: true
+
+    /*! This property holds the path to a configuration file.
+        If this property is not set the configuration file path is automatically generated
+        if \l autoSaveConfiguration is \c{true}
+    */
+    property string configurationFilePath: ""
 
     /*! This property holds the title of the window.
     */
@@ -764,7 +776,6 @@ Rectangle {
 
         ready: false
         configUri: configService.uri
-        filters: [ ApplicationConfigFilter { type: ApplicationConfigItem.Qt5QmlApplication } ]
         onConnectionStateChanged: {
             if (applicationConfig.connectionState === ApplicationConfig.Error)
             {
@@ -834,13 +845,19 @@ Rectangle {
         name: "service-discovery"
 
         Component.onCompleted: {
-            if (!autoSaveConfiguration) {
+            var manualConfig = false
+            if (configurationFilePath !== "") {
+                sdSettings.filePath = configurationFilePath
+                manualConfig = true
+            }
+            else if (!autoSaveConfiguration) {
                 return
             }
 
             load()
-            sdSettings.setValue("nameServers", [], false)
+            sdSettings.setValue("nameServers", serviceDiscovery.nameServers, false)
             sdSettings.setValue("lookupMode", serviceDiscovery.lookupMode, false)
+            sdSettings.setValue("mode", mode, false)
 
             // add stored name servers
             var nameServers = sdSettings.values.nameServers
@@ -868,6 +885,25 @@ Rectangle {
             }
 
             serviceDiscovery.lookupMode = sdSettings.values.lookupMode
+            mode = sdSettings.values.mode
+
+            if (manualConfig) {
+                sdSettings.setValue("autoSaveConfiguration", false, false)
+                sdSettings.setValue("autoSelectInstance", autoSelectInstance, false)
+                sdSettings.setValue("autoSelectApplication", autoSelectApplication, false)
+                sdSettings.setValue("instanceFilter", serviceDiscovery.filter, false)
+                sdSettings.setValue("applicationFilter", applicationConfig.filter, false)
+
+                autoSaveConfiguration = sdSettings.values.autoSaveConfiguration
+                autoSelectInstance = sdSettings.values.autoSelectInstance
+                autoSelectApplication = sdSettings.values.autoSelectApplication
+                for (var key in sdSettings.values.instanceFilter) {
+                    serviceDiscovery.filter[key] = sdSettings.values.instanceFilter[key]
+                }
+                for (key in sdSettings.values.applicationFilter) {
+                    applicationConfig.filter[key] = sdSettings.values.applicationFilter[key]
+                }
+            }
 
             initialized = true
         }
