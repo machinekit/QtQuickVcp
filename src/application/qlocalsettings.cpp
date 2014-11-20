@@ -78,8 +78,8 @@ void QLocalSettings::updateFilePath()
 #else
     basePath = QDir::currentPath();
 #endif
-
     m_filePath = QDir(basePath).filePath(m_application + "/" + m_name + ".json");
+    emit filePathChanged(m_filePath);
 }
 
 void QLocalSettings::save()
@@ -128,6 +128,15 @@ QJsonValue QLocalSettings::value(const QString &key)
     }
 
     return QJsonValue();
+}
+
+void QLocalSettings::setFilePath(QString arg)
+{
+    if (m_filePath == arg)
+        return;
+
+    m_filePath = arg;
+    emit filePathChanged(arg);
 }
 
 void QLocalSettings::setValue(const QString &key, const QJsonValue &value)

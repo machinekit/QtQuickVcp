@@ -38,6 +38,7 @@ class QLocalSettings : public QObject
     Q_PROPERTY(QJsonObject values READ values WRITE setValues NOTIFY valuesChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString application READ application WRITE setApplication NOTIFY applicatioChanged)
+    Q_PROPERTY(QString filePath READ filePath WRITE setFilePath NOTIFY filePathChanged)
 
 public:
     explicit QLocalSettings(QObject *parent = 0);
@@ -58,16 +59,23 @@ public:
         return m_name;
     }
 
+    QString filePath() const
+    {
+        return m_filePath;
+    }
+
 signals:
     void valuesChanged(QJsonObject arg);
     void applicatioChanged(QString arg);
     void nameChanged(QString arg);
+    void filePathChanged(QString arg);
 
 public slots:
     void setValues(QJsonObject arg);
     void setValue(const QString &key, const QJsonValue &value, bool overwrite);
     void setApplication(QString arg);
     void setName(QString arg);
+    void setFilePath(QString arg);
     void save();
     void load();
     void setValue(const QString &key, const QJsonValue &value);
