@@ -53,15 +53,51 @@ Item {
 
         anchors.fill: parent
         defaultTitle: qsTr("Machinekit App Discover")
-        remoteVisible: true
         mode: "remote"
+        remoteVisible: true
+        localVisible: true
         autoSelectInstance: false
-        instanceFilter: ServiceDiscoveryFilter{ name: "" }
         autoSelectApplication: false
+        instanceFilter: ServiceDiscoveryFilter{ name: "" }
+        applicationFilter: ApplicationConfigFilter { name: "" }
         applications: [
             ApplicationDescription {
                 sourceDir: "qrc:/AppDiscover.ServiceDisplay"
             }
         ]
+    }
+
+    Component.onCompleted: {
+        parseArguments(Qt.application.arguments)
+    }
+
+    function parseArguments(arguments)
+    {
+        var toggle = false
+        var option
+        var argument
+        var args = arguments.slice()
+        args.shift()
+
+        while (args.length > 0)
+        {
+            if (!toggle) {
+                option = args[0]
+            }
+            else {
+                argument = args[0]
+                processOption(option, argument)
+            }
+            toggle = !toggle
+            args.shift()
+        }
+    }
+
+    function processOption(option, argument)
+    {
+        if (option === '--config')
+        {
+            connectionWindow.configurationFilePath = argument
+        }
     }
 }
