@@ -55,7 +55,7 @@ class QApplicationConfig : public QQuickItem
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QApplicationConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
     Q_PROPERTY(QQmlListProperty<QApplicationConfigItem> configs READ configs NOTIFY configsChanged)
-    Q_PROPERTY(QQmlListProperty<QApplicationConfigFilter> filters READ filters)
+    Q_PROPERTY(QApplicationConfigFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
     Q_ENUMS(State)
     Q_ENUMS(ConnectionError)
 public:
@@ -90,6 +90,11 @@ public:
         return m_selectedConfig;
     }
 
+    QApplicationConfigFilter * filter() const
+    {
+        return m_filter;
+    }
+
     State connectionState() const
     {
         return m_connectionState;
@@ -108,10 +113,6 @@ public:
     QQmlListProperty<QApplicationConfigItem> configs();
     int appConfigCount() const;
     QApplicationConfigItem *appConfig(int index) const;
-
-    QQmlListProperty<QApplicationConfigFilter> filters();
-    int filterCount() const;
-    QApplicationConfigFilter* filter(int index) const;
 
     bool isConnected() const
     {
@@ -141,6 +142,15 @@ public slots:
         }
     }
 
+    void setFilter(QApplicationConfigFilter * arg)
+    {
+        if (m_filter == arg)
+            return;
+
+        m_filter = arg;
+        emit filterChanged(arg);
+    }
+
 private:
     bool    m_componentCompleted;
     QString m_configUri;
@@ -152,7 +162,7 @@ private:
 
     QApplicationConfigItem *m_selectedConfig;
     QList<QApplicationConfigItem*> m_configs;
-    QList<QApplicationConfigFilter*> m_filters;
+    QApplicationConfigFilter *m_filter;
 
     PollingZMQContext *m_context;
     ZMQSocket *m_configSocket;
@@ -180,6 +190,7 @@ signals:
     void readyChanged(bool arg);
     void selectedConfigChanged(QApplicationConfigItem * arg);
     void configsChanged(QQmlListProperty<QApplicationConfigItem> arg);
+    void filterChanged(QApplicationConfigFilter * arg);
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);

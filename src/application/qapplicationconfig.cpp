@@ -58,7 +58,7 @@
 
             configUri: "tcp://192.168.1.2:4999"
             ready: true
-            filters: [ ApplicationConfigFilter { type: ApplicationConfigItem.Qt5QmlApplication } ]
+            filter: ApplicationConfigFilter { type: ApplicationConfigItem.Qt5QmlApplication }
         }
     }
     \endqml
@@ -142,10 +142,10 @@
     This property holds a list of all available configurations.
 */
 
-/*! \qmlproperty list<ApplicationConfigFilter> ApplicationConfig::filters
+/*! \qmlproperty ApplicationConfigFilter ApplicationConfig::filter
 
-    This property holds a list of filters applied to the available configurations.
-    The filters are OR connected.
+    This property holds the filters that will be applied to available configurations.
+    The filter values are AND connected.
 */
 
 /*! \qmlmethod void QApplicationConfig::selectConfig(QString name)
@@ -168,6 +168,7 @@ QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
      m_error(NoError),
      m_errorString(""),
      m_selectedConfig(new QApplicationConfigItem(this)),
+     m_filter(new QApplicationConfigFilter(this)),
      m_context(NULL),
      m_configSocket(NULL)
 {
@@ -206,21 +207,6 @@ QApplicationConfigItem *QApplicationConfig::appConfig(int index) const
     return m_configs.at(index);
 }
 
-QQmlListProperty<QApplicationConfigFilter> QApplicationConfig::filters()
-{
-    return QQmlListProperty<QApplicationConfigFilter>(this, m_filters);
-}
-
-int QApplicationConfig::filterCount() const
-{
-    return m_filters.count();
-}
-
-QApplicationConfigFilter *QApplicationConfig::filter(int index) const
-{
-    return m_filters.at(index);
-}
-
 /** If the ready property has a rising edge we try to connect
  *  if it is has a falling edge we disconnect and cleanup
  */
@@ -250,10 +236,7 @@ void QApplicationConfig::start()
 {
 #ifdef QT_DEBUG
     qDebug() << "app config uri:" << m_configUri;
-    foreach (QApplicationConfigFilter* filter, m_filters)
-    {
-        qDebug() << "filter:" << filter->type();
-    }
+    qDebug() << "filter:" << m_filter->type();
 #endif
 
     m_configs.clear();
@@ -384,21 +367,28 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
 
             app = m_rx.app(i);
 
-            foreach (QApplicationConfigFilter *filter, m_filters)
+            QApplicationConfigItem::ApplicationType type;
+            QString name;
+            QString description;
+
+            type = (QApplicationConfigItem::ApplicationType)app.type();
+            name = QString::fromStdString(app.name());
+            description = QString::fromStdString(app.description());
+
+            if ((m_filter->type() == type)
+                 && (m_filter->name().isEmpty() || (name == m_filter->name()))
+                 && (m_filter->description().isEmpty() || description.contains(m_filter->description())))
             {
-                if ((pb::ApplicationType)filter->type() == app.type())
-                {
-                    QApplicationConfigItem *appConfigItem;
+                QApplicationConfigItem *appConfigItem;
 
-                    appConfigItem = new QApplicationConfigItem(this);
-                    appConfigItem->setName(QString::fromStdString(app.name()));
-                    appConfigItem->setDescription(QString::fromStdString(app.description()));
-                    appConfigItem->setType((QApplicationConfigItem::ApplicationType)app.type());
-                    m_configs.append(appConfigItem);
-                    emit configsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_configs));
+                appConfigItem = new QApplicationConfigItem(this);
+                appConfigItem->setName(name);
+                appConfigItem->setDescription(description);
+                appConfigItem->setType(type);
+                m_configs.append(appConfigItem);
+                emit configsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_configs));
 
-                    break;
-                }
+                break;
             }
         }
     }
@@ -410,89 +400,90 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
 
             app = m_rx.app(i);
 
-            foreach (QApplicationConfigFilter *filter, m_filters)
+            QApplicationConfigItem::ApplicationType type;
+
+            type = (QApplicationConfigItem::ApplicationType)app.type();
+
+            if (m_filter->type() == type)     // detail comes when application was already filtered, so we only check the type to make sure it is compatible
             {
-                if ((pb::ApplicationType)filter->type() == app.type())
+                QString baseFilePath;
+                QStringList fileList;
+                QDir dir;
+
+                if (m_selectedConfig == NULL)
                 {
-                    QString baseFilePath;
-                    QStringList fileList;
-                    QDir dir;
+                    return;
+                }
 
-                    if (m_selectedConfig == NULL)
-                    {
-                        return;
-                    }
+                m_selectedConfig->setName(QString::fromStdString(app.name()));
+                m_selectedConfig->setDescription(QString::fromStdString(app.description()));
+                m_selectedConfig->setType(type);
 
-                    m_selectedConfig->setName(QString::fromStdString(app.name()));
-                    m_selectedConfig->setDescription(QString::fromStdString(app.description()));
-                    m_selectedConfig->setType((QApplicationConfigItem::ApplicationType)app.type());
+                baseFilePath = applicationFilePath(m_selectedConfig->name());
+                if (!dir.mkpath(baseFilePath))
+                {
+                    qDebug() << "not able to create directory";
+                }
 
-                    baseFilePath = applicationFilePath(m_selectedConfig->name());
-                    if (!dir.mkpath(baseFilePath))
+#ifdef QT_DEBUG
+                qDebug() << "base file path:" << baseFilePath;
+#endif
+
+                for (int j = 0; j < app.file_size(); ++j)
+                {
+                    pb::File file;
+                    QString filePath;
+                    QByteArray data;
+
+                    file = app.file(j);
+                    filePath = baseFilePath + QString::fromStdString(file.name());
+
+                    QFileInfo fileInfo(filePath);
+                    if (!dir.mkpath(fileInfo.absolutePath()))
                     {
                         qDebug() << "not able to create directory";
                     }
 
-#ifdef QT_DEBUG
-                    qDebug() << "base file path:" << baseFilePath;
-#endif
-
-                    for (int j = 0; j < app.file_size(); ++j)
+                    QFile localFile(filePath);
+                    if (!localFile.open(QIODevice::WriteOnly))
                     {
-                        pb::File file;
-                        QString filePath;
-                        QByteArray data;
-
-                        file = app.file(j);
-                        filePath = baseFilePath + QString::fromStdString(file.name());
-
-                        QFileInfo fileInfo(filePath);
-                        if (!dir.mkpath(fileInfo.absolutePath()))
-                        {
-                            qDebug() << "not able to create directory";
-                        }
-
-                        QFile localFile(filePath);
-                        if (!localFile.open(QIODevice::WriteOnly))
-                        {
-                            qDebug() << "not able to create file" << filePath;
-                            continue;
-                        }
-
-                        data = QByteArray(file.blob().data(), file.blob().size());
-
-                        if (file.encoding() == pb::ZLIB)
-                        {
-                            quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
-                            qDebug() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
-                            data = qUncompress(data);
-                        }
-                        else if (file.encoding() != pb::CLEARTEXT)
-                        {
-                            qDebug() << "unknown encoding";
-                            localFile.close();
-                            continue;
-                        }
-
-                        localFile.write(data);
-                        localFile.close();
-
-                        fileList.append(filePath);
-
-#ifdef QT_DEBUG
-                        qDebug() << "created file: " << filePath;
-#endif
+                        qDebug() << "not able to create file" << filePath;
+                        continue;
                     }
 
-                    QApplicationDescription applicationDescription;
+                    data = QByteArray(file.blob().data(), file.blob().size());
 
-                    applicationDescription.setSourceDir(QUrl("file:///" + baseFilePath));
-                    // TODO check validity
+                    if (file.encoding() == pb::ZLIB)
+                    {
+                        quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
+                        qDebug() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
+                        data = qUncompress(data);
+                    }
+                    else if (file.encoding() != pb::CLEARTEXT)
+                    {
+                        qDebug() << "unknown encoding";
+                        localFile.close();
+                        continue;
+                    }
 
-                    m_selectedConfig->setFiles(fileList);
-                    m_selectedConfig->setMainFile(applicationDescription.mainFile());
-                    m_selectedConfig->setLoaded(true);
+                    localFile.write(data);
+                    localFile.close();
+
+                    fileList.append(filePath);
+
+#ifdef QT_DEBUG
+                    qDebug() << "created file: " << filePath;
+#endif
                 }
+
+                QApplicationDescription applicationDescription;
+
+                applicationDescription.setSourceDir(QUrl("file:///" + baseFilePath));
+                // TODO check validity
+
+                m_selectedConfig->setFiles(fileList);
+                m_selectedConfig->setMainFile(applicationDescription.mainFile());
+                m_selectedConfig->setLoaded(true);
             }
         }
     }
