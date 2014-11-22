@@ -43,7 +43,8 @@ QtObject {
     function updateLine() {
         if (_ready) {
             var file = status.task.file
-            var currentLine = status.motion.motionLine + 1
+            var currentLine = status.motion.motionLine
+            
             if (_lastLine > currentLine) {
                 for (var line = 1; line <= _lastLine; ++line) {
                     model.setData(file, line, false, GCodeProgramModel.ExecutedRole)
