@@ -42,7 +42,7 @@ ApplicationItem {
     property var g5xOffset: _ready ? status.motion.g5xOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
     property var g92Offset: _ready ? status.motion.g92Offset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
     property var toolOffset: _ready ? status.io.toolOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
-    property double velocity: _ready ? status.motion.currentVel : 15.4
+    property double velocity: _ready ? status.motion.currentVel * _timeFactor: 15.4
     property double distanceToGo: _ready ? status.motion.distanceToGo : 10.2
     property bool offsetsVisible: settings.initialized && settings.values.dro.showOffsets
     property bool velocityVisible: settings.initialized && settings.values.dro.showVelocity
@@ -52,6 +52,7 @@ ApplicationItem {
 
     property bool _ready: status.synced
     property var _axisNames: ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
+    property double _timeFactor: (_ready && (status.config.timeUnits === ApplicationStatus.TimeUnitsMinute)) ? 60 : 1
 
     function getPosition() {
         var basePosition
