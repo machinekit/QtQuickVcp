@@ -60,12 +60,11 @@ Item {
     function checkFile() {
         var remoteFile = "file://" + status.task.file
         var remotePath = "file://" + status.config.remotePath
-        if ((status.config.remotePath !== "")
+        if ((remotePath !== "file://")
                 && (remoteFile !== "file://")
                 && (remoteFile.indexOf(remotePath) === 0)
-                && (file.remoteFilePath != remoteFile))
+                && (file.remoteFilePath !== remoteFile))
         {
-
             file.remoteFilePath = remoteFile
             file.startDownload()
         }
