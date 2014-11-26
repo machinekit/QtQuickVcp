@@ -58,7 +58,11 @@ ApplicationItem {
     }
 
     on_PreviewEnabledChanged: {
-        if (_previewEnabled && (file.remoteFilePath !== "")) {
+        if (_previewEnabled
+            && (file.remoteFilePath !== "")
+            && (file.localFilePath !== "")
+            && (file.transferState === ApplicationFile.NoTransfer))
+        {
             gcodeProgramModel.clear()
             gcodeProgramLoader.load()
             executePreview()
