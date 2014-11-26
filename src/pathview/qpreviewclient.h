@@ -162,14 +162,7 @@ public slots:
         }
     }
 
-    void setUnits(CanonUnits arg)
-    {
-        if (m_units == arg)
-            return;
-
-        m_units = arg;
-        emit unitsChanged(arg);
-    }
+    void setUnits(CanonUnits arg);
 
 private:
     typedef struct {
@@ -185,8 +178,9 @@ private:
     QString             m_errorString;
     QGCodeProgramModel *m_model;
     InterpreterState    m_interpreterState;
-    QString m_interpreterNote;
+    QString             m_interpreterNote;
     CanonUnits          m_units;
+    double              m_convertFactor;
 
     PollingZMQContext *m_context;
     ZMQSocket  *m_statusSocket;
@@ -204,6 +198,7 @@ private:
     void updateState(State state, ConnectionError error, QString errorString);
     void updateError(ConnectionError error, QString errorString);
 
+    double convertValue(double value);
     void convertPos(pb::Position *position);
 
 private slots:

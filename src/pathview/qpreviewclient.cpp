@@ -35,6 +35,7 @@ QPreviewClient::QPreviewClient(QObject *parent) :
     m_interpreterState(InterpreterStateUnset),
     m_interpreterNote(""),
     m_units(CanonUnitsInches),
+    m_convertFactor(1.0),
     m_context(NULL),
     m_statusSocket(NULL),
     m_previewSocket(NULL),
@@ -44,12 +45,35 @@ QPreviewClient::QPreviewClient(QObject *parent) :
     m_previewStatus.lineNumber = 0;
 }
 
+void QPreviewClient::setUnits(QPreviewClient::CanonUnits arg)
+{
+    if (m_units == arg)
+        return;
+
+    switch (arg) {
+    case CanonUnitsInches:
+        m_convertFactor = 1.0;
+        break;
+    case CanonUnitsMm:
+        m_convertFactor = 25.4;
+        break;
+    case CanonUnitsCm:
+        m_convertFactor = 2.54;
+        break;
+    default:
+        m_convertFactor = 1.0;
+    }
+
+    m_units = arg;
+    emit unitsChanged(arg);
+}
+
 void QPreviewClient::start()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "preview", "start")
-#endif
-    updateState(Connecting);
+        #endif
+            updateState(Connecting);
 
     if (connectSockets())
     {
@@ -114,33 +138,22 @@ void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString 
     }
 }
 
+double QPreviewClient::convertValue(double value)
+{
+    return value * m_convertFactor;
+}
+
 void QPreviewClient::convertPos(pb::Position *position)
 {
-    double convertFactor;
-
-    switch (m_units) {
-    case CanonUnitsInches:
-        convertFactor = 1.0;
-        break;
-    case CanonUnitsMm:
-        convertFactor = 25.4;
-        break;
-    case CanonUnitsCm:
-        convertFactor = 2.54;
-        break;
-    default:
-        convertFactor = 1.0;
-    }
-
-    position->set_x(position->x() * convertFactor);
-    position->set_y(position->y() * convertFactor);
-    position->set_z(position->z() * convertFactor);
-    position->set_a(position->a() * convertFactor);
-    position->set_b(position->b() * convertFactor);
-    position->set_c(position->c() * convertFactor);
-    position->set_u(position->u() * convertFactor);
-    position->set_v(position->v() * convertFactor);
-    position->set_w(position->w() * convertFactor);
+    position->set_x(convertValue(position->x()));
+    position->set_y(convertValue(position->y()));
+    position->set_z(convertValue(position->z()));
+    position->set_a(convertValue(position->a()));
+    position->set_b(convertValue(position->b()));
+    position->set_c(convertValue(position->c()));
+    position->set_u(convertValue(position->u()));
+    position->set_v(convertValue(position->v()));
+    position->set_w(convertValue(position->w()));
 }
 
 /** Processes all message received on the status 0MQ socket */
@@ -221,6 +234,31 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
             if (preview.has_pos())
             {
                 convertPos(preview.mutable_pos());  // messages come always with unit inches
+            }
+
+            if (preview.has_first_axis())
+            {
+                preview.set_first_axis(convertValue(preview.first_axis()));
+            }
+
+            if (preview.has_second_axis())
+            {
+                preview.set_second_axis(convertValue(preview.second_axis()));
+            }
+
+            if (preview.has_first_end())
+            {
+                preview.set_first_end(convertValue(preview.first_end()));
+            }
+
+            if (preview.has_second_end())
+            {
+                preview.set_second_end(convertValue(preview.second_end()));
+            }
+
+            if (preview.has_axis_end_point())
+            {
+                preview.set_axis_end_point(convertValue(preview.axis_end_point()));
             }
 
             previewList = static_cast<QList<pb::Preview>*>(m_model->data(m_previewStatus.fileName,
