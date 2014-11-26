@@ -427,12 +427,12 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     double radius;
     ArcPathItem *arcPathItem;
 
+    currentVector = positionToVector3D(m_currentPosition);
+    newPosition = calculateNewPosition(preview.pos());
 
     if (m_activePlane == XYPlane)
     {
         arcPathItem = new ArcPathItem();
-        currentVector = positionToVector3D(m_currentPosition);
-        newPosition = calculateNewPosition(preview.pos());
         newPosition.x = preview.first_end();
         newPosition.y = preview.second_end();
         newPosition.z = preview.axis_end_point();
@@ -446,8 +446,6 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     else if (m_activePlane == YZPlane)
     {
         arcPathItem = new ArcPathItem();
-        currentVector = positionToVector3D(m_currentPosition);
-        newPosition = calculateNewPosition(preview.pos());
         newPosition.y = preview.first_end();
         newPosition.z = preview.second_end();
         newPosition.x = preview.axis_end_point();
@@ -461,8 +459,6 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     else if (m_activePlane == XZPlane)
     {
         arcPathItem = new ArcPathItem();
-        currentVector = positionToVector3D(m_currentPosition);
-        newPosition = calculateNewPosition(preview.pos());
         newPosition.x = preview.first_end();
         newPosition.z = preview.second_end();
         newPosition.y = preview.axis_end_point();
@@ -475,7 +471,7 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     }
     else
     {
-        return;
+        return; // not supported
     }
 
     endPoint.setX(preview.first_end());
@@ -493,33 +489,32 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     if (startAngle < 0) {
         endAngle += 2 * M_PI;
     }
-    anticlockwise = !(preview.rotation() < 0);
-    if (!anticlockwise) {
-        endAngle -= 2.0 * M_PI * (qAbs((double)preview.rotation())-1.0);  // for rotation > 1 decrease the startAngle
+    anticlockwise = preview.rotation() >= 0;
+    if (anticlockwise) {
+        startAngle += 2.0 * M_PI * (qAbs((double)preview.rotation())-1.0);  // for rotation > 1 increase the endAngle
     }
     else {
-        startAngle += 2.0 * M_PI * (qAbs((double)preview.rotation())-1.0);  // for rotation > 1 increase the endAngle
+        endAngle -= 2.0 * M_PI * (qAbs((double)preview.rotation())-1.0);  // for rotation > 1 decrease the startAngle
     }
 
     radius = centerPoint.distanceToPoint(startPoint);
 
-
     // calculate the extents of the arc
     double firstAngle;
     double secondAngle;
-    bool point1 = false;    // phi=0
-    bool point2 = false;    // phi=pi/2
-    bool point3 = false;    // phi=pi
-    bool point4 = false;    // phi=3pi/2
-    // TODO implement all possible arc
+    // when viewed on the unit-circle
+    bool point1 = false;    // phi=0        right
+    bool point2 = false;    // phi=pi/2     top
+    bool point3 = false;    // phi=pi       left
+    bool point4 = false;    // phi=3pi/2    bottom
 
-    if (!anticlockwise) {
-        firstAngle = startAngle;
-        secondAngle = endAngle;
-    }
-    else {
+    if (anticlockwise) {
         firstAngle = endAngle;
         secondAngle = startAngle;
+    }
+    else {
+        firstAngle = startAngle;
+        secondAngle = endAngle;
     }
 
     if (secondAngle > firstAngle) {
@@ -540,28 +535,74 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     }
 
     updateExtents(newVector);
-    if (m_activePlane == XYPlane)
+    if (m_activePlane == XYPlane)   // centerPoint: X is X, Y is Y
     {
         if (point1) {
-            updateExtents(QVector3D(centerPoint.x() + radius, centerPoint.y(), currentVector.z()));
+            updateExtents(QVector3D(centerPoint.x() + radius,
+                                    centerPoint.y(),
+                                    currentVector.z()));
         }
         if (point2) {
-            updateExtents(QVector3D(centerPoint.x(), centerPoint.y() + radius, currentVector.z()));
+            updateExtents(QVector3D(centerPoint.x(),
+                                    centerPoint.y() + radius,
+                                    currentVector.z()));
         }
         if (point3) {
-            updateExtents(QVector3D(centerPoint.x() - radius, centerPoint.y(), currentVector.z()));
+            updateExtents(QVector3D(centerPoint.x() - radius,
+                                    centerPoint.y(),
+                                    currentVector.z()));
         }
+        if (point4) {
+            updateExtents(QVector3D(centerPoint.x(),
+                                    centerPoint.y() - radius,
+                                    currentVector.z()));
+        }
+    }
+    else if (m_activePlane == XZPlane)  // centerPoint: X is X, Y is Z
+    {
         if (point1) {
-            updateExtents(QVector3D(centerPoint.x(), centerPoint.y() - radius, currentVector.z()));
+            updateExtents(QVector3D(centerPoint.x() + radius,
+                                    currentVector.y(),
+                                    centerPoint.y()));
+        }
+        if (point2) {
+            updateExtents(QVector3D(centerPoint.x(),
+                                    currentVector.y(),
+                                    centerPoint.y() + radius));
+        }
+        if (point3) {
+            updateExtents(QVector3D(centerPoint.x() - radius,
+                                    currentVector.y(),
+                                    centerPoint.y()));
+        }
+        if (point4) {
+            updateExtents(QVector3D(centerPoint.x(),
+                                    currentVector.y(),
+                                    centerPoint.y() - radius));
         }
     }
-    else if (m_activePlane == XZPlane)
+    else if (m_activePlane == YZPlane)  // centerPoint: X is Y, Y is Z
     {
-        //TODO
-    }
-    else if (m_activePlane == YZPlane)
-    {
-        //TODO
+        if (point1) {
+            updateExtents(QVector3D(currentVector.x(),
+                                    centerPoint.x() + radius,
+                                    centerPoint.y()));
+        }
+        if (point2) {
+            updateExtents(QVector3D(currentVector.x(),
+                                    centerPoint.x(),
+                                    centerPoint.y() + radius));
+        }
+        if (point3) {
+            updateExtents(QVector3D(currentVector.x(),
+                                    centerPoint.x() - radius,
+                                    centerPoint.y()));
+        }
+        if (point4) {
+            updateExtents(QVector3D(currentVector.x(),
+                                    centerPoint.x(),
+                                    centerPoint.y() - radius));
+        }
     }
 
     arcPathItem->position = currentVector;
