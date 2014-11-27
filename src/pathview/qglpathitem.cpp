@@ -30,7 +30,11 @@ QGLPathItem::QGLPathItem(QQuickItem *parent) :
     m_arcFeedColor(QColor(Qt::white)),
     m_straightFeedColor(QColor(Qt::white)),
     m_traverseColor(QColor(Qt::cyan)),
+    m_backplotArcFeedColor(QColor(Qt::yellow)),
+    m_backplotStraightFeedColor(QColor(Qt::yellow)),
+    m_backplotTraverseColor(QColor(Qt::yellow)),
     m_selectedColor(QColor(Qt::magenta)),
+    m_activeColor(QColor(Qt::red)),
     m_needsFullUpdate(true),
     m_minimumExtents(QVector3D(0, 0, 0)),
     m_maximumExtents(QVector3D(0, 0, 0))
@@ -110,7 +114,6 @@ void QGLPathItem::paint(QGLView *glView)
                 pathItem->drawablePointer = drawablePointer;
                 m_drawablePathMap.insert(drawablePointer, pathItem);
             }
-
         }
 
         glView->endUnion();
@@ -129,6 +132,24 @@ void QGLPathItem::paint(QGLView *glView)
                 QColor color;
                 if (m_model->data(pathItem->modelIndex, QGCodeProgramModel::SelectedRole).toBool()) {
                     color = m_selectedColor;
+                }
+                else if (m_model->data(pathItem->modelIndex, QGCodeProgramModel::ActiveRole).toBool())
+                {
+                    color = m_activeColor;
+                }
+                else if (m_model->data(pathItem->modelIndex, QGCodeProgramModel::ExecutedRole).toBool())
+                {
+                    if (pathItem->movementType == FeedMove) {
+                        if (pathItem->pathType == Arc) {
+                            color = m_backplotArcFeedColor;
+                        }
+                        else {
+                            color = m_backplotStraightFeedColor;
+                        }
+                    }
+                    else {
+                        color = m_backplotTraverseColor;
+                    }
                 }
                 else
                 {
@@ -184,6 +205,26 @@ QVector3D QGLPathItem::maximumExtents() const
 QColor QGLPathItem::straightFeedColor() const
 {
     return m_straightFeedColor;
+}
+
+QColor QGLPathItem::activeColor() const
+{
+    return m_activeColor;
+}
+
+QColor QGLPathItem::backplotArcFeedColor() const
+{
+    return m_backplotArcFeedColor;
+}
+
+QColor QGLPathItem::backplotStraightFeedColor() const
+{
+    return m_backplotStraightFeedColor;
+}
+
+QColor QGLPathItem::backplotTraverseColor() const
+{
+    return m_backplotTraverseColor;
 }
 
 void QGLPathItem::selectDrawable(void *pointer)
@@ -266,6 +307,38 @@ void QGLPathItem::setStraightFeedColor(QColor arg)
     if (m_straightFeedColor != arg) {
         m_straightFeedColor = arg;
         emit straightFeedColorChanged(arg);
+    }
+}
+
+void QGLPathItem::setActiveColor(QColor arg)
+{
+    if (m_activeColor != arg) {
+        m_activeColor = arg;
+        emit activeColorChanged(arg);
+    }
+}
+
+void QGLPathItem::setBackplotArcFeedColor(QColor arg)
+{
+    if (m_backplotArcFeedColor != arg) {
+        m_backplotArcFeedColor = arg;
+        emit backplotArcFeedColorChanged(arg);
+    }
+}
+
+void QGLPathItem::setBackplotStraightFeedColor(QColor arg)
+{
+    if (m_backplotStraightFeedColor != arg) {
+        m_backplotStraightFeedColor = arg;
+        emit backplotStraightFeedColorChanged(arg);
+    }
+}
+
+void QGLPathItem::setBackplotTraverseColor(QColor arg)
+{
+    if (m_backplotTraverseColor != arg) {
+        m_backplotTraverseColor = arg;
+        emit backplotTraverseColorChanged(arg);
     }
 }
 
@@ -822,7 +895,9 @@ void QGLPathItem::drawPath()
 void QGLPathItem::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
     Q_UNUSED(bottomRight) // we only change one item at a time
-    if (roles.contains(QGCodeProgramModel::SelectedRole))
+    if (roles.contains(QGCodeProgramModel::SelectedRole)
+        || roles.contains(QGCodeProgramModel::ActiveRole)
+        || roles.contains(QGCodeProgramModel::ExecutedRole))
     {
         QList<PathItem*> pathItemList;
 

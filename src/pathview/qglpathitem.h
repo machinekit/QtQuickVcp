@@ -33,7 +33,11 @@ class QGLPathItem : public QGLItem
     Q_PROPERTY(QColor arcFeedColor READ arcFeedColor WRITE setArcFeedColor NOTIFY arcFeedColorChanged)
     Q_PROPERTY(QColor straightFeedColor READ straightFeedColor WRITE setStraightFeedColor NOTIFY straightFeedColorChanged)
     Q_PROPERTY(QColor traverseColor READ traverseColor WRITE setTraverseColor NOTIFY traverseColorChanged)
+    Q_PROPERTY(QColor backplotArcFeedColor READ backplotArcFeedColor WRITE setBackplotArcFeedColor NOTIFY backplotArcFeedColorChanged)
+    Q_PROPERTY(QColor backplotStraightFeedColor READ backplotStraightFeedColor WRITE setBackplotStraightFeedColor NOTIFY backplotStraightFeedColorChanged)
+    Q_PROPERTY(QColor backplotTraverseColor READ backplotTraverseColor WRITE setBackplotTraverseColor NOTIFY backplotTraverseColorChanged)
     Q_PROPERTY(QColor selectedColor READ selectedColor WRITE setSelectedColor NOTIFY selectedColorChanged)
+    Q_PROPERTY(QColor activeColor READ activeColor WRITE setActiveColor NOTIFY activeColorChanged)
     Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(QVector3D minimumExtents READ minimumExtents NOTIFY minimumExtentsChanged)
     Q_PROPERTY(QVector3D maximumExtents READ maximumExtents NOTIFY maximumExtentsChanged)
@@ -46,11 +50,15 @@ public:
 
     QGCodeProgramModel * model() const;
     QColor arcFeedColor() const;
+    QColor straightFeedColor() const;
     QColor traverseColor() const;
+    QColor backplotArcFeedColor() const;
+    QColor backplotStraightFeedColor() const;
+    QColor backplotTraverseColor() const;
     QColor selectedColor() const;
+    QColor activeColor() const;
     QVector3D minimumExtents() const;
     QVector3D maximumExtents() const;
-    QColor straightFeedColor() const;
 
 public slots:
     virtual void selectDrawable(void *pointer);
@@ -60,6 +68,10 @@ public slots:
     void setTraverseColor(QColor arg);
     void setSelectedColor(QColor arg);
     void setStraightFeedColor(QColor arg);
+    void setBackplotArcFeedColor(QColor arg);
+    void setBackplotStraightFeedColor(QColor arg);
+    void setBackplotTraverseColor(QColor arg);
+    void setActiveColor(QColor arg);
 
 private:
     struct Position {
@@ -150,7 +162,11 @@ private:
     QColor m_arcFeedColor;
     QColor m_straightFeedColor;
     QColor m_traverseColor;
+    QColor m_backplotArcFeedColor;
+    QColor m_backplotStraightFeedColor;
+    QColor m_backplotTraverseColor;
     QColor m_selectedColor;
+    QColor m_activeColor;
 
     Offsets m_activeOffsets;
     Position m_currentPosition;
@@ -197,6 +213,11 @@ signals:
     void minimumExtentsChanged(QVector3D arg);
     void maximumExtentsChanged(QVector3D arg);
     void straightFeedColorChanged(QColor arg);
+    void executedColorChanged(QColor arg);
+    void activeColorChanged(QColor arg);
+    void backplotArcFeedColorChanged(QColor arg);
+    void backplotStraightFeedColorChanged(QColor arg);
+    void backplotTraverseColorChanged(QColor arg);
 };
 
 #endif // QGLPATHITEM_H
