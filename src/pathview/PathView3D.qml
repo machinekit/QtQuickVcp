@@ -44,6 +44,7 @@ GLView3D {
         "label_ok": Qt.rgba(1.0, 0.51, 0.53, 1.0),
         "label_limit": Qt.rgba(1.0, 0.21, 0.23, 1.0),
         "selected": Qt.rgba(0.0, 1.0, 1.0, 1.0),
+        "active": Qt.rgba(1.0, 0.0, 0.0, 1.0),
         "lathetool": Qt.rgba(0.8, 0.8, 0.8, 1.0),
         "m1xx": Qt.rgba(0.5, 0.5, 1.0, 1.0),
         "dwell": Qt.rgba(1.0, 0.5, 0.5, 1.0),
@@ -415,7 +416,11 @@ GLView3D {
         arcFeedColor: pathView.colors["arc_feed"]
         straightFeedColor: pathView.colors["straight_feed"]
         traverseColor: pathView.colors["traverse"]
+        backplotArcFeedColor: pathView.colors["backplotarc"]
+        backplotStraightFeedColor: pathView.colors["backplotfeed"]
+        backplotTraverseColor: pathView.colors["backplottraverse"]
         selectedColor: pathView.colors["selected"]
+        activeColor: pathView.colors["active"]
         model: (pathView.model !== undefined) ? pathView.model : tmpModel
     }
 
