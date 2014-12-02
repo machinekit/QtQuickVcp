@@ -28,6 +28,7 @@
 #include <QTimer>
 #include <QOpenGLBuffer>
 #include <QOpenGLTexture>
+#include <QOpenGLFunctions>
 #include <QStack>
 #include <QStaticText>
 #include <QPainter>
@@ -39,7 +40,7 @@
 
 class QGLItem;
 
-class QGLView : public QQuickPaintedItem
+class QGLView : public QQuickPaintedItem, protected QOpenGLFunctions
 {
     Q_OBJECT
 
