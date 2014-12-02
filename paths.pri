@@ -35,7 +35,7 @@ win32-msvc2013: {
     contains(QMAKE_TARGET.arch, x86_64) {
         ZEROMQ_LIB_PATH = "E:\zeromq4-x\lib\x64"
         PROTOBUF_LIB_PATH = E:\protobuf\vsprojects\x64\Release
-        PROTOBUF_PROTOC = E:\protobuf-x64\vsprojects\x64\Release\protoc.exe
+        PROTOBUF_PROTOC = E:\protobuf\vsprojects\x64\Release\protoc.exe
     }
     else {
         ZEROMQ_LIB_PATH = "E:\zeromq4-x\lib\Win32"
