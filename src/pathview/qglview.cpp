@@ -1598,6 +1598,7 @@ void QGLView::sync()
 {
     if (!m_initialized)
     {
+        initializeOpenGLFunctions();
         setupShaders();
         setupWindow();
         setupVBOs();
