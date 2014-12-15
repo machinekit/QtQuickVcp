@@ -28,6 +28,9 @@ import Machinekit.Service 1.0
 
 Rectangle {
     property string title: qsTr("Service Display")
+    property var statusBar: null
+    property var menuBar: null
+    property var toolBar: null
 
     property list<Service> services: [
         Service {
