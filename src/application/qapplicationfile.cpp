@@ -71,6 +71,8 @@ void QApplicationFile::startUpload()
     if (m_file->open(QIODevice::ReadOnly))
     {
         m_reply = m_networkManager->put(QNetworkRequest(url), m_file);
+        m_progress = 0.0;
+        emit progressChanged(m_progress);
         connect(m_reply, SIGNAL(uploadProgress(qint64,qint64)),
                 this,SLOT(transferProgress(qint64, qint64)));
         connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
@@ -123,6 +125,8 @@ void QApplicationFile::startDownload()
     if (m_file->open(QIODevice::WriteOnly))
     {
         m_reply = m_networkManager->get(QNetworkRequest(url));
+        m_progress = 0.0;
+        emit progressChanged(m_progress);
         connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)),
                 this,SLOT(transferProgress(qint64, qint64)));
         connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
