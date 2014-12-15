@@ -202,6 +202,7 @@ ApplicationItem {
 
                 ctx.restore()
             }
+            onColorChanged: requestPaint()
         }
     }
 
