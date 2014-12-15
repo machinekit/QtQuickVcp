@@ -47,10 +47,10 @@ ProgressBar {
 
     function getText() {
         if (_mode == "upload") {
-            return qsTr("Uploading file ") + file.fileName
+            return qsTr("Uploading file ") + file.localFilePath.split('/').reverse()[0]
         }
         else if (_mode == "download") {
-            return qsTr("Downloading file ") + file.fileName
+            return qsTr("Downloading file ") + file.remoteFilePath.split('/').reverse()[0]
         }
         else {
             return ""
@@ -85,6 +85,7 @@ ProgressBar {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.top: parent.top
+        width: height
         iconSource: "qrc:Machinekit/Application/Controls/icons/dialog-cancel"
         visible: _mode == "upload"
         onClicked: {
