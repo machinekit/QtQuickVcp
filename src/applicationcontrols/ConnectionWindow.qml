@@ -545,7 +545,7 @@ Rectangle {
 
                                             if (dnsServerTextField.text && dnsServerView.model[index].hostName)
                                             {
-                                                var nameServerObject = nameServerComponent.createObject(null, {})
+                                                var nameServerObject = nameServerComponent.createObject(mainWindow, {})
                                                 serviceDiscovery.addNameServer(nameServerObject)
                                             }
                                         }
@@ -567,7 +567,7 @@ Rectangle {
                         Layout.preferredHeight: dummyButon.height * 1.5
                         visible: dnsServerView.model.length === 0
                         onClicked: {
-                            serviceDiscovery.addNameServer(nameServerComponent.createObject(null, {}))
+                            serviceDiscovery.addNameServer(nameServerComponent.createObject(mainWindow, {}))
                         }
 
                         Label {
@@ -877,7 +877,7 @@ Rectangle {
 
                 if (!found && (serviceDiscovery.nameServers.length < 3)) // limit to 3 name servers => TODO
                 {
-                    var nameServerObject = nameServerComponent.createObject(null, {})
+                    var nameServerObject = nameServerComponent.createObject(mainWindow, {})
                     nameServerObject.hostName = nameServers[i].hostName
                     nameServerObject.port = nameServers[i].port
                     serviceDiscovery.addNameServer(nameServerObject)
