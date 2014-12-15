@@ -76,7 +76,10 @@ Item {
         if (status.task.file !== "") {
             command.resetProgram('execute')
         }
-        command.openProgram('execute', file.remoteFilePath)
+        var fileName = file.localFilePath.split('/').reverse()[0]
+        var newPath = file.remotePath + '/' + fileName
+        file.remoteFilePath = newPath
+        command.openProgram('execute', newPath)
     }
 
     function errorMessageReceived(type, text) {
