@@ -313,6 +313,103 @@ Rectangle {
         d.errorActive = false
     }
 
+    /*! \internal */
+    function loadSettings() {
+        var manualConfig = false
+        if (configurationFilePath !== "") {
+            sdSettings.filePath = configurationFilePath
+            manualConfig = true
+        }
+        else if (!autoSaveConfiguration) {
+            return
+        }
+
+        sdSettings.load()
+        sdSettings.setValue("nameServers", serviceDiscovery.nameServers, false)
+        sdSettings.setValue("lookupMode", serviceDiscovery.lookupMode, false)
+        sdSettings.setValue("mode", mode, false)
+
+        // add stored name servers
+        var nameServers = sdSettings.values.nameServers
+        var currentNameServers = serviceDiscovery.nameServers
+        for (var i = 0; i < nameServers.length; ++i)
+        {
+            var found = false
+            for (var j = 0; j < currentNameServers.length; ++j)     // avoid duplicates
+            {
+                if ((nameServers[i].hostName === currentNameServers[j].hostName)
+                        && (nameServers[i].port === currentNameServers[j].port))
+                {
+                    found = true
+                    break
+                }
+            }
+
+            if (!found && (serviceDiscovery.nameServers.length < 3)) // limit to 3 name servers => TODO
+            {
+                var nameServerObject = nameServerComponent.createObject(mainWindow, {})
+                nameServerObject.hostName = nameServers[i].hostName
+                nameServerObject.port = nameServers[i].port
+                serviceDiscovery.addNameServer(nameServerObject)
+            }
+        }
+
+        serviceDiscovery.lookupMode = sdSettings.values.lookupMode
+        mode = sdSettings.values.mode
+
+        if (manualConfig) {
+            sdSettings.setValue("autoSaveConfiguration", false, false)
+            sdSettings.setValue("autoSelectInstance", autoSelectInstance, false)
+            sdSettings.setValue("autoSelectApplication", autoSelectApplication, false)
+            sdSettings.setValue("instanceFilter", serviceDiscovery.filter, false)
+            sdSettings.setValue("applicationFilter", applicationConfig.filter, false)
+
+            autoSaveConfiguration = sdSettings.values.autoSaveConfiguration
+            autoSelectInstance = sdSettings.values.autoSelectInstance
+            autoSelectApplication = sdSettings.values.autoSelectApplication
+            for (var key in sdSettings.values.instanceFilter) {
+                serviceDiscovery.filter[key] = sdSettings.values.instanceFilter[key]
+            }
+            for (key in sdSettings.values.applicationFilter) {
+                applicationConfig.filter[key] = sdSettings.values.applicationFilter[key]
+            }
+        }
+
+        sdSettings.initialized = true
+    }
+
+    /*! \internal */
+    function saveSettings() {
+        if (!sdSettings.initialized || !autoSaveConfiguration) {
+            return
+        }
+
+        var nameServerList = []
+        var nameServer
+
+        for (var i = 0; i < serviceDiscovery.nameServers.length; ++i) {
+            nameServer = {"hostName": "", "port": 0}
+            nameServer.hostName = serviceDiscovery.nameServers[i].hostName
+            nameServer.port = serviceDiscovery.nameServers[i].port
+            if (nameServer.hostName !== "") {
+                nameServerList.push(nameServer)
+            }
+        }
+
+        sdSettings.setValue("nameServers", nameServerList)
+        sdSettings.setValue("lookupMode", serviceDiscovery.lookupMode)
+        sdSettings.setValue("mode", mode)
+        sdSettings.save()
+    }
+
+    Component.onCompleted: {
+        loadSettings()
+    }
+
+    onModeChanged: saveSettings()
+    onLookupModeChanged: saveSettings()
+    onNameServersChanged: saveSettings()
+
     // Capture the Android Back key and backspace key
     // on the desktop tp go back in the application
     // focus needs to be true to capture key events
@@ -834,31 +931,6 @@ Rectangle {
                 id: applicationServiceList
             }
         ]
-
-        onNameServersChanged: if (autoSaveConfiguration) updateConfig()
-        onLookupModeChanged: if (autoSaveConfiguration) updateConfig()
-
-        function updateConfig() {
-            var nameServerList = []
-            var nameServer
-
-            if (!sdSettings.initialized) {
-                return
-            }
-
-            for (var i = 0; i < serviceDiscovery.nameServers.length; ++i) {
-                nameServer = {"hostName": "", "port": 0}
-                nameServer.hostName = serviceDiscovery.nameServers[i].hostName
-                nameServer.port = serviceDiscovery.nameServers[i].port
-                if (nameServer.hostName !== "") {
-                    nameServerList.push(nameServer)
-                }
-            }
-
-            sdSettings.setValue("nameServers", nameServerList)
-            sdSettings.setValue("lookupMode", serviceDiscovery.lookupMode)
-            sdSettings.save()
-        }
     }
 
     LocalSettings {
@@ -868,70 +940,6 @@ Rectangle {
 
         application: "machinekit"
         name: "service-discovery"
-
-        Component.onCompleted: {
-            var manualConfig = false
-            if (configurationFilePath !== "") {
-                sdSettings.filePath = configurationFilePath
-                manualConfig = true
-            }
-            else if (!autoSaveConfiguration) {
-                return
-            }
-
-            load()
-            sdSettings.setValue("nameServers", serviceDiscovery.nameServers, false)
-            sdSettings.setValue("lookupMode", serviceDiscovery.lookupMode, false)
-            sdSettings.setValue("mode", mode, false)
-
-            // add stored name servers
-            var nameServers = sdSettings.values.nameServers
-            var currentNameServers = serviceDiscovery.nameServers
-            for (var i = 0; i < nameServers.length; ++i)
-            {
-                var found = false
-                for (var j = 0; j < currentNameServers.length; ++j)     // avoid duplicates
-                {
-                    if ((nameServers[i].hostName === currentNameServers[j].hostName)
-                            && (nameServers[i].port === currentNameServers[j].port))
-                    {
-                        found = true
-                        break
-                    }
-                }
-
-                if (!found && (serviceDiscovery.nameServers.length < 3)) // limit to 3 name servers => TODO
-                {
-                    var nameServerObject = nameServerComponent.createObject(mainWindow, {})
-                    nameServerObject.hostName = nameServers[i].hostName
-                    nameServerObject.port = nameServers[i].port
-                    serviceDiscovery.addNameServer(nameServerObject)
-                }
-            }
-
-            serviceDiscovery.lookupMode = sdSettings.values.lookupMode
-            mode = sdSettings.values.mode
-
-            if (manualConfig) {
-                sdSettings.setValue("autoSaveConfiguration", false, false)
-                sdSettings.setValue("autoSelectInstance", autoSelectInstance, false)
-                sdSettings.setValue("autoSelectApplication", autoSelectApplication, false)
-                sdSettings.setValue("instanceFilter", serviceDiscovery.filter, false)
-                sdSettings.setValue("applicationFilter", applicationConfig.filter, false)
-
-                autoSaveConfiguration = sdSettings.values.autoSaveConfiguration
-                autoSelectInstance = sdSettings.values.autoSelectInstance
-                autoSelectApplication = sdSettings.values.autoSelectApplication
-                for (var key in sdSettings.values.instanceFilter) {
-                    serviceDiscovery.filter[key] = sdSettings.values.instanceFilter[key]
-                }
-                for (key in sdSettings.values.applicationFilter) {
-                    applicationConfig.filter[key] = sdSettings.values.applicationFilter[key]
-                }
-            }
-
-            initialized = true
-        }
     }
 
     Component {
