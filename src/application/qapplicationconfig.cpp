@@ -444,8 +444,6 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                 appConfigItem->setType(type);
                 m_configs.append(appConfigItem);
                 emit configsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_configs));
-
-                break;
             }
         }
     }
