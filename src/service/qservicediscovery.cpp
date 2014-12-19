@@ -972,7 +972,7 @@ void QServiceDiscovery::removeItem(QString name, QString type)
         if (serviceDiscoveryItems.at(i)->name() == name)
         {
             stopItemQueries(serviceDiscoveryItems.at(i));
-            delete serviceDiscoveryItems.takeAt(i);
+            serviceDiscoveryItems.takeAt(i)->deleteLater();
             m_serviceTypeMap.insert(type, serviceDiscoveryItems);
             updateServiceType(type);
             return;
