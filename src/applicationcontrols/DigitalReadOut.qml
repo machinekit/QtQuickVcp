@@ -33,17 +33,17 @@ ApplicationItem {
     property string prefix: ""
     property string suffix: ""
     property int axes: _ready ? status.config.axes : 4
-    property var axisHomed: _ready ? status.motion.axis : [{"homed":false}, {"homed":true}, {"homed":false}, {"homed":true}]
+    property var axisHomed: _ready ? status.motion.axis : [{"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}]
     property var axisNames: ["X:", "Y:", "Z:", "A:", "B:", "C:", "U:", "V:", "W:"]
     property var g5xNames: ["G54", "G55", "G56", "G57", "G58", "G59", "G59.1", "G59.2", "G59.3"]
     property int g5xIndex: _ready ? status.motion.g5xIndex : 1
     property var position: getPosition()
-    property var dtg: _ready ? status.motion.dtg : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
-    property var g5xOffset: _ready ? status.motion.g5xOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
-    property var g92Offset: _ready ? status.motion.g92Offset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
-    property var toolOffset: _ready ? status.io.toolOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
-    property double velocity: _ready ? status.motion.currentVel * _timeFactor: 15.4
-    property double distanceToGo: _ready ? status.motion.distanceToGo : 10.2
+    property var dtg: _ready ? status.motion.dtg : {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
+    property var g5xOffset: _ready ? status.motion.g5xOffset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
+    property var g92Offset: _ready ? status.motion.g92Offset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
+    property var toolOffset: _ready ? status.io.toolOffset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
+    property double velocity: _ready ? status.motion.currentVel * _timeFactor : 0.0
+    property double distanceToGo: _ready ? status.motion.distanceToGo : 0.0
     property bool offsetsVisible: settings.initialized && settings.values.dro.showOffsets
     property bool velocityVisible: settings.initialized && settings.values.dro.showVelocity
     property bool distanceToGoVisible: settings.initialized && settings.values.dro.showDistanceToGo
@@ -60,7 +60,7 @@ ApplicationItem {
             basePosition = (positionFeedback == ApplicationStatus.ActualPositionFeedback) ? status.motion.actualPosition : status.motion.position
         }
         else {
-            basePosition = {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
+            basePosition = {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
         }
 
         if (positionOffset == ApplicationStatus.RelativePositionOffset) {
@@ -84,6 +84,7 @@ ApplicationItem {
                     + (offsetsVisible ? Screen.pixelDensity * 8 : Screen.pixelDensity * 3)
     width: implicitWidth
     height: implicitHeight
+    enabled: _ready
 
     Label {
         id: dummyLabel
