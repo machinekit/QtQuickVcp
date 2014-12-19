@@ -75,81 +75,26 @@ public:
 
     virtual void componentComplete();
 
-    QString configUri() const
-    {
-        return m_configUri;
-    }
-
-    bool isReady() const
-    {
-        return m_ready;
-    }
-
-    QApplicationConfigItem * selectedConfig() const
-    {
-        return m_selectedConfig;
-    }
-
-    QApplicationConfigFilter * filter() const
-    {
-        return m_filter;
-    }
-
-    State connectionState() const
-    {
-        return m_connectionState;
-    }
-
-    ConnectionError error() const
-    {
-        return m_error;
-    }
-
-    QString errorString() const
-    {
-        return m_errorString;
-    }
-
+    QString configUri() const;
+    bool isReady() const;
+    bool isConnected() const;
+    QApplicationConfigItem *selectedConfig() const;
+    QApplicationConfigFilter *filter() const;
+    State connectionState() const;
+    ConnectionError error() const;
+    QString errorString() const;
     QQmlListProperty<QApplicationConfigItem> configs();
     int appConfigCount() const;
     QApplicationConfigItem *appConfig(int index) const;
-
-    bool isConnected() const
-    {
-        return m_connected;
-    }
 
 public slots:
 
     void selectConfig(QString name);
     void unselectConfig();
-
-    void setConfigUri(QString arg)
-    {
-        if (m_configUri != arg) {
-            m_configUri = arg;
-            emit configUriChanged(arg);
-        }
-    }
-
+    void setConfigUri(QString arg);
     void setReady(bool arg);
-
-    void setSelectedConfig(QApplicationConfigItem * arg)
-    {
-        if (m_selectedConfig != arg) {
-            m_selectedConfig = arg;
-            emit selectedConfigChanged(arg);
-        }
-    }
-
-    void setFilter(QApplicationConfigFilter * arg)
-    {
-        if (m_filter == arg)
-            return;
-
-        m_filter = arg;
-        emit filterChanged(arg);
-    }
+    void setSelectedConfig(QApplicationConfigItem * arg);
+    void setFilter(QApplicationConfigFilter * arg);
 
 private:
     bool    m_componentCompleted;

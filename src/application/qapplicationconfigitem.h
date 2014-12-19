@@ -37,6 +37,7 @@ class QApplicationConfigItem : public QObject
     Q_PROPERTY(ApplicationType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(QUrl webUri READ webUri WRITE setWebUri NOTIFY webUriChanged)
     Q_PROPERTY(bool loaded READ isLoaded WRITE setLoaded NOTIFY loadedChanged)
+    Q_PROPERTY(bool loading READ isLoading WRITE setLoading NOTIFY loadingChanged)
     Q_PROPERTY(QStringList files READ files WRITE setFiles NOTIFY filesChanged)
     Q_PROPERTY(QUrl mainFile READ mainFile WRITE setMainFile NOTIFY mainFileChanged)
     Q_ENUMS(ApplicationType)
@@ -83,6 +84,11 @@ public:
     QUrl mainFile() const
     {
         return m_mainFile;
+    }
+
+    bool isLoading() const
+    {
+        return m_loading;
     }
 
 public slots:
@@ -137,12 +143,22 @@ public slots:
         }
     }
 
+    void setLoading(bool arg)
+    {
+        if (m_loading == arg)
+            return;
+
+        m_loading = arg;
+        emit loadingChanged(arg);
+    }
+
 private:
     QString m_name;
     QString m_description;
     ApplicationType m_type;
     QUrl m_webUri;
     bool m_loaded;
+    bool m_loading;
     QStringList m_files;
     QUrl m_mainFile;
 
@@ -163,6 +179,7 @@ signals:
     void mainFileChanged(QUrl arg);
 
 
+    void loadingChanged(bool arg);
 };
 
 #endif // QAPPCONFIGITEM_H

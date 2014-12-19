@@ -192,6 +192,46 @@ void QApplicationConfig::componentComplete()
     QQuickItem::componentComplete();
 }
 
+QString QApplicationConfig::configUri() const
+{
+    return m_configUri;
+}
+
+bool QApplicationConfig::isReady() const
+{
+    return m_ready;
+}
+
+bool QApplicationConfig::isConnected() const
+{
+    return m_connected;
+}
+
+QApplicationConfigItem *QApplicationConfig::selectedConfig() const
+{
+    return m_selectedConfig;
+}
+
+QApplicationConfigFilter *QApplicationConfig::filter() const
+{
+    return m_filter;
+}
+
+QApplicationConfig::State QApplicationConfig::connectionState() const
+{
+    return m_connectionState;
+}
+
+QApplicationConfig::ConnectionError QApplicationConfig::error() const
+{
+    return m_error;
+}
+
+QString QApplicationConfig::errorString() const
+{
+    return m_errorString;
+}
+
 QQmlListProperty<QApplicationConfigItem> QApplicationConfig::configs()
 {
     return QQmlListProperty<QApplicationConfigItem>(this, m_configs);
@@ -230,6 +270,23 @@ void QApplicationConfig::setReady(bool arg)
             stop();
         }
     }
+}
+
+void QApplicationConfig::setSelectedConfig(QApplicationConfigItem *arg)
+{
+    if (m_selectedConfig != arg) {
+        m_selectedConfig = arg;
+        emit selectedConfigChanged(arg);
+    }
+}
+
+void QApplicationConfig::setFilter(QApplicationConfigFilter *arg)
+{
+    if (m_filter == arg)
+        return;
+
+    m_filter = arg;
+    emit filterChanged(arg);
 }
 
 void QApplicationConfig::start()
@@ -484,6 +541,7 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                 m_selectedConfig->setFiles(fileList);
                 m_selectedConfig->setMainFile(applicationDescription.mainFile());
                 m_selectedConfig->setLoaded(true);
+                m_selectedConfig->setLoading(false);
             }
         }
     }
@@ -536,6 +594,8 @@ void QApplicationConfig::request(pb::ContainerType type)
 void QApplicationConfig::selectConfig(QString name)
 {
     m_selectedConfig->setLoaded(false);
+    m_selectedConfig->setLoading(true);
+    m_selectedConfig->setName(name);
 
     pb::Application *app = m_tx.add_app();
 
@@ -552,4 +612,13 @@ void QApplicationConfig::unselectConfig()
     m_selectedConfig->setFiles(QStringList());
     m_selectedConfig->setMainFile(QUrl(""));
     m_selectedConfig->setLoaded(false);
+    m_selectedConfig->setLoading(false);
+}
+
+void QApplicationConfig::setConfigUri(QString arg)
+{
+    if (m_configUri != arg) {
+        m_configUri = arg;
+        emit configUriChanged(arg);
+    }
 }

@@ -108,6 +108,7 @@ QApplicationConfigItem::QApplicationConfigItem(QObject *parent) :
     m_type(Qt5QmlApplication),
     m_webUri(""),
     m_loaded(false),
+    m_loading(false),
     m_files(QStringList()),
     m_mainFile("")
 {
