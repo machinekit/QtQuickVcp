@@ -272,7 +272,7 @@ Rectangle {
                 Qt.quit()
             }
         }
-        else if (mainWindow.state == "loaded")
+        else if ((mainWindow.state == "loaded") || (mainWindow.state == "loading"))
         {
             if ((autoSelectApplication) && (autoSelectInstance))
                 Qt.quit()
@@ -753,6 +753,31 @@ Rectangle {
     }
 
     Item {
+        id: loadingPage
+
+        anchors.fill: parent
+
+        Label {
+            id: connectingLabel
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: connectingIndicator.top
+            anchors.bottomMargin: Screen.logicalPixelDensity
+            font.pointSize: dummyText.font.pointSize * 1.3
+            text: qsTr("Loading ") + applicationConfig.selectedConfig.name + "..."
+        }
+
+        BusyIndicator {
+            id: connectingIndicator
+
+            anchors.centerIn: parent
+            running: true
+            height: (parent.height > parent.width) ? parent.height * 0.10 : parent.width * 0.10
+            width: height
+        }
+    }
+
+    Item {
         id: errorPage
 
         anchors.fill: parent
@@ -925,6 +950,10 @@ Rectangle {
             {
                 return "loaded"
             }
+            else if (applicationConfig.selectedConfig.loading)
+            {
+                return "loading"
+            }
             else if (d.instanceSelected)
             {
                 return "config"
@@ -947,6 +976,7 @@ Rectangle {
             PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
         },
         State {
             name: "discovery"
@@ -955,6 +985,7 @@ Rectangle {
             PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
         },
         State {
             name: "config"
@@ -963,6 +994,16 @@ Rectangle {
             PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+        },
+        State {
+            name: "loading"
+            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: loadingPage; opacity: 1.0; z: 1; enabled: true }
         },
         State {
             name: "loaded"
@@ -971,6 +1012,7 @@ Rectangle {
             PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
         },
         State {
             name: "error"
@@ -979,6 +1021,7 @@ Rectangle {
             PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
         }
     ]
 
