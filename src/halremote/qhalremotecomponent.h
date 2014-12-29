@@ -52,6 +52,7 @@ class QHalRemoteComponent : public AbstractServiceImplementation
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QObject *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
+    Q_PROPERTY(bool create READ create WRITE setCreate NOTIFY createChanged)
     Q_ENUMS(SocketState)
     Q_ENUMS(State)
     Q_ENUMS(ConnectionError)
@@ -126,6 +127,11 @@ public:
         return m_connected;
     }
 
+    bool create() const
+    {
+        return m_create;
+    }
+
 public slots:
     void pinChange(QVariant value);
 
@@ -172,6 +178,15 @@ public slots:
         }
     }
 
+    void setCreate(bool arg)
+    {
+        if (m_create == arg)
+            return;
+
+        m_create = arg;
+        emit createChanged(arg);
+    }
+
 private:
     QString     m_halrcmdUri;
     QString     m_halrcompUri;
@@ -184,6 +199,7 @@ private:
     ConnectionError       m_error;
     QString     m_errorString;
     QObject     *m_containerItem;
+    bool        m_create;
 
     PollingZMQContext *m_context;
     ZMQSocket  *m_halrcompSocket;
@@ -240,6 +256,7 @@ signals:
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
     void connectedChanged(bool arg);
+    void createChanged(bool arg);
 };
 
 #endif // QCOMPONENT_H

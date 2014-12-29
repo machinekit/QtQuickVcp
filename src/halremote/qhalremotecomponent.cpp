@@ -155,6 +155,14 @@
     The default value is \c{NULL}.
 */
 
+/*! \qmlproperty Item HalRemoteComponent::create
+
+    Specifies wether the component should be created on bind if it
+    does not exist on the remote host.
+
+    The default value is \c{true}.
+*/
+
 /** Remote HAL Component implementation for use with C++ and QML */
 QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
     AbstractServiceImplementation(parent),
@@ -169,6 +177,7 @@ QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
     m_error(NoError),
     m_errorString(""),
     m_containerItem(this),
+    m_create(true),
     m_context(NULL),
     m_halrcompSocket(NULL),
     m_halrcmdSocket(NULL),
@@ -306,6 +315,7 @@ void QHalRemoteComponent::bind()
 
     component = m_tx.add_comp();
     component->set_name(m_name.toStdString());
+    component->set_no_create(!m_create);
     foreach (QHalPin *pin, m_pinsByName)
     {
         pb::Pin *halPin = component->add_pin();
