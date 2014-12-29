@@ -51,6 +51,11 @@ enum EmcCanonUnitsType {
     CANON_UNITS_CM      = 3;
 }
 
+enum EmcTimeUnitsType {
+    TIME_UNITS_MINUTE  = 1;
+    TIME_UNITS_SECOND  = 2;
+}
+
 enum EmcTaskModeType {
     EMC_TASK_MODE_MANUAL    = 1;
     EMC_TASK_MODE_AUTO      = 2;
@@ -125,6 +130,7 @@ message EmcStatusConfigAxis {
     optional double         min_ferror          = 6;
     optional double         min_position_limit  = 7;
     optional double         units               = 8;
+    optional int32          home_sequence       = 9;
 }
 
 message EmcProgramExtension {
@@ -163,7 +169,7 @@ message EmcStatusSetting {
 }
 
 message EmcStatusConfig {
-    optional double                     acceleration             = 1;
+    optional double                     default_acceleration     = 1;
     optional double                     angular_units            = 2;
     optional int32                      axes                     = 3;
     repeated EmcStatusConfigAxis        axis                     = 4;
@@ -175,7 +181,7 @@ message EmcStatusConfig {
     optional double                     max_acceleration         = 10;
     optional double                     max_velocity             = 11;
     optional EmcCanonUnitsType          program_units            = 12;
-    optional double                     velocity                 = 13;
+    optional double                     default_velocity         = 13;
     repeated EmcProgramExtension        program_extension        = 14;
     optional EmcPositionOffsetType      position_offset          = 15;
     optional EmcPositionFeedbackType    position_feedback        = 16;
@@ -197,6 +203,9 @@ message EmcStatusConfig {
     optional string                     geometry                 = 32;
     optional uint32                     arcdivision              = 33;
     optional bool                       no_force_homing          = 34;
+    optional string                     remote_path              = 35;
+    optional EmcTimeUnitsType           time_units               = 36;
+    optional string                     name                     = 37;
 }
 
 message EmcStatusMotion {
@@ -246,6 +255,8 @@ message EmcStatusMotion {
     optional double                 spindle_speed           = 45;
     optional double                 spindlerate             = 46;
     optional RCS_STATUS             state                   = 47;
+    optional double                 max_velocity            = 48;
+    optional double                 max_acceleration        = 49;
 }
 
 message EmcStatusIo {
