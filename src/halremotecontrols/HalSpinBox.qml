@@ -85,6 +85,6 @@ SpinBox {
         visible: !pin.synced
     }
 
-    Binding { target: main; property: "currentIndex"; value: pin.value}
-    Binding { target: pin; property: "value"; value: main.currentIndex}
+    Binding { target: main; property: "value"; value: pin.value}
+    Binding { target: pin; property: "value"; value: main.value}
 }
