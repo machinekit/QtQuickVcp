@@ -401,7 +401,7 @@ void QHalRemoteComponent::pinChange(QVariant value)
 
     pin = static_cast<QHalPin *>(QObject::sender());
 
-    if (pin->direction() == QHalPin::In)   // Only update IN or IO pins
+    if (pin->direction() == QHalPin::In)   // Only update Output or IO pins
     {
         return;
     }
