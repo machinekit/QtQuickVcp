@@ -1,7 +1,6 @@
 project(jdns)
 
-# Force cmake 2.8.8 in order to have a decent support of Qt5
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.12)
 cmake_policy(SET CMP0003 NEW)
 
 # Do not link against qtmain on Windows
