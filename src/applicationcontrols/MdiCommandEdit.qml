@@ -32,16 +32,47 @@ RowLayout {
     property alias status: mdiCommandAction.status
     property alias command: mdiCommandAction.command
     property alias mdiHistory: mdiCommandAction.mdiHistory
+    property int mdiHistoryPos: -1
 
     Layout.fillWidth: true
     Layout.fillHeight: false
 
     TextField {
+
         id: mdiTextField
         Layout.fillWidth: true
         Layout.fillHeight: true
+
         onAccepted: {
             mdiCommandAction.trigger()
+        }
+
+        Keys.onUpPressed: {
+            if (mdiHistory.model.length > 0) {
+                if (mdiHistoryPos == -1) {
+                    mdiHistoryPos = mdiHistory.model.length
+                }
+
+                mdiHistoryPos -= 1
+
+                if (mdiHistoryPos == -1) {
+                    mdiHistoryPos = 0
+                }
+
+                mdiTextField.text = mdiHistory.model[mdiHistoryPos].command
+            }
+        }
+
+        Keys.onDownPressed: {
+            if (mdiHistory.model.length > 0) {
+                mdiHistoryPos += 1
+
+                if (mdiHistoryPos === mdiHistory.model.length) {
+                    mdiHistoryPos -= 1
+                }
+
+                mdiTextField.text = mdiHistory.model[mdiHistoryPos].command
+            }
         }
     }
 
@@ -54,5 +85,9 @@ RowLayout {
     MdiCommandAction {
         id: mdiCommandAction
         mdiCommand: mdiTextField.text
+        onTriggered: {
+            mdiTextField.text = ''
+            mdiHistoryPos = -1
+        }
     }
 }
