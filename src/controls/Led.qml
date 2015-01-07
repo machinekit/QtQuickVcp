@@ -67,6 +67,12 @@ Rectangle {
     */
     property bool value: false
 
+    /*! This property inverts the polarity of the led.
+
+        The default value is \c{false}.
+    */
+    property bool invert: false
+
     /*! This property holds the led's on color.
 
         The default value is \c{red}.
@@ -106,7 +112,7 @@ Rectangle {
     border.width: 2
     radius: width/2
     border.color: "black"
-    color: (value && (helpItem.blinkHelper || !blink))?onColor:offColor
+    color: ((value ^ invert) && (helpItem.blinkHelper || !blink))?onColor:offColor
     opacity: enabled ? 1.0 : 0.3
 
     Rectangle {
