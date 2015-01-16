@@ -44,7 +44,9 @@ RowLayout {
         Layout.fillHeight: true
 
         onAccepted: {
-            mdiCommandAction.trigger()
+            if (text != "") {
+                mdiCommandAction.trigger()
+            }
         }
 
         Keys.onUpPressed: {
