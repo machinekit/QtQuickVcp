@@ -621,7 +621,6 @@ Rectangle {
                                         onEditingFinished: {
                                             dnsServerView.model[index].hostName = text
                                             serviceDiscovery.updateNameServers()
-                                            serviceDiscovery.updateConfig() // nameServers have changed but are not updated
 
                                             mainWindow.forceActiveFocus()   // remove the focus
                                         }
