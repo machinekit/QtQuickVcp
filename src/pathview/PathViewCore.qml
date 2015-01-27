@@ -70,8 +70,10 @@ ApplicationItem {
     }
 
     function executePreview() {
-        command.openProgram('preview', file.remoteFilePath)
-        command.runProgram('preview', 0)
+        if (file.remoteFilePath.split('.').pop() === 'ngc') {   // only open ngc files
+            command.openProgram('preview', file.remoteFilePath)
+            command.runProgram('preview', 0)
+        }
     }
 
     Service {
