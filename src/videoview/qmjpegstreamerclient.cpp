@@ -87,6 +87,13 @@
     This property holds the time the current displayed video frame was taken.
 */
 
+/* \qmlproperty enumeration MjpegStreamerClient::aspectRatioMode
+ *
+ *  This property specifies how the video image should be scaled.
+ *
+ *  The default value is \c{Qt::KeepAspectRatio}
+ */
+
 QMjpegStreamerClient::QMjpegStreamerClient(QQuickPaintedItem *parent) :
     QQuickPaintedItem(parent),
     m_componentCompleted(false),
@@ -99,11 +106,13 @@ QMjpegStreamerClient::QMjpegStreamerClient(QQuickPaintedItem *parent) :
     m_fps(0.0),
     m_frameCount(0),
     m_timestamp(0.0),
-    m_time(QTime())
+    m_time(QTime()),
+    m_aspectRatioMode(Qt::KeepAspectRatio)
 {
     this->setRenderTarget(QQuickPaintedItem::FramebufferObject);
     this->setPerformanceHint(QQuickPaintedItem::FastFBOResizing, true);
     this->setAntialiasing(false);
+    this->setOpaquePainting(true);
 
     connect(m_framerateTimer, SIGNAL(timeout()),
             this, SLOT(updateFramerate()));
@@ -139,7 +148,14 @@ void QMjpegStreamerClient::paint(QPainter *painter)
     // Show view finder
     if(!m_frameImg.isNull())
     {
-        painter->drawImage(r, m_frameImg, m_frameImg.rect());
+        if (m_aspectRatioMode != Qt::IgnoreAspectRatio) {
+            QImage scaledImage = m_frameImg.scaled(r.size(), m_aspectRatioMode);
+            painter->drawImage(r, scaledImage, r);
+        }
+        else
+        {
+            painter->drawImage(r, m_frameImg, m_frameImg.rect());
+        }
     }
 }
 
@@ -279,7 +295,7 @@ void QMjpegStreamerClient::updateStreamBuffer()
         m_currentStreamBufferItem = m_streamBuffer.dequeue();
         interval = m_currentStreamBufferItem.timestamp - timestamp;
 
-        m_streamBufferTimer->start(qMax((int)interval,0));
+        m_streamBufferTimer->start(qMax((int)interval, 0));
     }
 
 }

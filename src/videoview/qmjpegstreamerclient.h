@@ -50,6 +50,7 @@ class QMjpegStreamerClient : public QQuickPaintedItem
     Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(double timestamp READ timestamp NOTIFY timestampChanged)
     Q_PROPERTY(QTime time READ time NOTIFY timeChanged)
+    Q_PROPERTY(Qt::AspectRatioMode aspectRatioMode READ aspectRatioMode WRITE setAspectRatioMode NOTIFY aspectRatioModeChanged)
 
 public:
     typedef struct {
@@ -88,12 +89,19 @@ public:
         return m_time;
     }
 
+    Qt::AspectRatioMode aspectRatioMode() const
+    {
+        return m_aspectRatioMode;
+    }
+
 signals:
     void videoUriChanged(QString arg);
     void readyChanged(bool arg);
     void fpsChanged(double arg);
     void timestampChanged(double arg);
     void timeChanged(QTime arg);
+
+    void aspectRatioModeChanged(Qt::AspectRatioMode arg);
 
 public slots:
 
@@ -106,6 +114,15 @@ void setVideoUri(QString arg)
 }
 
 void setReady(bool arg);
+
+void setAspectRatioMode(Qt::AspectRatioMode arg)
+{
+    if (m_aspectRatioMode == arg)
+        return;
+
+    m_aspectRatioMode = arg;
+    emit aspectRatioModeChanged(arg);
+}
 
 private:
     bool        m_componentCompleted;
@@ -125,6 +142,7 @@ private:
     int     m_frameCount;
     double  m_timestamp;
     QTime   m_time;
+    Qt::AspectRatioMode m_aspectRatioMode;
 
 private slots:
     void start();
