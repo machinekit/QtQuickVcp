@@ -4,7 +4,7 @@ QtKnobs is a Qt and QML based Library/Plugin which provides different types of K
 Screenshots:
 - ###### All Types:
 
-  ![ScreenShot](https://raw.github.com/ashish157/Knobs-n-Dials-QML/master/Screenshot.png)
+  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/a7221d312dab8dac2b0b4b7451caa485ed551c4b/QtKnobs/screens/alltypes.png)
 
 - ###### Percent Mode
 
