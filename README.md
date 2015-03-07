@@ -85,6 +85,8 @@ QML_IMPORT_PATH = /home/ashish/KnobsTest
 
   ![ScreenShot](https://raw.githubusercontent.com/ashish157/Knobs-n-Dials-QML/5c5e347b649606533a95330b9cafb3b4eb4b8155/QtKnobs/screens/default.png)
 
+   You can find more examples in QtKnobs/examples/main.qml
+
 #License
 
 MIT
