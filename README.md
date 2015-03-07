@@ -4,23 +4,23 @@ QtKnobs is a Qt and QML based Library/Plugin which provides different types of K
 Screenshots:
 - ###### All Types:
 
-  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/a7221d312dab8dac2b0b4b7451caa485ed551c4b/QtKnobs/screens/alltypes.png)
+  ![ScreenShot](https://raw.githubusercontent.com/ashish157/Knobs-n-Dials-QML/5c5e347b649606533a95330b9cafb3b4eb4b8155/QtKnobs/screens/alltypes.png)
 
 - ###### Percent Mode
 
-  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/fe78d5dcce1517d2ff73a745c0611ef05b3cc52a/QtKnobs/screens/percent.png)
+  ![ScreenShot](https://raw.githubusercontent.com/ashish157/Knobs-n-Dials-QML/5c5e347b649606533a95330b9cafb3b4eb4b8155/QtKnobs/screens/percent.png)
 
 - ###### Specify Max values
 
-  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/fe78d5dcce1517d2ff73a745c0611ef05b3cc52a/QtKnobs/screens/maxvalues.png)
+  ![ScreenShot](https://raw.githubusercontent.com/ashish157/Knobs-n-Dials-QML/5c5e347b649606533a95330b9cafb3b4eb4b8155/QtKnobs/screens/maxvalues.png)
   
 - ###### Different sizes
 
-  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/fe78d5dcce1517d2ff73a745c0611ef05b3cc52a/QtKnobs/screens/sizes.png)
+  ![ScreenShot](https://raw.githubusercontent.com/ashish157/Knobs-n-Dials-QML/5c5e347b649606533a95330b9cafb3b4eb4b8155/QtKnobs/screens/sizes.png)
   
 - ###### Customize
 
-  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/fe78d5dcce1517d2ff73a745c0611ef05b3cc52a/QtKnobs/screens/custom.png)
+  ![ScreenShot](https://raw.githubusercontent.com/ashish157/Knobs-n-Dials-QML/5c5e347b649606533a95330b9cafb3b4eb4b8155/QtKnobs/screens/custom.png)
 
 #List of properties
 * size
@@ -82,6 +82,8 @@ QML_IMPORT_PATH = /home/ashish/KnobsTest
     id: myKnob
   }
   ```
+
+  ![ScreenShot](https://raw.githubusercontent.com/ashish157/Knobs-n-Dials-QML/5c5e347b649606533a95330b9cafb3b4eb4b8155/QtKnobs/screens/default.png)
 
 #License
 
