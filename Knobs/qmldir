@@ -1,0 +1,2 @@
+module Knobs
+plugin QtKnobs
