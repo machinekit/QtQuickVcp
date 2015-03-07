@@ -8,19 +8,19 @@ Screenshots:
 
 - ###### Percent Mode
 
-  ![ScreenShot](https://raw.github.com/ashish157/Knobs-n-Dials-QML/master/Screenshot.png)
+  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/fe78d5dcce1517d2ff73a745c0611ef05b3cc52a/QtKnobs/screens/percent.png)
 
 - ###### Specify Max values
 
-  ![ScreenShot](https://raw.github.com/ashish157/Knobs-n-Dials-QML/master/Screenshot.png)
+  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/fe78d5dcce1517d2ff73a745c0611ef05b3cc52a/QtKnobs/screens/maxvalues.png)
   
 - ###### Different sizes
 
-  ![ScreenShot](https://raw.github.com/ashish157/Knobs-n-Dials-QML/master/Screenshot.png)
+  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/fe78d5dcce1517d2ff73a745c0611ef05b3cc52a/QtKnobs/screens/sizes.png)
   
 - ###### Customize
 
-  ![ScreenShot](https://raw.github.com/ashish157/Knobs-n-Dials-QML/master/Screenshot.png)
+  ![ScreenShot](https://github.com/ashish157/Knobs-n-Dials-QML/blob/fe78d5dcce1517d2ff73a745c0611ef05b3cc52a/QtKnobs/screens/custom.png)
 
 #List of properties
 * size
