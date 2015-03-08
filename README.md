@@ -2,11 +2,11 @@
 QtKnobs is a Qt and QML based Library/Plugin which provides different types of Knobs.
 
 Screenshots:
-- ###### All Types:
+- ###### Types
 
   ![ScreenShot](https://raw.githubusercontent.com/ashish157/Knobs-n-Dials-QML/5c5e347b649606533a95330b9cafb3b4eb4b8155/QtKnobs/screens/alltypes.png)
 
-- ###### Percent Mode
+- ###### Percent View
 
   ![ScreenShot](https://raw.githubusercontent.com/ashish157/Knobs-n-Dials-QML/5c5e347b649606533a95330b9cafb3b4eb4b8155/QtKnobs/screens/percent.png)
 
