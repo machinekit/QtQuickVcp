@@ -1,4 +1,4 @@
-#Knobs 'n' Dials (a.k.a QtKnobs)
+#QtKnobs (formerly Knobs 'n' Dials)
 QtKnobs is a Qt and QML based Library/Plugin which provides different types of Knobs.
 
 Screenshots:
