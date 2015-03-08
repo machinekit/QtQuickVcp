@@ -1,10 +1,17 @@
-import QtQuick 2.0
+import QtQuick 2.4
 import Knobs 1.0
 import QtQuick.Controls 1.2
 
 Rectangle {
     width: 1280
     height: 460
+
+    property int newVal : 0
+
+    Timer {
+        interval: 1000; running: true; repeat: true
+        onTriggered: newVal = Math.floor((Math.random() * 100) + 0)
+    }
 
     Column {
         anchors.left: parent.left
@@ -13,9 +20,9 @@ Rectangle {
         anchors.topMargin: 10
         spacing: 30
         Row {
-            spacing: 10
+            spacing: 5
+
             Knob {
-                id: kn
                 size: 200
                 style: Knob.Pie
                 pieType: Knob.Flat
@@ -33,7 +40,7 @@ Rectangle {
                 size: 200
                 style: Knob.Needle
                 needleType: Knob.Point
-                value: 50
+                value: newVal
                 color: "#FEC56B"
             }
 
@@ -41,7 +48,7 @@ Rectangle {
                 size: 200
                 style: Knob.Pie
                 pieType: Knob.Curve
-                value: 65
+                value: newVal
                 color: "#C55186"
             }
 
@@ -62,7 +69,7 @@ Rectangle {
         }
 
         Row {
-            spacing: 10
+            spacing: 5
 
             Knob {
                 size: 200
