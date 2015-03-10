@@ -178,6 +178,12 @@ Rectangle {
         return list;
     }
 
+    /*! \qmlsignal disconnect
+
+        Disconnects the service window if connected.
+      */
+    signal disconnect()
+
     Component.onCompleted: {
         var list = main.services
         var nestedList = _recurseObjects(main.data, "Service")
