@@ -587,7 +587,7 @@ Rectangle {
 
                     Label {
                         Layout.fillWidth: true
-                        text: qsTr("DNS Servers:")
+                        text: qsTr("Machinekit Instances:")
                         font.pointSize: dummyText.font.pointSize * 1.3
                         font.bold: true
                         horizontalAlignment: Text.AlignHCenter
@@ -609,7 +609,7 @@ Rectangle {
                                     height: dummyButon.height * 1.5
 
                                     Label {
-                                        text: qsTr("Server ") + (index + 1) + ":"
+                                        text: qsTr("Instance ") + (index + 1) + ":"
                                         font.pointSize: dummyText.font.pointSize * 1.2
                                     }
 
@@ -618,6 +618,7 @@ Rectangle {
                                         Layout.fillWidth: true
                                         Layout.fillHeight: true
                                         font.pointSize: dummyText.font.pointSize * 1.2
+                                        placeholderText: qsTr("ip address or hostname")
                                         onEditingFinished: {
                                             dnsServerView.model[index].hostName = text
                                             serviceDiscovery.updateNameServers()
