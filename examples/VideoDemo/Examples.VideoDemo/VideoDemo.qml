@@ -23,25 +23,19 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
-import Machinekit.HalRemote.Controls 1.0
-import Machinekit.HalRemote 1.0
+import Machinekit.Application.Controls 1.0
 import Machinekit.VideoView 1.0
+import Machinekit.Service 1.0
 
-HalApplicationWindow {
+ServiceWindow {
     id: main
-
-    services: [
-        Service {
-            id: videoService
-            type: "video"
-            filter: ServiceDiscoveryFilter {
-                name: "Webcam1"
-            }
-        }
-    ]
-
-    name: "video"
     title: qsTr("Video Demo")
+
+    Service {
+        id: videoService
+        type: "video"
+        required: true
+    }
 
     ColumnLayout {
         anchors.margins: 10
@@ -68,7 +62,7 @@ HalApplicationWindow {
                 anchors.left: parent.left
                 anchors.bottom: parent.bottom
                 anchors.margins: Screen.logicalPixelDensity
-                text: parent.time
+                text: parent.time.toTimeString()
             }
         }
 
@@ -82,10 +76,5 @@ HalApplicationWindow {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
-    }
-
-    HalPin {
-        id: dummyPin
-        name: "dummy"
     }
 }
