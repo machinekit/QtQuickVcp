@@ -29,8 +29,8 @@ ApplicationWindow {
     id: applicationWindow
 
     visible: true
-    width: 500
-    height: 700
+    width: 800
+    height: 500
     title: connectionWindow.title
 
     ConnectionWindow {

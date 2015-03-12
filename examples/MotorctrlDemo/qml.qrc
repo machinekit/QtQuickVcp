@@ -3,5 +3,7 @@
         <file>main.qml</file>
         <file>Examples.MotorctrlDemo/MotorctrlDemo.qml</file>
         <file>Examples.MotorctrlDemo/description.ini</file>
+        <file>Examples.MotorctrlDemo/ControlTab.qml</file>
+        <file>Examples.MotorctrlDemo/VideoTab.qml</file>
     </qresource>
 </RCC>
