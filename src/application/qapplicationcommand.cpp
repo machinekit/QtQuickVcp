@@ -672,6 +672,10 @@ void QApplicationCommand::updateError(QApplicationCommand::ConnectionError error
 
 void QApplicationCommand::sendCommandMessage(pb::ContainerType type)
 {
+    if (m_commandSocket == NULL) {  // disallow sending messages when not connected
+        return;
+    }
+
     try {
         m_tx.set_type(type);
         m_commandSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));

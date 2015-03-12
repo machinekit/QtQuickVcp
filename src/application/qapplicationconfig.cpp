@@ -547,6 +547,10 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
 
 void QApplicationConfig::sendConfigMessage(const QByteArray &data)
 {
+    if (m_configSocket == NULL) {  // disallow sending messages when not connected
+        return;
+    }
+
     try {
         m_configSocket->sendMessage(data);
     }

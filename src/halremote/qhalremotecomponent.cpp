@@ -790,6 +790,10 @@ void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
 
 void QHalRemoteComponent::sendHalrcmdMessage(pb::ContainerType type)
 {
+    if (m_halrcmdSocket == NULL) {  // disallow sending messages when not connected
+        return;
+    }
+
     try {
         m_tx.set_type(type);
         m_halrcmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
