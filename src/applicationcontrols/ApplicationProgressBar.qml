@@ -87,7 +87,7 @@ ProgressBar {
         anchors.top: parent.top
         width: height
         iconSource: "qrc:Machinekit/Application/Controls/icons/dialog-cancel"
-        visible: _mode == "upload"
+        visible: (_mode == "upload") || (_mode == "download")
         onClicked: {
             parent.file.abort()
         }
