@@ -43,8 +43,10 @@ PieStyle::PieStyle(QQuickItem *parent) :
     m_startAngle((m_value * m_factor) + (1440)),
     m_spanAngle(0)
 {
-    setRenderTarget(QQuickPaintedItem::FramebufferObject);
     setAntialiasing(true);
+#if defined Q_OS_LINUX || defined Q_OS_MAC
+    setRenderTarget(QQuickPaintedItem::FramebufferObject);
+#endif
 }
 
 void PieStyle::paint(QPainter *painter)
@@ -62,17 +64,17 @@ void PieStyle::paint(QPainter *painter)
             {
                 switch(i)
                 {
-                case 0:
-                    m_startAngle = 1440;
-                    painter->setBrush(m_chunkColors[i]);
-                    break;
-                case 1:
-                case 2:
-                case 3:
-                    m_startAngle = m_startAngle - 1440;
-                    m_spanAngle = m_spanAngle - 1440;
-                    painter->setBrush(m_chunkColors.at(i));
-                    break;
+                    case 0:
+                        m_startAngle = 1440;
+                        painter->setBrush(m_chunkColors[i]);
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        m_startAngle = m_startAngle - 1440;
+                        m_spanAngle = m_spanAngle - 1440;
+                        painter->setBrush(m_chunkColors.at(i));
+                        break;
                 }
                 painter->drawPie(boundingRect().marginsRemoved(QMarginsF(m,m,m,m)), m_startAngle, -m_spanAngle);
             }

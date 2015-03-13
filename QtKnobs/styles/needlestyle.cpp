@@ -41,8 +41,10 @@ NeedleStyle::NeedleStyle(QQuickItem *parent) :
     m_angle(-90),
     m_offset(90.0)
 {
-    setRenderTarget(QQuickPaintedItem::FramebufferObject);
     setAntialiasing(true);
+#if defined Q_OS_LINUX || defined Q_OS_MAC
+    setRenderTarget(QQuickPaintedItem::FramebufferObject);
+#endif
 }
 
 void NeedleStyle::paint(QPainter *painter)
@@ -59,7 +61,7 @@ void NeedleStyle::paint(QPainter *painter)
 
     switch(m_style)
     {
-        case NeedleStyle::Point:
+        case NeedleStyle::Point: {
             d = 3.0;
             static const QPoint points[3] = {
                 QPoint(0, 14),
@@ -68,13 +70,15 @@ void NeedleStyle::paint(QPainter *painter)
             };
             painter->drawConvexPolygon(points, 3);
             break;
+        }
 
-        case NeedleStyle::Round:
+        case NeedleStyle::Round: {
             d = 3.0;
             painter->drawRoundedRect(0,-10,w/2-5,20,10,10);
             break;
+        }
 
-        case NeedleStyle::Groove:
+        case NeedleStyle::Groove: {
             d = 2.4;
             static qreal wd = w/12.0;
             static qreal p = (w/2.0) - wd/2.0;
@@ -86,6 +90,7 @@ void NeedleStyle::paint(QPainter *painter)
             painter->setBrush(g);
             painter->drawEllipse(r);
             break;
+        }
     }
 
     painter->restore();

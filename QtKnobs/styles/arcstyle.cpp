@@ -41,8 +41,10 @@ ArcStyle::ArcStyle(QQuickItem *parent) :
     m_spanAngle(480),
     m_offset((1440) + ( m_spanAngle / 2 ))
 {
-    setRenderTarget(QQuickPaintedItem::FramebufferObject);
     setAntialiasing(true);
+#if defined Q_OS_LINUX || defined Q_OS_MAC
+    setRenderTarget(QQuickPaintedItem::FramebufferObject);
+#endif
 }
 
 void ArcStyle::paint(QPainter *painter)

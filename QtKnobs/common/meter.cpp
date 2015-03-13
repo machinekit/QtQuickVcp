@@ -32,7 +32,9 @@ Meter::Meter(QQuickItem *parent) :
     QQuickPaintedItem(parent)
 {
     setAntialiasing(true);
+#if defined Q_OS_LINUX || defined Q_OS_MAC
     setRenderTarget(QQuickPaintedItem::FramebufferObject);
+#endif
 }
 
 void Meter::paint(QPainter *painter)

@@ -33,7 +33,9 @@ Dial::Dial(QQuickItem *parent)
     m_borderColor(Qt::darkGray)
 {
     setAntialiasing(true);
+#if defined Q_OS_LINUX || defined Q_OS_MAC
     setRenderTarget(QQuickPaintedItem::FramebufferObject);
+#endif
 }
 
 Dial::~Dial()
