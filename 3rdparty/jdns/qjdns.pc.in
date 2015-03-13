@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@LIB_INSTALL_DIR@
+includedir=@INCLUDE_INSTALL_DIR@/jdns
+
+Name: qjdns
+Description: Qt bindings for JDNS
+Version: @JDNS_LIB_MAJOR_VERSION@.@JDNS_LIB_MINOR_VERSION@.@JDNS_LIB_PATCH_VERSION@
+Requires: jdns @QJDns_QT_PC_VERSION@
+Libs: -L${libdir} -lqjdns
+Cflags: -I${includedir}
