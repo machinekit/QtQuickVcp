@@ -28,6 +28,16 @@ copyqmlpropertyeditor.CONFIG += no_link no_clean
 copyqmlpropertyeditor.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmlpropertyeditor
 
+android: {
+    copyjavafiles.input = JAVAFILES
+    copyjavafiles.output = $$OUT_PWD/../../src/android/java/
+    copyjavafiles.commands = $$QMAKE_MKDIR $$shell_path($$dirname(copyjavafiles.output)) $$escape_expand(\n\t)
+    copyjavafiles.commands += $(COPY_DIR) ${QMAKE_FILE_IN} $$shell_path($$OUT_PWD/../../src/android/java/)
+    copyjavafiles.CONFIG += no_link no_clean
+    copyjavafiles.variable_out = PRE_TARGETDEPS
+    QMAKE_EXTRA_COMPILERS += copyjavafiles
+}
+
 win32: QMAKE_DEL_FILE = del /q /f
 !win32:QMAKE_DEL_FILE = rm -r -f
 QMAKE_CLEAN += $$OUT_PWD/../../imports/$$TARGETPATH/
@@ -56,9 +66,15 @@ copyqmlpropertyeditor_install.files = $$QML_PROPERTY_EDITOR_FILES
 copyqmlpropertyeditor_install.path = $$QTCREATOR_INSTALL_DIR/share/qtcreator/qmldesigner/propertyEditorQmlSources/$$TARGETPATH
 INSTALLS += copyqmlpropertyeditor_install
 
+android: {
+    copyjavafiles_install.CONFIG = no_files no_path
+    copyjavafiles_install.commands += $(COPY_DIR) $$shell_path($$OUT_PWD/../../src/android) $$shell_path($$[QT_INSTALL_ARCHDATA]/src)
+    INSTALLS += copyjavafiles_install
+}
+
 target.path = $$[QT_INSTALL_QML]/$$TARGETPATH
 
 INSTALLS += target
 
 
-OTHER_FILES += $$QML_INFRA_FILES $$QML_DESIGNER_FILES $$QML_PROPERTY_EDITOR_FILES
+OTHER_FILES += $$QML_INFRA_FILES $$QML_DESIGNER_FILES $$QML_PROPERTY_EDITOR_FILES $$JAVAFILES

@@ -22,6 +22,10 @@
 #include "qservicediscovery.h"
 #include "debughelper.h"
 
+#if defined(Q_OS_ANDROID)
+#include <QtAndroidExtras/QAndroidJniObject>
+#endif
+
 /*!
     \qmltype ServiceDiscovery
     \instantiates QServiceDiscovery
@@ -307,6 +311,10 @@ void QServiceDiscovery::initializeMdns()
 
     if (m_lookupMode == MulticastDNS)
     {
+#if defined(Q_OS_ANDROID)
+        QAndroidJniObject::callStaticMethod<void>("io/machinekit/service/MulticastActivator",
+                                                  "enable");
+#endif
         initialized = m_jdns->init(QJDns::Multicast, QHostAddress::Any);
     }
     else
@@ -373,6 +381,11 @@ void QServiceDiscovery::deinitializeMdns()
 
     m_jdns->deleteLater();
     m_jdns = NULL;
+
+#if defined(Q_OS_ANDROID)
+    QAndroidJniObject::callStaticMethod<void>("io/machinekit/service/MulticastActivator",
+                                              "disable");
+#endif
 
     m_lookupReady = false;                      // lookup no ready anymore
     emit lookupReadyChanged(m_lookupReady);

@@ -1,6 +1,10 @@
 TEMPLATE = lib
 QT += qml quick network
 
+android: {
+    QT += androidextras
+}
+
 uri = Machinekit.Service
 include(../plugin.pri)
 
@@ -30,3 +34,8 @@ QML_INFRA_FILES = \
     qmldir
 
 include(../deployment.pri)
+
+JAVAFILES = android-sources/src
+
+DISTFILES += \
+    android-sources/src/io/machinekit/service/MulticastActivator.java
