@@ -45,11 +45,6 @@ ApplicationWindow {
             focus = true
             console.debug("Main application loaded.");
         }
-        focus: true
-         Keys.onPressed: {
-             console.log("Loaded item captured:", event.text);
-             event.accepted = true;
-         }
     }
 
     Loader {
