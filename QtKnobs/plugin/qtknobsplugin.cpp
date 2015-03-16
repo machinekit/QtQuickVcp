@@ -8,7 +8,7 @@ QtKnobsPlugin::~QtKnobsPlugin()
 
 void QtKnobsPlugin::registerTypes(const char *uri)
 {
-    Q_ASSERT(uri == QLatin1String("Knobs"));
+    Q_ASSERT(uri == QLatin1String("QtKnobs"));
     qmlRegisterType<Knob>(uri, 1, 0, "Knob");
     qmlRegisterType<ArcStyle>(uri, 1, 1, "ArcStyle");
     qmlRegisterType<PieStyle>(uri, 1, 1, "PieStyle");

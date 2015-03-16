@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import Knobs 1.0
+import QtKnobs 1.0
 import QtQuick.Controls 1.2
 
 Rectangle {

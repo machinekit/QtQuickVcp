@@ -49,7 +49,7 @@ public:
             return "import QtQuick 2.0\nText{anchors.centerIn:parent}";
         } else if(type=="ArcStyle"||type=="PieStyle"||type=="NeedleStyle") {
             return "import QtQuick 2.0"
-                    "\nimport Knobs 1.1"
+                    "\nimport QtKnobs 1.1"
                     "\n"+type.toLatin1()+"{"
                     "\nid:chunk"
                     "\nanchors.fill:parent"
