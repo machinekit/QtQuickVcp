@@ -27,7 +27,7 @@
 TEMPLATE = lib
 QT += qml quick
 
-uri = Knobs
+uri = QtKnobs
 include(QtKnobs/plugin.pri)
 
 OBJECTS_DIR = tmp

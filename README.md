@@ -55,7 +55,7 @@ The compiled library (libQtKnobs.so on .nix systems) would be in directory **Kno
   
   ```
   import QtQuick 2.0
-  import Knobs 1.0
+  import QtKnobs 1.0
   Knob {
     id: myKnob
   }

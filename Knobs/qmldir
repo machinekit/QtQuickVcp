@@ -1,2 +1,2 @@
-module Knobs
-plugin knobsplugin
+module QtKnobs
+plugin qtknobsplugin
