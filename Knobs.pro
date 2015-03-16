@@ -25,12 +25,10 @@
 #************************************************************************************/
 
 TEMPLATE = lib
-CONFIG += plugin
-
 QT += qml quick
 
-DESTDIR = Knobs
-TARGET  = QtKnobs
+uri = Knobs
+include(QtKnobs/plugin.pri)
 
 OBJECTS_DIR = tmp
 MOC_DIR = tmp
@@ -44,8 +42,6 @@ SOURCES += QtKnobs/styles/piestyle.cpp \
     QtKnobs/common/dial.cpp
 
 CONFIG += c++11
-
-unix:!macx: QMAKE_POST_LINK=strip $$PWD/Knobs/$(TARGET)
 
 RESOURCES += QtKnobs/qml.qrc
 
@@ -62,7 +58,6 @@ HEADERS += \
 DISTFILES += \
     QtKnobs/examples/main.qml
 
+QML_INFRA_FILES = Knobs/qmldir
 
-
-
-
+include(QtKnobs/deployment.pri)

@@ -45,33 +45,11 @@ Qt >= 5.3
 
 #Building
 * Clone
-* Run qmake && make
+* Run qmake && make && make install
 
 The compiled library (libQtKnobs.so on .nix systems) would be in directory **Knobs** with **qmldir**.
 
-#Use
-Copy directory **Knobs** to your project location and include in it your .pro file.
-For eg:
-```
-unix:!macx: LIBS += -L$$PWD/Knobs/ -lQtKnobs
-
-INCLUDEPATH += $$PWD/Knobs
-DEPENDPATH += $$PWD/Knobs
-```
-Then to make the engine to search for this module, add the path where the **Knobs** directory is using *addImportPath*. 
-For eg. If the directory **Knobs** is at location */home/ashish/KnobsTest* then,
-```
-QQuickView view;
-view.engine()->addImportPath("/home/ashish/KnobsTest");
-view.show();
-```
-
-Additionally, to make QtCreator aware of it (and to get rid of the annoying **QML module not found** during import) add the path in .pro file,
-```
-QML_IMPORT_PATH = /home/ashish/KnobsTest
-```
-
-#Examples
+#Use & Examples
 
 * A simple Knob:
   
