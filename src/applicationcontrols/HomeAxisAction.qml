@@ -26,8 +26,18 @@ import Machinekit.Application 1.0
 
 ApplicationAction {
     property int axis: 0
+    property bool homed: _ready ? (axis > -1 ? status.motion.axis[axis].homed : _allHomed()) : false
 
     property bool _ready: status.synced && command.connected
+
+    function _allHomed() {
+        for (var i = 0; i < status.config.axes; ++i) {
+            if (!status.motion.axis[i].homed) {
+                return false
+            }
+        }
+        return true
+    }
 
     id: root
     text: qsTr("Home")
