@@ -35,15 +35,15 @@ Knob::Knob(QQuickItem *parent)
       m_textColor(Qt::red),
       m_borderColor(Qt::darkGray),
       m_value(25),
+      m_minimumValue(0),
       m_maximumValue(100),
-      m_percent(0),
+      m_decimals(0),
       m_readOnly(false),
       m_pieMultiColor(false),
       m_meter(false),
       m_style(Knob::Pie),
       m_needleType(Knob::Point),
       m_pieType(Knob::Flat),
-      m_mode(Knob::Normal),
       m_engine(0),
       m_base(0),
       m_text(0)
@@ -118,9 +118,8 @@ void Knob::top()
     m_text->setParentItem(m_base);
     m_text->setProperty("z",0.5);
     m_text->setProperty("color",m_textColor);
-    QFont f; f.setPointSize(16);
-    m_text->setProperty("font",f);
-    m_text->setProperty("text",m_mode==Knob::Percent?"0%":"0");
+    m_text->setProperty("font",m_font);
+    m_text->setProperty("text",m_prefix + "0" + m_suffix);
 }
 
 void Knob::mid()
@@ -128,23 +127,15 @@ void Knob::mid()
     QQuickItem *item = 0;
     QUrl url("qrc:/qml/");
     QQmlComponent component(m_engine);
-    auto percentSlot = [=](const int &percent) { m_text->setProperty("text",QString::number(percent)+"%");};
-    auto valueSlot = [=](const int &value) { m_text->setProperty("text",QString::number(value));};
+    auto valueSlot = [=](const int &value) { m_text->setProperty("text",m_prefix+QString::number(value,'f',m_decimals)+m_suffix);};
     switch(m_style) {
         case Knob::Pie: {
-            component.setData(Component::getComponent("PieStyle",m_mode==Knob::Percent?"percent":"value"),url);
+            component.setData(Component::getComponent("PieStyle","value"),url);
             PieStyle *pie = qobject_cast<PieStyle*>(component.create());
-            if(m_mode==Knob::Normal) {
-                connect(pie,&PieStyle::valueChanged,valueSlot);
-                connect(this,&Knob::valueChanged,[=](const int &value) {
-                    if(pie->animationRunning()) return;
-                    pie->setProperty("value",value);});
-            } else {
-                connect(pie,&PieStyle::percentChanged,percentSlot);
-                connect(this,&Knob::percentChanged,[=](const int &percent) {
-                    if(pie->animationRunning()) return;
-                    pie->setProperty("percent",percent);});
-            }
+            connect(pie,&PieStyle::valueChanged,valueSlot);
+            connect(this,&Knob::valueChanged,[=](const int &value) {
+                if(pie->animationRunning()) return;
+                pie->setProperty("value",value);});
             makeConnections(*pie);
             item = pie;
             item->setProperty("multicolor",m_pieMultiColor);
@@ -152,37 +143,23 @@ void Knob::mid()
             break;
         }
         case Knob::Arc: {
-            component.setData(Component::getComponent("ArcStyle",m_mode==Knob::Percent?"percent":"value"),url);
+            component.setData(Component::getComponent("ArcStyle","value"),url);
             ArcStyle *arc = qobject_cast<ArcStyle*>(component.create());
-            if(m_mode==Knob::Normal) {
-                connect(arc,&ArcStyle::valueChanged,valueSlot);
-                connect(this,&Knob::valueChanged,[=](const int &value) {
-                    if(arc->animationRunning()) return;
-                    arc->setProperty("value",value);});
-            } else {
-                connect(arc,&ArcStyle::percentChanged,percentSlot);
-                connect(this,&Knob::percentChanged,[=](const int &percent) {
-                    if(arc->animationRunning()) return;
-                    arc->setProperty("percent",percent);});
-            }
+            connect(arc,&ArcStyle::valueChanged,valueSlot);
+            connect(this,&Knob::valueChanged,[=](const int &value) {
+                if(arc->animationRunning()) return;
+                arc->setProperty("value",value);});
             makeConnections(*arc);
             item = arc;
             break;
         }
         case Knob::Needle: {
-            component.setData(Component::getComponent("NeedleStyle",m_mode==Knob::Percent?"percent":"value"),url);
+            component.setData(Component::getComponent("NeedleStyle","value"),url);
             NeedleStyle *needle = qobject_cast<NeedleStyle*>(component.create());
-            if(m_mode==Knob::Normal) {
-                connect(needle,&NeedleStyle::valueChanged,valueSlot);
-                connect(this,&Knob::valueChanged,[=](const int &value) {
-                    if(needle->animationRunning()) return;
-                    needle->setProperty("value",value);});
-            } else {
-                connect(needle,&NeedleStyle::percentChanged,percentSlot);
-                connect(this,&Knob::percentChanged,[=](const int &percent) {
-                    if(needle->animationRunning()) return;
-                    needle->setProperty("percent",percent);});
-            }
+            connect(needle,&NeedleStyle::valueChanged,valueSlot);
+            connect(this,&Knob::valueChanged,[=](const int &value) {
+                if(needle->animationRunning()) return;
+                needle->setProperty("value",value);});
             makeConnections(*needle);
             item = needle;
             item->setProperty("style",m_needleType);
@@ -194,16 +171,15 @@ void Knob::mid()
     item->setProperty("width",m_size);
     item->setProperty("height",m_size);
     item->setProperty("color",m_color);
+    item->setProperty("minValue",m_minimumValue);
     item->setProperty("maxValue",m_maximumValue);
     item->setProperty("readOnly",m_readOnly);
-    item->setProperty("mode",m_mode);
-    m_mode==Knob::Normal ? item->setProperty("value",m_value) : item->setProperty("percent",m_percent);
+    item->setProperty("value",m_value);
 }
 
 void Knob::makeConnections(QQuickItem &item)
 {
-    connect(&item,SIGNAL(valueChanged(int)),this,SLOT(setValue(int)));
-    connect(&item,SIGNAL(percentChanged(int)),this,SLOT(setPercent(int)));
+    connect(&item,SIGNAL(valueChanged(double)),this,SLOT(setValue(double)));
     connect(parentItem(),&QQuickItem::destroyed,&item,&QQuickItem::deleteLater);
 }
 
@@ -213,8 +189,6 @@ void Knob::setSize(qreal arg)
         return;
 
     m_size = arg;
-    if(m_size<100)
-        m_size = 100;
     emit sizeChanged(m_size);
 }
 

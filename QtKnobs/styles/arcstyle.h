@@ -35,48 +35,39 @@
 class ArcStyle : public QQuickPaintedItem
 {
     Q_OBJECT
-    Q_ENUMS(Mode)
-    Q_PROPERTY(int value MEMBER m_value WRITE setValue NOTIFY valueChanged)
-    Q_PROPERTY(int maxValue MEMBER m_maxValue WRITE setMaxValue NOTIFY maxValueChanged)
-    Q_PROPERTY(int percent MEMBER m_percent WRITE setPercent NOTIFY percentChanged)
+    Q_PROPERTY(double value MEMBER m_value WRITE setValue NOTIFY valueChanged)
+    Q_PROPERTY(double minValue MEMBER m_minValue WRITE setMinValue NOTIFY minValueChanged)
+    Q_PROPERTY(double maxValue MEMBER m_maxValue WRITE setMaxValue NOTIFY maxValueChanged)
     Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged)
     Q_PROPERTY(bool readOnly MEMBER m_readOnly NOTIFY readOnlyChanged)
-    Q_PROPERTY(Mode mode MEMBER m_mode NOTIFY modeChanged)
 
 public:
     explicit ArcStyle(QQuickItem *parent = 0);
 
-    enum Mode {
-        Normal = 10,
-        Percent
-    };
-
     void paint(QPainter *painter);
-    Q_INVOKABLE int endValueFromPoint(qreal x = 0, qreal y = 0);
+    Q_INVOKABLE double endValueFromPoint(qreal x = 0, qreal y = 0);
     void classBegin();
     void componentComplete();
     bool animationRunning();
 
 signals:
-    void valueChanged(int arg);
-    void maxValueChanged(int arg);
-    void percentChanged(int arg);
+    void valueChanged(double arg);
+    void minValueChanged(double arg);
+    void maxValueChanged(double arg);
     void readOnlyChanged(bool arg);
-    void modeChanged(Mode arg);
     void colorChanged(QColor arg);
 
 protected slots:
-    void setValue(int arg);
-    void setMaxValue(int arg);
-    void setPercent(int arg);
+    void setValue(double arg);
+    void setMinValue(double arg);
+    void setMaxValue(double arg);
 
 private:
-    int m_value;
-    int m_maxValue;
-    int m_percent;
+    double m_value;
+    double m_minValue;
+    double m_maxValue;
     bool m_readOnly;
     QColor m_color;
-    Mode m_mode;
     qreal m_factor;
     qreal m_scale;
     int m_startAngle;

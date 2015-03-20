@@ -30,11 +30,10 @@
 NeedleStyle::NeedleStyle(QQuickItem *parent) :
     QQuickPaintedItem(parent),
     m_value(0),
+    m_minValue(0),
     m_maxValue(100),
-    m_percent(0),
     m_readOnly(false),
     m_color(QColor(135,206,235)),
-    m_mode(NeedleStyle::Normal),
     m_style(Style::Point),
     m_factor(3.6),
     m_scale(m_factor),
@@ -98,12 +97,12 @@ void NeedleStyle::paint(QPainter *painter)
     painter->drawEllipse(boundingRect().center(),w/d,w/d);
 }
 
-int NeedleStyle::endValueFromPoint(qreal x, qreal y)
+double NeedleStyle::endValueFromPoint(qreal x, qreal y)
 {
     qreal theta = qAtan2(x,-y);
     qreal angle = fmod((theta * M_180_D_PI) + 360,360);
-    int v = qFloor(angle) / m_scale;
-    return m_mode==NeedleStyle::Percent ? v*100/m_maxValue : v;
+    double v = qFloor(angle) / m_scale;
+    return v;
 }
 
 void NeedleStyle::classBegin()
@@ -119,7 +118,7 @@ bool NeedleStyle::animationRunning()
     return m_anim->property("running").toBool();
 }
 
-void NeedleStyle::setValue(int arg)
+void NeedleStyle::setValue(double arg)
 {
     if (m_value == arg)
         return;
@@ -130,18 +129,20 @@ void NeedleStyle::setValue(int arg)
         m_value = m_maxValue;
 
     m_angle = (m_value * m_factor) - m_offset;
-    m_percent = m_value*100/m_maxValue;
-    if(m_mode == NeedleStyle::Normal) {
-        emit percentChanged(m_percent);
-        emit valueChanged(m_value);
-    } else {
-        emit valueChanged(m_value);
-        emit percentChanged(m_percent);
-    }
+    emit valueChanged(m_value);
     update();
 }
 
-void NeedleStyle::setMaxValue(int arg)
+void NeedleStyle::setMinValue(double arg)
+{
+    if (m_minValue == arg)
+        return;
+
+    m_minValue = arg;
+    emit minValueChanged(arg);
+}
+
+void NeedleStyle::setMaxValue(double arg)
 {
     if (m_maxValue == arg)
         return;
@@ -151,13 +152,3 @@ void NeedleStyle::setMaxValue(int arg)
     m_scale = m_factor;
     emit maxValueChanged(arg);
 }
-
-void NeedleStyle::setPercent(int arg)
-{
-    if (m_percent == arg)
-        return;
-
-    m_percent = arg;
-    setValue(m_percent*m_maxValue/100);
-}
-

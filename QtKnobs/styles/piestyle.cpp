@@ -31,11 +31,10 @@
 PieStyle::PieStyle(QQuickItem *parent) :
     QQuickPaintedItem(parent),
     m_value(0),
+    m_minValue(0),
     m_maxValue(100),
-    m_percent(0),
     m_readOnly(false),
     m_color(QColor(135,206,235)),
-    m_mode(PieStyle::Normal),
     m_style(PieStyle::Flat),
     m_multiColor(false),
     m_factor(57.6),
@@ -97,12 +96,12 @@ void PieStyle::paint(QPainter *painter)
     painter->drawEllipse(boundingRect().center(),w,w);
 }
 
-int PieStyle::endValueFromPoint(qreal x, qreal y)
+double PieStyle::endValueFromPoint(qreal x, qreal y)
 {
     qreal theta = qAtan2(x,-y);
     qreal angle = fmod((theta * M_180_D_PI) + 360,360);
-    int v = qFloor(angle) * m_scale;
-    return m_mode==PieStyle::Percent ? v*100/m_maxValue : v;
+    double v = qFloor(angle) * m_scale + m_minValue;
+    return v;
 }
 
 void PieStyle::classBegin()
@@ -118,46 +117,45 @@ bool PieStyle::animationRunning()
     return m_anim->property("running").toBool();
 }
 
-void PieStyle::setValue(int arg)
+void PieStyle::setValue(double arg)
 {
     if (m_value == arg)
         return;
 
     m_value = arg;
 
-    if(m_value>m_maxValue)
+    if(m_value>m_maxValue) {
         m_value = m_maxValue;
-
-    m_spanAngle = m_value * m_factor;
-    m_percent = m_value*100/m_maxValue;
-    if(m_mode == PieStyle::Normal) {
-        emit percentChanged(m_percent);
-        emit valueChanged(m_value);
-    } else {
-        emit valueChanged(m_value);
-        emit percentChanged(m_percent);
     }
+    else if (m_value < m_minValue) {
+        m_value = m_minValue;
+    }
+
+    m_spanAngle = (m_value - m_minValue) * m_factor;
+    emit valueChanged(m_value);
     update();
 }
 
-void PieStyle::setMaxValue(int arg)
+void PieStyle::setMinValue(double arg)
+{
+    if (m_minValue == arg)
+        return;
+
+    m_minValue = arg;
+    m_factor = (360.0/(m_maxValue - m_minValue)) * 16.0;
+    m_scale = 16.0 / m_factor;
+    emit minValueChanged(arg);
+}
+
+void PieStyle::setMaxValue(double arg)
 {
     if (m_maxValue == arg)
         return;
 
     m_maxValue = arg;
-    m_factor = (360.0/m_maxValue) * 16;
-    m_scale = 16 / m_factor;
+    m_factor = (360.0/(m_maxValue - m_minValue)) * 16.0;
+    m_scale = 16.0 / m_factor;
     emit maxValueChanged(arg);
-}
-
-void PieStyle::setPercent(int arg)
-{
-    if (m_percent == arg)
-        return;
-
-    m_percent = arg;
-    setValue(m_percent*m_maxValue/100);
 }
 
 void PieStyle::setMultiColor(bool arg)
