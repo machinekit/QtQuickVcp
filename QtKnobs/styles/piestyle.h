@@ -39,9 +39,10 @@ class PieStyle : public QQuickPaintedItem
     Q_PROPERTY(double value MEMBER m_value WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(double minValue MEMBER m_minValue WRITE setMinValue NOTIFY minValueChanged)
     Q_PROPERTY(double maxValue MEMBER m_maxValue WRITE setMaxValue NOTIFY maxValueChanged)
+    Q_PROPERTY(double stepSize MEMBER m_stepSize WRITE setStepSize NOTIFY stepSizeChanged)
     Q_PROPERTY(bool multicolor MEMBER m_multiColor WRITE setMultiColor NOTIFY multiColorChanged)
 
-    Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged)
+    Q_PROPERTY(QColor color MEMBER m_color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(CapStyle style MEMBER m_style NOTIFY styleChanged)
     Q_PROPERTY(bool readOnly MEMBER m_readOnly NOTIFY readOnlyChanged)
 
@@ -64,6 +65,7 @@ signals:
     void multiColorChanged(bool arg);
     void minValueChanged(double arg);
     void maxValueChanged(double arg);
+    void stepSizeChanged(double arg);
     void readOnlyChanged(bool arg);
     void colorChanged(QColor arg);
     void styleChanged(CapStyle arg);
@@ -71,13 +73,16 @@ signals:
 protected slots:
     void setMinValue(double arg);
     void setMaxValue(double arg);
+    void setStepSize(double arg);
     void setMultiColor(bool arg);
     void setValue(double arg);
+    void setColor(QColor arg);
 
 private:
     double m_value;
     double m_minValue;
     double m_maxValue;
+    double m_stepSize;
     bool m_readOnly;
     QColor m_color;
     CapStyle m_style;

@@ -28,7 +28,6 @@
 
 Knob::Knob(QQuickItem *parent)
     : QQuickItem(parent),
-      m_size(200),
       m_color(QColor(135,206,235)),
       m_backgroundColor(QColor(241,241,241)),
       m_foregroundColor(Qt::white),
@@ -37,6 +36,7 @@ Knob::Knob(QQuickItem *parent)
       m_value(25),
       m_minimumValue(0),
       m_maximumValue(100),
+      m_stepSize(0.1),
       m_decimals(0),
       m_readOnly(false),
       m_pieMultiColor(false),
@@ -46,6 +46,7 @@ Knob::Knob(QQuickItem *parent)
       m_pieType(Knob::Flat),
       m_engine(0),
       m_base(0),
+      m_top(NULL),
       m_text(0)
 {
     setSmooth(true);
@@ -54,10 +55,9 @@ Knob::Knob(QQuickItem *parent)
 
 Knob::~Knob()
 {
-    delete m_base;
-    m_base = 0;
-    delete m_text;
-    m_text = 0;
+    m_base->deleteLater();
+    m_top->deleteLater();
+    m_text->deleteLater();
 }
 
 void Knob::classBegin()
@@ -65,8 +65,6 @@ void Knob::classBegin()
 
 void Knob::componentComplete()
 {
-    setWidth(m_size);
-    setHeight(m_size);
     m_engine = qmlEngine(parentItem());
     connect(parentItem(),&QQuickItem::destroyed,m_engine,&QQmlEngine::deleteLater);
     base();top();mid();
@@ -78,11 +76,23 @@ void Knob::base()
 {
     m_base = new Dial(this);
     connect(parentItem(),&QQuickItem::destroyed,m_base,&QQuickItem::deleteLater);
-    m_base->setProperty("x",x());
-    m_base->setProperty("y",y());
     m_base->setProperty("z",0.1);
-    m_base->setProperty("width",m_size);
-    m_base->setProperty("height",m_size);
+    updateBaseColor();
+    connect(this, SIGNAL(colorChanged(QColor)), this, SLOT(updateBaseColor()));
+    connect(this, SIGNAL(borderColorChanged(QColor)), this, SLOT(updateBaseColor()));
+    updateBaseSize();
+    connect(this, SIGNAL(widthChanged()), this, SLOT(updateBaseSize()));
+    connect(this, SIGNAL(heightChanged()), this, SLOT(updateBaseSize()));
+}
+
+void Knob::updateBaseSize()
+{
+    m_base->setProperty("width", width());
+    m_base->setProperty("height", height());
+}
+
+void Knob::updateBaseColor()
+{
     m_base->setProperty("color",m_backgroundColor);
     m_base->setProperty("borderColor",m_borderColor);
 }
@@ -94,23 +104,22 @@ void Knob::showMeter()
     meter->setProperty("x",x());
     meter->setProperty("y",y());
     meter->setProperty("z",0.2);
-    meter->setProperty("width",m_size);
-    meter->setProperty("height",m_size);
+    meter->setProperty("width", width());
+    meter->setProperty("height", height());
 }
 
 void Knob::top()
 {
-    Dial *m_top = new Dial(m_base);
+    m_top = new Dial(m_base);
     connect(parentItem(),&QQuickItem::destroyed,m_top,&QQuickItem::deleteLater);
     m_top->setProperty("bottom",false);
-    qreal w = m_needleType < 7 ? qreal(m_size/1.5) : qreal(m_size/1.2);
-    m_top->setProperty("x",m_base->width()/2.0-w/2.0);
-    m_top->setProperty("y",m_base->height()/2.0-w/2.0);
+    updateTopSize();
+    connect(this, SIGNAL(widthChanged()), this, SLOT(updateTopSize()));
+    connect(this, SIGNAL(heightChanged()), this, SLOT(updateTopSize()));
+    updateTopColor();
+    connect(this, SIGNAL(foregroundColorChanged(QColor)), this, SLOT(updateTopColor()));
+    connect(this, SIGNAL(borderColorChanged(QColor)), this, SLOT(updateTopColor()));
     m_top->setProperty("z",0.4);
-    m_top->setProperty("width",w);
-    m_top->setProperty("height",w);
-    m_top->setProperty("color",m_foregroundColor);
-    m_top->setProperty("borderColor",m_borderColor);
 
     QQmlComponent component(m_engine);
     component.setData(Component::getComponent("Text"),QUrl());
@@ -120,6 +129,22 @@ void Knob::top()
     m_text->setProperty("color",m_textColor);
     m_text->setProperty("font",m_font);
     m_text->setProperty("text",m_prefix + "0" + m_suffix);
+}
+
+void Knob::updateTopSize()
+{
+    qreal w = m_needleType < 7 ? qreal(width()/1.5) : qreal(width()/1.2);
+    m_top->setProperty("x",m_base->width()/2.0-w/2.0);
+    m_top->setProperty("y",m_base->height()/2.0-w/2.0);
+
+    m_top->setProperty("width",w);
+    m_top->setProperty("height",w);
+}
+
+void Knob::updateTopColor()
+{
+    m_top->setProperty("color",m_foregroundColor);
+    m_top->setProperty("borderColor",m_borderColor);
 }
 
 void Knob::mid()
@@ -168,11 +193,10 @@ void Knob::mid()
     }
     item->setParentItem(m_base);
     item->setProperty("z",0.3);
-    item->setProperty("width",m_size);
-    item->setProperty("height",m_size);
     item->setProperty("color",m_color);
     item->setProperty("minValue",m_minimumValue);
     item->setProperty("maxValue",m_maximumValue);
+    item->setProperty("stepSize",m_stepSize);
     item->setProperty("readOnly",m_readOnly);
     item->setProperty("value",m_value);
 }
@@ -181,14 +205,9 @@ void Knob::makeConnections(QQuickItem &item)
 {
     connect(&item,SIGNAL(valueChanged(double)),this,SLOT(setValue(double)));
     connect(parentItem(),&QQuickItem::destroyed,&item,&QQuickItem::deleteLater);
-}
-
-void Knob::setSize(qreal arg)
-{
-    if (m_size == arg)
-        return;
-
-    m_size = arg;
-    emit sizeChanged(m_size);
+    connect(this, SIGNAL(maximumValueChanged(double)), &item, SLOT(setMaxValue(double)));
+    connect(this, SIGNAL(minimumValueChanged(double)), &item, SLOT(setMinValue(double)));
+    connect(this, SIGNAL(colorChanged(QColor)), &item, SLOT(setColor(QColor)));
+    connect(this, SIGNAL(stepSizeChanged(double)), &item, SLOT(setStepSize(double)));
 }
 

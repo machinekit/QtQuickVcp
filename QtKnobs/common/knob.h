@@ -49,7 +49,6 @@ class Knob : public QQuickItem
     Q_ENUMS(Style)
     Q_ENUMS(NeedleType)
     Q_ENUMS(PieType)
-    Q_PROPERTY(qreal size READ size WRITE setSize NOTIFY sizeChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QColor foregroundColor READ foregroundColor WRITE setForegroundColor NOTIFY foregroundColorChanged)
@@ -57,6 +56,7 @@ class Knob : public QQuickItem
     Q_PROPERTY(QColor borderColor MEMBER m_borderColor NOTIFY borderColorChanged)
     Q_PROPERTY(double minimumValue READ minimumValue WRITE setMinimumValue NOTIFY minimumValueChanged)
     Q_PROPERTY(double maximumValue READ maximumValue WRITE setMaximumValue NOTIFY maximumValueChanged)
+    Q_PROPERTY(double stepSize READ stepSize WRITE setStepSize NOTIFY stepSizeChanged)
     Q_PROPERTY(int decimals READ decimals WRITE setDecimals NOTIFY decimalsChanged)
     Q_PROPERTY(Style style READ style WRITE setStyle NOTIFY styleChanged)
     Q_PROPERTY(NeedleType needleType READ needleType WRITE setNeedleType NOTIFY needleTypeChanged)
@@ -91,7 +91,6 @@ public:
         Curve
     };
 
-    GET(qreal, size)
     GET(QColor, color)
     GET(QColor, backgroundColor)
     GET(QColor, foregroundColor)
@@ -101,6 +100,7 @@ public:
     GET(double, value)
     GET(double, minimumValue)
     GET(double, maximumValue)
+    GET(double, stepSize)
     GET(int, decimals)
     GET(bool, readOnly)
     GET(Style, style)
@@ -121,9 +121,9 @@ protected:
     void makeConnections(QQuickItem &item);
 
 protected slots:
-    void setSize(qreal arg);
     SET(double,MinimumValue,minimumValue)
     SET(double,MaximumValue,maximumValue)
+    SET(double,StepSize,stepSize)
     SET(int,Decimals,decimals)
     SET(Style,Style,style)
     SET(PieType,PieType,pieType)
@@ -140,14 +140,18 @@ protected slots:
     SET(QString,Suffix,suffix)
     SET(QFont,Font,font)
 
+    void updateBaseSize();
+    void updateTopSize();
+    void updateBaseColor();
+    void updateTopColor();
 signals:
-    void sizeChanged(int arg);
     void colorChanged(QColor arg);
     void backgroundColorChanged(QColor arg);
     void foregroundColorChanged(QColor arg);
     void textColorChanged(QColor arg);
     void minimumValueChanged(double arg);
     void maximumValueChanged(double arg);
+    void stepSizeChanged(double arg);
     void decimalsChanged(int arg);
     void styleChanged(Style arg);
     void pieTypeChanged(int arg);
@@ -162,7 +166,6 @@ signals:
     void fontChanged(QFont arg);
 
 private:
-    qreal m_size;
     QColor m_color;
     QColor m_backgroundColor;
     QColor m_foregroundColor;
@@ -171,6 +174,7 @@ private:
     double m_value;
     double m_minimumValue;
     double m_maximumValue;
+    double m_stepSize;
     int m_decimals;
     bool m_readOnly;
     bool m_pieMultiColor;
@@ -185,6 +189,7 @@ private:
 
     QQmlEngine *m_engine;
     Dial *m_base;
+    Dial *m_top;
     QQuickItem *m_text;
 };
 

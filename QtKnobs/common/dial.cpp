@@ -36,6 +36,7 @@ Dial::Dial(QQuickItem *parent)
 #if defined Q_OS_LINUX || defined Q_OS_MAC
     setRenderTarget(QQuickPaintedItem::FramebufferObject);
 #endif
+    connect(this, SIGNAL(borderColorChanged(QColor)), this, SLOT(update()));
 }
 
 Dial::~Dial()
@@ -44,7 +45,7 @@ Dial::~Dial()
 void Dial::paint(QPainter *painter)
 {
     if(m_bottom){
-        painter->setPen(m_borderColor.lighter(157));
+        painter->setPen(m_borderColor.lighter(110));
     }
     else{
         QLinearGradient g(QPointF(width()/2.0,0),QPointF(width()/2.0,height()));

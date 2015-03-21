@@ -33,6 +33,7 @@ PieStyle::PieStyle(QQuickItem *parent) :
     m_value(0),
     m_minValue(0),
     m_maxValue(100),
+    m_stepSize(0.1),
     m_readOnly(false),
     m_color(QColor(135,206,235)),
     m_style(PieStyle::Flat),
@@ -40,7 +41,8 @@ PieStyle::PieStyle(QQuickItem *parent) :
     m_factor(57.6),
     m_scale(16 / m_factor),
     m_startAngle((m_value * m_factor) + (1440)),
-    m_spanAngle(0)
+    m_spanAngle(0),
+    m_anim(NULL)
 {
     setAntialiasing(true);
 #if defined Q_OS_LINUX || defined Q_OS_MAC
@@ -100,7 +102,7 @@ double PieStyle::endValueFromPoint(qreal x, qreal y)
 {
     qreal theta = qAtan2(x,-y);
     qreal angle = fmod((theta * M_180_D_PI) + 360,360);
-    double v = qFloor(angle) * m_scale + m_minValue;
+    double v = (double)qRound((angle * m_scale) / m_stepSize) * m_stepSize + m_minValue;
     return v;
 }
 
@@ -158,6 +160,15 @@ void PieStyle::setMaxValue(double arg)
     emit maxValueChanged(arg);
 }
 
+void PieStyle::setStepSize(double arg)
+{
+    if (m_stepSize == arg)
+        return;
+
+    m_stepSize = arg;
+    emit stepSizeChanged(arg);
+}
+
 void PieStyle::setMultiColor(bool arg)
 {
     if (m_multiColor != arg) {
@@ -173,3 +184,11 @@ void PieStyle::setMultiColor(bool arg)
     }
 }
 
+void PieStyle::setColor(QColor arg)
+{
+    if (m_color == arg)
+        return;
+
+    m_color = arg;
+    emit colorChanged(arg);
+}

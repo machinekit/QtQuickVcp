@@ -38,7 +38,8 @@ class ArcStyle : public QQuickPaintedItem
     Q_PROPERTY(double value MEMBER m_value WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(double minValue MEMBER m_minValue WRITE setMinValue NOTIFY minValueChanged)
     Q_PROPERTY(double maxValue MEMBER m_maxValue WRITE setMaxValue NOTIFY maxValueChanged)
-    Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged)
+    Q_PROPERTY(double stepSize MEMBER m_stepSize WRITE setStepSize NOTIFY stepSizeChanged)
+    Q_PROPERTY(QColor color MEMBER m_color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(bool readOnly MEMBER m_readOnly NOTIFY readOnlyChanged)
 
 public:
@@ -54,6 +55,7 @@ signals:
     void valueChanged(double arg);
     void minValueChanged(double arg);
     void maxValueChanged(double arg);
+    void stepSizeChanged(double arg);
     void readOnlyChanged(bool arg);
     void colorChanged(QColor arg);
 
@@ -61,11 +63,14 @@ protected slots:
     void setValue(double arg);
     void setMinValue(double arg);
     void setMaxValue(double arg);
+    void setStepSize(double arg);
+    void setColor(QColor arg);
 
 private:
     double m_value;
     double m_minValue;
     double m_maxValue;
+    double m_stepSize;
     bool m_readOnly;
     QColor m_color;
     qreal m_factor;

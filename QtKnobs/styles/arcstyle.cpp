@@ -32,13 +32,15 @@ ArcStyle::ArcStyle(QQuickItem *parent) :
     m_value(0),
     m_minValue(0),
     m_maxValue(100),
+    m_stepSize(0.1),
     m_readOnly(false),
     m_color(QColor(135,206,235)),
     m_factor(57.6),
     m_scale(16 / m_factor),
     m_startAngle(-1680),
     m_spanAngle(480),
-    m_offset((1440) + ( m_spanAngle / 2 ))
+    m_offset((1440) + ( m_spanAngle / 2 )),
+    m_anim(NULL)
 {
     setAntialiasing(true);
 #if defined Q_OS_LINUX || defined Q_OS_MAC
@@ -99,6 +101,8 @@ void ArcStyle::setMinValue(double arg)
         return;
 
     m_minValue = arg;
+    m_factor = (360.0/(m_maxValue - m_minValue)) * 16.0;
+    m_scale = 16.0 / m_factor;
     emit minValueChanged(arg);
 }
 
@@ -108,7 +112,25 @@ void ArcStyle::setMaxValue(double arg)
         return;
 
     m_maxValue = arg;
-    m_factor = (360.0/m_maxValue) * 16.0;
+    m_factor = (360.0/(m_maxValue - m_minValue)) * 16.0;
     m_scale = 16.0 / m_factor;
     emit maxValueChanged(arg);
+}
+
+void ArcStyle::setStepSize(double arg)
+{
+    if (m_stepSize == arg)
+        return;
+
+    m_stepSize = arg;
+    emit stepSizeChanged(arg);
+}
+
+void ArcStyle::setColor(QColor arg)
+{
+    if (m_color == arg)
+        return;
+
+    m_color = arg;
+    emit colorChanged(arg);
 }

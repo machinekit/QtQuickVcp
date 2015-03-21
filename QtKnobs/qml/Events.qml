@@ -11,7 +11,7 @@ MouseArea {
     }
 
     onWheel: {
-        wheel.angleDelta.y < 0 ? value < maxValue ? ++value : maxValue : value > minValue ? --value : minValue
+        wheel.angleDelta.y < 0 ? value < maxValue ? value += stepSize : maxValue : value > minValue ? value -= stepSize : minValue
     }
 
     onClicked: calculateValue(mouseX,mouseY)
