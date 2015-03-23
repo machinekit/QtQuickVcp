@@ -29,7 +29,6 @@ ApplicationAction {
     property bool enableHistory: true
 
     property bool _ready: status.synced && command.connected
-                          && (status.task.taskState === ApplicationStatus.TaskStateOn)
 
     id: root
     text: qsTr("Go")
@@ -45,5 +44,7 @@ ApplicationAction {
     }
 
     //checked: _ready && (status.task.taskState === ApplicationStatus.TaskStateEstop)
-    enabled: _ready && !status.running
+    enabled: _ready
+             && (status.task.taskState === ApplicationStatus.TaskStateOn)
+             && !status.running
 }
