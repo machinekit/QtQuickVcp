@@ -148,10 +148,11 @@ void mdnsda_content_free(struct mdnsda_struct *rr)
 int _namehash(const char *s)
 {
     const unsigned char *name = (const unsigned char *)s;
-    unsigned long h = 0, g;
+    unsigned long h = 0;
 
     while (*name)
     { /* do some fancy bitwanking on the string */
+        unsigned long g;
         h = (h << 4) + (unsigned long)(*name++);
         if ((g = (h & 0xF0000000UL))!=0)
             h ^= (g >> 24);
@@ -625,10 +626,10 @@ int _r_out(mdnsd d, struct message *m, mdnsdr *list)
 int _r_out(mdnsd d, jdns_packet_t *m, mdnsdr *list)
 { // copy a published record into an outgoing message
     mdnsdr r; //, next;
-    unsigned short class;
     int ret = 0;
     while((r = *list) != 0)
     {
+        unsigned short class;
         *list = r->list;
         ret++;
         class = r->unique ? d->class | 0x8000 : d->class;
@@ -735,7 +736,7 @@ void mdnsd_free(mdnsd d)
 
 void mdnsd_in(mdnsd d, const jdns_packet_t *m, const jdns_response_t *resp, const jdns_address_t *addr, unsigned short int port)
 {
-    int i, j;
+    int i;
     mdnsdr r = 0;
 
     if(d->shutdown) return;
@@ -755,6 +756,7 @@ void mdnsd_in(mdnsd d, const jdns_packet_t *m, const jdns_response_t *resp, cons
 
             for(;r != 0; r = _r_next(d,r,(char *)pq->qname->data,pq->qtype))
             { // check all of our potential answers
+                int j;
                 if(r->unique && r->unique < 5)
                 { // probing state, check for conflicts
                     for(j=0;j<resp->authorityCount;j++)
@@ -843,9 +845,9 @@ int mdnsd_out(mdnsd d, jdns_packet_t **_m, jdns_address_t **addr, unsigned short
     if(d->a_publish && _tvdiff(d->now,d->publish) <= 0)
     { // check to see if it's time to send the publish retries (and unlink if done)
         mdnsdr next, cur = d->a_publish, last = 0;
-        unsigned short class;
         while(cur /*&& message_packet_len(m) + _rr_len(&cur->rr) < d->frame*/ )
         {
+            unsigned short class;
             next = cur->list;
             ret++; cur->tries++;
             class = cur->unique ? d->class | 0x8000 : d->class;
@@ -1013,10 +1015,10 @@ struct mytimeval *mdnsd_sleep(mdnsd d)
 void mdnsd_query(mdnsd d, char *host, int type, int (*answer)(mdnsda a, void *arg), void *arg)
 {
     struct query *q;
-    struct cached *cur = 0;
     int i = _namehash_nocase(host) % SPRIME;
     if(!(q = _q_next(d,0,host,type)))
     {
+        struct cached *cur = 0;
         if(!answer) return;
         q = (struct query *)jdns_alloc(sizeof(struct query));
         bzero(q,sizeof(struct query));

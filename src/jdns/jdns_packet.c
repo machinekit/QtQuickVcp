@@ -291,7 +291,7 @@ static int matchlabel(const unsigned char *a, int asize, const unsigned char *b,
 
 int jdns_packet_name_isvalid(const unsigned char *name, int size)
 {
-	int n, at, len;
+	int n, at;
 
 	// at least one byte, no larger than MAX_LABEL_LENGTH - 1 (one byte is
 	//   gained when converting to a label)
@@ -310,6 +310,7 @@ int jdns_packet_name_isvalid(const unsigned char *name, int size)
 	at = 0;
 	while(1)
 	{
+		int len;
 		// search for dot or end
 		for(n = at; n < size; ++n)
 		{
@@ -332,7 +333,7 @@ int jdns_packet_name_isvalid(const unsigned char *name, int size)
 // this function assumes label is pointing to a MAX_LABEL_LENGTH byte buffer
 static int name_to_label(const jdns_string_t *name, unsigned char *label)
 {
-	int n, i, at, len;
+	int n, i, at;
 
 	if(!jdns_packet_name_isvalid(name->data, name->size))
 		return -1;
@@ -347,6 +348,7 @@ static int name_to_label(const jdns_string_t *name, unsigned char *label)
 	i = 0;
 	while(1)
 	{
+		int len;
 		// search for dot or end
 		for(n = at; n < name->size; ++n)
 		{
