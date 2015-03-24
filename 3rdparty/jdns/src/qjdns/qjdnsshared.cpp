@@ -297,6 +297,8 @@ QStringList QJDnsSharedDebug::readDebugLines()
 QJDnsSharedPrivate::QJDnsSharedPrivate(QJDnsShared *_q)
 	: QObject(_q)
 	, q(_q)
+	, shutting_down(false)
+	, db(NULL)
 {
 }
 
@@ -465,7 +467,12 @@ void QJDnsSharedPrivate::late_shutdown()
 	emit q->shutdownFinished();
 }
 
-QJDnsSharedRequestPrivate::QJDnsSharedRequestPrivate(QJDnsSharedRequest *_q) : QObject(_q), q(_q), lateTimer(this)
+QJDnsSharedRequestPrivate::QJDnsSharedRequestPrivate(QJDnsSharedRequest *_q) : QObject(_q)
+	, q(_q)
+	, jsp(NULL)
+	, qType(QJDns::A)
+	, success(false)
+	, lateTimer(this)
 {
 	connect(&lateTimer, SIGNAL(timeout()), SLOT(lateTimer_timeout()));
 }
@@ -505,7 +512,7 @@ QJDnsSharedRequest::Type QJDnsSharedRequest::type()
 void QJDnsSharedRequest::query(const QByteArray &name, int type)
 {
 	cancel();
-	d->jsp->queryStart(this, name, type);
+	d->jsp->queryStart(this, name, static_cast<QJDns::Type>(type));
 }
 
 void QJDnsSharedRequest::publish(QJDns::PublishMode m, const QJDns::Record &record)
@@ -817,7 +824,7 @@ void QJDnsSharedPrivate::removeInterface(const QHostAddress &addr)
 	addDebug(index, QString("removing from %1").arg(addr.toString()));
 }
 
-void QJDnsSharedPrivate::queryStart(QJDnsSharedRequest *obj, const QByteArray &name, int qType)
+void QJDnsSharedPrivate::queryStart(QJDnsSharedRequest *obj, const QByteArray &name, QJDns::Type qType)
 {
 	obj->d->type = QJDnsSharedRequest::Query;
 	obj->d->success = false;
@@ -1010,7 +1017,7 @@ void QJDnsSharedPrivate::publishCancel(QJDnsSharedRequest *obj)
 
 void QJDnsSharedPrivate::jdns_resultsReady(int id, const QJDns::Response &results)
 {
-	QJDns *jdns = (QJDns *)sender();
+	QJDns *jdns = static_cast<QJDns *>(sender());
 	QJDnsSharedRequest *obj = findRequest(jdns, id);
 	Q_ASSERT(obj);
 
@@ -1091,7 +1098,7 @@ void QJDnsSharedPrivate::jdns_resultsReady(int id, const QJDns::Response &result
 
 void QJDnsSharedPrivate::jdns_published(int id)
 {
-	QJDns *jdns = (QJDns *)sender();
+	QJDns *jdns = static_cast<QJDns *>(sender());
 	QJDnsSharedRequest *obj = findRequest(jdns, id);
 	Q_ASSERT(obj);
 
@@ -1125,7 +1132,7 @@ void QJDnsSharedPrivate::jdns_published(int id)
 
 void QJDnsSharedPrivate::jdns_error(int id, QJDns::Error e)
 {
-	QJDns *jdns = (QJDns *)sender();
+	QJDns *jdns = static_cast<QJDns *>(sender());
 	QJDnsSharedRequest *obj = findRequest(jdns, id);
 	Q_ASSERT(obj);
 
@@ -1186,7 +1193,7 @@ void QJDnsSharedPrivate::jdns_error(int id, QJDns::Error e)
 
 void QJDnsSharedPrivate::jdns_shutdownFinished()
 {
-	QJDns *jdns = (QJDns *)sender();
+	QJDns *jdns = static_cast<QJDns *>(sender());
 
 	addDebug(instanceForQJDns.value(jdns)->index, "jdns_shutdownFinished, removing interface");
 
@@ -1202,7 +1209,7 @@ void QJDnsSharedPrivate::jdns_shutdownFinished()
 
 void QJDnsSharedPrivate::jdns_debugLinesReady()
 {
-	QJDns *jdns = (QJDns *)sender();
+	QJDns *jdns = static_cast<QJDns *>(sender());
 
 	doDebug(jdns, instanceForQJDns.value(jdns)->index);
 }
