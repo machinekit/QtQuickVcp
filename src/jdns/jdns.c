@@ -316,14 +316,14 @@ static void _print_hexdump(jdns_session_t *s, const unsigned char *buf, int size
 {
 	int n;
 	int lines;
-	int at, len;
+	int len;
 
 	lines = size / 16;
 	if(size % 16 != 0)
 		++lines;
 	for(n = 0; n < lines; ++n)
 	{
-		at = n * 16;
+		int at = n * 16;
 		if(at + 16 <= size)
 			len = 16;
 		else
@@ -348,7 +348,6 @@ static void _print_packet_resources(jdns_session_t *s, const jdns_list_t *reslis
 
 static void _print_packet(jdns_session_t *s, const jdns_packet_t *packet)
 {
-	int n;
 	_debug_line(s, "Packet:");
 	_debug_line(s, "  id:   %d", packet->id);
 	_debug_line(s, "  opts: qr:%d, opcode:%d, aa:%d, tc:%d, rd:%d, ra:%d, z:%d, rcode:%d",
@@ -359,6 +358,7 @@ static void _print_packet(jdns_session_t *s, const jdns_packet_t *packet)
 	if(packet->questions->count > 0)
 	{
 		_debug_line(s, "  questions: (class/type name)");
+		int n;
 		for(n = 0; n < packet->questions->count; ++n)
 		{
 			jdns_packet_question_t *q;
@@ -388,7 +388,6 @@ static void _print_packet(jdns_session_t *s, const jdns_packet_t *packet)
 
 static void _print_rr(jdns_session_t *s, const jdns_rr_t *rr, const unsigned char *owner)
 {
-	int n;
 	jdns_string_t *ownerstr;
 
 	ownerstr = jdns_string_new();
@@ -453,6 +452,7 @@ static void _print_rr(jdns_session_t *s, const jdns_rr_t *rr, const unsigned cha
 		case JDNS_RTYPE_TXT:
 		{
 			_debug_line(s, "    TXT: count=%d (ttl=%d)%s", rr->data.texts->count, rr->ttl, ownerstr->data);
+			int n;
 			for(n = 0; n < rr->data.texts->count; ++n)
 			{
 				jdns_string_t *str, *pstr;
@@ -1659,10 +1659,10 @@ jdns_response_t *_cache_get_response(jdns_session_t *s, const unsigned char *qna
 query_t *_find_first_active_query(jdns_session_t *s, const unsigned char *qname, int qtype)
 {
 	int n;
-	query_t *q;
 
 	for(n = 0; n < s->queries->count; ++n)
 	{
+		query_t *q;
 		q = (query_t *)s->queries->item[n];
 		if(jdns_domain_cmp(q->qname, qname) && q->qtype == qtype && q->step != -1)
 			return q;
@@ -2349,7 +2349,6 @@ int _unicast_do_reads(jdns_session_t *s, int now)
 
 void _process_message(jdns_session_t *s, jdns_packet_t *packet, int now, query_t *q, name_server_t *ns)
 {
-	int n;
 	int authoritative;
 	int truncated;
 	int recursion_desired;
@@ -2439,6 +2438,7 @@ void _process_message(jdns_session_t *s, jdns_packet_t *packet, int now, query_t
 
 		if(cache_answers)
 		{
+			int n;
 			for(n = 0; n < r->answerCount; ++n)
 			{
 				jdns_rr_t *record = r->answerRecords[n];
@@ -2448,6 +2448,7 @@ void _process_message(jdns_session_t *s, jdns_packet_t *packet, int now, query_t
 
 		if(cache_additional)
 		{
+			int n;
 			for(n = 0; n < r->additionalCount; ++n)
 			{
 				jdns_rr_t *record = r->additionalRecords[n];
@@ -2774,7 +2775,6 @@ int _multicast_query_ans(mdnsda a, void *arg)
 	query_t *q;
 	jdns_response_t *r;
 	jdns_rr_t *rr;
-	jdns_event_t *event;
 
 	s = (jdns_session_t *)arg;
 
@@ -2824,6 +2824,7 @@ int _multicast_query_ans(mdnsda a, void *arg)
 	// report event to any requests listening
 	for(n = 0; n < q->req_ids_count; ++n)
 	{
+		jdns_event_t *event;
 		event = jdns_event_new();
 		event->type = JDNS_EVENT_RESPONSE;
 		event->id = q->req_ids[n];

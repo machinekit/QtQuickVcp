@@ -622,7 +622,7 @@ void QJDns::Private::removeCancelled(int id)
 
 void QJDns::Private::udp_readyRead()
 {
-	QUdpSocket *sock = (QUdpSocket *)sender();
+	QUdpSocket *sock = static_cast<QUdpSocket *>(sender());
 	int handle = handleForSocket.value(sock);
 
 	if(need_handle)
