@@ -1,0 +1,47 @@
+# C++ objects and libs
+
+*.slo
+*.lo
+*.o
+*.a
+*.la
+*.lai
+*.so
+*.dll
+*.dylib
+
+# Qt-es
+
+*.moc
+moc_*.c*
+qrc_*.cpp
+ui_*.h
+Makefile*
+*-build-*
+
+# QtCreator
+
+*.autosave
+
+# cmake files
+/CMakeCache.txt
+CMakeFiles
+/JDnsConfig.cmake
+/JDnsConfigVersion.cmake
+/QJDnsConfig.cmake
+/QJDnsConfigVersion.cmake
+/bin
+/lib
+/jdns.pc
+/qjdns.pc
+cmake_install.cmake
+__
+cmake_uninstall.cmake
+
+# backup files
+*~
+\#*#
+~*
+
+# KDE Dolphin
+.directory
