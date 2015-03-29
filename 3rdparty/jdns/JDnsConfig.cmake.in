@@ -1,7 +1,0 @@
-@PACKAGE_INIT@
-
-if(NOT TARGET jdns)
-  include(${CMAKE_CURRENT_LIST_DIR}/JDnsTargets.cmake)
-endif()
-
-set(JDns_LIBRARY jdns)
