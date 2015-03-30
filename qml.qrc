@@ -3,8 +3,8 @@
         <file>main.qml</file>
         <file>init.qml</file>
         <file>SplashScreen.qml</file>
-        <file>AppDiscover.ServiceDisplay/ServiceDisplay.qml</file>
-        <file>AppDiscover.ServiceDisplay/description.ini</file>
+        <file>MachinekitClient.ServiceDisplay/ServiceDisplay.qml</file>
+        <file>MachinekitClient.ServiceDisplay/description.ini</file>
         <file>images/logo_text.png</file>
         <file>images/background.png</file>
     </qresource>

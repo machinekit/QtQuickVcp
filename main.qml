@@ -37,6 +37,7 @@ import Machinekit.PathView 1.0
 import Machinekit.Application 1.0
 import Machinekit.Application.Controls 1.0
 import Machinekit.Service 1.0
+import QtKnobs 1.0
 
 Item {
     id: applicationWindow
@@ -52,7 +53,7 @@ Item {
         id: connectionWindow
 
         anchors.fill: parent
-        defaultTitle: qsTr("Machinekit App Discover")
+        defaultTitle: qsTr("Machinekit Client")
         mode: "remote"
         remoteVisible: true
         localVisible: true
@@ -62,7 +63,7 @@ Item {
         applicationFilter: ApplicationConfigFilter { name: "" }
         applications: [
             ApplicationDescription {
-                sourceDir: "qrc:/AppDiscover.ServiceDisplay"
+                sourceDir: "qrc:/MachinekitClient.ServiceDisplay"
             }
         ]
     }
