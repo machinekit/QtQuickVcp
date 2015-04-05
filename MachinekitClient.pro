@@ -16,7 +16,7 @@ QML_IMPORT_PATH =
 # deactivate installs for applications
 INSTALLS =
 
-include(../../paths.pri)
+include(paths.pri)
 
 ios: {
     LIBS += -L$$PROTOBUF_LIB_PATH
