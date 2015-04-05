@@ -30,25 +30,25 @@ macx: {
     PROTOBUF_LIB_FLAGS = -Bstatic
 }
 win32-msvc2013: {
-    PROTOBUF_INCLUDE_PATH = E:\protobuf\src
-    ZEROMQ_INCLUDE_PATH = "E:\zeromq4-x\include"
+    PROTOBUF_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\src
+    ZEROMQ_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\zeromq4-x\include
     contains(QMAKE_TARGET.arch, x86_64) {
-        ZEROMQ_LIB_PATH = "E:\zeromq4-x\lib\x64"
-        PROTOBUF_LIB_PATH = E:\protobuf\vsprojects\x64\Release
-        PROTOBUF_PROTOC = E:\protobuf\vsprojects\x64\Release\protoc.exe
+        ZEROMQ_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\zeromq4-x\lib\x64
+        PROTOBUF_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\vsprojects\x64\Release
+        PROTOBUF_PROTOC = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\vsprojects\x64\Release\protoc.exe
     }
     else {
-        ZEROMQ_LIB_PATH = "E:\zeromq4-x\lib\Win32"
-        PROTOBUF_LIB_PATH = E:\protobuf\vsprojects\Release
-        PROTOBUF_PROTOC = E:\protobuf\vsprojects\Release\protoc.exe
+        ZEROMQ_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\zeromq4-x\lib\Win32
+        PROTOBUF_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\vsprojects\Release
+        PROTOBUF_PROTOC = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\vsprojects\Release\protoc.exe
     }
 }
 win32-g++: {
-    ZEROMQ_INCLUDE_PATH = E:\MinGW\include
-    ZEROMQ_LIB_PATH = E:\MinGW\lib
-    PROTOBUF_INCLUDE_PATH =  E:\MinGW\include
-    PROTOBUF_LIB_PATH =  E:\MinGW\lib
-    PROTOBUF_PROTOC =  E:\MinGW\bin\protoc.exe
+    ZEROMQ_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\MinGW\include
+    ZEROMQ_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\MinGW\lib
+    PROTOBUF_INCLUDE_PATH =  $$(HOMEDRIVE)$$(HOMEPATH)\bin\MinGW\include
+    PROTOBUF_LIB_PATH =  $$(HOMEDRIVE)$$(HOMEPATH)\bin\MinGW\lib
+    PROTOBUF_PROTOC =  $$(HOMEDRIVE)$$(HOMEPATH)\bin\MinGW\bin\protoc.exe
 }
 linux: !android: {
     PROTOBUF_INCLUDE_PATH=/usr/include
