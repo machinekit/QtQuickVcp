@@ -1,11 +1,10 @@
 QtQuickVcp
 ==========
 
-A remote component implementation for HAL written in Qt/C++/QML.
+A remote user interface implementation for [Machinekit](https://github.com/machinekit/machinekit) written in Qt/C++/QML.
 
-This application is intended to be used demonstration for the new HAL remote components. The application was tested on Desktop Linux and Android.
+This repository contains the QtQuickVcp library. A generic client implementation and binary distributions can be found here [MachinekitClient](https://github.com/strahlex/MachinekitClient)
 
-Read the wiki for more details: https://github.com/strahlex/QtQuickVcp/wiki/QtQuick-Virtual-Control-Panel
+More details about QtQuickVcp and how it can be installed can be found in the [QtQuickVcp Wiki](https://github.com/strahlex/QtQuickVcp/wiki/QtQuick-Virtual-Control-Panel)
 
-You can find the online documentation here:
-http://static.machinekit.io/html/qtquickvcp/index.html
+Online documentation for some QtQuickVcp classes can be found here [QtQuickVcp Docu](http://static.machinekit.io/html/qtquickvcp/index.html)
