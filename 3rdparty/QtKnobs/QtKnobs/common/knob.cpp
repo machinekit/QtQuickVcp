@@ -49,8 +49,6 @@ Knob::Knob(QQuickItem *parent)
       m_top(NULL),
       m_text(0)
 {
-    setSmooth(true);
-    setAntialiasing(true);
 }
 
 Knob::~Knob()

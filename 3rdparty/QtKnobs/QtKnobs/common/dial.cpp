@@ -32,10 +32,6 @@ Dial::Dial(QQuickItem *parent)
     m_color(QColor(241,241,241)),
     m_borderColor(Qt::darkGray)
 {
-    setAntialiasing(true);
-#if defined Q_OS_LINUX || defined Q_OS_MAC
-    setRenderTarget(QQuickPaintedItem::FramebufferObject);
-#endif
     connect(this, SIGNAL(borderColorChanged(QColor)), this, SLOT(update()));
 }
 
