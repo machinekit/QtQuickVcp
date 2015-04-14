@@ -22,17 +22,30 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 1.2
+import Machinekit.Application 1.0
 
 ComboBox {
-    property double distance: cbItems.get(jogCombo.currentIndex).distance
+    property alias core: object.core
+    property alias status: object.status
 
-    id: jogCombo
-    model: ListModel {
-            id: cbItems
-            ListElement { text: "Continous"; distance: 0 }
-            ListElement { text: "1"; distance: 1 }
-            ListElement { text: "0.1"; distance: 0.1 }
-            ListElement { text: "0.05"; distance: 0.05 }
+    property double distance: _distanceModel[root.currentIndex]
+    property bool showContinous: true
+    property string continousText: qsTr("Continous")
+
+    property var _incrementsModel: showContinous ? [continousText].concat(_incrementsModelBase) : _incrementsModelBase
+    property var _incrementsModelBase: status.synced ? status.config.increments.split(" ") : []
+    property var _distanceModel: {
+        var distanceModel = []
+        for (var i = 0; i < _incrementsModel.length; ++i) {
+            distanceModel.push(_incrementsModel[i] === continousText ? 0 : _incrementsModel[i])
         }
-    // TODO: should come from ini, maybe per axis
+        return distanceModel
+    }
+
+    id: root
+    model: _incrementsModel
+
+    ApplicationObject {
+        id: object
+    }
 }
