@@ -59,7 +59,8 @@ QML_FILES = \
     MdiHistoryTable.qml \
     MdiCommandEdit.qml \
     AxisRadioGroup.qml \
-    AxisComboBox.qml
+    AxisComboBox.qml \
+    TeleopAction.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \

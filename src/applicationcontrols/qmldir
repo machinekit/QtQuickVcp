@@ -48,3 +48,4 @@ MdiHistoryTable 1.0 MdiHistoryTable.qml
 MdiCommandEdit 1.0 MdiCommandEdit.qml
 AxisRadioGroup 1.0 AxisRadioGroup.qml
 AxisComboBox 1.0 AxisComboBox.qml
+TeleopAction 1.0 TeleopAction.qml
