@@ -15,9 +15,13 @@ SOURCES += \
 
 HEADERS += \
     plugin.h \
-    qlauncher.h
+    qlauncher.h \
+    debughelper.h
 
 QML_INFRA_FILES = \
     qmldir
 
 include(../deployment.pri)
+
+RESOURCES += \
+    launcher.qrc

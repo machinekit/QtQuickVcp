@@ -25,8 +25,7 @@
 
 #include <QObject>
 #include <QCoreApplication>
-#include <QJsonObject>
-#include <QJsonArray>
+#include <QJsonValue>
 #include <abstractserviceimplementation.h>
 #include <service.h>
 #include <nzmqt/nzmqt.hpp>
@@ -55,6 +54,7 @@ class QLauncher : public AbstractServiceImplementation
     Q_PROPERTY(Service::State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(Service::ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
+    Q_PROPERTY(QJsonValue launchers READ launchers NOTIFY launchersChanged)
 
 public:
     explicit QLauncher(QObject *parent = 0);
@@ -94,6 +94,11 @@ public:
         return m_errorString;
     }
 
+    QJsonValue launchers() const
+    {
+        return m_launchers;
+    }
+
 public slots:
     void setCommandUri(QString arg)
     {
@@ -123,9 +128,9 @@ public slots:
     }
 
 private:
+    QString m_subscribeUri;
     QString m_commandUri;
     QString m_commandIdentity;
-    QString m_subscribeUri;
     int m_heartbeatPeriod;
     bool m_connected;
     Service::SocketState m_subscribeSocketState;
@@ -157,6 +162,8 @@ private:
     void updateError(Service::ConnectionError error, QString errorString);
     void sendCommandMessage(pb::ContainerType type);
 
+    QJsonValue m_launchers;
+
 private slots:
     void subscribeMessageReceived(QList<QByteArray> messageList);
     void commandMessageReceived(QList<QByteArray> messageList);
@@ -177,6 +184,7 @@ signals:
     void connectionStateChanged(Service::State arg);
     void errorChanged(Service::ConnectionError arg);
     void errorStringChanged(QString arg);
+    void launchersChanged(QJsonValue arg);
 };
 
 #endif // QLAUNCHER_H

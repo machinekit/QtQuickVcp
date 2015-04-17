@@ -1,10 +1,11 @@
 #include "qlauncher.h"
+#include "debughelper.h"
 
 QLauncher::QLauncher(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_subscribeUri(""),
-    m_commandIdentity("launcher"),
     m_commandUri(""),
+    m_commandIdentity("launcher"),
     m_heartbeatPeriod(3000),
     m_connected(false),
     m_subscribeSocketState(Service::Down),
@@ -17,7 +18,8 @@ QLauncher::QLauncher(QObject *parent) :
     m_commandSocket(NULL),
     m_commandHeartbeatTimer(new QTimer(this)),
     m_subscribeHeartbeatTimer(new QTimer(this)),
-    m_commandPingOutstanding(false)
+    m_commandPingOutstanding(false),
+    m_launchers(QJsonValue(QJsonArray()))
 {
     connect(m_commandHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(commandHeartbeatTimerTick()));
@@ -113,6 +115,7 @@ void QLauncher::start()
 
     if (connectSockets())
     {
+        subscribe("launcher");
         startCommandHeartbeat();
         sendCommandMessage(pb::MT_PING);
     }
@@ -254,35 +257,32 @@ void QLauncher::subscribeMessageReceived(QList<QByteArray> messageList)
 #ifdef QT_DEBUG
     std::string s;
     gpb::TextFormat::PrintToString(m_rx, &s);
-    DEBUG_TAG(3, m_commandIdentifier, "status update" << topic << QString::fromStdString(s))
+    DEBUG_TAG(3, m_commandIdentity, "launcher update" << topic << QString::fromStdString(s))
 #endif
 
-    if (m_rx.type() == pb::MT_LAUNCHER_INCREMENTAL_UPDATE) //incremental update
+    if (m_rx.type() == pb::MT_LAUNCHER_INCREMENTAL_UPDATE
+        || m_rx.type() == pb::MT_LAUNCHER_FULL_UPDATE) //value update
     {
-        // TODO
+        Service::updateValue(m_rx, &m_launchers, "launcher");
+        emit launchersChanged(m_launchers);
 
-        return;
-    }
-    else if (m_rx.type() == pb::MT_LAUNCHER_FULL_UPDATE)
-    {
-#ifdef QT_DEBUG
-        DEBUG_TAG(1, m_commandIdentifier, "full update")
-#endif
-        for (int i = 0; i < m_rx.comp_size(); ++i)
+        if (m_rx.type() == pb::MT_LAUNCHER_FULL_UPDATE)
         {
-            // TODO
-
-            if (m_subscribeSocketState != Service::Up) // will be executed only once
+            if (m_subscribeSocketState != Service::Up)
             {
                 m_subscribeSocketState = Service::Up;
                 updateState(Service::Connected);
             }
-        }
 
-        if (m_rx.has_pparams())
+            if (m_rx.has_pparams())
+            {
+                pb::ProtocolParameters pparams = m_rx.pparams();
+                startSubscribeHeartbeat(pparams.keepalive_timer() * 2);  // wait double the time of the hearbeat interval
+            }
+        }
+        else
         {
-            pb::ProtocolParameters pparams = m_rx.pparams();
-            startSubscribeHeartbeat(pparams.keepalive_timer() * 2);  // wait double the time of the hearbeat interval
+            refreshSubscribeHeartbeat();
         }
 
         return;
@@ -315,7 +315,7 @@ void QLauncher::subscribeMessageReceived(QList<QByteArray> messageList)
         updateState(Service::Error, Service::CommandError, errorString);
 
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_commandIdentifier, "proto error on subscribe" << errorString)
+        DEBUG_TAG(1, m_commandIdentity, "proto error on subscribe" << errorString)
 #endif
 
         return;
@@ -323,7 +323,7 @@ void QLauncher::subscribeMessageReceived(QList<QByteArray> messageList)
 
 #ifdef QT_DEBUG
     gpb::TextFormat::PrintToString(m_rx, &s);
-    DEBUG_TAG(1, m_commandIdentifier, "status_update: unknown message type: " << QString::fromStdString(s))
+    DEBUG_TAG(1, m_commandIdentity, "status_update: unknown message type: " << QString::fromStdString(s))
 #endif
 }
 
@@ -335,7 +335,7 @@ void QLauncher::commandMessageReceived(QList<QByteArray> messageList)
 #ifdef QT_DEBUG
     std::string s;
     gpb::TextFormat::PrintToString(m_rx, &s);
-    DEBUG_TAG(3, m_commandIdentifier, "server message" << QString::fromStdString(s))
+    DEBUG_TAG(3, m_commandIdentity, "server message" << QString::fromStdString(s))
 #endif
 
     if (m_rx.type() == pb::MT_PING_ACKNOWLEDGE)
@@ -348,7 +348,7 @@ void QLauncher::commandMessageReceived(QList<QByteArray> messageList)
         }
 
 #ifdef QT_DEBUG
-        DEBUG_TAG(2, m_commandIdentifier, "ping ack")
+        DEBUG_TAG(2, m_commandIdentity, "ping ack")
 #endif
 
         return;
@@ -356,7 +356,7 @@ void QLauncher::commandMessageReceived(QList<QByteArray> messageList)
     else
     {
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_commandIdentifier, "UNKNOWN server message type")
+        DEBUG_TAG(1, m_commandIdentity, "UNKNOWN server message type")
 #endif
     }
 }
@@ -387,7 +387,7 @@ void QLauncher::commandHeartbeatTimerTick()
         updateState(Service::Timeout);
 
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_commandIdentifier, "halcmd timeout")
+        DEBUG_TAG(1, m_commandIdentity, "halcmd timeout")
 #endif
     }
 
@@ -396,7 +396,7 @@ void QLauncher::commandHeartbeatTimerTick()
     m_commandPingOutstanding = true;
 
 #ifdef QT_DEBUG
-    DEBUG_TAG(2, m_commandIdentifier, "ping")
+    DEBUG_TAG(2, m_commandIdentity, "ping")
 #endif
 }
 
@@ -406,6 +406,6 @@ void QLauncher::subscribeHeartbeatTimerTick()
     updateState(Service::Timeout);
 
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_commandIdentifier, "halcmd timeout")
+    DEBUG_TAG(1, m_commandIdentity, "halcmd timeout")
 #endif
 }
