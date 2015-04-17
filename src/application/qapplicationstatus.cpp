@@ -187,207 +187,32 @@ void QApplicationStatus::clearSync()
 
 void QApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
 {
-    recurseMessage(motion, &m_motion);
+    Service::recurseMessage(motion, &m_motion);
     emit motionChanged(m_motion);
 }
 
 void QApplicationStatus::updateConfig(const pb::EmcStatusConfig &config)
 {
-    recurseMessage(config, &m_config);
+    Service::recurseMessage(config, &m_config);
     emit configChanged(m_config);
 }
 
 void QApplicationStatus::updateIo(const pb::EmcStatusIo &io)
 {
-    recurseMessage(io, &m_io);
+    Service::recurseMessage(io, &m_io);
     emit ioChanged(m_io);
 }
 
 void QApplicationStatus::updateTask(const pb::EmcStatusTask &task)
 {
-    recurseMessage(task, &m_task);
+    Service::recurseMessage(task, &m_task);
     emit taskChanged(m_task);
 }
 
 void QApplicationStatus::updateInterp(const pb::EmcStatusInterp &interp)
 {
-    recurseMessage(interp, &m_interp);
+    Service::recurseMessage(interp, &m_interp);
     emit interpChanged(m_interp);
-}
-
-QString QApplicationStatus::enumNameToCamelCase(const QString &name)
-{
-    QStringList partList;
-
-    partList = name.toLower().split('_');
-
-    for (int i = 0; i < partList.size(); ++i)
-    {
-        partList[i][0] = partList[i][0].toUpper();
-    }
-
-    return partList.join("");
-}
-
-void QApplicationStatus::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *object)
-{
-    for (int i = 0; i < descriptor->field_count(); ++i)
-    {
-        const gpb::FieldDescriptor *field;
-        QString name;
-        QJsonValue jsonValue;
-
-        field = descriptor->field(i);
-        name = QString::fromStdString(field->camelcase_name());
-
-        switch (field->cpp_type())
-        {
-        case gpb::FieldDescriptor::CPPTYPE_BOOL:
-            jsonValue = false;
-            break;
-        case gpb::FieldDescriptor::CPPTYPE_DOUBLE:
-        case gpb::FieldDescriptor::CPPTYPE_FLOAT:
-            jsonValue = 0.0;
-            break;
-        case gpb::FieldDescriptor::CPPTYPE_INT32:
-        case gpb::FieldDescriptor::CPPTYPE_INT64:
-        case gpb::FieldDescriptor::CPPTYPE_UINT32:
-        case gpb::FieldDescriptor::CPPTYPE_UINT64:
-            jsonValue = 0;
-            break;
-        case gpb::FieldDescriptor::CPPTYPE_STRING:
-            jsonValue = "";
-            break;
-        case gpb::FieldDescriptor::CPPTYPE_ENUM:
-            jsonValue = field->enum_type()->value(0)->number();
-            //jsonValue = enumNameToCamelCase(QString::fromStdString(field->enum_type()->value(0)->name()));
-            break;
-        case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
-            QJsonObject jsonObject;
-            recurseDescriptor(field->message_type(), &jsonObject);
-            jsonValue = jsonObject;
-            break;
-        }
-
-        if (field->is_repeated())
-        {
-            QJsonArray jsonArray;
-            QJsonObject jsonObject = jsonValue.toObject();
-
-            jsonObject.remove("index");
-            if (jsonObject.count() == 1)
-            {
-                jsonValue = jsonObject.value(jsonObject.keys().at(0));
-            }
-            else
-            {
-                jsonValue = jsonObject;
-            }
-            jsonArray.append(jsonValue);
-            object->insert(name, jsonArray);
-        }
-        else
-        {
-            object->insert(name, jsonValue);
-        }
-    }
-}
-
-void QApplicationStatus::recurseMessage(const gpb::Message &message, QJsonObject *object)
-{
-    const gpb::Reflection *reflection = message.GetReflection();
-    gpb::vector< const gpb::FieldDescriptor * > output;
-    reflection->ListFields(message, &output);
-
-    for (int i = 0; i < (int)output.size(); ++i)
-    {
-        QString name;
-        QJsonValue jsonValue;
-        const gpb::FieldDescriptor *field;
-
-        field = output[i];
-        name = QString::fromStdString(field->camelcase_name());
-
-        if (!field->is_repeated())
-        {
-            switch (field->cpp_type())
-            {
-            case gpb::FieldDescriptor::CPPTYPE_BOOL:
-                jsonValue = reflection->GetBool(message, field);
-                break;
-            case gpb::FieldDescriptor::CPPTYPE_DOUBLE:
-                jsonValue = reflection->GetDouble(message, field);
-                break;
-            case gpb::FieldDescriptor::CPPTYPE_FLOAT:
-                jsonValue = (double)reflection->GetFloat(message, field);
-                break;
-            case gpb::FieldDescriptor::CPPTYPE_INT32:
-                jsonValue = (int)reflection->GetInt32(message, field);
-                break;
-            case gpb::FieldDescriptor::CPPTYPE_INT64:
-                jsonValue = (int)reflection->GetInt64(message, field);
-                break;
-            case gpb::FieldDescriptor::CPPTYPE_UINT32:
-                jsonValue = (int)reflection->GetUInt32(message, field);
-                break;
-            case gpb::FieldDescriptor::CPPTYPE_UINT64:
-                jsonValue = (int)reflection->GetUInt64(message, field);
-                break;
-            case gpb::FieldDescriptor::CPPTYPE_STRING:
-                jsonValue = QString::fromStdString(reflection->GetString(message, field));
-                break;
-            case gpb::FieldDescriptor::CPPTYPE_ENUM:
-                jsonValue = reflection->GetEnum(message, field)->number();
-                //jsonValue = enumNameToCamelCase(QString::fromStdString(reflection->GetEnum(message, field)->name()));
-                break;
-            case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
-                QJsonObject jsonObject = object->value(name).toObject();
-                recurseMessage(reflection->GetMessage(message, field), &jsonObject);
-                jsonValue = jsonObject;
-                break;
-            }
-            object->insert(name, jsonValue);
-        }
-        else
-        {
-            if (field->cpp_type() == gpb::FieldDescriptor::CPPTYPE_MESSAGE)
-            {
-                QJsonArray jsonArray = object->value(name).toArray();
-                for (int j = 0; j < reflection->FieldSize(message, field); ++j)
-                {
-                    QJsonObject jsonObject;
-                    QJsonValue jsonValue;
-                    const gpb::Message &subMessage = reflection->GetRepeatedMessage(message, field, j);
-                    const gpb::Descriptor *subDescriptor = subMessage.GetDescriptor();
-                    const gpb::FieldDescriptor *subField = subDescriptor->FindFieldByName("index");
-                    const gpb::Reflection *subReflection = subMessage.GetReflection();
-                    int index = subReflection->GetInt32(subMessage, subField);
-
-                    while (jsonArray.size() < (index + 1))
-                    {
-                        jsonArray.append(QJsonValue());
-                    }
-
-                    if (subDescriptor->field_count() == 2)  // index and value field
-                    {
-                        recurseMessage(subMessage, &jsonObject);
-                        jsonObject.remove("index");
-                        jsonValue = jsonObject.value(jsonObject.keys().at(0));
-                    }
-                    else
-                    {
-                        jsonObject = jsonArray.at(index).toObject(QJsonObject());
-                        recurseMessage(subMessage, &jsonObject);
-                        jsonObject.remove("index");
-                        jsonValue = jsonObject;
-                    }
-
-                    jsonArray.replace(index, jsonValue);
-                }
-                object->insert(name, QJsonValue(jsonArray));
-            }
-        }
-    }
 }
 
 void QApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageList)
@@ -629,27 +454,27 @@ void QApplicationStatus::initializeObject(QApplicationStatus::StatusChannel chan
     {
     case MotionChannel:
         m_motion = QJsonObject();
-        recurseDescriptor(statusMotion.GetDescriptor(), &m_motion);
+        Service::recurseDescriptor(statusMotion.GetDescriptor(), &m_motion);
         emit motionChanged(m_motion);
         return;
     case ConfigChannel:
         m_config = QJsonObject();
-        recurseDescriptor(statusConfig.GetDescriptor(), &m_config);
+        Service::recurseDescriptor(statusConfig.GetDescriptor(), &m_config);
         emit configChanged(m_config);
         return;
     case IoChannel:
         m_io = QJsonObject();
-        recurseDescriptor(statusIo.GetDescriptor(), &m_io);
+        Service::recurseDescriptor(statusIo.GetDescriptor(), &m_io);
         emit ioChanged(m_io);
         return;
     case TaskChannel:
         m_task = QJsonObject();
-        recurseDescriptor(statusTask.GetDescriptor(), &m_task);
+        Service::recurseDescriptor(statusTask.GetDescriptor(), &m_task);
         emit taskChanged(m_task);
         return;
     case InterpChannel:
         m_interp = QJsonObject();
-        recurseDescriptor(statusInterp.GetDescriptor(), &m_interp);
+        Service::recurseDescriptor(statusInterp.GetDescriptor(), &m_interp);
         emit interpChanged(m_interp);
         return;
     }

@@ -2,6 +2,18 @@
 #define SERVICE_H
 
 #include <QObject>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QStringList>
+#include <google/protobuf/text_format.h>
+#include <google/protobuf/message.h>
+#include <google/protobuf/descriptor.h>
+
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
 
 class Service : public QObject
 {
@@ -35,9 +47,11 @@ public:
         SocketError = 4
     };
 
-signals:
 
-public slots:
+    static QString enumNameToCamelCase(const QString &name);
+    static void recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *object);
+    static void recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter = QString());
+    static void updateValue(const gpb::Message &message, QJsonValue *value, const QString &field);
 };
 
 #endif // SERVICE_H

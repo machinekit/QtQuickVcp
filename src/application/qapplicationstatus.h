@@ -24,10 +24,9 @@
 #define QEMCSTATUS_H
 
 #include <abstractserviceimplementation.h>
+#include <service.h>
 #include <QStringList>
 #include <QTimer>
-#include <QJsonObject>
-#include <QJsonArray>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/message.h>
@@ -330,10 +329,6 @@ private:
     void updateIo(const pb::EmcStatusIo &io);
     void updateTask(const pb::EmcStatusTask &task);
     void updateInterp(const pb::EmcStatusInterp &interp);
-
-    QString enumNameToCamelCase(const QString &name);
-    void recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *object);
-    void recurseMessage(const gpb::Message &message, QJsonObject *object);
 
 private slots:
     void statusMessageReceived(const QList<QByteArray> &messageList);
