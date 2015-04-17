@@ -281,8 +281,6 @@ public slots:
         emit channelsChanged(arg);
     }
 
-    void initializeObject(StatusChannel channel);
-
 private:
     QString         m_statusUri;
     SocketState     m_statusSocketState;
@@ -329,6 +327,7 @@ private:
     void updateIo(const pb::EmcStatusIo &io);
     void updateTask(const pb::EmcStatusTask &task);
     void updateInterp(const pb::EmcStatusInterp &interp);
+    void initializeObject(StatusChannel channel);
 
 private slots:
     void statusMessageReceived(const QList<QByteArray> &messageList);
