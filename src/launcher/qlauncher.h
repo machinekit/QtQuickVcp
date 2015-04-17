@@ -55,6 +55,7 @@ class QLauncher : public AbstractServiceImplementation
     Q_PROPERTY(Service::ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QJsonValue launchers READ launchers NOTIFY launchersChanged)
+    Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
 
 public:
     explicit QLauncher(QObject *parent = 0);
@@ -99,6 +100,11 @@ public:
         return m_launchers;
     }
 
+    bool isSynced() const
+    {
+        return m_synced;
+    }
+
 public slots:
     void setCommandUri(QString arg)
     {
@@ -127,6 +133,12 @@ public slots:
         emit heartbeatPeriodChanged(arg);
     }
 
+    void start(int index);
+    void stop(int index);
+    void writeToStdin(int index, const QString &data);
+    void call(const QString &command);
+    void shutdown();
+
 private:
     QString m_subscribeUri;
     QString m_commandUri;
@@ -138,6 +150,8 @@ private:
     Service::State m_connectionState;
     Service::ConnectionError m_error;
     QString m_errorString;
+    QJsonValue m_launchers;
+    bool m_synced;
 
     PollingZMQContext *m_context;
     ZMQSocket  *m_subscribeSocket;
@@ -161,8 +175,9 @@ private:
     void updateState(Service::State state, Service::ConnectionError error, QString errorString);
     void updateError(Service::ConnectionError error, QString errorString);
     void sendCommandMessage(pb::ContainerType type);
-
-    QJsonValue m_launchers;
+    void updateSync();
+    void clearSync();
+    void initializeObject();
 
 private slots:
     void subscribeMessageReceived(QList<QByteArray> messageList);
@@ -185,6 +200,7 @@ signals:
     void errorChanged(Service::ConnectionError arg);
     void errorStringChanged(QString arg);
     void launchersChanged(QJsonValue arg);
+    void syncedChanged(bool arg);
 };
 
 #endif // QLAUNCHER_H

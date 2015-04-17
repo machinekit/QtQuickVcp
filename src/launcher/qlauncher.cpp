@@ -13,18 +13,75 @@ QLauncher::QLauncher(QObject *parent) :
     m_connectionState(Service::Disconnected),
     m_error(Service::NoError),
     m_errorString(""),
+    m_launchers(QJsonValue(QJsonArray())),
+    m_synced(false),
     m_context(NULL),
     m_subscribeSocket(NULL),
     m_commandSocket(NULL),
     m_commandHeartbeatTimer(new QTimer(this)),
     m_subscribeHeartbeatTimer(new QTimer(this)),
-    m_commandPingOutstanding(false),
-    m_launchers(QJsonValue(QJsonArray()))
+    m_commandPingOutstanding(false)
 {
     connect(m_commandHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(commandHeartbeatTimerTick()));
     connect(m_subscribeHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(subscribeHeartbeatTimerTick()));
+
+    initializeObject();
+}
+
+void QLauncher::start(int index)
+{
+    if (!m_connected) {
+        return;
+    }
+
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, m_commandIdentity, "starting launcher" << index)
+#endif
+
+    m_tx.set_index(index);
+    sendCommandMessage(pb::MT_LAUNCHER_START);
+}
+
+void QLauncher::stop(int index)
+{
+    if (!m_connected) {
+        return;
+    }
+
+    m_tx.set_index(index);
+    sendCommandMessage(pb::MT_LAUNCHER_STOP);
+}
+
+void QLauncher::writeToStdin(int index, const QString &data)
+{
+    if (!m_connected) {
+        return;
+    }
+
+    m_tx.set_index(index);
+    m_tx.set_name(data.toStdString());
+    sendCommandMessage(pb::MT_LAUNCHER_WRITE_STDIN);
+}
+
+void QLauncher::call(const QString &command)
+{
+    if (!m_connected) {
+        return;
+    }
+
+    m_tx.set_name(command.toStdString());
+    sendCommandMessage(pb::MT_LAUNCHER_CALL);
+}
+
+void QLauncher::shutdown()
+{
+    if (!m_connected) {
+        return;
+    }
+
+    sendCommandMessage(pb::MT_LAUNCHER_SHUTDOWN);
 }
 
 /** Connects the 0MQ sockets */
@@ -194,28 +251,23 @@ void QLauncher::updateState(Service::State state, Service::ConnectionError error
 
     if (state != m_connectionState)
     {
-        if (m_connectionState == Service::Connected) // we are not connected anymore
+        if (m_connected) // we are not connected anymore
         {
-            //unsyncPins(); // TODO
+            stopSubscribeHeartbeat();
+            clearSync();
+            m_connected = false;
+            emit connectedChanged(false);
+        }
+        else if (state == Service::Connected) {
+            m_connected = true;
+            emit connectedChanged(true);
         }
 
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
 
-        if (m_connectionState == Service::Connected)
-        {
-            if (m_connected != true) {
-                m_connected = true;
-                emit connectedChanged(true);
-            }
-        }
-        else
-        {
-            stopSubscribeHeartbeat();
-            if (m_connected != false) {
-                m_connected = false;
-                emit connectedChanged(false);
-            }
+        if ((state == Service::Disconnected) || (state == Service::Error)) {
+            initializeObject();
         }
     }
 }
@@ -273,6 +325,8 @@ void QLauncher::subscribeMessageReceived(QList<QByteArray> messageList)
                 m_subscribeSocketState = Service::Up;
                 updateState(Service::Connected);
             }
+
+            updateSync();
 
             if (m_rx.has_pparams())
             {
@@ -342,9 +396,10 @@ void QLauncher::commandMessageReceived(QList<QByteArray> messageList)
     {
         m_commandPingOutstanding = false;
 
-        if (m_commandSocketState == Service::Trying)
+        if (m_commandSocketState != Service::Up)
         {
-            updateState(Service::Connecting);
+            m_commandSocketState = Service::Up;
+            updateState(Service::Connected);
         }
 
 #ifdef QT_DEBUG
@@ -377,6 +432,24 @@ void QLauncher::sendCommandMessage(pb::ContainerType type)
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         updateState(Service::Error, Service::SocketError, errorString);
     }
+}
+
+void QLauncher::updateSync()
+{
+    m_synced = true;
+    emit syncedChanged(m_synced);
+}
+
+void QLauncher::clearSync()
+{
+    m_synced = false;
+    emit syncedChanged(m_synced);
+}
+
+void QLauncher::initializeObject()
+{
+    m_launchers = QJsonValue(QJsonArray());
+    emit launchersChanged(m_launchers);
 }
 
 void QLauncher::commandHeartbeatTimerTick()
