@@ -20,6 +20,7 @@
 **
 ****************************************************************************/
 #include "qapplicationconfig.h"
+#include "service.h"
 
 /*!
     \qmltype ApplicationConfig
@@ -474,7 +475,7 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                 m_selectedConfig->setDescription(QString::fromStdString(app.description()));
                 m_selectedConfig->setType(type);
 
-                baseFilePath = applicationFilePath(m_selectedConfig->name());
+                baseFilePath = Service::applicationTempPath(m_selectedConfig->name());
                 if (!dir.mkpath(baseFilePath))
                 {
                     qDebug() << "not able to create directory";
@@ -562,18 +563,11 @@ void QApplicationConfig::sendConfigMessage(const QByteArray &data)
     }
 }
 
-QString QApplicationConfig::applicationFilePath(const QString &name)
-{
-    return QString("%1/machinekit-%2/%3/").arg(QDir::tempPath())
-            .arg(QCoreApplication::applicationPid())
-            .arg(name);
-}
-
 void QApplicationConfig::cleanupFiles()
 {
     if (!m_selectedConfig->name().isEmpty())
     {
-        QString path = applicationFilePath(m_selectedConfig->name());
+        QString path = Service::applicationTempPath(m_selectedConfig->name());
         QDir dir(path);
         dir.removeRecursively();
     }
