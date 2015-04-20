@@ -44,7 +44,8 @@ public:
         BindError = 1,
         PinChangeError = 2,
         CommandError = 3,
-        SocketError = 4
+        SocketError = 4,
+        ServiceError = 5
     };
 
 
