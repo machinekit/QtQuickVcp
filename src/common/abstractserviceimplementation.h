@@ -84,6 +84,7 @@ public slots:
     }
 
     void setReady(bool arg);
+    void reset();
 
 private:
     bool m_componentCompleted;

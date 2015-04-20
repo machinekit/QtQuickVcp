@@ -71,3 +71,16 @@ void AbstractServiceImplementation::setReady(bool arg)
         }
     }
 }
+
+/** Resets the connection state of a component.
+ *  If an error was active it is cleared. If the
+ *  component was connected a reconnect is issued.
+ **/
+void AbstractServiceImplementation::reset()
+{
+    if (m_ready)
+    {
+        stop();
+        start();
+    }
+}
