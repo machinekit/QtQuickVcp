@@ -1,8 +1,22 @@
 #include "service.h"
+#include <QDebug>
 
 Service::Service(QObject *parent) : QObject(parent)
 {
 
+}
+
+QString Service::applicationTempPath(const QString &name)
+{
+    return QString("%1/machinekit-%2/%3/").arg(QDir::tempPath())
+            .arg(QCoreApplication::applicationPid())
+            .arg(name);
+}
+
+bool Service::removeTempPath(const QString &name)
+{
+    QDir dir(applicationTempPath(name));
+    return dir.removeRecursively();
 }
 
 QString Service::enumNameToCamelCase(const QString &name)
@@ -83,13 +97,20 @@ void Service::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *
     }
 }
 
-
-void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter)
+void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter, const QString &tempDir)
 {
     bool filterEnabled = !fieldFilter.isEmpty();
     const gpb::Reflection *reflection = message.GetReflection();
     gpb::vector< const gpb::FieldDescriptor * > output;
     reflection->ListFields(message, &output);
+
+    QString typeName = QString::fromStdString(message.GetTypeName());
+    if (typeName == "pb.File") { // handle files with binary data
+        pb::File file;
+        file.MergeFrom(message);
+        fileToJson(file, object, tempDir);
+        return;
+    }
 
     for (int i = 0; i < (int)output.size(); ++i)
     {
@@ -138,7 +159,7 @@ void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, c
                 break;
             case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
                 QJsonObject jsonObject = object->value(name).toObject();
-                recurseMessage(reflection->GetMessage(message, field), &jsonObject);
+                recurseMessage(reflection->GetMessage(message, field), &jsonObject, QString(), tempDir);
                 jsonValue = jsonObject;
                 break;
             }
@@ -166,14 +187,14 @@ void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, c
 
                     if (subDescriptor->field_count() == 2)  // index and value field
                     {
-                        recurseMessage(subMessage, &jsonObject);
+                        recurseMessage(subMessage, &jsonObject, QString(), tempDir);
                         jsonObject.remove("index");
                         jsonValue = jsonObject.value(jsonObject.keys().at(0));
                     }
                     else
                     {
                         jsonObject = jsonArray.at(index).toObject(QJsonObject());
-                        recurseMessage(subMessage, &jsonObject);
+                        recurseMessage(subMessage, &jsonObject, QString(), tempDir);
                         jsonObject.remove("index");
                         jsonValue = jsonObject;
                     }
@@ -186,11 +207,66 @@ void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, c
     }
 }
 
-void Service::updateValue(const google::protobuf::Message &message, QJsonValue *value, const QString &field)
+void Service::updateValue(const google::protobuf::Message &message, QJsonValue *value, const QString &field, const QString &tempDir)
 {
     QJsonObject object;
     object.insert(field, *value);
-    recurseMessage(message, &object, field);
+    recurseMessage(message, &object, field, tempDir);
     *value = object.value(field);
 }
 
+/** Converts a protobuf File object to a json file descriptor
+ *  stores the data to a temporary directory
+ **/
+void Service::fileToJson(const pb::File &file, QJsonObject *object, const QString tempDir)
+{
+    QDir dir;
+    QString fileName;
+    QString tmpPath;
+    QString filePath;
+    QString uuid;
+    QByteArray data;
+
+    if (!(file.has_name() && file.has_blob() && file.has_encoding())) {
+        return;
+    }
+
+    fileName = QString::fromStdString(file.name());
+    tmpPath = applicationTempPath(tempDir);
+    uuid = QUuid::createUuid().toString();
+    uuid = uuid.replace('{', '_').replace('}', '_');
+    filePath = tmpPath + uuid + fileName;
+    QFile localFile(filePath);
+
+    if (!dir.mkpath(tmpPath))
+    {
+        qWarning() << "not able to create directory";
+        return;
+    }
+
+    if (!localFile.open(QIODevice::WriteOnly))
+    {
+        qWarning() << "not able to create file" << filePath;
+        return;
+    }
+
+    data = QByteArray(file.blob().data(), file.blob().size());
+
+    if (file.encoding() == pb::ZLIB)
+    {
+        quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
+        qWarning() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
+        data = qUncompress(data);
+    }
+    else if (file.encoding() != pb::CLEARTEXT)
+    {
+        qWarning() << "unknown encoding";
+        localFile.close();
+        return;
+    }
+
+    localFile.write(data);
+    localFile.close();
+
+    object->insert("url", "file://" + filePath);
+}

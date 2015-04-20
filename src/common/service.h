@@ -5,9 +5,13 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QStringList>
+#include <QDir>
+#include <QCoreApplication>
+#include <QUuid>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
+#include "config.pb.h"
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;
@@ -48,11 +52,22 @@ public:
         ServiceError = 5
     };
 
-
+    static QString applicationTempPath(const QString &name);
+    static bool removeTempPath(const QString &name);
     static QString enumNameToCamelCase(const QString &name);
-    static void recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *object);
-    static void recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter = QString());
-    static void updateValue(const gpb::Message &message, QJsonValue *value, const QString &field);
+    static void recurseDescriptor(const gpb::Descriptor *descriptor,
+                                  QJsonObject *object);
+    static void recurseMessage(const gpb::Message &message,
+                               QJsonObject *object,
+                               const QString &fieldFilter = QString(),
+                               const QString &tempDir = QString("json"));
+    static void updateValue(const gpb::Message &message,
+                            QJsonValue *value,
+                            const QString &field,
+                            const QString &tempDir = QString("json"));
+    static void fileToJson(const pb::File &file,
+                           QJsonObject *object,
+                           const QString tempDir);
 };
 
 #endif // SERVICE_H
