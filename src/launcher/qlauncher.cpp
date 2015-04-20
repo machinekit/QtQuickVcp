@@ -247,8 +247,6 @@ void QLauncher::updateState(Service::State state)
 
 void QLauncher::updateState(Service::State state, Service::ConnectionError error, QString errorString)
 {
-    updateError(error, errorString);
-
     if (state != m_connectionState)
     {
         if (m_connected) // we are not connected anymore
@@ -270,6 +268,8 @@ void QLauncher::updateState(Service::State state, Service::ConnectionError error
             initializeObject();
         }
     }
+
+    updateError(error, errorString);
 }
 
 void QLauncher::updateError(Service::ConnectionError error, QString errorString)
@@ -404,6 +404,24 @@ void QLauncher::commandMessageReceived(QList<QByteArray> messageList)
 
 #ifdef QT_DEBUG
         DEBUG_TAG(2, m_commandIdentity, "ping ack")
+#endif
+
+        return;
+    }
+    else if (m_rx.type() == pb::MT_ERROR)
+    {
+        QString errorString;
+
+        for (int i = 0; i < m_rx.note_size(); ++i)
+        {
+            errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
+        }
+
+        m_commandSocketState = Service::Down;
+        updateState(Service::Error, Service::ServiceError, errorString);
+
+#ifdef QT_DEBUG
+        DEBUG_TAG(1, "command", "error" << errorString)
 #endif
 
         return;
