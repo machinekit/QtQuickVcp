@@ -105,8 +105,6 @@ void QApplicationError::updateState(QApplicationError::State state)
 
 void QApplicationError::updateState(QApplicationError::State state, QApplicationError::ConnectionError error, const QString &errorString)
 {
-    updateError(error, errorString);
-
     if (state != m_connectionState)
     {
         if (m_connectionState == Connected) // we are not connected anymore
@@ -125,6 +123,8 @@ void QApplicationError::updateState(QApplicationError::State state, QApplication
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
     }
+
+    updateError(error, errorString);
 }
 
 void QApplicationError::updateError(QApplicationError::ConnectionError error, const QString &errorString)

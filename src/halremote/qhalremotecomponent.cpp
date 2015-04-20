@@ -527,8 +527,6 @@ void QHalRemoteComponent::updateState(QHalRemoteComponent::State state)
 
 void QHalRemoteComponent::updateState(State state, QHalRemoteComponent::ConnectionError error, QString errorString)
 {
-    updateError(error, errorString);
-
     if (state != m_connectionState)
     {
         if (m_connectionState == Connected) // we are not connected anymore
@@ -555,6 +553,8 @@ void QHalRemoteComponent::updateState(State state, QHalRemoteComponent::Connecti
             }
         }
     }
+
+    updateError(error, errorString);
 }
 
 void QHalRemoteComponent::updateError(QHalRemoteComponent::ConnectionError error, QString errorString)

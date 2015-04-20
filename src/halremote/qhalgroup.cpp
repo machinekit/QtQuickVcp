@@ -138,8 +138,6 @@ void QHalGroup::updateState(QHalGroup::State state)
 
 void QHalGroup::updateState(QHalGroup::State state, ConnectionError error, const QString &errorString)
 {
-    updateError(error, errorString);
-
     if (state != m_connectionState)
     {
         if (m_connectionState == Connected) // we are not connected anymore
@@ -162,6 +160,8 @@ void QHalGroup::updateState(QHalGroup::State state, ConnectionError error, const
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
     }
+
+    updateError(error, errorString);
 }
 
 void QHalGroup::updateError(QHalGroup::ConnectionError error, const QString &errorString)

@@ -105,8 +105,6 @@ void QPreviewClient::updateState(QPreviewClient::State state)
 
 void QPreviewClient::updateState(QPreviewClient::State state, QPreviewClient::ConnectionError error, QString errorString)
 {
-    updateError(error, errorString);
-
     if (state != m_connectionState)
     {
         if (m_connected != (state == Connected)) {
@@ -117,6 +115,8 @@ void QPreviewClient::updateState(QPreviewClient::State state, QPreviewClient::Co
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
     }
+
+    updateError(error, errorString);
 }
 
 void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString errorString)

@@ -627,8 +627,6 @@ void QApplicationCommand::updateState(QApplicationCommand::State state)
 
 void QApplicationCommand::updateState(QApplicationCommand::State state, QApplicationCommand::ConnectionError error, const QString &errorString)
 {
-    updateError(error, errorString);
-
     if (state != m_connectionState)
     {
         m_connectionState = state;
@@ -649,6 +647,8 @@ void QApplicationCommand::updateState(QApplicationCommand::State state, QApplica
             }
         }
     }
+
+    updateError(error, errorString);
 }
 
 void QApplicationCommand::updateError(QApplicationCommand::ConnectionError error, const QString &errorString)

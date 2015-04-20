@@ -119,8 +119,6 @@ void QApplicationStatus::updateState(QApplicationStatus::State state)
 
 void QApplicationStatus::updateState(QApplicationStatus::State state, QApplicationStatus::ConnectionError error, const QString &errorString)
 {
-    updateError(error, errorString);
-
     if (state != m_connectionState)
     {
         if (m_connected) // we are not connected anymore
@@ -146,6 +144,8 @@ void QApplicationStatus::updateState(QApplicationStatus::State state, QApplicati
             initializeObject(InterpChannel);
         }
     }
+
+    updateError(error, errorString);
 }
 
 void QApplicationStatus::updateError(QApplicationStatus::ConnectionError error, const QString &errorString)
