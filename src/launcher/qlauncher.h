@@ -59,6 +59,7 @@ class QLauncher : public AbstractServiceImplementation
 
 public:
     explicit QLauncher(QObject *parent = 0);
+    ~QLauncher();
 
     QString commandUri() const
     {

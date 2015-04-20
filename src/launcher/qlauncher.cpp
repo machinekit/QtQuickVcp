@@ -30,6 +30,11 @@ QLauncher::QLauncher(QObject *parent) :
     initializeObject();
 }
 
+QLauncher::~QLauncher()
+{
+    Service::removeTempPath("launcher"); // clean up dir created by json
+}
+
 void QLauncher::start(int index)
 {
     if (!m_connected) {
@@ -315,7 +320,7 @@ void QLauncher::subscribeMessageReceived(QList<QByteArray> messageList)
     if (m_rx.type() == pb::MT_LAUNCHER_INCREMENTAL_UPDATE
         || m_rx.type() == pb::MT_LAUNCHER_FULL_UPDATE) //value update
     {
-        Service::updateValue(m_rx, &m_launchers, "launcher");
+        Service::updateValue(m_rx, &m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
         emit launchersChanged(m_launchers);
 
         if (m_rx.type() == pb::MT_LAUNCHER_FULL_UPDATE)
