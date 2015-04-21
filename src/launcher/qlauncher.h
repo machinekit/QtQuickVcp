@@ -47,8 +47,8 @@ class QLauncher : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(QString commandUri READ commandUri WRITE setCommandUri NOTIFY commandUriChanged)
-    Q_PROPERTY(QString subscribeUri READ subscribeUri WRITE setSubscribeUri NOTIFY subscribeUriChanged)
+    Q_PROPERTY(QString launchercmdUri READ launchercmdUri WRITE setLaunchercmdUri NOTIFY launchercmdUriChanged)
+    Q_PROPERTY(QString launcherUri READ launcherUri WRITE setLauncherUri NOTIFY launcherUriChanged)
     Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(Service::State connectionState READ connectionState NOTIFY connectionStateChanged)
@@ -61,12 +61,12 @@ public:
     explicit QLauncher(QObject *parent = 0);
     ~QLauncher();
 
-    QString commandUri() const
+    QString launchercmdUri() const
     {
         return m_commandUri;
     }
 
-    QString subscribeUri() const
+    QString launcherUri() const
     {
         return m_subscribeUri;
     }
@@ -107,22 +107,22 @@ public:
     }
 
 public slots:
-    void setCommandUri(QString arg)
+    void setLaunchercmdUri(QString arg)
     {
         if (m_commandUri == arg)
             return;
 
         m_commandUri = arg;
-        emit commandUriChanged(arg);
+        emit launchercmdUriChanged(arg);
     }
 
-    void setSubscribeUri(QString arg)
+    void setLauncherUri(QString arg)
     {
         if (m_subscribeUri == arg)
             return;
 
         m_subscribeUri = arg;
-        emit subscribeUriChanged(arg);
+        emit launcherUriChanged(arg);
     }
 
     void heartbeatPeriod(int arg)
@@ -194,8 +194,8 @@ private slots:
     void unsubscribe(const QString &topic);
 
 signals:
-    void commandUriChanged(QString arg);
-    void subscribeUriChanged(QString arg);
+    void launchercmdUriChanged(QString arg);
+    void launcherUriChanged(QString arg);
     void heartbeatPeriodChanged(int arg);
     void connectedChanged(bool arg);
     void connectionStateChanged(Service::State arg);
