@@ -135,7 +135,8 @@ public slots:
     }
 
     void start(int index);
-    void stop(int index);
+    void terminate(int index);
+    void kill(int index);
     void writeToStdin(int index, const QString &data);
     void call(const QString &command);
     void shutdown();

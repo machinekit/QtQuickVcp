@@ -49,14 +49,24 @@ void QLauncher::start(int index)
     sendCommandMessage(pb::MT_LAUNCHER_START);
 }
 
-void QLauncher::stop(int index)
+void QLauncher::kill(int index)
 {
     if (!m_connected) {
         return;
     }
 
     m_tx.set_index(index);
-    sendCommandMessage(pb::MT_LAUNCHER_STOP);
+    sendCommandMessage(pb::MT_LAUNCHER_KILL);
+}
+
+void QLauncher::terminate(int index)
+{
+    if (!m_connected) {
+        return;
+    }
+
+    m_tx.set_index(index);
+    sendCommandMessage(pb::MT_LAUNCHER_TERMINATE);
 }
 
 void QLauncher::writeToStdin(int index, const QString &data)
