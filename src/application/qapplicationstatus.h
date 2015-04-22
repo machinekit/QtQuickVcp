@@ -61,7 +61,7 @@ class QApplicationStatus : public AbstractServiceImplementation
     Q_ENUMS(State ConnectionError OriginIndex TrajectoryMode MotionStatus
             AxisType KinematicsType CanonUnits TaskExecState TaskState
             TaskMode InterpreterState InterpreterExitCode PositionOffset
-            PositionFeedback TimeUnits)
+            PositionFeedback TimeUnits MotionType)
     Q_FLAGS(StatusChannels)
 
 public:
@@ -111,6 +111,16 @@ public:
         MotionExec = pb::RCS_EXEC,
         MotionError = pb::RCS_ERROR,
         MotionReceived = pb::RCS_RECEIVED
+    };
+
+    enum MotionType {
+        NoneType = pb::_EMC_MOTION_TYPE_NONE,
+        TraverseType = pb::_EMC_MOTION_TYPE_TRAVERSE,
+        FeedType = pb::_EMC_MOTION_TYPE_FEED,
+        ArcType = pb::_EMC_MOTION_TYPE_ARC,
+        ToolchangeType = pb::_EMC_MOTION_TYPE_TOOLCHANGE,
+        ProbingType = pb::_EMC_MOTION_TYPE_PROBING,
+        IndexRotaryType = pb::_EMC_MOTION_TYPE_INDEXROTARY
     };
 
     enum AxisType {
