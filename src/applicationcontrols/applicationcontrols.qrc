@@ -58,5 +58,6 @@
         <file alias="go-pause">icons/go-pause.png</file>
         <file alias="go-stop">icons/go-stop.png</file>
         <file alias="view-refresh">icons/view-refresh.png</file>
+        <file alias="machinekit">icons/machinekit.png</file>
     </qresource>
 </RCC>
