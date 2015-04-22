@@ -20,6 +20,7 @@ SOURCES += \
     qapplicationerror.cpp \
     qapplicationstatus.cpp \
     qapplicationfile.cpp \
+    qapplicationlauncher.cpp \
     qlocalsettings.cpp
 
 HEADERS += \
@@ -33,6 +34,7 @@ HEADERS += \
     qapplicationerror.h \
     qapplicationstatus.h \
     qapplicationfile.h \
+    qapplicationlauncher.h \
     qlocalsettings.h
 
 RESOURCES += \

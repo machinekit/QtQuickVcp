@@ -1,4 +1,0 @@
-module Machinekit.Launcher
-plugin machinekitlauncherplugin
-classname MachinekitLauncherPlugin
-typeinfo plugins.qmltypes

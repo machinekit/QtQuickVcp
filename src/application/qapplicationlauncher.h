@@ -20,14 +20,12 @@
 **
 ****************************************************************************/
 
-#ifndef QLAUNCHER_H
-#define QLAUNCHER_H
+#ifndef QAPPLICATIONLAUNCHER_H
+#define QAPPLICATIONLAUNCHER_H
 
-#include <QObject>
-#include <QCoreApplication>
-#include <QJsonValue>
 #include <abstractserviceimplementation.h>
 #include <service.h>
+#include <QJsonValue>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/message.h>
@@ -43,10 +41,9 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-class QLauncher : public AbstractServiceImplementation
+class QApplicationLauncher : public AbstractServiceImplementation
 {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString launchercmdUri READ launchercmdUri WRITE setLaunchercmdUri NOTIFY launchercmdUriChanged)
     Q_PROPERTY(QString launcherUri READ launcherUri WRITE setLauncherUri NOTIFY launcherUriChanged)
     Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
@@ -58,8 +55,8 @@ class QLauncher : public AbstractServiceImplementation
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
 
 public:
-    explicit QLauncher(QObject *parent = 0);
-    ~QLauncher();
+    explicit QApplicationLauncher(QObject *parent = 0);
+    ~QApplicationLauncher();
 
     QString launchercmdUri() const
     {
@@ -205,4 +202,4 @@ signals:
     void syncedChanged(bool arg);
 };
 
-#endif // QLAUNCHER_H
+#endif // QAPPLICATIONLAUNCHER_H

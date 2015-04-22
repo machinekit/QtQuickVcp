@@ -7,5 +7,4 @@ SUBDIRS += halremote \
     pathview \
     service \
     application \
-    applicationcontrols \
-    launcher
+    applicationcontrols
