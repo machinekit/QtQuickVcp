@@ -31,8 +31,8 @@ Action {
     id: root
     shortcut: "+"
     enabled: view != null
-    text: qsTr("Zoom In")
-    tooltip: qsTr("Zoom In")
+    text: qsTr("Zoom Out")
+    tooltip: qsTr("Zoom Out")
     iconSource: "qrc:Machinekit/PathView/icons/zoom-out"
 
     onTriggered: {
