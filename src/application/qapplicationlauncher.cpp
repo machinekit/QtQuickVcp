@@ -477,6 +477,7 @@ void QApplicationLauncher::clearSync()
 {
     m_synced = false;
     emit syncedChanged(m_synced);
+    initializeObject();
 }
 
 void QApplicationLauncher::initializeObject()
@@ -493,7 +494,7 @@ void QApplicationLauncher::commandHeartbeatTimerTick()
         updateState(Service::Timeout);
 
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_commandIdentity, "halcmd timeout")
+        DEBUG_TAG(1, m_commandIdentity, "launchercmd timeout")
 #endif
     }
 
@@ -512,6 +513,6 @@ void QApplicationLauncher::subscribeHeartbeatTimerTick()
     updateState(Service::Timeout);
 
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_commandIdentity, "halcmd timeout")
+    DEBUG_TAG(1, m_commandIdentity, "launchercmd timeout")
 #endif
 }
