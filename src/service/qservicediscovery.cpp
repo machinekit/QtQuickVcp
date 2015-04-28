@@ -1215,8 +1215,11 @@ void QServiceDiscovery::openNetworkSession()
 
     // use the default network configuration and make sure that the link is open
     QList<QNetworkConfiguration> availableConfigs;
+    QNetworkConfiguration defaultConfig = m_networkConfigManager->defaultConfiguration();
 
-    availableConfigs.append(m_networkConfigManager->defaultConfiguration());
+    if (defaultConfig.isValid()) {
+        availableConfigs.append(defaultConfig);
+    }
     availableConfigs.append(m_networkConfigManager->allConfigurations(QNetworkConfiguration::Discovered));
 
 #ifdef QT_DEBUG
@@ -1226,10 +1229,9 @@ void QServiceDiscovery::openNetworkSession()
     for (int i = 0; i < availableConfigs.size(); ++i)
     {
         QNetworkConfiguration config = availableConfigs.at(i);
-        if (config.isValid()
-            && ((config.bearerType() == QNetworkConfiguration::BearerEthernet)
+        if ((config.bearerType() == QNetworkConfiguration::BearerEthernet)
             || (config.bearerType() == QNetworkConfiguration::BearerWLAN)
-            || (config.bearerType() == QNetworkConfiguration::BearerUnknown)))  // unknown is usually ethernet or any other local network
+            || (config.bearerType() == QNetworkConfiguration::BearerUnknown))  // unknown is usually ethernet or any other local network
         {
 #ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
