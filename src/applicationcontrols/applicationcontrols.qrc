@@ -44,6 +44,14 @@
         <file>JogButton.qml</file>
         <file>JogDistanceComboBox.qml</file>
         <file>TeleopAction.qml</file>
+        <file>Private/NetworkPage.qml</file>
+        <file>Private/InstancePage.qml</file>
+        <file>Private/LauncherPage.qml</file>
+        <file>Private/SelectedPage.qml</file>
+        <file>Private/ConfigPage.qml</file>
+        <file>Private/AppPage.qml</file>
+        <file>Private/LoadingPage.qml</file>
+        <file>Private/ErrorPage.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/Application/Controls/icons">
         <file alias="process-stop">icons/process-stop.png</file>

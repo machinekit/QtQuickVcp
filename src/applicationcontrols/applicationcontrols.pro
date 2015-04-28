@@ -16,7 +16,7 @@ HEADERS += \
 RESOURCES += \
     applicationcontrols.qrc
 
-QML_FILES = \
+CONTROLS_QML_FILES = \
     EstopAction.qml \
     PowerAction.qml \
     OpenAction.qml \
@@ -62,8 +62,12 @@ QML_FILES = \
     AxisComboBox.qml \
     TeleopAction.qml
 
-QML_INFRA_FILES = \
-    $$QML_FILES \
+QML_FILES += $$CONTROLS_QML_FILES
+
+include(Private/private.pri)
+
+QML_INFRA_FILES += \
+    $$CONTROLS_QML_FILES \
     qmldir
 
 #QML_DESIGNER_FILES = \

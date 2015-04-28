@@ -26,6 +26,7 @@ import QtQuick.Window 2.0
 import Machinekit.Controls 1.0
 import Machinekit.Service 1.0
 import Machinekit.Application 1.0
+import Machinekit.Application.Controls.Private 1.0
 
 /*!
     \qmltype ConnectionWindow
@@ -131,7 +132,7 @@ Rectangle {
 
         This property can be used to filter all available instances for a specific name or TXT record.
     */
-    property alias instanceFilter: configService.filter
+    property alias instanceFilter: launcherService.filter
 
     /*! \qmlproperty ApplicationConfigFilter applicationFilters
 
@@ -171,9 +172,7 @@ Rectangle {
 
     /*! This property holds the title of the window.
     */
-    readonly property string title: (applicationLoader.active && (applicationLoader.item != null))
-                           ? ((applicationLoader.item.title !== undefined) ? applicationLoader.item.title : "")
-                           : defaultTitle
+    readonly property string title: appPage.active ? appPage.title : defaultTitle
 
     /*! This property holds the title of the window displayed if no application is loaded.
     */
@@ -190,7 +189,7 @@ Rectangle {
 
         This property is set by the connection window.
     */
-    property Item toolBar
+    property Item toolBar: appPage.toolBar
 
     /*!
         \qmlproperty Item statusBar
@@ -199,7 +198,7 @@ Rectangle {
 
         This property is set by the connection window.
     */
-    property Item statusBar
+    property Item statusBar: appPage.statusBar
 
     /*!
         \qmlproperty MenuBar menuBar
@@ -208,7 +207,7 @@ Rectangle {
 
         This property is set by the connection window.
     */
-    property MenuBar menuBar
+    property MenuBar menuBar: appPage.menuBar
 
     id: mainWindow
 
@@ -222,24 +221,26 @@ Rectangle {
         if (!(remoteVisible || localVisible))
             return
 
-        if ((configService.items[index].uuid !== "")
-                && (!remoteVisible || configService.items[index].uri !== ""))
+        if ((launcherService.items[index].uuid !== "")
+                /*&& (!remoteVisible || launcherService.items[index].uri !== "")*/)
         {
-            var x = applicationConfig   // for some reason the appConfig variable goes away after settings the filter
-            serviceDiscoveryFilter.txtRecords = ["uuid=" + configService.items[index].uuid]
+            serviceDiscoveryFilter.txtRecords = ["uuid=" + launcherService.items[index].uuid]
             serviceDiscovery.updateFilter()
-            if (remoteVisible)
-                x.ready = true
             d.instanceSelected = true
-
-            if ((mainWindow.mode == "local") && mainWindow.autoSelectApplication)
-                selectApplication(0)
         }
         else
         {
             console.log("selecting instance failed: check uri and uuid")
             setError(qsTr("Instance Error:"), qsTr("Check uri and uuid"))
         }
+    }
+
+    /*! \internal */
+    function selectLauncher(index)
+    {
+        var x = d //goes away
+        x.freshStart = false // not fresh anymore
+        x.holdLauncher = false // we have started a new instance so we don't hold back
     }
 
     /*! \internal */
@@ -254,15 +255,14 @@ Rectangle {
     /*! \internal */
     function goBack()
     {
-        if (mainWindow.state == "discovery")
+        if (mainWindow.state == "instance")
         {
             Qt.quit()
         }
-        else if (mainWindow.state == "config")
+        else if (mainWindow.state == "launcher")
         {
             if (autoSelectInstance == false)
             {
-                applicationConfig.ready = false
                 serviceDiscoveryFilter.txtRecords = []
                 serviceDiscovery.updateFilter()
                 d.instanceSelected = false
@@ -272,7 +272,11 @@ Rectangle {
                 Qt.quit()
             }
         }
-        else if ((mainWindow.state == "loaded") || (mainWindow.state == "loading"))
+        else if ((mainWindow.state == "config") || (mainWindow.state == "launcher-selected"))
+        {
+            d.holdLauncher = true
+        }
+        else if ((mainWindow.state == "app-loaded") || (mainWindow.state == "app-loading"))
         {
             if ((autoSelectApplication) && (autoSelectInstance))
                 Qt.quit()
@@ -432,6 +436,9 @@ Rectangle {
         property string errorType: ""           // a string representing the type of the current error
         property string errorText: ""           // a string representing the text of the current error
         property string applicationSource: ""   // indicates that a local app was selected
+        property bool holdLauncher: false       // when this property is true we do not automatically proceed to the config state
+        property bool freshStart: true          // indicates if this session was freshly started
+        property int selectedLauncher: 0        // index of the selected launcher
     }
 
     SystemPalette {
@@ -439,472 +446,105 @@ Rectangle {
         colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
     }
 
-    Label {
-        id: dummyText
-        visible: false
+    NetworkPage {
+        id: networkPage 
+        anchors.fill: parent
     }
 
-    Button {
-        id: dummyButon
-        visible: false
-    }
-
-    Item {
-        id: networkPage
-
+    InstancePage {
+        id: instancePage
         anchors.fill: parent
 
-        Label {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.margins: Screen.logicalPixelDensity * 2
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-            font.pointSize: dummyText.font.pointSize * 1.1
-            text: qsTr("Warning!<br>No network connection found, service discovery unavailable. Please check your network connection.")
-        }
+        autoSelectInstance: mainWindow.autoSelectInstance
+        launcherService: launcherService
+        serviceDiscovery: serviceDiscovery
+
+        onInstanceSelected: mainWindow.selectInstance(index)
     }
 
-    Item {
-        id: discoveryPage
-
+    LauncherPage {
+        id: launcherPage
         anchors.fill: parent
 
-        Component {
-            id: instanceListView
+        applicationLauncher: applicationLauncher
 
-            ListView {
-                spacing: Screen.logicalPixelDensity*3
-                clip: true
-
-                model: configService.items
-                delegate: Button {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: dummyButon.height * 3
-
-                    Label {
-                        id: titleText2
-
-                        anchors.fill: parent
-                        font.pointSize: dummyText.font.pointSize*1.3
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        text: name
-                        elide: Text.ElideRight
-                    }
-
-                    onClicked: selectInstance(index)
-                }
-
-                onCountChanged: {
-                    if ((mainWindow.state == "discovery") && (autoSelectInstance == true) && (count > 0))
-                    {
-                        selectInstance(0)
-                    }
-                }
-
-                BusyIndicator {
-                    anchors.centerIn: parent
-                    running: true
-                    visible: configService.items.length === 0
-                    height: parent.height * 0.15
-                    width: height
-                }
-            }
-        }
-
-        SlideView {
-            id: discoveryView
-            anchors.fill: parent
-
-            onCurrentIndexChanged: {
-                if (currentIndex == 0)
-                    serviceDiscovery.lookupMode = ServiceDiscovery.MulticastDNS
-                else
-                    serviceDiscovery.lookupMode = ServiceDiscovery.UnicastDNS
-            }
-
-            Binding {
-                target: discoveryView; property: "currentIndex";
-                value: (serviceDiscovery.lookupMode == ServiceDiscovery.MulticastDNS) ? 0 : 1
-            }
-
-            SlidePage {
-                title: qsTr("Multicast")
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: Screen.logicalPixelDensity*3
-                    spacing: Screen.logicalPixelDensity*3
-
-                    Label {
-                        id: pageTitleText2
-
-                        Layout.fillWidth: true
-                        text: qsTr("Available Instances:")
-                        font.pointSize: dummyText.font.pointSize * 1.3
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        wrapMode: Text.WordWrap
-                    }
-
-                    Loader {
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        sourceComponent: instanceListView
-                        active: true
-                    }
-                }
-            }
-
-            SlidePage {
-                id: unicastPage
-                title: qsTr("Unicast")
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: Screen.logicalPixelDensity*3
-                    spacing: Screen.logicalPixelDensity*3
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: qsTr("Available Instances:")
-                        font.pointSize: dummyText.font.pointSize * 1.3
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        wrapMode: Text.WordWrap
-                    }
-
-                    Loader {
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        sourceComponent: instanceListView
-                        active: true
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        text: qsTr("Machinekit Instances:")
-                        font.pointSize: dummyText.font.pointSize * 1.3
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        wrapMode: Text.WordWrap
-                    }
-
-                    ListView {
-                        id: dnsServerView
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: dummyButon.height * 1.5 * model.length + Screen.logicalPixelDensity * 1.5 * Math.max(model.length-1, 0)
-                        spacing: Screen.logicalPixelDensity*1.5
-
-                        model: serviceDiscovery.nameServers
-
-                        delegate: RowLayout {
-                                    id: viewItem
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    height: dummyButon.height * 1.5
-
-                                    Label {
-                                        text: qsTr("Instance ") + (index + 1) + ":"
-                                        font.pointSize: dummyText.font.pointSize * 1.2
-                                    }
-
-                                    TextField {
-                                        id: dnsServerTextField
-                                        Layout.fillWidth: true
-                                        Layout.fillHeight: true
-                                        font.pointSize: dummyText.font.pointSize * 1.2
-                                        placeholderText: qsTr("ip address or hostname")
-                                        onEditingFinished: {
-                                            dnsServerView.model[index].hostName = text
-                                            serviceDiscovery.updateNameServers()
-
-                                            mainWindow.forceActiveFocus()   // remove the focus
-                                        }
-
-                                        Binding {
-                                            target: dnsServerTextField;
-                                            property: "text";
-                                            value: (dnsServerView.model[index] !== null) ? dnsServerView.model[index].hostName : ""
-                                        }
-                                    }
-
-                                    Button {
-                                        Layout.fillHeight: true
-                                        text: (dnsServerTextField.text !== "") ? "+" : "-"
-                                        visible: (index === (dnsServerView.model.length - 1)) && (index < 2)   // last item, limited to 3 items due to bug => TODO
-                                        onClicked: {
-                                            mainWindow.forceActiveFocus()   // accept changes on text edit
-
-                                            if (dnsServerTextField.text && dnsServerView.model[index].hostName)
-                                            {
-                                                var nameServerObject = nameServerComponent.createObject(mainWindow, {})
-                                                serviceDiscovery.addNameServer(nameServerObject)
-                                            }
-                                        }
-
-                                        Label {
-                                            anchors.fill: parent
-                                            font.pointSize: dummyText.font.pointSize*1.2
-                                            font.bold: true
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                            text: "+"
-                                        }
-                                    }
-                                }
-                    }
-
-                    Button {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: dummyButon.height * 1.5
-                        visible: dnsServerView.model.length === 0
-                        onClicked: {
-                            serviceDiscovery.addNameServer(nameServerComponent.createObject(mainWindow, {}))
-                        }
-
-                        Label {
-                            anchors.fill: parent
-                            font.pointSize: dummyText.font.pointSize*1.2
-                            font.bold: true
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            text: "+"
-                        }
-                    }
-                }
-            }
-        }
+        onGoBack: mainWindow.goBack()
+        onLauncherSelected: mainWindow.selectLauncher(index)
     }
 
-    Item {
+    SelectedPage {
+        id: selectedPage
+        anchors.fill: parent
+
+        launcher: (launcherPage.selectedLauncher < applicationLauncher.launchers.length) ?
+                   applicationLauncher.launchers[launcherPage.selectedLauncher] : undefined
+        onGoBack: mainWindow.goBack()
+    }
+
+    ConfigPage {
+        id: configPage
+        anchors.fill: parent
+
+        autoSelectApplication: mainWindow.autoSelectApplication
+        localVisible: mainWindow.localVisible
+        remoteVisible: mainWindow.remoteVisible
+        mode: mainWindow.mode
+        configService: configService
+
+        onApplicationSelected: mainWindow.selectApplication(index)
+        onGoBack: mainWindow.goBack()
+    }
+
+    AppPage {
         id: appPage
-
         anchors.fill: parent
 
-        Component {
-            id: localRemoteContent
+        applicationSource: d.applicationSource
+        applicationConfig: applicationConfig
+        serviceDiscovery: serviceDiscovery
 
-            ColumnLayout {
-                spacing: Screen.logicalPixelDensity*3
-
-                Label {
-                    id: pageTitleText
-
-                    Layout.fillWidth: true
-                    text: configService.name
-                    font.pointSize: dummyText.font.pointSize * 1.3
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.WordWrap
-                }
-
-                ListView {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    spacing: Screen.logicalPixelDensity*3
-                    clip: true
-
-                    model: (mode == "local") ? applications : applicationConfig.configs
-                    delegate: Button {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        height: dummyButon.height * 3
-
-                        ColumnLayout {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Label {
-                                id: titleText
-
-                                Layout.fillWidth: true
-                                font.pointSize: dummyText.font.pointSize*1.3
-                                font.bold: true
-                                text: name
-                                horizontalAlignment: Text.AlignHCenter
-                                elide: Text.ElideRight
-                            }
-                            Label {
-                                id: descriptionText
-
-                                Layout.fillWidth: true
-                                text: description
-                                color: systemPalette.dark
-                                horizontalAlignment: Text.AlignHCenter
-                                wrapMode: Text.WordWrap
-                            }
-                        }
-
-                        onClicked: selectApplication(index)
-                    }
-
-                    onCountChanged: {
-                        if ((mainWindow.state == "config") && (autoSelectApplication == true) && (count > 0))
-                        {
-                            selectApplication(0)
-                        }
-                    }
-                }
-            }
-        }
-
-        SlideView {
-            id: appView
-            anchors.fill: parent
-
-            onCurrentIndexChanged: {
-                if (currentIndex == 0)
-                    mainWindow.mode = "remote"
-                else
-                    mainWindow.mode = "local"
-            }
-
-            Binding {
-                target: appView; property: "currentIndex";
-                value: ((mainWindow.mode == "remote") ? 0 : 1)
-            }
-
-            SlidePage {
-                anchors.fill: parent
-                anchors.margins: Screen.logicalPixelDensity*3
-                title: qsTr("Remote")
-                visible: mainWindow.remoteVisible
-
-                Loader {
-                    anchors.fill: parent
-                    sourceComponent: localRemoteContent
-                    active: true
-                }
-            }
-
-            SlidePage {
-                anchors.fill: parent
-                anchors.margins: Screen.logicalPixelDensity*3
-                title: qsTr("Local")
-                visible: mainWindow.localVisible
-
-                Loader {
-                    anchors.fill: parent
-                    sourceComponent: localRemoteContent
-                    active: true
-                }
-            }
-        }
+        onGoBack: mainWindow.goBack()
     }
 
-    Item {
-        id: viewPage
-
-        anchors.fill: parent
-
-        Loader {
-            id: applicationLoader
-
-            anchors.fill: parent
-            active: (d.applicationSource != "") ? true : applicationConfig.selectedConfig.loaded
-            source: (d.applicationSource != "") ? d.applicationSource : applicationConfig.selectedConfig.mainFile
-
-            onSourceChanged: {
-                console.log("Source changed: " + source + " " + active)
-            }
-
-            onStatusChanged: {
-                if (applicationLoader.status === Loader.Error)
-                {
-                    setError(qsTr("QML Error:"), "Loading QML file failed")
-                }
-            }
-
-            onLoaded: {
-                console.log("Window " + applicationLoader.item.title + " loaded")
-                applicationServiceList.services = Qt.binding(
-                            function()
-                            {
-                                return (((applicationLoader.item != null) && (applicationLoader.item.services !== undefined)) ? applicationLoader.item.services : [])
-                            })
-                mainWindow.toolBar = Qt.binding(
-                            function()
-                            {
-                                return ((applicationLoader.item != null) ? applicationLoader.item.toolBar : null)
-                            })
-                mainWindow.statusBar = Qt.binding(
-                            function()
-                            {
-                                return ((applicationLoader.item != null) ? applicationLoader.item.statusBar : null)
-                            })
-                mainWindow.menuBar = Qt.binding(
-                            function()
-                            {
-                                return ((applicationLoader.item != null) ? applicationLoader.item.menuBar : null)
-                            })
-                serviceDiscovery.updateServices()
-                applicationLoader.item.onServicesChanged.connect(serviceDiscovery.updateServices)
-                if (applicationLoader.item.onDisconnect) {
-                    applicationLoader.item.onDisconnect.connect(mainWindow.goBack)
-                }
-            }
-        }
-    }
-
-    Item {
+    LoadingPage {
         id: loadingPage
-
         anchors.fill: parent
 
-        Label {
-            id: connectingLabel
-
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: connectingIndicator.top
-            anchors.bottomMargin: Screen.logicalPixelDensity
-            font.pointSize: dummyText.font.pointSize * 1.3
-            text: qsTr("Loading ") + applicationConfig.selectedConfig.name + "..."
-        }
-
-        BusyIndicator {
-            id: connectingIndicator
-
-            anchors.centerIn: parent
-            running: true
-            height: (parent.height > parent.width) ? parent.height * 0.10 : parent.width * 0.10
-            width: height
-        }
+        applicationConfig: applicationConfig
     }
 
-    Item {
+    ErrorPage {
         id: errorPage
-
         anchors.fill: parent
 
-        Label {
-            id: errorLabel
-
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.margins: Screen.logicalPixelDensity * 2
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-            font.pointSize: dummyText.font.pointSize * 1.1
-            text: d.errorType + "\n" + d.errorText
-        }
+        errorType: d.errorType
+        errorText: d.errorText
     }
 
     ApplicationConfig {
         id: applicationConfig
 
-        ready: false
+        ready: ((mainWindow.state === "config") || (mainWindow.state === "app-loading"))
+               && remoteVisible && configService.ready
         configUri: configService.uri
         onConnectionStateChanged: {
             if (applicationConfig.connectionState === ApplicationConfig.Error)
             {
                 setError(qsTr("Application Config Error:"), applicationConfig.errorString)
+            }
+        }
+    }
+
+    ApplicationLauncher {
+        id: applicationLauncher
+        ready: (mainWindow.state === "launcher") || (mainWindow.state === "launcher-selected")
+               && launcherService.ready && launchercmdService.ready
+        launcherUri: launcherService.uri
+        launchercmdUri: launchercmdService.uri
+        onConnectionStateChanged: {
+            if (applicationLauncher.connectionState === ApplicationLauncher.Error)
+            {
+                setError(qsTr("Application Launcher Error:"), applicationLauncher.errorString)
             }
         }
     }
@@ -924,12 +564,21 @@ Rectangle {
                     Service {
                         id: configService
                         type: "config"
+                    },
+                    Service {
+                        id: launcherService
+                        type: "launcher"
                         filter: ServiceDiscoveryFilter { name: "" }
+                    },
+                    Service {
+                        id: launchercmdService
+                        type: "launchercmd"
                     }
                 ]
             },
             ServiceList {
                 id: applicationServiceList
+                services: appPage.services
             }
         ]
     }
@@ -949,31 +598,36 @@ Rectangle {
     }
 
     state: {
-        if (serviceDiscovery.networkReady)
-        {
-            if (d.errorActive)
-            {
-                return "error"
-            }
-            else if (applicationLoader.active)
-            {
-                return "loaded"
-            }
-            else if (applicationConfig.selectedConfig.loading)
-            {
-                return "loading"
-            }
-            else if (d.instanceSelected)
-            {
-                return "config"
-            }
-            else {
-                return "discovery"
-            }
-        }
-        else
+        if (!serviceDiscovery.networkReady)
         {
             return "network"
+        }
+        else if (d.errorActive)
+        {
+            return "error"
+        }
+        else if (appPage.active)
+        {
+            return "app-loaded"
+        }
+        else if (applicationConfig.selectedConfig.loading)
+        {
+            return "app-loading"
+        }
+        else if (d.instanceSelected)
+        {
+            if (configService.ready && !d.holdLauncher) {
+                return "config"
+            }
+            else if (d.holdLauncher || d.freshStart) {
+                return "launcher"
+            }
+            else {
+                return "launcher-selected"
+            }
+        }
+        else {
+            return "instance"
         }
     }
 
@@ -981,53 +635,87 @@ Rectangle {
         State {
             name: "network"
             PropertyChanges { target: networkPage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
         },
         State {
-            name: "discovery"
-            PropertyChanges { target: discoveryPage; opacity: 1.0; z: 1; enabled: true }
+            name: "instance"
+            PropertyChanges { target: instancePage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+        },
+        State {
+            name: "launcher"
+            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: launcherPage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+        },
+        State {
+            name: "launcher-selected"
+            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: selectedPage; opacity: 1.0; z: 1; enabled: true }
             PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
         },
         State {
             name: "config"
-            PropertyChanges { target: appPage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: configPage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
         },
         State {
-            name: "loading"
+            name: "app-loading"
+            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: loadingPage; opacity: 1.0; z: 1; enabled: true }
         },
         State {
-            name: "loaded"
-            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: viewPage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            name: "app-loaded"
+            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: appPage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
         },
         State {
             name: "error"
+            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: viewPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: discoveryPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
             PropertyChanges { target: errorPage; opacity: 1.0; z: 1; enabled: true }
             PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }

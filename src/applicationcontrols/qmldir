@@ -2,6 +2,7 @@ module Machinekit.Application.Controls
 plugin machinekitapplicationcontrolsplugin
 classname MachinekitApplicationControlsPlugin
 typeinfo plugins.qmltypes
+designersupported
 
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work
