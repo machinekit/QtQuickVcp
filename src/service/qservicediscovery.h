@@ -36,8 +36,6 @@ class QServiceDiscovery : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(QString serviceType READ serviceType WRITE setServiceType NOTIFY serviceTypeChanged)
-    Q_PROPERTY(QString domain READ domain WRITE setDomain NOTIFY domainChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(bool networkReady READ isNetworkReady NOTIFY networkReadyChanged)
     Q_PROPERTY(bool lookupReady READ isLookupReady NOTIFY lookupReadyChanged)
@@ -60,11 +58,6 @@ public:
     void classBegin() {}
     void componentComplete();
 
-    QString serviceType() const
-    {
-        return m_serviceType;
-    }
-
     bool running() const
     {
         return m_running;
@@ -73,11 +66,6 @@ public:
     bool isNetworkReady() const
     {
         return m_networkReady;
-    }
-
-    QString domain() const
-    {
-        return m_domain;
     }
 
     QServiceDiscoveryFilter *filter() const
@@ -109,8 +97,6 @@ public:
     QNameServer *nameServer(int index) const;
 
 public slots:
-    void setServiceType(QString arg);
-    void setDomain(QString arg);
     void setRunning(bool arg);
     void setFilter(QServiceDiscoveryFilter *arg);
     void setLookupMode(LookupMode arg);
@@ -123,10 +109,8 @@ public slots:
     void clearNameServers();
 
 signals:
-    void serviceTypeChanged(QString arg);
     void runningChanged(bool arg);
     void networkReadyChanged(bool arg);
-    void domainChanged(QString arg);
     void filterChanged(QServiceDiscoveryFilter *arg);
     void lookupReadyChanged(bool arg);
     void lookupModeChanged(LookupMode arg);
@@ -135,8 +119,6 @@ signals:
 
 private:
     bool m_componentCompleted;
-    QString m_serviceType;
-    QString m_domain;
     bool m_running;
     bool m_networkReady;
     bool m_lookupReady;
@@ -151,23 +133,24 @@ private:
     QTimer *m_networkConfigTimer; // Timer for refreshing the network status
 
     QJDns *m_jdns;
-    QMap<int, int> m_queryTypeMap;
-    QMap<int, QServiceDiscoveryItem*> m_queryItemMap;
-    QMap<QString, QList<QServiceDiscoveryItem*> > m_serviceTypeMap;
-    QMap<int, QString> m_queryServiceMap;
+    QMap<int, QJDns::Type> m_queryIdTypeMap; // queryId > type
+    QMap<int, QServiceDiscoveryItem *> m_queryIdItemMap; // queryId > item
+    QMap<int, QString> m_queryIdServiceMap; // queryId > serviceType
+    QMap<QString, QList<QServiceDiscoveryItem*> > m_serviceTypeMap; // serviceType > items
+    QMap<QString, QJDns::Type> m_queryTypeMap; // serviceType > queryType
 
     QTimer *m_unicastLookupTimer;
 
     void initializeNetworkSession();
     void startQueries();
     void stopQueries();
-    void startQuery(QString type);
-    void stopQuery(QString type);
-    void refreshQuery(QString type);
+    void startQuery(QString serviceType);
+    void stopQuery(QString serviceType);
+    void refreshQuery(QString serviceType);
     void stopItemQueries(QServiceDiscoveryItem *item);
-    void addServiceType(QString type);
-    void removeServiceType(QString type);
-    void updateServiceType(QString type);
+    void addServiceType(QString serviceType, QJDns::Type queryType);
+    void removeServiceType(QString serviceType);
+    void updateServiceType(QString serviceType);
     void removeAllServiceTypes();
     void updateAllServiceTypes();
     static bool filterServiceDiscoveryItem(QServiceDiscoveryItem *item, QServiceDiscoveryFilter *serviceDiscoveryFilter);
@@ -177,16 +160,14 @@ private:
     void updateItem(QString name, QString type);
     void removeItem(QString name, QString type);
     void clearItems(QString type);
-    void purgeItems(QString type);
-    static QString composeSdString(QString type, QString domain);
-    static QString composeSdString(QString subType, QString type, QString domain);
+    void purgeItems(QString serviceType);
 
 private slots:
     void resultsReady(int id, const QJDns::Response &results);
     void error(int id, QJDns::Error e);
     void openNetworkSession();
     void updateNetConfig();
-    void initializeMdns();
+    bool initializeMdns();
     void deinitializeMdns();
     void networkSessionOpened();
     void networkSessionClosed();

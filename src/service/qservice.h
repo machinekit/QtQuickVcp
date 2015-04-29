@@ -26,11 +26,15 @@
 #include <QQmlListProperty>
 #include "qservicediscoveryitem.h"
 #include "qservicediscoveryfilter.h"
+#include "qservicediscoveryquery.h"
 
 class QService : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(QString domain READ domain WRITE setDomain NOTIFY domainChanged)
+    Q_PROPERTY(QString baseType READ baseType WRITE setBaseType NOTIFY baseTypeChanged)
+    Q_PROPERTY(QString protocol READ protocol WRITE setProtocol NOTIFY protocolChanged)
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(QString uri READ uri NOTIFY uriChanged)
     Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged)
@@ -39,14 +43,18 @@ class QService : public QObject
     Q_PROPERTY(QServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
     Q_PROPERTY(QQmlListProperty<QServiceDiscoveryItem> items READ items NOTIFY itemsChanged)
     Q_PROPERTY(bool required READ required WRITE setRequired NOTIFY requiredChanged)
+    Q_PROPERTY(QQmlListProperty<QServiceDiscoveryQuery> queries READ queries)
 
 public:
     explicit QService(QObject *parent = 0);
 
     QQmlListProperty<QServiceDiscoveryItem> items();
-    int serviceDiscoveryItemCount() const;
-    QServiceDiscoveryItem *serviceDiscoveryItem(int index) const;
-    void setItems(QList<QServiceDiscoveryItem*> newServiceDiscoveryItems);
+    int itemCount() const;
+    QServiceDiscoveryItem *item(int index) const;
+
+    QQmlListProperty<QServiceDiscoveryQuery> queries();
+    int queriesCount() const;
+    QServiceDiscoveryQuery *query(int index) const;
 
     QString uri() const
     {
@@ -66,6 +74,21 @@ public:
     QString type() const
     {
         return m_type;
+    }
+
+    QString domain() const
+    {
+        return m_domain;
+    }
+
+    QString baseType() const
+    {
+        return m_baseType;
+    }
+
+    QString protocol() const
+    {
+        return m_protocol;
     }
 
     QString name() const
@@ -97,11 +120,40 @@ public slots:
         }
     }
 
+    void setDomain(QString domain)
+    {
+        if (m_domain == domain)
+            return;
+
+        m_domain = domain;
+        emit domainChanged(domain);
+    }
+
+    void setBaseType(QString baseType)
+    {
+        if (m_baseType == baseType)
+            return;
+
+        m_baseType = baseType;
+        emit baseTypeChanged(baseType);
+    }
+
+    void setProtocol(QString protocol)
+    {
+        if (m_protocol == protocol)
+            return;
+
+        m_protocol = protocol;
+        emit protocolChanged(protocol);
+    }
+
     void setFilter(QServiceDiscoveryFilter *arg)
     {
         if (m_filter != arg) {
             m_filter = arg;
             emit filterChanged(arg);
+
+            m_serviceQuery->setFilter(m_filter); // pass the filter to the underlying query
         }
     }
 
@@ -116,6 +168,9 @@ public slots:
 
 private:
     QString m_type;
+    QString m_domain;
+    QString m_baseType;
+    QString m_protocol;
     QString m_name;
     QString m_uri;
     QString m_uuid;
@@ -124,17 +179,39 @@ private:
     QServiceDiscoveryFilter *m_filter;
     QList<QServiceDiscoveryItem *> m_items;
     bool m_required;
+    QServiceDiscoveryQuery *m_serviceQuery;
+    QServiceDiscoveryQuery *m_hostnameQuery;
+    QList<QServiceDiscoveryQuery *> m_queries;
+
+    bool m_itemsReady;        // true when we have items
+    QString m_rawUri;         // the raw uri from the items
+    bool m_hostnameResolved;  // if the hostname was resolved
+    QString m_hostname;       // the hostname that is queried
+    QString m_hostaddress;    // the address that was resolved
+
+    const QString composeSdString(QString type, QString domain, QString protocol);
+    const QString composeSdString(QString subType, QString type, QString domain, QString protocol);
+
+private slots:
+    void updateUri();
+    void updateServiceQuery();
+    void serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> newItems);
+    void hostnameQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> newItems);
 
 signals:
     void uriChanged(QString arg);
     void versionChanged(int arg);
     void readyChanged(bool arg);
     void typeChanged(QString arg);
+    void domainChanged(QString domain);
+    void baseTypeChanged(QString baseType);
+    void protocolChanged(QString protocol);
     void nameChanged(QString arg);
     void itemsChanged(QQmlListProperty<QServiceDiscoveryItem> arg);
     void filterChanged(QServiceDiscoveryFilter *arg);
     void uuidChanged(QString arg);
     void requiredChanged(bool arg);
+    void queriesChanged();
 };
 
 #endif // QSERVICE_H

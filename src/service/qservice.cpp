@@ -57,6 +57,30 @@
     case the type is equivalent to a mDNS service subtype.
 */
 
+/*! \qmlproperty string Service::baseType
+
+    This property holds the DNS SRV service type that the service discovery
+    should browse.
+
+    The default value is \c{"machinekit"}.
+*/
+
+/*! \qmlproperty string Service::domain
+
+    This property holds the domain name that the service discovery should
+    browse for services.
+
+    The default value is \c{"local"}.
+*/
+
+/*! \qmlproperty string Service::protocol
+
+    This property holds the protocol of the service. If no protocol is specified
+    can use the service to discover hostnames. Common protocols are \c{"tcp"} and \c{"udp"}.
+
+    The default value is \c{"tcp"}.
+*/
+
 /*! \qmlproperty string Service::name
 
     This property holds the name of the service.
@@ -112,15 +136,47 @@
 QService::QService(QObject *parent) :
     QObject(parent),
     m_type(""),
+    m_domain("local"),
+    m_baseType("machinekit"),
+    m_protocol("tcp"),
     m_name(""),
     m_uri(""),
     m_uuid(""),
     m_version(0),
     m_ready(false),
     m_filter(new QServiceDiscoveryFilter(this)),
-    m_required(false)
+    m_required(false),
+    m_serviceQuery(new QServiceDiscoveryQuery(this)),
+    m_hostnameQuery(new QServiceDiscoveryQuery(this)),
+    m_hostnameResolved(false),
+    m_hostname(""),
+    m_hostaddress("")
 {
     this->setObjectName("Service");
+
+    m_serviceQuery->setQueryType(QJDns::Ptr);
+    m_hostnameQuery->setQueryType(QJDns::A);
+    m_queries.append(m_serviceQuery);
+    m_queries.append(m_hostnameQuery);
+
+    connect(m_serviceQuery, SIGNAL(serviceTypeChanged(QString)),
+            this, SIGNAL(queriesChanged()));
+    connect(m_hostnameQuery, SIGNAL(serviceTypeChanged(QString)),
+            this, SIGNAL(queriesChanged()));
+
+    connect(m_serviceQuery, SIGNAL(itemsChanged(QQmlListProperty<QServiceDiscoveryItem>)),
+            this, SLOT(serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem>)));
+    connect(m_hostnameQuery, SIGNAL(itemsChanged(QQmlListProperty<QServiceDiscoveryItem>)),
+            this, SLOT(hostnameQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem>)));
+
+    connect(this, SIGNAL(typeChanged(QString)),
+            this, SLOT(updateServiceQuery()));
+    connect(this, SIGNAL(baseTypeChanged(QString)),
+            this, SLOT(updateServiceQuery()));
+    connect(this, SIGNAL(protocolChanged(QString)),
+            this, SLOT(updateServiceQuery()));
+    connect(this, SIGNAL(domainChanged(QString)),
+            this, SLOT(updateServiceQuery()));
 }
 
 QQmlListProperty<QServiceDiscoveryItem> QService::items()
@@ -128,41 +184,153 @@ QQmlListProperty<QServiceDiscoveryItem> QService::items()
     return QQmlListProperty<QServiceDiscoveryItem>(this, m_items);
 }
 
-int QService::serviceDiscoveryItemCount() const
+int QService::itemCount() const
 {
     return m_items.count();
 }
 
-QServiceDiscoveryItem *QService::serviceDiscoveryItem(int index) const
+QServiceDiscoveryItem *QService::item(int index) const
 {
     return m_items.at(index);
 }
 
-void QService::setItems(QList<QServiceDiscoveryItem *> newServiceDiscoveryItems)
+void QService::serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> newItems)
 {
-    m_items = newServiceDiscoveryItems;
+    m_items.clear();
+    for (int i = 0; i < newItems.count(&newItems); ++i)
+    {
+        m_items.append(newItems.at(&newItems, i));
+    }
 
     if (m_items.count() > 0)
     {
-        m_uri = m_items.at(0)->uri();
+        m_rawUri = m_items.at(0)->uri();
         m_uuid = m_items.at(0)->uuid();
         m_name = m_items.at(0)->name();
         m_version = m_items.at(0)->version();
-        m_ready = true;
+
+        m_itemsReady = true;
     }
     else
     {
-        m_uri = "";
+        m_rawUri = "";
         m_uuid = "";
         m_name = "";
         m_version = 0;
-        m_ready = false;
+        m_itemsReady = false;
     }
 
-    emit uriChanged(m_uri);
     emit uuidChanged(m_uuid);
     emit nameChanged(m_name);
     emit versionChanged(m_version);
-    emit readyChanged(m_ready);
     emit itemsChanged(items());
+
+    updateUri();
+}
+
+void QService::hostnameQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> newItems)
+{
+    if (newItems.count(&newItems) > 0)
+    {
+        QServiceDiscoveryItem *item;
+
+        item = newItems.at(&newItems, 0);
+        m_hostaddress = item->hostAddress().toString();
+        m_hostnameResolved = true;
+    }
+    else
+    {
+        m_hostnameResolved = false;
+    }
+
+    updateUri();
+}
+
+QQmlListProperty<QServiceDiscoveryQuery> QService::queries()
+{
+    return QQmlListProperty<QServiceDiscoveryQuery>(this, m_queries);
+}
+
+int QService::queriesCount() const
+{
+    return m_queries.count();
+}
+
+QServiceDiscoveryQuery *QService::query(int index) const
+{
+    return m_queries.at(index);
+}
+
+void QService::updateServiceQuery()
+{
+    m_serviceQuery->setServiceType(
+                composeSdString(m_type,
+                                m_baseType,
+                                m_domain,
+                                m_protocol));
+}
+
+const QString QService::composeSdString(QString type, QString domain, QString protocol)
+{
+    QString sdString;
+
+    sdString = type;
+    if (!protocol.isEmpty()) {
+        sdString.prepend("_");
+        sdString.append("._" + protocol);
+    }
+    sdString.append("." + domain);
+
+    return sdString;
+}
+
+const QString QService::composeSdString(QString subType, QString type, QString domain, QString protocol)
+{
+    if (subType.isEmpty())
+    {
+        return composeSdString(type, domain, protocol);
+    }
+    else
+    {
+        return QString("_%1._sub._%2._%3.%4").arg(subType).arg(type).arg(protocol).arg(domain);
+    }
+}
+
+/** Updates the uri and creates additional requests if necessary */
+void QService::updateUri()
+{
+    if (!m_itemsReady)
+    {
+        m_ready = false;
+        m_uri = "";
+    }
+    else
+    {
+        QUrl url = QUrl(m_rawUri);
+        QString host = url.host();
+
+        if (host.contains(".local")) // discovering the host necessary
+        {
+            if (m_hostnameResolved && (host == m_hostname))
+            {
+                url.setHost(m_hostaddress);
+                m_uri = url.toString();
+                m_ready = true;
+            }
+            else
+            {
+                m_hostname = host;
+                m_hostnameQuery->setServiceType(host);
+                m_uri = "";
+                m_ready = false;
+            }
+        }
+        else {
+            m_uri = m_rawUri;
+            m_ready = true;
+        }
+    }
+
+    emit uriChanged(m_uri);
+    emit readyChanged(m_ready);
 }

@@ -113,7 +113,7 @@ void QServiceDiscoveryItem::setTxtRecords(QStringList arg)
             }
             else if (keyValue.at(0) == "uuid")
             {
-                uuid =keyValue.at(1);
+                uuid = keyValue.at(1);
             }
             else if (keyValue.at(0) == "version")
             {

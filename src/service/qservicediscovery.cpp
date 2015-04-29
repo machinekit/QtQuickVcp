@@ -63,8 +63,6 @@
         ServiceDiscovery {
             id: serviceDiscovery
 
-            serviceType: "machinekit"
-            domain:      "local"
             running:     true
 
             serviceLists: [
@@ -92,8 +90,6 @@
         ServiceDiscovery {
             id: serviceDiscovery
 
-            serviceType: "machinekit"
-            domain:      "local"
             running:     true
             lookupMode:  ServiceDiscovery.UnicastDNS
 
@@ -120,22 +116,6 @@
     \endqml
 
     \sa Service, ServiceList, ServiceDiscoveryFilter, ServiceDiscoveryItem
-*/
-
-/*! \qmlproperty string ServiceDiscovery::serviceType
-
-    This property holds the DNS SRV service type that the service discovery
-    should browse.
-
-    The default value is \c{"machinekit"}.
-*/
-
-/*! \qmlproperty string ServiceDiscovery::domain
-
-    This property holds the domain name that the service discovery should
-    browse for services.
-
-    The default value is \c{"local"}.
 */
 
 /*! \qmlproperty bool ServiceDiscovery::running
@@ -245,8 +225,6 @@ QServiceDiscovery::QServiceDiscovery(QObject *parent) :
     QObject(parent),
     QQmlParserStatus(),
     m_componentCompleted(false),
-    m_serviceType("machinekit"),
-    m_domain("local"),
     m_running(false),
     m_networkReady(false),
     m_lookupReady(false),
@@ -289,13 +267,13 @@ void QServiceDiscovery::initializeNetworkSession()
     m_networkConfigTimer->start(); // update the connections cyclically
 }
 
-void QServiceDiscovery::initializeMdns()
+bool QServiceDiscovery::initializeMdns()
 {
     bool initialized;
 
     if (m_jdns != NULL) // already initialized
     {
-        return;
+        return true;
     }
 
 #ifdef QT_DEBUG
@@ -331,6 +309,7 @@ void QServiceDiscovery::initializeMdns()
 
         m_jdns->deleteLater();
         m_jdns = NULL;
+        return false;
     }
     else
     {
@@ -353,6 +332,8 @@ void QServiceDiscovery::initializeMdns()
 
         emit lookupReadyChanged(m_lookupReady);
     }
+
+    return true;
 }
 
 void QServiceDiscovery::deinitializeMdns()
@@ -374,9 +355,9 @@ void QServiceDiscovery::deinitializeMdns()
         }
 
         removeAllServiceTypes();
-        m_queryItemMap.clear();
-        m_queryServiceMap.clear();
-        m_queryTypeMap.clear();
+        m_queryIdItemMap.clear();
+        m_queryIdServiceMap.clear();
+        m_queryIdTypeMap.clear();
     }
 
     m_jdns->deleteLater();
@@ -396,7 +377,12 @@ void QServiceDiscovery::networkSessionOpened()
     m_networkReady = true;          // the network is ready
     emit networkReadyChanged(m_networkReady);
 
-    initializeMdns();
+    if (!initializeMdns()) {
+        // if the initialization fails we set network ready to
+        // false in order to retrigger the after a certain period
+        m_networkReady = false;
+        emit networkReadyChanged(m_networkReady);
+    }
 }
 
 void QServiceDiscovery::networkSessionClosed()
@@ -418,7 +404,7 @@ void QServiceDiscovery::networkSessionError(QNetworkSession::SessionError error)
 
 void QServiceDiscovery::unicastLookup()
 {
-    QMapIterator<int, QString> i(m_queryServiceMap);
+    QMapIterator<int, QString> i(m_queryIdServiceMap);
     while (i.hasNext()) {
         i.next();
         refreshQuery(i.value());
@@ -473,40 +459,6 @@ void QServiceDiscovery::clearNameServers()
     emit nameServersChanged(nameServers());
 }
 
-void QServiceDiscovery::setServiceType(QString arg)
-{
-    if (m_serviceType != arg) {
-
-        if (m_running && m_networkReady) {
-            stopQueries();
-        }
-
-        m_serviceType = arg;
-        emit serviceTypeChanged(arg);
-
-        if (m_running && m_networkReady) {
-            startQueries();
-        }
-    }
-}
-
-void QServiceDiscovery::setDomain(QString arg)
-{
-    if (m_domain != arg) {
-
-        if (m_running && m_networkReady) {
-            stopQueries();
-        }
-
-        m_domain = arg;
-        emit domainChanged(arg);
-
-        if (m_running && m_networkReady) {
-            startQueries();
-        }
-    }
-}
-
 void QServiceDiscovery::setRunning(bool arg)
 {
     if (m_running != arg) {
@@ -551,11 +503,24 @@ void QServiceDiscovery::updateServices()
             QService *service;
 
             service = serviceList->service(i);
-            addServiceType(service->type());
-            oldServiceTypeMap.remove(service->type());
-            if (m_running && m_networkReady)
+            disconnect(service, SIGNAL(queriesChanged()),
+                       this, SLOT(updateServices()));
+            connect(service, SIGNAL(queriesChanged()),
+                    this, SLOT(updateServices()));
+            for (int j = 0; j < service->queriesCount(); ++j)
             {
-                startQuery(service->type());
+                QServiceDiscoveryQuery *query;
+
+                query = service->query(j);
+                if (!query->serviceType().isEmpty())
+                {
+                    addServiceType(query->serviceType(), query->queryType());
+                    oldServiceTypeMap.remove(query->serviceType());
+                    if (m_running && m_networkReady)
+                    {
+                        startQuery(query->serviceType());
+                    }
+                }
             }
         }
     }
@@ -650,7 +615,11 @@ void QServiceDiscovery::setLookupMode(QServiceDiscovery::LookupMode arg)
 
         if (ready)
         {
-            initializeMdns();
+            if (!initializeMdns()) {
+                // in case init fails we reset the network state to retrigger the initialization
+                m_networkReady = false;
+                emit networkReadyChanged(m_networkReady);
+            }
         }
     }
 }
@@ -683,40 +652,40 @@ void QServiceDiscovery::stopQueries()
     }
 }
 
-void QServiceDiscovery::startQuery(QString type)
+void QServiceDiscovery::startQuery(QString serviceType)
 {
     int queryId;
-    QString queryString;
 
-    QMapIterator<int, QString> i(m_queryServiceMap);
+    QMapIterator<int, QString> i(m_queryIdServiceMap);
     while (i.hasNext()) {
         i.next();
-        if (i.value() == type)  // query with the type already running
+        if (i.value() == serviceType)  // query with the type already running
         {
             return;
         }
     }
 
-    queryString = composeSdString(type, m_serviceType, m_domain);
-    queryId = m_jdns->queryStart(queryString.toLocal8Bit(), QJDns::Ptr);
-    m_queryTypeMap.insert(queryId, QJDns::Ptr);
-    m_queryServiceMap.insert(queryId, type);
+    QJDns::Type queryType = m_queryTypeMap.value(serviceType);
+
+    queryId = m_jdns->queryStart(serviceType.toLocal8Bit(), queryType);
+    m_queryIdTypeMap.insert(queryId, queryType);
+    m_queryIdServiceMap.insert(queryId, serviceType);
 
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, "SD", "Started query" << queryId << queryString);
+    DEBUG_TAG(1, "SD", "Started query" << queryId << serviceType << queryType);
 #endif
 }
 
-void QServiceDiscovery::stopQuery(QString type)
+void QServiceDiscovery::stopQuery(QString serviceType)
 {
     int queryId;
     bool found;
 
     found = false;
-    QMapIterator<int, QString> i(m_queryServiceMap);
+    QMapIterator<int, QString> i(m_queryIdServiceMap);
     while (i.hasNext()) {
         i.next();
-        if (i.value() == type)  // query type matching
+        if (i.value() == serviceType)  // query type matching
         {
             found = true;
             queryId = i.key();
@@ -730,26 +699,25 @@ void QServiceDiscovery::stopQuery(QString type)
     }
 
     m_jdns->queryCancel(queryId);
-    m_queryTypeMap.remove(queryId);
-    m_queryServiceMap.remove(queryId);
-    clearItems(type);
+    m_queryIdTypeMap.remove(queryId);
+    m_queryIdServiceMap.remove(queryId);
+    clearItems(serviceType);
 
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, "SD", "Stopped query" << queryId << type);
+    DEBUG_TAG(1, "SD", "Stopped query" << queryId << serviceType);
 #endif
 }
 
-void QServiceDiscovery::refreshQuery(QString type)
+void QServiceDiscovery::refreshQuery(QString serviceType)
 {
     int queryId;
     bool found;
-    QString queryString;
 
     found = false;
-    QMapIterator<int, QString> i(m_queryServiceMap);
+    QMapIterator<int, QString> i(m_queryIdServiceMap);
     while (i.hasNext()) {
         i.next();
-        if (i.value() == type)  // query type matching
+        if (i.value() == serviceType)  // query type matching
         {
             found = true;
             queryId = i.key();
@@ -762,19 +730,20 @@ void QServiceDiscovery::refreshQuery(QString type)
         return;
     }
 
+    QJDns::Type queryType = m_queryTypeMap.value(serviceType);
+
     m_jdns->queryCancel(queryId);                                       // stop old query
-    m_queryTypeMap.remove(queryId);
-    m_queryServiceMap.remove(queryId);
+    m_queryIdTypeMap.remove(queryId);
+    m_queryIdServiceMap.remove(queryId);
 
-    purgeItems(type);                                                   // purge outdated items
+    purgeItems(serviceType);                                                   // purge outdated items
 
-    queryString = composeSdString(type, m_serviceType, m_domain);       // start a new query
-    queryId = m_jdns->queryStart(queryString.toLocal8Bit(), QJDns::Ptr);
-    m_queryTypeMap.insert(queryId, QJDns::Ptr);
-    m_queryServiceMap.insert(queryId, type);
+    queryId = m_jdns->queryStart(serviceType.toLocal8Bit(), queryType);       // start a new query
+    m_queryIdTypeMap.insert(queryId, queryType);
+    m_queryIdServiceMap.insert(queryId, serviceType);
 
 #ifdef QT_DEBUG
-    DEBUG_TAG(2, "SD", "Refreshed query" << queryId << queryString);
+    DEBUG_TAG(2, "SD", "Refreshed query" << queryId << serviceType);
 #endif
 }
 
@@ -782,7 +751,7 @@ void QServiceDiscovery::stopItemQueries(QServiceDiscoveryItem *item)
 {
     int queryId;
 
-    QMapIterator<int, QServiceDiscoveryItem*> i(m_queryItemMap);
+    QMapIterator<int, QServiceDiscoveryItem*> i(m_queryIdItemMap);
     while (i.hasNext()) {
         i.next();
         if (i.value() == item)  // query item matching
@@ -790,42 +759,44 @@ void QServiceDiscovery::stopItemQueries(QServiceDiscoveryItem *item)
             queryId = i.key();
 
             m_jdns->queryCancel(queryId);
-            m_queryItemMap.remove(queryId);
-            m_queryTypeMap.remove(queryId);
+            m_queryIdItemMap.remove(queryId);
+            m_queryIdTypeMap.remove(queryId);
         }
     }
 }
 
-void QServiceDiscovery::addServiceType(QString type)
+void QServiceDiscovery::addServiceType(QString serviceType, QJDns::Type queryType)
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
 
-    if (m_serviceTypeMap.contains(type))
+    if (m_serviceTypeMap.contains(serviceType))
     {
         return;
     }
 
-    m_serviceTypeMap.insert(type, serviceDiscoveryItems);
+    m_serviceTypeMap.insert(serviceType, serviceDiscoveryItems);
+    m_queryTypeMap.insert(serviceType, queryType);
 }
 
-void QServiceDiscovery::removeServiceType(QString type)
+void QServiceDiscovery::removeServiceType(QString serviceType)
 {
-    if (!m_serviceTypeMap.contains(type))
+    if (!m_serviceTypeMap.contains(serviceType))
     {
         return;
     }
 
-    clearItems(type);
-    m_serviceTypeMap.remove(type);
+    clearItems(serviceType);
+    m_serviceTypeMap.remove(serviceType);
+    m_queryTypeMap.remove(serviceType);
 }
 
-void QServiceDiscovery::updateServiceType(QString type)
+void QServiceDiscovery::updateServiceType(QString serviceType)
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
 
-    if (m_serviceTypeMap.contains(type))
+    if (m_serviceTypeMap.contains(serviceType))
     {
-        serviceDiscoveryItems = m_serviceTypeMap.value(type);
+        serviceDiscoveryItems = m_serviceTypeMap.value(serviceType);
     }
     else
     {
@@ -840,10 +811,22 @@ void QServiceDiscovery::updateServiceType(QString type)
             QService *service;
 
             service = serviceList->service(i);
-
-            if (service->type() == type)
+            for (int j = 0; j < service->queriesCount(); ++j)
             {
-                service->setItems(filterServiceDiscoveryItems(serviceDiscoveryItems, m_filter, service->filter()));
+                QServiceDiscoveryQuery *query;
+
+                query = service->query(j);
+                if (query->serviceType() == serviceType)
+                {
+                    if (query->queryType() == QJDns::A) // do not filter hostname resolve queries
+                    {
+                        query->setItems(serviceDiscoveryItems);
+                    }
+                    else
+                    {
+                        query->setItems(filterServiceDiscoveryItems(serviceDiscoveryItems, m_filter, query->filter()));
+                    }
+                }
             }
         }
     }
@@ -1019,14 +1002,14 @@ void QServiceDiscovery::clearItems(QString type)
 }
 
 /** Removes items that have no been updated and flags other items with not updated **/
-void QServiceDiscovery::purgeItems(QString type)
+void QServiceDiscovery::purgeItems(QString serviceType)
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
     bool modified;
 
-    if (m_serviceTypeMap.contains(type))
+    if (m_serviceTypeMap.contains(serviceType))
     {
-        serviceDiscoveryItems = m_serviceTypeMap.value(type);
+        serviceDiscoveryItems = m_serviceTypeMap.value(serviceType);
     }
     else
     {
@@ -1053,33 +1036,16 @@ void QServiceDiscovery::purgeItems(QString type)
 
     if (modified)
     {
-        m_serviceTypeMap.insert(type, serviceDiscoveryItems);   // insert the modified list
-        updateServiceType(type);
-    }
-}
-
-QString QServiceDiscovery::composeSdString(QString type, QString domain)
-{
-    return QString("_%1._tcp.%2").arg(type).arg(domain);
-}
-
-QString QServiceDiscovery::composeSdString(QString subType, QString type, QString domain)
-{
-    if (subType.isEmpty())
-    {
-        return composeSdString(type, domain);
-    }
-    else
-    {
-        return QString("_%1._sub._%2._tcp.%3").arg(subType).arg(type).arg(domain);
+        m_serviceTypeMap.insert(serviceType, serviceDiscoveryItems);   // insert the modified list
+        updateServiceType(serviceType);
     }
 }
 
 void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 {
-    int type;
+    QJDns::Type type;
 
-    type = m_queryTypeMap.value(id);
+    type = m_queryIdTypeMap.value(id);
 
     foreach(QJDns::Record r, results.answerRecords)
     {
@@ -1090,9 +1056,8 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
         if (type == QJDns::Ptr)
         {
-
-            QString serviceType = m_queryServiceMap.value(id);
-            QString name = r.name.left(r.name.indexOf(composeSdString(m_serviceType, m_domain)) - 1);
+            QString serviceType = m_queryIdServiceMap.value(id);
+            QString name = r.name.left(r.name.indexOf("._"));
 
 #ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "Discovered DNS record:" << r.owner << r.name << serviceType << name << "TTL:" << r.ttl);
@@ -1103,11 +1068,11 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
                 item = addItem(name, serviceType);
                 item->setOutstandingRequests(3);     // We have to do 3 requests before the item is fully resolved
                 newId = m_jdns->queryStart(r.name, QJDns::Txt);
-                m_queryTypeMap.insert(newId, QJDns::Txt);
-                m_queryItemMap.insert(newId, item);
+                m_queryIdTypeMap.insert(newId, QJDns::Txt);
+                m_queryIdItemMap.insert(newId, item);
                 newId = m_jdns->queryStart(r.name, QJDns::Srv);
-                m_queryTypeMap.insert(newId, QJDns::Srv);
-                m_queryItemMap.insert(newId, item);
+                m_queryIdTypeMap.insert(newId, QJDns::Srv);
+                m_queryIdItemMap.insert(newId, item);
             }
             else
             {
@@ -1118,10 +1083,10 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         {
             QStringList txtRecords;
 
-            item = m_queryItemMap.value(id);
+            item = m_queryIdItemMap.value(id);
             m_jdns->queryCancel(id);    // we have our results
-            m_queryTypeMap.remove(id);
-            m_queryItemMap.remove(id);
+            m_queryIdTypeMap.remove(id);
+            m_queryIdItemMap.remove(id);
 
             foreach (QString string, r.texts)
             {
@@ -1136,14 +1101,14 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         }
         else if (type == QJDns::Srv)
         {
-            item = m_queryItemMap.value(id);
+            item = m_queryIdItemMap.value(id);
             m_jdns->queryCancel(id);    // we have our results
-            m_queryTypeMap.remove(id);
-            m_queryItemMap.remove(id);
+            m_queryIdTypeMap.remove(id);
+            m_queryIdItemMap.remove(id);
 
             newId = m_jdns->queryStart(r.name, QJDns::A);
-            m_queryTypeMap.insert(newId, QJDns::A);
-            m_queryItemMap.insert(newId, item);
+            m_queryIdTypeMap.insert(newId, QJDns::A);
+            m_queryIdItemMap.insert(newId, item);
 
             item->setPort(r.port);
 
@@ -1153,15 +1118,33 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         }
         else if (type == QJDns::A)
         {
-            item = m_queryItemMap.value(id);
-            m_jdns->queryCancel(id);    // we have our results
-            m_queryTypeMap.remove(id);
-            m_queryItemMap.remove(id);
+            QString serviceType = m_queryIdServiceMap.value(id, QString());
 
-            item->setHostAddress(r.address);
+            if (serviceType.isEmpty()) // this request was started by another service
+            {
+                item = m_queryIdItemMap.value(id);
+                m_jdns->queryCancel(id);    // we have our results
+                m_queryIdTypeMap.remove(id);
+                m_queryIdItemMap.remove(id);
+            }
+            else
+            {
+                if (r.ttl != 0)
+                {
+                    item = addItem(serviceType, serviceType);
+                    item->setOutstandingRequests(1);     // With this request the item is resolved
+                    item->setHostAddress(r.address);
+                }
+                else
+                {
+                    removeItem(serviceType, serviceType);
+                }
+            }
 
 #ifdef QT_DEBUG
-            DEBUG_TAG(2, "SD", item->type() << item->name() << "Address:" << r.address.toString());
+            if (item) {
+                DEBUG_TAG(2, "SD", item->type() << item->name() << "Address:" << r.address.toString());
+            }
 #endif
         }
 

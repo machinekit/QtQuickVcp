@@ -18,7 +18,8 @@ SOURCES += \
     qservicediscoveryfilter.cpp \
     qservicediscovery.cpp \
     qservicediscoveryitem.cpp \
-    qnameserver.cpp
+    qnameserver.cpp \
+    qservicediscoveryquery.cpp
 
 HEADERS += \
     plugin.h \
@@ -28,7 +29,8 @@ HEADERS += \
     qservicediscovery.h \
     qservicediscoveryitem.h \
     qnameserver.h \
-    debughelper.h
+    debughelper.h \
+    qservicediscoveryquery.h
 
 QML_INFRA_FILES = \
     qmldir

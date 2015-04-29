@@ -43,126 +43,126 @@ public:
     explicit QServiceDiscoveryItem(QObject *parent = 0);
 
 
-QString uri() const
-{
-    return m_uri;
-}
+    QString uri() const
+    {
+        return m_uri;
+    }
 
-int port() const
-{
-    return m_port;
-}
+    int port() const
+    {
+        return m_port;
+    }
 
-QHostAddress hostAddress() const
-{
-    return m_hostAddress;
-}
+    QHostAddress hostAddress() const
+    {
+        return m_hostAddress;
+    }
 
-QString name() const
-{
-    return m_name;
-}
+    QString name() const
+    {
+        return m_name;
+    }
 
-QString type() const
-{
-    return m_type;
-}
+    QString type() const
+    {
+        return m_type;
+    }
 
-QStringList txtRecords() const
-{
-    return m_txtRecords;
-}
+    QStringList txtRecords() const
+    {
+        return m_txtRecords;
+    }
 
-QString uuid() const
-{
-    return m_uuid;
-}
+    QString uuid() const
+    {
+        return m_uuid;
+    }
 
-int outstandingRequests() const
-{
-    return m_outstandingRequests;
-}
+    int outstandingRequests() const
+    {
+        return m_outstandingRequests;
+    }
 
-int version() const
-{
-    return m_version;
-}
+    int version() const
+    {
+        return m_version;
+    }
 
-bool updated() const
-{
-    return m_updated;
-}
+    bool updated() const
+    {
+        return m_updated;
+    }
 
 public slots:
 
-void setUri(QString arg)
-{
-    if (m_uri != arg) {
-        m_uri = arg;
-        emit uriChanged(arg);
+    void setUri(QString arg)
+    {
+        if (m_uri != arg) {
+            m_uri = arg;
+            emit uriChanged(arg);
+        }
     }
-}
-void setPort(int arg)
-{
-    if (m_port != arg) {
-        m_port = arg;
-        emit portChanged(arg);
+    void setPort(int arg)
+    {
+        if (m_port != arg) {
+            m_port = arg;
+            emit portChanged(arg);
+        }
     }
-}
-void setHostAddress(QHostAddress arg)
-{
-    if (m_hostAddress != arg) {
-        m_hostAddress = arg;
-        emit hostAddressChanged(arg);
+    void setHostAddress(QHostAddress arg)
+    {
+        if (m_hostAddress != arg) {
+            m_hostAddress = arg;
+            emit hostAddressChanged(arg);
+        }
     }
-}
 
-void setName(QString arg)
-{
-    if (m_name != arg) {
-        m_name = arg;
-        emit nameChanged(arg);
+    void setName(QString arg)
+    {
+        if (m_name != arg) {
+            m_name = arg;
+            emit nameChanged(arg);
+        }
     }
-}
 
-void setType(QString arg)
-{
-    if (m_type != arg) {
-        m_type = arg;
-        emit typeChanged(arg);
+    void setType(QString arg)
+    {
+        if (m_type != arg) {
+            m_type = arg;
+            emit typeChanged(arg);
+        }
     }
-}
 
-void setTxtRecords(QStringList arg);
+    void setTxtRecords(QStringList arg);
 
-void setUuid(QString arg)
-{
-    if (m_uuid != arg) {
-        m_uuid = arg;
-        emit uuidChanged(arg);
+    void setUuid(QString arg)
+    {
+        if (m_uuid != arg) {
+            m_uuid = arg;
+            emit uuidChanged(arg);
+        }
     }
-}
 
-void setOutstandingRequests(int arg)
-{
-    m_outstandingRequests = arg;
-}
-
-void setVersion(int arg)
-{
-    if (m_version != arg) {
-        m_version = arg;
-        emit versionChanged(arg);
+    void setOutstandingRequests(int arg)
+    {
+        m_outstandingRequests = arg;
     }
-}
 
-void setUpdated(bool arg)
-{
-    if (m_updated != arg) {
-        m_updated = arg;
-        emit updatedChanged(arg);
+    void setVersion(int arg)
+    {
+        if (m_version != arg) {
+            m_version = arg;
+            emit versionChanged(arg);
+        }
     }
-}
+
+    void setUpdated(bool arg)
+    {
+        if (m_updated != arg) {
+            m_updated = arg;
+            emit updatedChanged(arg);
+        }
+    }
 
 private:
     QString m_name;
@@ -177,16 +177,15 @@ private:
     bool m_updated;
 
 signals:
-
-void uriChanged(QString arg);
-void portChanged(int arg);
-void hostAddressChanged(QHostAddress arg);
-void nameChanged(QString arg);
-void typeChanged(QString arg);
-void txtRecordsChanged(QStringList arg);
-void uuidChanged(QString arg);
-void versionChanged(int arg);
-void updatedChanged(bool arg);
+    void uriChanged(QString arg);
+    void portChanged(int arg);
+    void hostAddressChanged(QHostAddress arg);
+    void nameChanged(QString arg);
+    void typeChanged(QString arg);
+    void txtRecordsChanged(QStringList arg);
+    void uuidChanged(QString arg);
+    void versionChanged(int arg);
+    void updatedChanged(bool arg);
 };
 
 #endif // QAPPDISCOVERYITEM_H
