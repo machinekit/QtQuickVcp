@@ -489,11 +489,13 @@ Rectangle {
         autoSelectApplication: mainWindow.autoSelectApplication
         localVisible: mainWindow.localVisible
         remoteVisible: mainWindow.remoteVisible
-        mode: mainWindow.mode
         configService: configService
 
         onApplicationSelected: mainWindow.selectApplication(index)
         onGoBack: mainWindow.goBack()
+
+        Binding { target: configPage; property: "mode"; value: mainWindow.mode }
+        Binding { target: mainWindow; property: "mode"; value: configPage.mode }
     }
 
     AppPage {
@@ -505,6 +507,10 @@ Rectangle {
         serviceDiscovery: serviceDiscovery
 
         onGoBack: mainWindow.goBack()
+        onServicesChanged: {
+            applicationServiceList.services = services
+            serviceDiscovery.updateServices()
+        }
     }
 
     LoadingPage {
@@ -579,7 +585,7 @@ Rectangle {
             },
             ServiceList {
                 id: applicationServiceList
-                services: appPage.services
+                services: []
             }
         ]
     }
