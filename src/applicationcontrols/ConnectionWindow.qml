@@ -460,6 +460,7 @@ Rectangle {
         serviceDiscovery: serviceDiscovery
 
         onInstanceSelected: mainWindow.selectInstance(index)
+        onNameServersChanged: saveSettings()
     }
 
     LauncherPage {

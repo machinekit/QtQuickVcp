@@ -10,6 +10,8 @@ Item {
     property var launcherService: {"items": []}
     property var serviceDiscovery: {"lookupMode": ServiceDiscovery.MulticastDNS}
 
+    signal nameServersChanged()
+
     id: root
     width: 1000
     height: 800
@@ -176,6 +178,7 @@ Item {
                                     onEditingFinished: {
                                         dnsServerView.model[index].hostName = text
                                         serviceDiscovery.updateNameServers()
+                                        root.nameServersChanged()
 
                                         root.forceActiveFocus()   // remove the focus
                                     }
