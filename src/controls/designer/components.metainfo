@@ -95,7 +95,7 @@ MetaInfo {
             version: "1.0"
             requiredImport: "Machinekit.Controls"
 
-            QmlSource { source: "source/valueChart.qml" }
+            QmlSource { source: "./valueChart.qml" }
         }
     }
 
