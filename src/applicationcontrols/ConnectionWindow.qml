@@ -912,8 +912,6 @@ Rectangle {
     ServiceDiscovery {
         id: serviceDiscovery
 
-        serviceType: "machinekit"
-        domain:      "local"
         running:     true
         filter: ServiceDiscoveryFilter {
             id: serviceDiscoveryFilter
