@@ -73,7 +73,7 @@ Section {
 
         Label {
             text: qsTr("Visibility")
-            toolTip: qsTr("Determines whether the values are visible or not.")
+            tooltip: qsTr("Determines whether the values are visible or not.")
         }
 
         SecondColumnLayout {

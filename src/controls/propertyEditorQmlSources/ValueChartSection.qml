@@ -274,7 +274,7 @@ Column {
 
         ColorEditor {
                     caption: qsTr("Background color")
-                    backendendValue: backendValues.backgroundColor
+                    backendValue: backendValues.backgroundColor
                     supportGradient: false
                 }
     }
@@ -286,7 +286,7 @@ Column {
 
         ColorEditor {
                     caption: qsTr("Grid color")
-                    backendendValue: backendValues.gridColor
+                    backendValue: backendValues.gridColor
                     supportGradient: false
                 }
     }
@@ -298,7 +298,7 @@ Column {
 
         ColorEditor {
                     caption: qsTr("Text color")
-                    backendendValue: backendValues.textColor
+                    backendValue: backendValues.textColor
                     supportGradient: false
                 }
     }
@@ -310,7 +310,7 @@ Column {
 
         ColorEditor {
                     caption: qsTr("Signal color")
-                    backendendValue: backendValues.signalColor
+                    backendValue: backendValues.signalColor
                     supportGradient: false
                 }
     }
@@ -322,7 +322,7 @@ Column {
 
         ColorEditor {
                     caption: qsTr("H line color")
-                    backendendValue: backendValues.hLineColor
+                    backendValue: backendValues.hLineColor
                     supportGradient: false
                 }
     }
@@ -334,7 +334,7 @@ Column {
 
             ColorEditor {
                         caption: qsTr("PositiveChange color")
-                        backendendValue: backendValues.positiveChangeColor
+                        backendValue: backendValues.positiveChangeColor
                         supportGradient: false
                     }
     }
@@ -346,7 +346,7 @@ Column {
 
             ColorEditor {
                         caption: qsTr("Negative change color")
-                        backendendValue: backendValues.negativeChangeColor
+                        backendValue: backendValues.negativeChangeColor
                         supportGradient: false
                     }
     }
