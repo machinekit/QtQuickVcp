@@ -536,6 +536,8 @@ void QServiceDiscovery::updateServices()
         }
         removeServiceType(i.key());
     }
+
+    updateAllServiceTypes(); // now we need to refill all queries with fresh data
 }
 
 void QServiceDiscovery::updateFilter()

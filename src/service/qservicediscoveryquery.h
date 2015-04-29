@@ -67,9 +67,6 @@ public slots:
 
         m_queryType = type;
         emit queryTypeChanged(type);
-
-        m_items.clear();
-        emit itemsChanged(items());
     }
 
     void setServiceType(QString serviceType)
@@ -79,9 +76,6 @@ public slots:
 
         m_serviceType = serviceType;
         emit serviceTypeChanged(serviceType);
-
-        m_items.clear();
-        emit itemsChanged(items());
     }
 
     void setFilter(QServiceDiscoveryFilter * filter)
@@ -91,9 +85,6 @@ public slots:
 
         m_filter = filter;
         emit filterChanged(filter);
-
-        m_items.clear();
-        emit itemsChanged(items());
     }
 
 private:

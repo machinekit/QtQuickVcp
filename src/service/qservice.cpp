@@ -161,6 +161,8 @@ QService::QService(QObject *parent) :
 
     connect(m_serviceQuery, SIGNAL(serviceTypeChanged(QString)),
             this, SIGNAL(queriesChanged()));
+    connect(m_serviceQuery, SIGNAL(filterChanged(QServiceDiscoveryFilter*)),
+            this, SIGNAL(queriesChanged()));
     connect(m_hostnameQuery, SIGNAL(serviceTypeChanged(QString)),
             this, SIGNAL(queriesChanged()));
 
@@ -177,6 +179,8 @@ QService::QService(QObject *parent) :
             this, SLOT(updateServiceQuery()));
     connect(this, SIGNAL(domainChanged(QString)),
             this, SLOT(updateServiceQuery()));
+
+    updateServiceQuery();
 }
 
 QQmlListProperty<QServiceDiscoveryItem> QService::items()
@@ -319,15 +323,17 @@ void QService::updateUri()
             }
             else
             {
-                m_hostname = host;
-                m_hostnameQuery->setServiceType(host);
                 m_uri = "";
                 m_ready = false;
+                m_hostname = host;
+                m_hostnameQuery->setServiceType(host);  // may refresh the query
             }
         }
         else {
             m_uri = m_rawUri;
             m_ready = true;
+            m_hostname = host;
+            m_hostnameQuery->setServiceType(""); // may refresh the query
         }
     }
 
