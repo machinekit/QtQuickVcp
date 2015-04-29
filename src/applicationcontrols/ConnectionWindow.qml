@@ -537,7 +537,7 @@ Rectangle {
 
     ApplicationLauncher {
         id: applicationLauncher
-        ready: (mainWindow.state === "launcher") || (mainWindow.state === "launcher-selected")
+        ready: ((mainWindow.state === "launcher") || (mainWindow.state === "launcher-selected"))
                && launcherService.ready && launchercmdService.ready
         launcherUri: launcherService.uri
         launchercmdUri: launchercmdService.uri
