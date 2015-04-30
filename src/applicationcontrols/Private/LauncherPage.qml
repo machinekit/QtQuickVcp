@@ -6,6 +6,7 @@ import QtQuick.Window 2.0
 Item {
     property var applicationLauncher: {"launchers": []}
     property int selectedLauncher: 0
+    property var configService: {"ready": false}
 
     signal launcherSelected(int index)
     signal goBack()
@@ -16,6 +17,11 @@ Item {
 
     Label {
         id: dummyText
+        visible: false
+    }
+
+    Button {
+        id: dummyButton
         visible: false
     }
 
@@ -56,17 +62,10 @@ Item {
             }
         }
 
-        GridView {
-            property string viewMode: "small"
+        Component {
+            id: launcherItem
 
-            id: launcherListView
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            cellWidth: width * (viewMode === "big" ? 0.333 : (viewMode === "small" ? 0.2 : 1.0))
-            cellHeight: viewMode === "list" ? dummyButton.height * 3 : cellWidth
-            clip: true
-            model: applicationLauncher.launchers
-            delegate: Item {
+            Item {
                 property var item: launcherListView.model[index]
 
                 width: launcherListView.cellWidth
@@ -102,22 +101,20 @@ Item {
                                 anchors.right: parent.right
                                 anchors.top: parent.top
                                 text:  item.terminating ? qsTr("Kill") : qsTr("Terminate")
-                                visible: item.running
+                                visible: item.running && (item.local === undefined)
 
                                 onClicked: {
                                     if (item.terminating) {
-                                       applicationLauncher.kill(index)
+                                       applicationLauncher.kill(item.index)
                                     }
                                     else {
-                                       applicationLauncher.terminate(index)
+                                       applicationLauncher.terminate(item.index)
                                     }
                                 }
                             }
                         }
 
                         Label {
-                            id: titleText2
-
                             Layout.fillWidth: true
                             font.pointSize: dummyText.font.pointSize * (launcherListView.viewMode === "small" ? 1.0 : 1.3)
                             font.bold: true
@@ -130,18 +127,60 @@ Item {
 
                     onClicked: {
                         if (!item.running) {
-                            applicationLauncher.start(index)
+                            applicationLauncher.start(item.index)
                         }
-                        selectedLauncher = index
+                        selectedLauncher = item.index
                         launcherSelected(index)
                     }
                 }
             }
+        }
+
+        GridView {
+            property string viewMode: "small"
+            property var launchers: {
+                var items = applicationLauncher.launchers
+                var running = false
+
+                for (var i = 0; i < items.length; ++i) {
+                    items[i].index = i  // store the original index
+                    if (items[i].running) {
+                        running = true
+                        var item = items[i]  // move the running items to the front
+                        items.splice(i, 1)
+                        items.unshift(item)
+                    }
+                }
+
+                // create a new launcher element if a configserver is running
+                // but none of our launchers is running
+                if (configService.ready && !running) {
+                    var launcher = {}
+                    launcher.name = configService.name
+                    launcher.running = true
+                    launcher.terminating = false
+                    launcher.local = true
+                    launcher.index = -1
+
+                    items.unshift(launcher)
+                }
+
+                return items
+            }
+
+            id: launcherListView
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            cellWidth: width * (viewMode === "big" ? 0.333 : (viewMode === "small" ? 0.2 : 1.0))
+            cellHeight: viewMode === "list" ? dummyButton.height * 3 : cellWidth
+            clip: true
+            model: launchers
+            delegate: launcherItem
 
             BusyIndicator {
                 anchors.centerIn: parent
                 running: true
-                visible: applicationLauncher.launchers.length === 0
+                visible: launcherListView.model.length === 0
                 height: parent.height * 0.15
                 width: height
             }

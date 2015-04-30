@@ -468,6 +468,7 @@ Rectangle {
         anchors.fill: parent
 
         applicationLauncher: applicationLauncher
+        configService: configService
 
         onGoBack: mainWindow.goBack()
         onLauncherSelected: mainWindow.selectLauncher(index)
