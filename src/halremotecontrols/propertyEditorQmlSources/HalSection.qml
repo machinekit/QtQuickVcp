@@ -32,7 +32,7 @@ Section {
 
         Label {
             text: qsTr("Name")
-            toolTip: qsTr("Name of the main HAL pin")
+            tooltip: qsTr("Name of the main HAL pin")
         }
 
         SecondColumnLayout {

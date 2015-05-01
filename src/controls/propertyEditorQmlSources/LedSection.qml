@@ -114,7 +114,7 @@ Column {
 
             ColorEditor {
                         caption: qsTr("On color")
-                        backendendValue: backendValues.onColor
+                        backendValue: backendValues.onColor
                         supportGradient: false
                     }
     }
@@ -126,7 +126,7 @@ Column {
 
             ColorEditor {
                         caption: qsTr("Off color")
-                        backendendValue: backendValues.offColor
+                        backendValue: backendValues.offColor
                         supportGradient: false
                     }
     }

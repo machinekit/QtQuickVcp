@@ -54,7 +54,7 @@ MetaInfo {
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
-            QmlSource { source: "source/halComboBox1.qml" }
+            QmlSource { source: "./halComboBox1.qml" }
         }
 
         ItemLibraryEntry {
@@ -64,7 +64,7 @@ MetaInfo {
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
-            QmlSource { source: "source/halComboBox2.qml" }
+            QmlSource { source: "./halComboBox2.qml" }
         }
     }
 

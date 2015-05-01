@@ -32,7 +32,7 @@ Section {
 
         Label {
             text: qsTr("Text")
-            toolTip: qsTr("The text label for the radio button")
+            tooltip: qsTr("The text label for the radio button")
         }
 
         SecondColumnLayout {
@@ -47,7 +47,7 @@ Section {
 
         Label {
             text: qsTr("Checked")
-            toolTip: qsTr("Determines whether the radio button is checked or not.")
+            tooltip: qsTr("Determines whether the radio button is checked or not.")
         }
 
         SecondColumnLayout {
@@ -64,7 +64,7 @@ Section {
         Label {
 
             text: qsTr("Focus on press")
-            toolTip: "Determines whether the radio button gets focus if pressed."
+            tooltip: "Determines whether the radio button gets focus if pressed."
         }
 
         SecondColumnLayout {

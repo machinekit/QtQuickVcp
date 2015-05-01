@@ -36,7 +36,7 @@ Column {
 
             Label {
                 text: qsTr("Tool tip")
-                toolTip: qsTr("The tool tip shown for the combobox.")
+                tooltip: qsTr("The tool tip shown for the combobox.")
             }
 
             SecondColumnLayout {
@@ -51,7 +51,7 @@ Column {
 
             Label {
                 text: qsTr("Focus on press")
-                toolTip: "Determines whether the combobox gets focus if pressed."
+                tooltip: "Determines whether the combobox gets focus if pressed."
             }
 
             SecondColumnLayout {

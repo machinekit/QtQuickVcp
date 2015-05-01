@@ -125,7 +125,7 @@ Column {
             Label {
 
                 text: qsTr("Focus on press")
-                toolTip: "Determines whether the radio button gets focus if pressed."
+                tooltip: "Determines whether the radio button gets focus if pressed."
             }
 
             SecondColumnLayout {

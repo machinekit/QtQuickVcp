@@ -125,7 +125,7 @@ Column {
 
             Label {
                 text: qsTr("Invert")
-                toolTip: qsTr("Determines whether the gauge is inverted or not.")
+                tooltip: qsTr("Determines whether the gauge is inverted or not.")
             }
 
             SecondColumnLayout {
@@ -140,7 +140,7 @@ Column {
 
             Label {
                 text: qsTr("Fancy")
-                toolTip: qsTr("Determines whether the bar should be styled fancy or not.")
+                tooltip: qsTr("Determines whether the bar should be styled fancy or not.")
             }
 
             SecondColumnLayout {
@@ -181,7 +181,7 @@ Column {
 
             ColorEditor {
                         caption: qsTr("Text color")
-                        backendendValue: backendValues.textColor
+                        backendValue: backendValues.textColor
                         supportGradient: false
                     }
     }
@@ -193,7 +193,7 @@ Column {
 
             ColorEditor {
                         caption: qsTr("Background color")
-                        backendendValue: backendValues.backgroundColor
+                        backendValue: backendValues.backgroundColor
                         supportGradient: false
                     }
     }
@@ -205,7 +205,7 @@ Column {
 
             ColorEditor {
                         caption: qsTr("z0 color")
-                        backendendValue: backendValues.z0Color
+                        backendValue: backendValues.z0Color
                         supportGradient: false
                     }
     }
@@ -217,7 +217,7 @@ Column {
 
             ColorEditor {
                         caption: qsTr("z1 color")
-                        backendendValue: backendValues.z1Color
+                        backendValue: backendValues.z1Color
                         supportGradient: false
                     }
     }
@@ -229,7 +229,7 @@ Column {
 
             ColorEditor {
                         caption: qsTr("z2 color")
-                        backendendValue: backendValues.z2Color
+                        backendValue: backendValues.z2Color
                         supportGradient: false
                     }
     }

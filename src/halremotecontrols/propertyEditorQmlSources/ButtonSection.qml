@@ -32,7 +32,7 @@ Section {
 
             Label {
                 text: qsTr("Text")
-                toolTip:  qsTr("The text shown on the button")
+                tooltip:  qsTr("The text shown on the button")
             }
 
             SecondColumnLayout {
@@ -47,7 +47,7 @@ Section {
 
             Label {
                 text: qsTr("Checked")
-                toolTip: qsTr("The state of the button")
+                tooltip: qsTr("The state of the button")
             }
 
             SecondColumnLayout {
@@ -62,7 +62,7 @@ Section {
 
             Label {
                 text: qsTr("Checkable")
-                toolTip: qsTr("Determines whether the button is checkable or not.")
+                tooltip: qsTr("Determines whether the button is checkable or not.")
             }
 
             SecondColumnLayout {
@@ -77,7 +77,7 @@ Section {
 
             Label {
                 text: qsTr("Enabled")
-                toolTip: qsTr("Determines whether the button is enabled or not.")
+                tooltip: qsTr("Determines whether the button is enabled or not.")
             }
 
             SecondColumnLayout {
@@ -93,7 +93,7 @@ Section {
 
             Label {
                 text: qsTr("Default button")
-                toolTip: qsTr("Sets the button as the default button in a dialog.")
+                tooltip: qsTr("Sets the button as the default button in a dialog.")
             }
 
             SecondColumnLayout {
@@ -108,7 +108,7 @@ Section {
 
             Label {
                 text: qsTr("Tool tip")
-                toolTip: qsTr("The tool tip shown for the button.")
+                tooltip: qsTr("The tool tip shown for the button.")
             }
 
             SecondColumnLayout {
@@ -123,7 +123,7 @@ Section {
 
             Label {
                 text: qsTr("Focus on press")
-                toolTip: "Determines whether the button gets focus if pressed."
+                tooltip: "Determines whether the button gets focus if pressed."
             }
 
             SecondColumnLayout {
@@ -139,7 +139,7 @@ Section {
 
             Label {
                 text: qsTr("Icon source")
-                toolTip: qsTr("The URL of an icon resource.")
+                tooltip: qsTr("The URL of an icon resource.")
             }
 
             SecondColumnLayout {
