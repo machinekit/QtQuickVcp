@@ -5,9 +5,9 @@ import QtQuick.Window 2.0
 
 Item {
     property var launcher: {"name": "Test-config",
-                            "stdout": ["First line", "second line", "third line"]}
-    property string stdoutText: (launcher !== undefined) && (launcher.stdout !== undefined) ?
-                                    launcher.stdout.join("") : ""
+                            "output": ["First line", "second line", "third line"]}
+    property string stdoutText: (launcher !== undefined) && (launcher.output !== undefined) ?
+                                    launcher.output.join("") : ""
     property string launcherName: launcher != undefined ? launcher.name : ""
     property string titleText: {
         if (isRunning) {
