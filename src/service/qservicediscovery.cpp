@@ -1149,6 +1149,30 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             }
 #endif
         }
+        else if (type == QJDns::Aaaa)
+        {
+            QString serviceType = m_queryIdServiceMap.value(id, QString());
+
+            if (!serviceType.isEmpty())
+            {
+                if (r.ttl != 0)
+                {
+                    item = addItem(serviceType, serviceType);
+                    item->setOutstandingRequests(1);     // With this request the item is resolved
+                    item->setHostAddress(r.address);
+                }
+                else
+                {
+                    removeItem(serviceType, serviceType);
+                }
+            }
+
+#ifdef QT_DEBUG
+            if (item) {
+                DEBUG_TAG(2, "SD", item->type() << item->name() << "Address:" << r.address.toString());
+            }
+#endif
+        }
 
         if (item != NULL)   // we got a answer to a request
         {
