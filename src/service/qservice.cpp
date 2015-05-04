@@ -307,6 +307,8 @@ void QService::updateUri()
     {
         m_ready = false;
         m_uri = "";
+        m_hostname = "";
+        m_hostnameQuery->setServiceType(""); // disables the hostname query
     }
     else
     {
