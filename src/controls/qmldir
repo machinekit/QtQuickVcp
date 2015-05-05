@@ -7,6 +7,7 @@ typeinfo plugins.qmltypes
 # typeinfo plugins.qmltypes does not work
 Dial 1.0 Dial.qml
 Gauge 1.0 Gauge.qml
+Knob 1.0 Knob.qml
 Led 1.0 Led.qml
 ColorPicker 1.0 ColorPicker.qml
 Line 1.0 Line.qml

@@ -1,0 +1,9 @@
+module Machinekit.Application.Controls.Private
+NetworkPage 1.0 NetworkPage.qml
+InstancePage 1.0 InstancePage.qml
+LauncherPage 1.0 LauncherPage.qml
+SelectedPage 1.0 SelectedPage.qml
+ConfigPage 1.0 ConfigPage.qml
+AppPage 1.0 AppPage.qml
+LoadingPage 1.0 LoadingPage.qml
+ErrorPage 1.0 ErrorPage.qml

@@ -34,6 +34,7 @@ static const struct {
     { "Dial", 1, 0 },
     { "Gauge", 1, 0 },
     { "ColorPicker", 1, 0 },
+    { "Knob", 1, 0 },
     { "Led", 1, 0 },
     { "Line", 1, 0 },
     { "LogChart", 1, 0 },

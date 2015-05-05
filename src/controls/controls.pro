@@ -20,6 +20,7 @@ QML_FILES = \
     Dial.qml \
     Gauge.qml \
     ColorPicker.qml \
+    Knob.qml \
     Led.qml \
     Line.qml \
     LogChart.qml \
@@ -31,6 +32,8 @@ QML_FILES = \
     ValueChart.qml \
     ValueModel.qml \
     VirtualJoystick.qml
+
+include(Private/private.pri)
 
 QML_INFRA_FILES = \
     $$QML_FILES \

@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 CONFIG += ordered
-SUBDIRS += machinetalk-protobuf-qt QtKnobs
+SUBDIRS += machinetalk-protobuf-qt

@@ -14,5 +14,8 @@
         <file>RoundGauge.qml</file>
         <file>SlidePage.qml</file>
         <file>SlideView.qml</file>
+        <file>Private/KnobPart.qml</file>
+        <file>Private/KnobPie.qml</file>
+        <file>Knob.qml</file>
     </qresource>
 </RCC>
