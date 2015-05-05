@@ -1,3 +1,0 @@
-module QtKnobs
-plugin qtknobsplugin
-classname QtKnobsPlugin
