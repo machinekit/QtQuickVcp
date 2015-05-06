@@ -136,8 +136,8 @@ private:
     QMap<int, QJDns::Type> m_queryIdTypeMap; // queryId > type
     QMap<int, QServiceDiscoveryItem *> m_queryIdItemMap; // queryId > item
     QMap<int, QString> m_queryIdServiceMap; // queryId > serviceType
-    QMap<QString, QList<QServiceDiscoveryItem*> > m_serviceTypeMap; // serviceType > items
-    QMap<QString, QJDns::Type> m_queryTypeMap; // serviceType > queryType
+    QMap<QString, QList<QServiceDiscoveryItem*> > m_serviceItemsMap; // serviceType > items
+    QMap<QString, QJDns::Type> m_serviceTypeMap; // serviceType > queryType
 
     QTimer *m_unicastLookupTimer;
 

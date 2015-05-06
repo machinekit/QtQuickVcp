@@ -404,10 +404,10 @@ void QServiceDiscovery::networkSessionError(QNetworkSession::SessionError error)
 
 void QServiceDiscovery::unicastLookup()
 {
-    QMapIterator<int, QString> i(m_queryIdServiceMap);
+    QMapIterator<QString, QList<QServiceDiscoveryItem*> > i(m_serviceItemsMap);
     while (i.hasNext()) {
         i.next();
-        refreshQuery(i.value());
+        refreshQuery(i.key());
     }
 }
 
@@ -493,7 +493,7 @@ void QServiceDiscovery::updateServices()
 {
     QMap<QString, QList<QServiceDiscoveryItem*> > oldServiceTypeMap;
 
-    oldServiceTypeMap = m_serviceTypeMap;
+    oldServiceTypeMap = m_serviceItemsMap;
 
     // Iterate through all services and update all service types
     foreach (QServiceList *serviceList, m_serviceLists)
@@ -638,7 +638,7 @@ void QServiceDiscovery::setFilter(QServiceDiscoveryFilter *arg)
 
 void QServiceDiscovery::startQueries()
 {
-    QMapIterator<QString, QList<QServiceDiscoveryItem*> > i(m_serviceTypeMap);
+    QMapIterator<QString, QList<QServiceDiscoveryItem*> > i(m_serviceItemsMap);
     while (i.hasNext()) {
         i.next();
         startQuery(i.key());
@@ -647,7 +647,7 @@ void QServiceDiscovery::startQueries()
 
 void QServiceDiscovery::stopQueries()
 {
-    QMapIterator<QString, QList<QServiceDiscoveryItem*> > i(m_serviceTypeMap);
+    QMapIterator<QString, QList<QServiceDiscoveryItem*> > i(m_serviceItemsMap);
     while (i.hasNext()) {
         i.next();
         stopQuery(i.key());
@@ -667,7 +667,7 @@ void QServiceDiscovery::startQuery(QString serviceType)
         }
     }
 
-    QJDns::Type queryType = m_queryTypeMap.value(serviceType);
+    QJDns::Type queryType = m_serviceTypeMap.value(serviceType);
 
     queryId = m_jdns->queryStart(serviceType.toLocal8Bit(), queryType);
     m_queryIdTypeMap.insert(queryId, queryType);
@@ -732,7 +732,7 @@ void QServiceDiscovery::refreshQuery(QString serviceType)
         return;
     }
 
-    QJDns::Type queryType = m_queryTypeMap.value(serviceType);
+    QJDns::Type queryType = m_serviceTypeMap.value(serviceType);
 
     m_jdns->queryCancel(queryId);                                       // stop old query
     m_queryIdTypeMap.remove(queryId);
@@ -771,34 +771,34 @@ void QServiceDiscovery::addServiceType(QString serviceType, QJDns::Type queryTyp
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
 
-    if (m_serviceTypeMap.contains(serviceType))
+    if (m_serviceItemsMap.contains(serviceType))
     {
         return;
     }
 
-    m_serviceTypeMap.insert(serviceType, serviceDiscoveryItems);
-    m_queryTypeMap.insert(serviceType, queryType);
+    m_serviceItemsMap.insert(serviceType, serviceDiscoveryItems);
+    m_serviceTypeMap.insert(serviceType, queryType);
 }
 
 void QServiceDiscovery::removeServiceType(QString serviceType)
 {
-    if (!m_serviceTypeMap.contains(serviceType))
+    if (!m_serviceItemsMap.contains(serviceType))
     {
         return;
     }
 
     clearItems(serviceType);
+    m_serviceItemsMap.remove(serviceType);
     m_serviceTypeMap.remove(serviceType);
-    m_queryTypeMap.remove(serviceType);
 }
 
 void QServiceDiscovery::updateServiceType(QString serviceType)
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
 
-    if (m_serviceTypeMap.contains(serviceType))
+    if (m_serviceItemsMap.contains(serviceType))
     {
-        serviceDiscoveryItems = m_serviceTypeMap.value(serviceType);
+        serviceDiscoveryItems = m_serviceItemsMap.value(serviceType);
     }
     else
     {
@@ -836,7 +836,7 @@ void QServiceDiscovery::updateServiceType(QString serviceType)
 
 void QServiceDiscovery::removeAllServiceTypes()
 {
-    QMap<QString, QList<QServiceDiscoveryItem*> > serviceTypeMap = m_serviceTypeMap;
+    QMap<QString, QList<QServiceDiscoveryItem*> > serviceTypeMap = m_serviceItemsMap;
     QMapIterator<QString, QList<QServiceDiscoveryItem*> > i(serviceTypeMap);
     while (i.hasNext()) {
         i.next();
@@ -846,7 +846,7 @@ void QServiceDiscovery::removeAllServiceTypes()
 
 void QServiceDiscovery::updateAllServiceTypes()
 {
-    QMapIterator<QString, QList<QServiceDiscoveryItem*> > i(m_serviceTypeMap);
+    QMapIterator<QString, QList<QServiceDiscoveryItem*> > i(m_serviceItemsMap);
     while (i.hasNext()) {
         i.next();
         updateServiceType(i.key());
@@ -896,9 +896,9 @@ QServiceDiscoveryItem *QServiceDiscovery::addItem(QString name, QString type)
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
 
-    if (m_serviceTypeMap.contains(type))
+    if (m_serviceItemsMap.contains(type))
     {
-        serviceDiscoveryItems = m_serviceTypeMap.value(type);
+        serviceDiscoveryItems = m_serviceItemsMap.value(type);
     }
     else
     {
@@ -917,7 +917,7 @@ QServiceDiscoveryItem *QServiceDiscovery::addItem(QString name, QString type)
     item->setName(name);
     item->setType(type);
     serviceDiscoveryItems.append(item);
-    m_serviceTypeMap.insert(type, serviceDiscoveryItems);
+    m_serviceItemsMap.insert(type, serviceDiscoveryItems);
 
     return item;
 }
@@ -926,9 +926,9 @@ QServiceDiscoveryItem *QServiceDiscovery::getItem(QString name, QString type)
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
 
-    if (m_serviceTypeMap.contains(type))
+    if (m_serviceItemsMap.contains(type))
     {
-        serviceDiscoveryItems = m_serviceTypeMap.value(type);
+        serviceDiscoveryItems = m_serviceItemsMap.value(type);
     }
     else
     {
@@ -956,9 +956,9 @@ void QServiceDiscovery::removeItem(QString name, QString type)
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
 
-    if (m_serviceTypeMap.contains(type))
+    if (m_serviceItemsMap.contains(type))
     {
-        serviceDiscoveryItems = m_serviceTypeMap.value(type);
+        serviceDiscoveryItems = m_serviceItemsMap.value(type);
     }
     else
     {
@@ -971,7 +971,7 @@ void QServiceDiscovery::removeItem(QString name, QString type)
         {
             stopItemQueries(serviceDiscoveryItems.at(i));
             serviceDiscoveryItems.takeAt(i)->deleteLater();
-            m_serviceTypeMap.insert(type, serviceDiscoveryItems);
+            m_serviceItemsMap.insert(type, serviceDiscoveryItems);
             updateServiceType(type);
             return;
         }
@@ -982,9 +982,9 @@ void QServiceDiscovery::clearItems(QString type)
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
 
-    if (m_serviceTypeMap.contains(type))
+    if (m_serviceItemsMap.contains(type))
     {
-        serviceDiscoveryItems = m_serviceTypeMap.value(type);
+        serviceDiscoveryItems = m_serviceItemsMap.value(type);
     }
     else
     {
@@ -999,19 +999,19 @@ void QServiceDiscovery::clearItems(QString type)
         serviceDiscoveryItems.removeAt(i);
     }
 
-    m_serviceTypeMap.insert(type, serviceDiscoveryItems);   // insert the empty list
+    m_serviceItemsMap.insert(type, serviceDiscoveryItems);   // insert the empty list
     updateServiceType(type);
 }
 
-/** Removes items that have no been updated and flags other items with not updated **/
+/** Removes items that have not been updated and flags other items with not updated **/
 void QServiceDiscovery::purgeItems(QString serviceType)
 {
     QList<QServiceDiscoveryItem*> serviceDiscoveryItems;
     bool modified;
 
-    if (m_serviceTypeMap.contains(serviceType))
+    if (m_serviceItemsMap.contains(serviceType))
     {
-        serviceDiscoveryItems = m_serviceTypeMap.value(serviceType);
+        serviceDiscoveryItems = m_serviceItemsMap.value(serviceType);
     }
     else
     {
@@ -1038,7 +1038,7 @@ void QServiceDiscovery::purgeItems(QString serviceType)
 
     if (modified)
     {
-        m_serviceTypeMap.insert(serviceType, serviceDiscoveryItems);   // insert the modified list
+        m_serviceItemsMap.insert(serviceType, serviceDiscoveryItems);   // insert the modified list
         updateServiceType(serviceType);
     }
 }
