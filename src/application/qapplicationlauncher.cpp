@@ -327,34 +327,31 @@ void QApplicationLauncher::subscribeMessageReceived(QList<QByteArray> messageLis
     DEBUG_TAG(3, m_commandIdentity, "launcher update" << topic << QString::fromStdString(s))
 #endif
 
-    if (m_rx.type() == pb::MT_LAUNCHER_INCREMENTAL_UPDATE
-        || m_rx.type() == pb::MT_LAUNCHER_FULL_UPDATE) //value update
+    if (m_rx.type() == pb::MT_LAUNCHER_FULL_UPDATE) //value update
     {
+        m_launchers = QJsonValue(QJsonArray()); // clear old value
         Service::updateValue(m_rx, &m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
         emit launchersChanged(m_launchers);
 
-        if (m_rx.type() == pb::MT_LAUNCHER_FULL_UPDATE)
+        if (m_subscribeSocketState != Service::Up)
         {
-            if (m_subscribeSocketState != Service::Up)
-            {
-                m_subscribeSocketState = Service::Up;
-                updateState(Service::Connected);
-            }
-
-            updateSync();
-
-            if (m_rx.has_pparams())
-            {
-                pb::ProtocolParameters pparams = m_rx.pparams();
-                startSubscribeHeartbeat(pparams.keepalive_timer() * 2);  // wait double the time of the hearbeat interval
-            }
-        }
-        else
-        {
-            refreshSubscribeHeartbeat();
+            m_subscribeSocketState = Service::Up;
+            updateState(Service::Connected);
         }
 
-        return;
+        updateSync();
+
+        if (m_rx.has_pparams())
+        {
+            pb::ProtocolParameters pparams = m_rx.pparams();
+            startSubscribeHeartbeat(pparams.keepalive_timer() * 2);  // wait double the time of the hearbeat interval
+        }
+    }
+    else if (m_rx.type() == pb::MT_LAUNCHER_INCREMENTAL_UPDATE){
+        Service::updateValue(m_rx, &m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
+        emit launchersChanged(m_launchers);
+
+        refreshSubscribeHeartbeat();
     }
     else if (m_rx.type() == pb::MT_PING)
     {
@@ -368,8 +365,6 @@ void QApplicationLauncher::subscribeMessageReceived(QList<QByteArray> messageLis
             unsubscribe("launcher");  // clean up previous subscription
             subscribe("launcher");    // trigger a fresh subscribe -> full update
         }
-
-        return;
     }
     else if (m_rx.type() == pb::MT_LAUNCHER_ERROR)
     {
@@ -386,14 +381,14 @@ void QApplicationLauncher::subscribeMessageReceived(QList<QByteArray> messageLis
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_commandIdentity, "proto error on subscribe" << errorString)
 #endif
-
-        return;
     }
-
+    else
+    {
 #ifdef QT_DEBUG
-    gpb::TextFormat::PrintToString(m_rx, &s);
-    DEBUG_TAG(1, m_commandIdentity, "status_update: unknown message type: " << QString::fromStdString(s))
+        gpb::TextFormat::PrintToString(m_rx, &s);
+        DEBUG_TAG(1, m_commandIdentity, "status_update: unknown message type: " << QString::fromStdString(s))
 #endif
+    }
 }
 
 /** Processes all message received on the command 0MQ socket */
