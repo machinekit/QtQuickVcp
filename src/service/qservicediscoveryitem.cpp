@@ -89,7 +89,8 @@ QServiceDiscoveryItem::QServiceDiscoveryItem(QObject *parent) :
     m_hostAddress(QHostAddress()),
     m_txtRecords(QStringList()),
     m_outstandingRequests(0),
-    m_updated(false)
+    m_updated(false),
+    m_errorCount(0)
 {
 }
 

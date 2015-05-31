@@ -43,6 +43,7 @@ class QServiceDiscovery : public QObject, public QQmlParserStatus
     Q_PROPERTY(QQmlListProperty<QServiceList> serviceLists READ serviceLists)
     Q_PROPERTY(LookupMode lookupMode READ lookupMode WRITE setLookupMode NOTIFY lookupModeChanged)
     Q_PROPERTY(int unicastLookupInterval READ unicastLookupInterval WRITE setUnicastLookupInterval NOTIFY unicastLookupIntervalChanged)
+    Q_PROPERTY(int unicastErrorThreshold READ unicastErrorThreshold WRITE setUnicastErrorThreshold NOTIFY unicastErrorThresholdChanged)
     Q_PROPERTY(QQmlListProperty<QNameServer> nameServers READ nameServers NOTIFY nameServersChanged)
 
     Q_ENUMS(LookupMode)
@@ -96,11 +97,17 @@ public:
     int nameServerCount() const;
     QNameServer *nameServer(int index) const;
 
+    int unicastErrorThreshold() const
+    {
+        return m_unicastErrorThreshold;
+    }
+
 public slots:
     void setRunning(bool arg);
     void setFilter(QServiceDiscoveryFilter *arg);
     void setLookupMode(LookupMode arg);
     void setUnicastLookupInterval(int arg);
+    void setUnicastErrorThreshold(int unicastErrorThreshold);
     void updateServices();
     void updateFilter();
     void updateNameServers();
@@ -115,6 +122,7 @@ signals:
     void lookupReadyChanged(bool arg);
     void lookupModeChanged(LookupMode arg);
     void unicastLookupIntervalChanged(int arg);
+    void unicastErrorThresholdChanged(int unicastErrorThreshold);
     void nameServersChanged(QQmlListProperty<QNameServer> arg);
 
 private:
@@ -123,7 +131,8 @@ private:
     bool m_networkReady;
     bool m_lookupReady;
     LookupMode m_lookupMode;
-    int m_unicastLookupInterval;
+    int m_unicastLookupInterval;    // interval for unicast lookups, queries are stop when retriggered
+    int m_unicastErrorThreshold;    // amount of unicast lookup timeouts to tolerate
     QServiceDiscoveryFilter *m_filter;
     QList<QServiceList*> m_serviceLists;
     QList<QNameServer*> m_nameServers;

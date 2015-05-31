@@ -93,6 +93,11 @@ public:
         return m_updated;
     }
 
+    int errorCount() const
+    {
+        return m_errorCount;
+    }
+
 public slots:
 
     void setUri(QString arg)
@@ -164,6 +169,24 @@ public slots:
         }
     }
 
+    void setErrorCount(int errorCount)
+    {
+        if (m_errorCount == errorCount)
+            return;
+
+        m_errorCount = errorCount;
+    }
+
+    void resetErrorCount()
+    {
+        m_errorCount = 0;
+    }
+
+    void increaseErrorCount()
+    {
+        m_errorCount += 1;
+    }
+
 private:
     QString m_name;
     QString m_type;
@@ -175,6 +198,7 @@ private:
     QStringList m_txtRecords;
     int m_outstandingRequests;
     bool m_updated;
+    int m_errorCount;
 
 signals:
     void uriChanged(QString arg);

@@ -230,6 +230,7 @@ QServiceDiscovery::QServiceDiscovery(QObject *parent) :
     m_lookupReady(false),
     m_lookupMode(MulticastDNS),
     m_unicastLookupInterval(5000),
+    m_unicastErrorThreshold(2),
     m_filter(new QServiceDiscoveryFilter(this)),
     m_networkSession(NULL),
     m_networkConfigManager(NULL),
@@ -457,6 +458,15 @@ void QServiceDiscovery::clearNameServers()
 {
     m_nameServers.clear();
     emit nameServersChanged(nameServers());
+}
+
+void QServiceDiscovery::setUnicastErrorThreshold(int unicastErrorThreshold)
+{
+    if (m_unicastErrorThreshold == unicastErrorThreshold)
+        return;
+
+    m_unicastErrorThreshold = unicastErrorThreshold;
+    emit unicastErrorThresholdChanged(unicastErrorThreshold);
 }
 
 void QServiceDiscovery::setRunning(bool arg)
@@ -1025,10 +1035,14 @@ void QServiceDiscovery::purgeItems(QString serviceType)
 
         if (!serviceDiscoveryItem->updated())    // remove old items
         {
-            stopItemQueries(serviceDiscoveryItem);
-            serviceDiscoveryItems.removeAt(i);
-            serviceDiscoveryItem->deleteLater();
-            modified = true;
+            serviceDiscoveryItem->increaseErrorCount();
+            if (serviceDiscoveryItem->errorCount() > m_unicastErrorThreshold ) // if threshold is reached we cleanup
+            {
+                stopItemQueries(serviceDiscoveryItem);
+                serviceDiscoveryItems.removeAt(i);
+                serviceDiscoveryItem->deleteLater();
+                modified = true;
+            }
         }
         else
         {
@@ -1062,10 +1076,10 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             QString name = r.name.left(r.name.indexOf("._"));
 
 #ifdef QT_DEBUG
-            DEBUG_TAG(2, "SD", "Discovered DNS record:" << r.owner << r.name << serviceType << name << "TTL:" << r.ttl);
+            DEBUG_TAG(2, "SD", "Ptr DNS record:" << r.owner << r.name << serviceType << name << "TTL:" << r.ttl);
 #endif
 
-            if (r.ttl != 0)
+            if (r.ttl > 0)
             {
                 item = addItem(name, serviceType);
                 item->setOutstandingRequests(3);     // We have to do 3 requests before the item is fully resolved
@@ -1098,7 +1112,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             item->setTxtRecords(txtRecords);
 
 #ifdef QT_DEBUG
-            DEBUG_TAG(2, "SD", item->type() << item->name() << "Texts:" << r.texts);
+            DEBUG_TAG(2, "SD", "Txt DNS record" << item->type() << item->name() << "Texts:" << r.texts);
 #endif
         }
         else if (type == QJDns::Srv)
@@ -1115,7 +1129,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             item->setPort(r.port);
 
 #ifdef QT_DEBUG
-            DEBUG_TAG(2, "SD", item->type() << item->name() << "Port:" << r.port);
+            DEBUG_TAG(2, "SD", "Srv DNS record" << item->type() << item->name() << "Port:" << r.port);
 #endif
         }
         else if (type == QJDns::A)
@@ -1128,10 +1142,11 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
                 m_jdns->queryCancel(id);    // we have our results
                 m_queryIdTypeMap.remove(id);
                 m_queryIdItemMap.remove(id);
+                item->setHostAddress(r.address);
             }
             else
             {
-                if (r.ttl != 0)
+                if (r.ttl > 0)
                 {
                     item = addItem(serviceType, serviceType);
                     item->setOutstandingRequests(1);     // With this request the item is resolved
@@ -1145,7 +1160,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
 #ifdef QT_DEBUG
             if (item) {
-                DEBUG_TAG(2, "SD", item->type() << item->name() << "Address:" << r.address.toString());
+                DEBUG_TAG(2, "SD", "A DNS record" << item->type() << item->name() << "Address:" << r.address.toString());
             }
 #endif
         }
@@ -1169,7 +1184,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
 #ifdef QT_DEBUG
             if (item) {
-                DEBUG_TAG(2, "SD", item->type() << item->name() << "Address:" << r.address.toString());
+                DEBUG_TAG(2, "SD", "AAA DNS record" << item->type() << item->name() << "Address:" << r.address.toString());
             }
 #endif
         }
@@ -1177,10 +1192,11 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         if (item != NULL)   // we got a answer to a request
         {
             item->setOutstandingRequests(item->outstandingRequests() - 1);
-            if (item->outstandingRequests() == 0)   // item is fully resolved
+            if (item->outstandingRequests() <= 0)   // item is fully resolved
             {
                 updateItem(item->name(), item->type());
                 item->setUpdated(true);
+                item->resetErrorCount();
             }
         }
     }
