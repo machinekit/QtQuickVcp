@@ -42,4 +42,5 @@ ApplicationAction {
         }
     }
     enabled: _ready
+             && !status.running
 }
