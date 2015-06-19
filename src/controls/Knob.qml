@@ -41,33 +41,12 @@ Item {
         z: 0.3
         multicolor: root.pieMultiColor
         style: root.pieType
+        minimumValue: root.minimumValue
+        maximumValue: root.maximumValue
+        stepSize: root.stepSize
 
-        MouseArea {
-            id: events
-            anchors.fill: parent
-            enabled: !readOnly
-
-            function calculateValue(x,y) {
-                var dx = (x - parent.height/2)
-                var dy = (y - parent.width/2)
-                value = parent.endValueFromPoint(dx,dy)
-            }
-
-            onWheel: {
-                wheel.angleDelta.y < 0 ? value < maxValue ? value += stepSize : maxValue : value > minValue ? value -= stepSize : minValue
-            }
-
-            onClicked: calculateValue(mouseX,mouseY)
-            onPositionChanged: calculateValue(mouseX,mouseY)
-        }
-
-        Binding { target: mid; property: "value"; value: root.value; when: !animate.running } // decouple value from animation
-        Binding { target: root; property: "value"; value: mid.value; when: !animate.running }
-
-        Behavior on value {
-            enabled: !events.pressed
-            SmoothedAnimation { id: animate; duration: 800 }
-        }
+        Binding { target: mid; property: "value"; value: root.value; when: !mid.animating } // decouple value from animation
+        Binding { target: root; property: "value"; value: mid.value; when: !mid.animating }
     }
 
     KnobPart {

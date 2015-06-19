@@ -15,16 +15,11 @@ Canvas {
     property double scale: 1 / (factor * stepSize)
     property double angle: value * factor - Math.PI/2
     property double spanAngle: (value - minimumValue) * factor
+    property alias animating: animate.running
 
     property var chunkColors: multicolor ?
                                   [Qt.rgba(197,81,134,255), Qt.rgba(232,156,132,255), Qt.rgba(254,197,107,255), Qt.rgba(81,197,212,255)]
                                 : []
-
-    function endValueFromPoint(x, y) {
-        var theta = Math.atan2(x, -y)
-        var angle = (theta + 2*Math.PI) % (2*Math.PI)
-        return Math.round(angle*scale) * stepSize
-    }
 
     id: root
     contextType: "2d"
@@ -54,5 +49,51 @@ Canvas {
 
     width: 200
     height: 200
+
+    MouseArea {
+        id: events
+        anchors.fill: parent
+        enabled: !readOnly
+
+        function endValueFromPoint(x, y) {
+            var theta = Math.atan2(x, -y)
+            var angle = (theta + 2*Math.PI) % (2*Math.PI)
+            var newValue = Math.round(angle*root.scale) * root.stepSize
+            return Math.max(Math.min(newValue, maximumValue), minimumValue)
+        }
+
+        function calculateValue(x,y) {
+            var dx = (x - height/2)
+            var dy = (y - width/2)
+            value = endValueFromPoint(dx,dy)
+        }
+
+        onWheel: {
+            if (wheel.angleDelta.y < 0) {
+                if (root.value < root.maximumValue) {
+                    root.value += root.stepSize
+                }
+                else {
+                    root.value = root.maximumValue
+                }
+            }
+            else {
+                if (root.value > root.minimumValue) {
+                    root.value -= root.stepSize
+                }
+                else {
+                    root.value = root.minimumValue
+                }
+            }
+        }
+
+        onClicked: calculateValue(mouseX,mouseY)
+        onPositionChanged: calculateValue(mouseX,mouseY)
+    }
+
+    Behavior on value {
+        enabled: !events.pressed
+        SmoothedAnimation { id: animate; duration: 800 }
+    }
 }
 
