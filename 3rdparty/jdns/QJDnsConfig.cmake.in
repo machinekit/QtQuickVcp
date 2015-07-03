@@ -5,7 +5,7 @@ if(NOT JDns_FOUND)
 endif(NOT JDns_FOUND)
 
 if(NOT TARGET qjdns)
-  include(${CMAKE_CURRENT_LIST_DIR}/QJDnsTargets.cmake)
+	include(${CMAKE_CURRENT_LIST_DIR}/Q${QT_MAJ}JDnsTargets.cmake)
 endif()
 
-set(QJDns_LIBRARY qjdns)
+set(QJDns_LIBRARY q${QT_MAJ}jdns)
