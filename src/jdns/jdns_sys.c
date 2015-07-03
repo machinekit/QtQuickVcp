@@ -818,7 +818,7 @@ static jdns_dnsparams_t *dnsparams_get_unixsys()
 #else
 	// nameservers - ipv6
 #ifdef __GLIBC__
-	for(n = 0; n < MAXNS && n < RESVAR._u._ext.nscount6; ++n)
+	for(n = 0; n < MAXNS; ++n)
 #else
 	for(n = 0; n < MAXNS && n < RESVAR._u._ext.nscount; ++n)
 #endif
@@ -845,7 +845,12 @@ static jdns_dnsparams_t *dnsparams_get_unixsys()
 	}
 
 	// nameservers - ipv4
+#ifdef __GLIBC__
+	int ns4count = RESVAR.nscount - RESVAR._u._ext.nscount6;
+	for(n = 0; n < MAXNS && n < ns4count; ++n)
+#else
 	for(n = 0; n < MAXNS && n < RESVAR.nscount; ++n)
+#endif
 	{
 		jdns_address_t *addr = jdns_address_new();
 		jdns_address_set_ipv4(addr, ntohl(RESVAR.nsaddr_list[n].sin_addr.s_addr));

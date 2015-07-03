@@ -24,21 +24,21 @@ set(qjdns_HEADERS
     qjdns_sock.h
 )
 
-add_library(qjdns ${qjdns_SRCS} ${qjdns_MOC_SRCS} ${qjdns_MOC_HDRS} ${qjdns_PUBLIC_HEADERS})
+add_library(q${QT_MAJ}jdns ${qjdns_SRCS} ${qjdns_MOC_SRCS} ${qjdns_MOC_HDRS} ${qjdns_PUBLIC_HEADERS})
 if(Qt5Core_FOUND)
-  target_link_libraries(qjdns ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES})
+  target_link_libraries(q${QT_MAJ}jdns ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES})
 else(Qt5Core_FOUND)
-  target_link_libraries(qjdns ${QT_LIBRARIES})
+  target_link_libraries(${QT_MAJ}qjdns ${QT_LIBRARIES})
 endif(Qt5Core_FOUND)
-target_link_libraries(qjdns jdns)
+target_link_libraries(q${QT_MAJ}jdns jdns)
 
 if(NOT ANDROID)
-  set_target_properties(qjdns PROPERTIES
+  set_target_properties(q${QT_MAJ}jdns PROPERTIES
                         VERSION ${JDNS_LIB_MAJOR_VERSION}.${JDNS_LIB_MINOR_VERSION}.${JDNS_LIB_PATCH_VERSION}
                         SOVERSION ${JDNS_LIB_MAJOR_VERSION}
   )
 endif()
-set_target_properties(qjdns PROPERTIES
+set_target_properties(q${QT_MAJ}jdns PROPERTIES
                       DEFINE_SYMBOL JDNS_MAKEDLL
                       PUBLIC_HEADER "${qjdns_PUBLIC_HEADERS}"
 #                     FRAMEWORK ${OSX_FRAMEWORK}
@@ -47,15 +47,15 @@ set_target_properties(qjdns PROPERTIES
 set(INCLUDES_DESTINATION "")
 if("${CMAKE_VERSION}" VERSION_LESS "2.8.12")
   if(USE_RELATIVE_PATHS)
-    target_include_directories(qjdns INTERFACE "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}/jdns")
+    target_include_directories(q${QT_MAJ}jdns INTERFACE "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}/jdns")
   else()
-    target_include_directories(qjdns INTERFACE "${INCLUDE_INSTALL_DIR}/jdns")
+    target_include_directories(q${QT_MAJ}jdns INTERFACE "${INCLUDE_INSTALL_DIR}/jdns")
   endif()
 else()
   set(INCLUDES_DESTINATION INCLUDES DESTINATION "${INCLUDE_INSTALL_DIR}/jdns")
 endif()
 
-install(TARGETS qjdns EXPORT qjdns-export
+install(TARGETS q${QT_MAJ}jdns EXPORT qjdns-export
         LIBRARY DESTINATION ${LIB_INSTALL_DIR}
         RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
@@ -64,11 +64,11 @@ install(TARGETS qjdns EXPORT qjdns-export
 )
 
 if(MSVC)
-  get_target_property(LOCATION qjdns LOCATION_DEBUG)
+  get_target_property(LOCATION q${QT_MAJ}jdns LOCATION_DEBUG)
   string(REGEX REPLACE "\\.[^.]*$" ".pdb" LOCATION "${LOCATION}")
   install(FILES ${LOCATION} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin CONFIGURATIONS Debug)
 
-  get_target_property(LOCATION qjdns LOCATION_RELWITHDEBINFO)
+  get_target_property(LOCATION q${QT_MAJ}jdns LOCATION_RELWITHDEBINFO)
   string(REGEX REPLACE "\\.[^.]*$" ".pdb" LOCATION "${LOCATION}")
   install(FILES ${LOCATION} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin CONFIGURATIONS RelWithDebInfo)
 endif(MSVC)

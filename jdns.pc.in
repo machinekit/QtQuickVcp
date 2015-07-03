@@ -1,7 +1,7 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
-libdir=@LIB_INSTALL_DIR@
-includedir=@INCLUDE_INSTALL_DIR@/jdns
+libdir=@LIB_INSTALL_DIR_FULL@
+includedir=@INCLUDE_INSTALL_DIR_FULL@/jdns
 
 Name: jdns
 Description: Simple DNS implementation can perform normal DNS queries

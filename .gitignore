@@ -42,6 +42,7 @@ cmake_uninstall.cmake
 *~
 \#*#
 ~*
+*.orig
 
 # KDE Dolphin
 .directory
