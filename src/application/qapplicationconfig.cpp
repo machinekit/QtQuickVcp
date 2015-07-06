@@ -385,8 +385,6 @@ bool QApplicationConfig::connectSocket()
     connect(m_configSocket, SIGNAL(messageReceived(QList<QByteArray>)),
             this, SLOT(configMessageReceived(QList<QByteArray>)));
 
-    updateState(Connected);
-
     return true;
 }
 
@@ -447,6 +445,8 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                 emit configsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_configs));
             }
         }
+
+        updateState(Connected); // now we are connected
     }
     else if (m_rx.type() == pb::MT_APPLICATION_DETAIL) // receive the details of an application
     {
