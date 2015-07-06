@@ -533,7 +533,7 @@ Rectangle {
         id: applicationConfig
 
         ready: ((mainWindow.state === "config") || (mainWindow.state === "app-loading"))
-               && remoteVisible && (configService.ready || connected)
+               && remoteVisible && configService.ready
         configUri: configService.uri
         onConnectionStateChanged: {
             if (applicationConfig.connectionState === ApplicationConfig.Error)
@@ -546,7 +546,7 @@ Rectangle {
     ApplicationLauncher {
         id: applicationLauncher
         ready: ((mainWindow.state === "launcher") || (mainWindow.state === "launcher-selected"))
-               && (launcherService.ready && launchercmdService.ready || connected)
+               && launcherService.ready && launchercmdService.ready
         launcherUri: launcherService.uri
         launchercmdUri: launchercmdService.uri
         onConnectionStateChanged: {
