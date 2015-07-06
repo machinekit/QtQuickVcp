@@ -46,7 +46,8 @@ QGLView::QGLView(QQuickItem *parent)
     //setFlag(QQuickItem::ItemHasContents, true);
 
     connect(this, SIGNAL(windowChanged(QQuickWindow*)), this, SLOT(handleWindowChanged(QQuickWindow*)));
-    connect(this, SIGNAL(childrenChanged()), this, SLOT(updateChildren()));
+    // queue this connection to prevent trigger on destruction
+    connect(this, SIGNAL(childrenChanged()), this, SLOT(updateChildren()), Qt::QueuedConnection);
     connect(m_propertySignalMapper, SIGNAL(mapped(QObject*)), this, SLOT(updateItem(QObject*)));
     //connect(this, SIGNAL(initialized()), this, SLOT(updateItems()), Qt::QueuedConnection);
 
@@ -177,8 +178,8 @@ void QGLView::updateChildren()
         }
     }
 
-    // remove all remvoed GL items
-    for (int i = (m_glItems.count()-1); i >= 0; i--)
+    // remove all removed GL items
+    for (int i = (m_glItems.size()-1); i >= 0; i--)
     {
         if (!newItems.contains(m_glItems.at(i)))
         {
@@ -187,7 +188,7 @@ void QGLView::updateChildren()
     }
 
     // add all new GL items
-    for (int i = 0; i < newItems.count(); ++i)
+    for (int i = 0; i < newItems.size(); ++i)
     {
         if (!m_glItems.contains(newItems.at(i)))
         {
