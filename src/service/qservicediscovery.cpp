@@ -278,7 +278,15 @@ bool QServiceDiscovery::initializeMdns()
     }
 
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, "SD", "Initializing MDNS");
+    QString mode;
+    if (m_lookupMode == MulticastDNS)
+    {
+        mode = "multicast";
+    }
+    else {
+        mode = "unicast";
+    }
+    DEBUG_TAG(1, "SD", "Initializing JDNS " + mode);
 #endif
 
     m_jdns = new QJDns(this);
@@ -345,7 +353,7 @@ void QServiceDiscovery::deinitializeMdns()
     }
 
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, "SD", "Deinitializing MDNS");
+    DEBUG_TAG(1, "SD", "Deinitializing JDNS");
 #endif
 
     if (m_running)
