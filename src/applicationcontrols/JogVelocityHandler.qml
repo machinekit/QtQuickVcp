@@ -67,6 +67,12 @@ ApplicationObject {
         }
     }
 
+    Component.onDestruction: {
+        settings.onValuesChanged.disconnect(_update)
+        status.onConfigChanged.disconnect(_update)
+        status.onMotionChanged.disconnect(_update)
+    }
+
     function _update() {
         _remoteUpdate = true
         minimumValue = status.config.minVelocity
