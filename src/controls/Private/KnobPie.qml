@@ -31,6 +31,9 @@ Canvas {
 
     onPaint:
     {
+        if (!context)
+            return
+
         var w = (width/3.0) - 1.0
         var m = 1.5
         context.reset()
