@@ -143,19 +143,15 @@ void QMjpegStreamerClient::componentComplete()
 
 void QMjpegStreamerClient::paint(QPainter *painter)
 {
-    QRect r = this->boundingRect().toRect();
+    QRect boundingRect = this->boundingRect().toRect();
 
     // Show view finder
     if(!m_frameImg.isNull())
     {
-        if (m_aspectRatioMode != Qt::IgnoreAspectRatio) {
-            QImage scaledImage = m_frameImg.scaled(r.size(), m_aspectRatioMode);
-            painter->drawImage(r, scaledImage, r);
-        }
-        else
-        {
-            painter->drawImage(r, m_frameImg, m_frameImg.rect());
-        }
+        QImage scaledImage = m_frameImg.scaled(boundingRect.size(), m_aspectRatioMode);
+        QRect drawRect(scaledImage.rect());
+        drawRect.moveCenter(boundingRect.center());
+        painter->drawImage(drawRect, scaledImage, scaledImage.rect());
     }
 }
 
