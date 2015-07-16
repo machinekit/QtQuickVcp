@@ -136,6 +136,9 @@ Item {
             }
         }
 
+        ScrollView {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         GridView {
             property string viewMode: "small"
             property var launchers: {
@@ -169,8 +172,6 @@ Item {
             }
 
             id: launcherListView
-            Layout.fillHeight: true
-            Layout.fillWidth: true
             cellWidth: width * (viewMode === "big" ? 0.333 : (viewMode === "small" ? 0.199 : 1.0))
             cellHeight: viewMode === "list" ? dummyButton.height * 3 : cellWidth
             clip: true
@@ -184,6 +185,7 @@ Item {
                 height: parent.height * 0.15
                 width: height
             }
+        }
         }
     }
 }
