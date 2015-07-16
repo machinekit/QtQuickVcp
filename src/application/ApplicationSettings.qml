@@ -47,7 +47,7 @@ LocalSettings {
             setValue("dro.showOffsets", false, false)
             setValue("dro.showVelocity", true, false)
             setValue("dro.showDistanceToGo", true, false)
-            setValue("preview.enable", true, false)
+            setValue("preview.enable", false, false)
             setValue("preview.showMachineLimits", true, false)
             setValue("preview.showProgram", true, false)
             setValue("preview.showProgramRapids", true, false)
