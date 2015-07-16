@@ -45,7 +45,7 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        width: Screen.pixelDensity * 11
+        width: dummyLabel.width * (Math.ceil(Math.log(listView.count) / Math.LN10) + 1)  // adapting width to line numbers
         color: systemPalette.window
     }
 
@@ -60,6 +60,8 @@ Item {
 
     Label {
         id: dummyLabel
+        text: "0"
+        visible: false
     }
 
     ScrollView {
