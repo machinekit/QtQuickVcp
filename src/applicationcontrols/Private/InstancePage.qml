@@ -7,7 +7,7 @@ import Machinekit.Service 1.0
 
 Item {
     property bool autoSelectInstance: false
-    property var launcherService: {"items": []}
+    property var instances: []
     property var serviceDiscovery: {"lookupMode": ServiceDiscovery.MulticastDNS}
 
     signal nameServersChanged()
@@ -16,7 +16,7 @@ Item {
     width: 1000
     height: 800
 
-    signal instanceSelected(int index)
+    signal instanceSelected(string uuid)
 
     Button {
         id: dummyButton
@@ -34,7 +34,7 @@ Item {
             spacing: Screen.logicalPixelDensity*3
             clip: true
 
-            model: launcherService.items
+            model: root.instances
             delegate: Button {
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -52,20 +52,22 @@ Item {
                     elide: Text.ElideRight
                 }
 
-                onClicked: instanceSelected(index)
+                onClicked: instanceSelected(root.instances[index].uuid)
             }
 
             onCountChanged: {
-                if (root.visible && (autoSelectInstance == true) && (count > 0))
+                if (root.visible && (root.autoSelectInstance == true) && (root.instances.length > 0))
                 {
-                    instanceSelected(0)
+                    var uuid = root.instances[0].uuid
+                    if (uuid !== "")
+                        instanceSelected(uuid)
                 }
             }
 
             BusyIndicator {
                 anchors.centerIn: parent
                 running: true
-                visible: launcherService.items.length === 0
+                visible: instances.length === 0
                 height: parent.height * 0.15
                 width: height
             }

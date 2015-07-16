@@ -216,15 +216,14 @@ Rectangle {
     height: 700
 
     /*! \internal */
-    function selectInstance(index)
+    function selectInstance(uuid)
     {
         if (!(remoteVisible || localVisible))
             return
 
-        if ((launcherService.items[index].uuid !== "")
-                /*&& (!remoteVisible || launcherService.items[index].uri !== "")*/)
+        if (uuid !== "")
         {
-            serviceDiscoveryFilter.txtRecords = ["uuid=" + launcherService.items[index].uuid]
+            serviceDiscoveryFilter.txtRecords = ["uuid=" + uuid]
             serviceDiscovery.updateFilter()
             d.instanceSelected = true
         }
@@ -456,10 +455,10 @@ Rectangle {
         anchors.fill: parent
 
         autoSelectInstance: mainWindow.autoSelectInstance
-        launcherService: launcherService
+        instances: d.instanceSelected ? [] : launcherService.items
         serviceDiscovery: serviceDiscovery
 
-        onInstanceSelected: mainWindow.selectInstance(index)
+        onInstanceSelected: mainWindow.selectInstance(uuid)
         onNameServersChanged: saveSettings()
     }
 
@@ -487,10 +486,12 @@ Rectangle {
         id: configPage
         anchors.fill: parent
 
+        instanceSelected: d.instanceSelected
         autoSelectApplication: mainWindow.autoSelectApplication
         localVisible: mainWindow.localVisible
         remoteVisible: mainWindow.remoteVisible
         configService: configService
+        applications: mode === "local" ? mainWindow.applications : applicationConfig.configs
 
         onApplicationSelected: mainWindow.selectApplication(index)
         onGoBack: mainWindow.goBack()
@@ -555,12 +556,13 @@ Rectangle {
                 setError(qsTr("Application Launcher Error:"), applicationLauncher.errorString)
             }
         }
+        onReadyChanged: console.log("launcher ready: " + ready)
     }
 
     ServiceDiscovery {
         id: serviceDiscovery
 
-        running:     true
+        running: true
         filter: ServiceDiscoveryFilter {
             id: serviceDiscoveryFilter
             name: ""
@@ -576,7 +578,6 @@ Rectangle {
                     Service {
                         id: launcherService
                         type: "launcher"
-                        filter: ServiceDiscoveryFilter { name: "" }
                     },
                     Service {
                         id: launchercmdService

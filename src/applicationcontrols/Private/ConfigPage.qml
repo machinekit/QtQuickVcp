@@ -5,11 +5,13 @@ import QtQuick.Window 2.0
 import Machinekit.Controls 1.0
 
 Item {
+    property bool instanceSelected: false
     property bool autoSelectApplication: false
     property bool localVisible: true
     property bool remoteVisible: true
     property string mode: "local"
     property var configService: {"name": "Test on XYZ"}
+    property var applications: []
 
     signal applicationSelected(int index)
     signal goBack()
@@ -58,7 +60,7 @@ Item {
                 spacing: Screen.logicalPixelDensity*3
                 clip: true
 
-                model: (root.mode == "local") ? applications : applicationConfig.configs
+                model: root.instanceSelected ? root.applications : 0
                 delegate: Button {
                     anchors.left: parent.left
                     anchors.right: parent.right
