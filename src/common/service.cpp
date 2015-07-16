@@ -268,5 +268,5 @@ void Service::fileToJson(const pb::File &file, QJsonObject *object, const QStrin
     localFile.write(data);
     localFile.close();
 
-    object->insert("url", "file://" + filePath);
+    object->insert("url", QUrl::fromLocalFile(filePath).toString());
 }

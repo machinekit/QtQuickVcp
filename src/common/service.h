@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QUuid>
+#include <QUrl>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
