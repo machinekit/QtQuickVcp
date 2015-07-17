@@ -28,6 +28,7 @@ import Machinekit.Application 1.0
 ProgressBar {
     property alias core: object.core
     property alias file: object.file
+    property alias status: object.status
     property string _mode: getMode()
 
     id: progressBar
@@ -39,6 +40,9 @@ ProgressBar {
         }
         else if ((file !== undefined) && (file.transferState === ApplicationFile.DownloadRunning)) {
             return "download"
+        }
+        else if (status.running) {
+            return "running"
         }
         else {
             return ""
@@ -52,6 +56,9 @@ ProgressBar {
         else if (_mode == "download") {
             return qsTr("Downloading file ") + file.remoteFilePath.split('/').reverse()[0]
         }
+        else if (_mode == "running") {
+            return qsTr("Progress ") + (value * 100).toFixed(2) + "%"
+        }
         else {
             return ""
         }
@@ -63,6 +70,10 @@ ProgressBar {
         }
         else if (_mode == "download") {
             return file.progress
+        }
+        else if (_mode == "running") {
+            var totalLines = status.task.totalLines
+            return (totalLines > 0 ? (status.motion.motionLine / totalLines) : 0.0)
         }
         else {
             return 0.0
