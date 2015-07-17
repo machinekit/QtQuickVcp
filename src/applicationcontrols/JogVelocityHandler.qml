@@ -76,8 +76,15 @@ ApplicationObject {
     function _update() {
         _remoteUpdate = true
         minimumValue = status.config.minVelocity
-        maximumValue = status.motion.maxVelocity
+        var axisMaxVel = status.config.axis[axis].maxVelocity
+        var configMaxVel = status.config.maxVelocity
+        if ((axisMaxVel === undefined) || (axisMaxVel === 0) || (axisMaxVel > configMaxVel)) {
+            maximumValue = configMaxVel
+        } else {
+            maximumValue = axisMaxVel
+        }
         var tmpValue = settings.value("axis" + axis + ".jogVelocity")
+        tmpValue = Math.max(Math.min(tmpValue, maximumValue), minimumValue) // clamp value
         if (value !== tmpValue) {
             value = tmpValue
         }
