@@ -1,10 +1,12 @@
-QtQuickVcp
-==========
+machinetalk-protobuf
+====================
 
-A remote user interface implementation for [Machinekit](https://github.com/machinekit/machinekit) written in Qt/C++/QML.
+Protobuf declarations for machinekit messages
 
-This repository contains the QtQuickVcp library. A generic client implementation and binary distributions can be found here [MachinekitClient](https://github.com/strahlex/MachinekitClient)
+This repo is integrated into github.com/machinekit/machinekit as a git subtree.
 
-More details about QtQuickVcp and how it can be installed can be found in the [QtQuickVcp Wiki](https://github.com/strahlex/QtQuickVcp/wiki/QtQuick-Virtual-Control-Panel)
+To change message definitions, send a PR against this repo, then update the subtree in the machinekit repo.
 
-Online documentation for some QtQuickVcp classes can be found here [QtQuickVcp Docu](http://static.machinekit.io/html/qtquickvcp/index.html)
+
+
+

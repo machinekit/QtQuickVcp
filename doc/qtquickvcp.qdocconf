@@ -1,2 +1,0 @@
-include(config/qtquickvcp-project.qdocconf)
-include(config/qt-html-templates.qdocconf)

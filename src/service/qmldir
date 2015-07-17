@@ -1,4 +1,0 @@
-module Machinekit.Service
-plugin machinekitserviceplugin
-classname MachinekitServicePlugin
-typeinfo plugins.qmltypes
