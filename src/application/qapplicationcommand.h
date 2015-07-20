@@ -199,6 +199,7 @@ public slots:
     void setToolOffset(int index, double zOffset, double xOffset, double diameter, double frontangle, double backangle, int orientation);
     void setTrajectoryMode(QApplicationStatus::TrajectoryMode mode);
     void unhomeAxis(int index);
+    void shutdown();
 private:
 
     QString         m_commandUri;

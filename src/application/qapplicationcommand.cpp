@@ -570,6 +570,15 @@ void QApplicationCommand::unhomeAxis(int index)
     sendCommandMessage(pb::MT_EMC_AXIS_UNHOME);
 }
 
+void QApplicationCommand::shutdown()
+{
+    if (m_connectionState != Connected) {
+        return;
+    }
+
+    sendCommandMessage(pb::MT_SHUTDOWN);
+}
+
 void QApplicationCommand::start()
 {
 #ifdef QT_DEBUG
