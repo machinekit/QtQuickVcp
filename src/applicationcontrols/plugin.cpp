@@ -54,6 +54,7 @@ static const struct {
     { "JogAction", 1, 0 },
     { "JogButton", 1, 0 },
     { "JogDistanceComboBox", 1, 0 },
+    {"JogDistanceHandler", 1, 0},
     { "SpindleCwAction", 1, 0 },
     { "SpindleCcwAction", 1, 0 },
     { "StopSpindleAction", 1, 0 },

@@ -36,6 +36,7 @@ CONTROLS_QML_FILES = \
     JogAction.qml \
     JogButton.qml \
     JogDistanceComboBox.qml \
+    JogDistanceHandler.qml \
     SpindleCwAction.qml \
     SpindleCcwAction.qml \
     StopSpindleAction.qml \

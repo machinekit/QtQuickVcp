@@ -29,6 +29,7 @@ MdiCommandAction 1.0 MdiCommandAction.qml
 JogAction 1.0 JogAction.qml
 JogButton 1.0 JogButton.qml
 JogDistanceComboBox 1.0 JogDistanceComboBox.qml
+JogDistanceHandler 1.0 JogDistanceHandler.qml
 SpindleCwAction 1.0 SpindleCwAction.qml
 SpindleCcwAction 1.0 SpindleCcwAction.qml
 StopSpindleAction 1.0 StopSpindleAction.qml

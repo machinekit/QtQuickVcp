@@ -53,6 +53,7 @@
         <file>Private/LoadingPage.qml</file>
         <file>Private/ErrorPage.qml</file>
         <file>ShutdownAction.qml</file>
+        <file>JogDistanceHandler.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/Application/Controls/icons">
         <file alias="process-stop">icons/process-stop.png</file>
