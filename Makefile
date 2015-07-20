@@ -43,6 +43,9 @@ PROTOBUFJS_GEN := js
 # the proto2js compiler
 PROTOJS := $(shell which proto2js)
 
+# pkg-config
+PKG_CONFIG := $(shell which pkg-config)
+
 # proto2js options - namespace
 #PROTOBUFJS_OPT := -commonjs=pb
 # http://en.wikipedia.org/wiki/Asynchronous_module_definition
@@ -59,7 +62,7 @@ PROTO_SPECS := $(wildcard $(PROTODIR)/*.proto)
 PROTOC := $(shell which protoc)
 
 # the directory where descriptor.proto lives:
-GPBINCLUDE :=  $(shell pkg-config --variable=includedir protobuf)
+GPBINCLUDE :=  $(shell $(PKG_CONFIG) --variable=includedir protobuf)
 DESCDIR    :=  $(GPBINCLUDE)/google/protobuf
 
 # object files generated during dependency resolving
