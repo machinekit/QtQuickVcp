@@ -78,7 +78,6 @@ enum ObjectType {
     NAMED_VALUE       = 125;
 
     OT_ERROR          = 130;
-
 }
 
 enum RCS_STATUS {
