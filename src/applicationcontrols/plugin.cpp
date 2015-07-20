@@ -74,7 +74,8 @@ static const struct {
     { "MdiCommandEdit", 1, 0 },
     { "AxisRadioGroup", 1, 0 },
     { "AxisComboBox", 1, 0 },
-    { "TeleopAction", 1, 0 }
+    { "TeleopAction", 1, 0 },
+    { "ShutdownAction", 1, 0 }
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)

@@ -60,7 +60,8 @@ CONTROLS_QML_FILES = \
     MdiCommandEdit.qml \
     AxisRadioGroup.qml \
     AxisComboBox.qml \
-    TeleopAction.qml
+    TeleopAction.qml \
+    ShutdownAction.qml
 
 QML_FILES += $$CONTROLS_QML_FILES
 
