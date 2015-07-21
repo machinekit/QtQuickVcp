@@ -31,7 +31,7 @@ Item {
         id: instanceListView
 
         ListView {
-            spacing: Screen.logicalPixelDensity*3
+            spacing: Screen.pixelDensity
             clip: true
 
             model: root.instances
@@ -95,17 +95,19 @@ Item {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: Screen.logicalPixelDensity*3
-                spacing: Screen.logicalPixelDensity*3
+                anchors.margins: Screen.pixelDensity
+                spacing: Screen.pixelDensity
 
                 Label {
                     id: pageTitleText2
 
                     Layout.fillWidth: true
+                    Layout.preferredHeight: Math.max(dummyButton.height, implicitHeight)
                     text: qsTr("Available Instances:")
                     font.pointSize: dummyText.font.pointSize * 1.3
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                     wrapMode: Text.WordWrap
                 }
 
@@ -124,15 +126,17 @@ Item {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: Screen.logicalPixelDensity*3
-                spacing: Screen.logicalPixelDensity*3
+                anchors.margins: Screen.pixelDensity
+                spacing: Screen.pixelDensity
 
                 Label {
                     Layout.fillWidth: true
+                    Layout.preferredHeight: Math.max(dummyButton.height, implicitHeight)
                     text: qsTr("Available Instances:")
                     font.pointSize: dummyText.font.pointSize * 1.3
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                     wrapMode: Text.WordWrap
                 }
 
@@ -155,8 +159,8 @@ Item {
                 ListView {
                     id: dnsServerView
                     Layout.fillWidth: true
-                    Layout.preferredHeight: dummyButton.height * 1.5 * model.length + Screen.logicalPixelDensity * 1.5 * Math.max(model.length-1, 0)
-                    spacing: Screen.logicalPixelDensity*1.5
+                    Layout.preferredHeight: dummyButton.height * 1.5 * model.length + Screen.pixelDensity * 1.5 * Math.max(model.length-1, 0)
+                    spacing: Screen.pixelDensity
 
                     model: serviceDiscovery.nameServers
 

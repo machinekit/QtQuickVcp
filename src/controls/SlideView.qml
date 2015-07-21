@@ -273,8 +273,7 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.margins: Screen.pixelDensity
-        width: Screen.pixelDensity * 8
-        height: width
+        width: height
         text: menuVisible ? "<" : ">"
         visible: buttonVisible && !menuVisible
 

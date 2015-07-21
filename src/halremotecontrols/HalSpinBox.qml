@@ -78,8 +78,8 @@ SpinBox {
     BusyIndicator {
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.margins: Screen.logicalPixelDensity
-        height: Screen.logicalPixelDensity * 4
+        anchors.margins: Screen.pixelDensity
+        height: Screen.pixelDensity * 4
         width: height
         running: true
         visible: !pin.synced

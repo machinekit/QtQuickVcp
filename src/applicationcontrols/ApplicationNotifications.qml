@@ -52,7 +52,7 @@ ListView {
             anchors.right: parent.right
             width: root.messageWidth
             height: textLabel.height
-            radius: Screen.logicalPixelDensity * 2
+            radius: Screen.pixelDensity * 2
             color: systemPalette.light
             border.color: systemPalette.mid
             border.width: 1
@@ -61,7 +61,7 @@ ListView {
                 id: textLabel
                 anchors.left: typeImage.right
                 anchors.right: parent.right
-                anchors.margins: Screen.logicalPixelDensity * 5
+                anchors.margins: Screen.pixelDensity * 5
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.WordWrap
@@ -74,7 +74,7 @@ ListView {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: parent.width * 0.13
-                anchors.margins: Screen.logicalPixelDensity * 5
+                anchors.margins: Screen.pixelDensity * 5
                 fillMode: Image.PreserveAspectFit
                 source: {
                     switch (model.type) {

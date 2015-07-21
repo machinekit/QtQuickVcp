@@ -38,8 +38,8 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Screen.logicalPixelDensity*3
-        spacing: Screen.logicalPixelDensity*3
+        anchors.margins: Screen.pixelDensity
+        spacing: Screen.pixelDensity
 
         Label {
             id: pageTitleText

@@ -27,17 +27,19 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Screen.logicalPixelDensity*3
-        spacing: Screen.logicalPixelDensity*3
+        anchors.margins: Screen.pixelDensity
+        spacing: Screen.pixelDensity
 
         Label {
             id: pageTitleText
 
             Layout.fillWidth: true
+            Layout.preferredHeight: Math.max(dummyButton.height, implicitHeight)
             text: qsTr("Available Launchers:")
             font.pointSize: dummyText.font.pointSize * 1.3
             font.bold: true
             horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
 
             RowLayout {
@@ -73,11 +75,11 @@ Item {
 
                 Button {
                     anchors.fill: parent
-                    anchors.margins: Screen.logicalPixelDensity*1.5
+                    anchors.margins: Screen.pixelDensity / 2
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: Screen.pixelDensity * 3
+                        anchors.margins: Screen.pixelDensity * 1.5
 
                         Item {
                             Layout.fillHeight: true

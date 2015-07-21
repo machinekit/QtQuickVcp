@@ -31,16 +31,18 @@ Item {
         id: localRemoteContent
 
         ColumnLayout {
-            spacing: Screen.logicalPixelDensity*3
+            spacing: Screen.pixelDensity
 
             Label {
                 id: pageTitleText
 
                 Layout.fillWidth: true
+                Layout.preferredHeight: Math.max(dummyButton.height, implicitHeight)
                 text: configService.name
                 font.pointSize: dummyText.font.pointSize * 1.3
                 font.bold: true
                 horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.WordWrap
 
                 RowLayout {
@@ -57,7 +59,7 @@ Item {
             ListView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                spacing: Screen.logicalPixelDensity*3
+                spacing: Screen.pixelDensity
                 clip: true
 
                 model: root.instanceSelected ? root.applications : 0
@@ -123,7 +125,7 @@ Item {
 
         SlidePage {
             anchors.fill: parent
-            anchors.margins: Screen.logicalPixelDensity*3
+            anchors.margins: Screen.pixelDensity
             title: qsTr("Remote")
             visible: root.remoteVisible
 
@@ -136,7 +138,7 @@ Item {
 
         SlidePage {
             anchors.fill: parent
-            anchors.margins: Screen.logicalPixelDensity*3
+            anchors.margins: Screen.pixelDensity
             title: qsTr("Local")
             visible: root.localVisible
 

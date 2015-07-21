@@ -20,7 +20,7 @@ Item {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: connectingIndicator.top
-        anchors.bottomMargin: Screen.logicalPixelDensity
+        anchors.bottomMargin: Screen.pixelDensity
         font.pointSize: dummyText.font.pointSize * 1.3
         text: qsTr("Loading ") + applicationConfig.selectedConfig.name + "..."
     }

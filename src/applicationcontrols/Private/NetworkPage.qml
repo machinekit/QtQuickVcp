@@ -14,7 +14,7 @@ Item {
     Label {
         anchors.fill: parent
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: Screen.logicalPixelDensity * 2
+        anchors.margins: Screen.pixelDensity
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap

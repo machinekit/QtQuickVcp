@@ -20,7 +20,7 @@ Item {
     Label {
         id: errorLabel
         anchors.fill: parent
-        anchors.margins: Screen.logicalPixelDensity * 2
+        anchors.margins: Screen.pixelDensity
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap

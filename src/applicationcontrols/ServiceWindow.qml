@@ -168,7 +168,7 @@ Rectangle {
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: connectingIndicator.top
-            anchors.bottomMargin: Screen.logicalPixelDensity
+            anchors.bottomMargin: Screen.pixelDensity
             font.pointSize: dummyText.font.pointSize * 1.3
             text: qsTr("Waiting for services to appear...")
         }
@@ -185,7 +185,7 @@ Rectangle {
         Column {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: connectingIndicator.bottom
-            anchors.topMargin: Screen.logicalPixelDensity
+            anchors.topMargin: Screen.pixelDensity
 
             Repeater {
                 model: main._requiredServices.length
