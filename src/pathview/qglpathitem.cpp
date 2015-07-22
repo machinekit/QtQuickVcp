@@ -559,7 +559,7 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
         startAngle += 2 * M_PI;
     }
     endAngle = qAtan2(endVector.y(), endVector.x());
-    if (startAngle < 0) {
+    if (endAngle < 0) {
         endAngle += 2 * M_PI;
     }
     anticlockwise = preview.rotation() >= 0;
