@@ -62,7 +62,8 @@ CONTROLS_QML_FILES = \
     AxisRadioGroup.qml \
     AxisComboBox.qml \
     TeleopAction.qml \
-    ShutdownAction.qml
+    ShutdownAction.qml \
+    UserCommandAction.qml
 
 QML_FILES += $$CONTROLS_QML_FILES
 
