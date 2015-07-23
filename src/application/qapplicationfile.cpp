@@ -33,20 +33,29 @@ QApplicationFile::QApplicationFile(QObject *parent) :
     m_error(NoError),
     m_errorString(""),
     m_progress(0.0),
+    m_networkReady(false),
     m_networkManager(NULL),
-    m_reply(NULL),
-    m_file(NULL)
+    m_file(NULL),
+    m_ftp(NULL)
 {
     m_localPath = generateTempPath();
 
     m_networkManager = new QNetworkAccessManager(this);
     connect(m_networkManager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
+    connect(m_networkManager, SIGNAL(networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)),
+            this, SLOT(networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)));
+
+    if (m_networkManager->networkAccessible() == QNetworkAccessManager::Accessible)
+    {
+        initializeFtp();
+    }
 }
 
 QApplicationFile::~QApplicationFile()
 {
     cleanupTempPath();
+    cleanupFtp();
     m_networkManager->deleteLater();
 }
 
@@ -70,13 +79,14 @@ void QApplicationFile::startUpload()
 
     if (m_file->open(QIODevice::ReadOnly))
     {
-        m_reply = m_networkManager->put(QNetworkRequest(url), m_file);
+        m_ftp->connectToHost(url.host(), url.port());
+        m_ftp->login();
+        //m_ftp->cd(remoteUrl.path());
+        m_ftp->put(m_file, fileInfo.fileName(), QFtp::Binary);
+        m_ftp->close();
+
         m_progress = 0.0;
         emit progressChanged(m_progress);
-        connect(m_reply, SIGNAL(uploadProgress(qint64,qint64)),
-                this,SLOT(transferProgress(qint64, qint64)));
-        connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(error(QNetworkReply::NetworkError)));
         updateState(UploadRunning);
         updateError(NoError, "");
     }
@@ -124,15 +134,12 @@ void QApplicationFile::startDownload()
 
     if (m_file->open(QIODevice::WriteOnly))
     {
-        m_reply = m_networkManager->get(QNetworkRequest(url));
+        m_ftp->connectToHost(url.host(), url.port());
+        m_ftp->login();
+        m_ftp->get(fileName, m_file, QFtp::Binary);
+        m_ftp->close();
         m_progress = 0.0;
         emit progressChanged(m_progress);
-        connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)),
-                this,SLOT(transferProgress(qint64, qint64)));
-        connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(error(QNetworkReply::NetworkError)));
-        connect(m_reply, SIGNAL(readyRead()),
-                this, SLOT(readyRead()));
         updateState(DownloadRunning);
         updateError(NoError, "");
     }
@@ -143,13 +150,33 @@ void QApplicationFile::startDownload()
     }
 }
 
+void QApplicationFile::refreshFiles()
+{
+    QUrl url(m_uri);
+
+    m_ftp->connectToHost(url.host(), url.port());
+    m_ftp->login();
+    m_ftp->list();
+    m_ftp->close();
+}
+
+void QApplicationFile::removeFile(QString name)
+{
+    QUrl url(m_uri);
+
+    m_ftp->connectToHost(url.host(), url.port());
+    m_ftp->login();
+    m_ftp->remove(name);
+    m_ftp->close();
+}
+
 void QApplicationFile::abort()
 {
-    if (!m_reply)
+    if (!m_ftp)
     {
         return;
     }
-    m_reply->abort();
+    m_ftp->abort();
     updateState(NoTransfer);
 }
 
@@ -195,34 +222,33 @@ QString QApplicationFile::applicationFilePath(const QString &fileName)
     return QDir(QUrl(m_localPath).toLocalFile()).filePath(fileName);
 }
 
-void QApplicationFile::readyRead()
+void QApplicationFile::initializeFtp()
 {
-    m_file->write(m_reply->readAll());
+    m_ftp = new QFtp(this);
+    connect(m_ftp, SIGNAL(commandFinished(int,bool)),
+    this, SLOT(ftpCommandFinished(int,bool)));
+    connect(m_ftp, SIGNAL(listInfo(QUrlInfo)),
+    this, SLOT(addToList(QUrlInfo)));
+    connect(m_ftp, SIGNAL(dataTransferProgress(qint64,qint64)),
+    this, SLOT(transferProgress(qint64,qint64)));
+
+    m_networkReady = true;
+    emit readyChanged(m_networkReady);
 }
 
-void QApplicationFile::replyFinished(QNetworkReply *reply)
+void QApplicationFile::cleanupFtp()
 {
-    Q_UNUSED(reply)
-
-    m_reply->deleteLater();
-    m_file->close();
-    m_file->deleteLater();
-    m_reply = NULL;
-    m_file = NULL;
-    m_networkManager->clearAccessCache();
-
-
-    if (m_error == NoError)
+    if (m_ftp == NULL)
     {
-        if (m_transferState == UploadRunning) {
-            emit uploadFinished();
-        }
-        else {
-            emit downloadFinished();
-        }
+        return;
     }
 
-    updateState(NoTransfer);
+    m_ftp->abort();
+    m_ftp->deleteLater();
+    m_ftp = NULL;
+
+    m_networkReady = false;
+    emit readyChanged(m_networkReady);
 }
 
 void QApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)
@@ -231,13 +257,74 @@ void QApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)
     emit progressChanged(m_progress);
 }
 
-void QApplicationFile::error(QNetworkReply::NetworkError code)
+void QApplicationFile::networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accesible)
 {
-    if (code == QNetworkReply::OperationCanceledError) // ignore user cancel
+    if (accesible == QNetworkAccessManager::Accessible)
+    {
+        initializeFtp();
+    }
+    else
+    {
+        cleanupFtp();
+    }
+}
+
+void QApplicationFile::addToList(const QUrlInfo &urlInfo)
+{
+    qDebug() << urlInfo.name();
+}
+
+void QApplicationFile::ftpCommandFinished(int, bool error)
+{
+    if (error)
+    {
+        if (m_file)
+        {
+            m_file->close();
+            m_file->deleteLater();
+            m_file = NULL;
+        }
+        updateState(Error);
+        updateError(FtpError, m_ftp->errorString());
+    }
+
+    if (m_ftp->currentCommand() == QFtp::ConnectToHost)
     {
         return;
     }
 
-    updateState(Error);
-    updateError(FtpError, m_reply->errorString());
+    if (m_ftp->currentCommand() == QFtp::Login)
+    {
+        return;
+    }
+
+    if (m_ftp->currentCommand() == QFtp::List)
+    {
+        return;
+    }
+
+    if (m_ftp->currentCommand() == QFtp::Cd)
+    {
+        return;
+    }
+
+    if (m_ftp->currentCommand() == QFtp::Get)
+    {
+        m_file->close();
+        m_file->deleteLater();
+        m_file = NULL;
+        emit downloadFinished();
+        updateState(NoTransfer);
+
+        return;
+    }
+
+    if (m_ftp->currentCommand() == QFtp::Put)
+    {
+        m_file->close();
+        m_file->deleteLater();
+        m_file = NULL;
+        emit uploadFinished();
+        updateState(NoTransfer);
+    }
 }

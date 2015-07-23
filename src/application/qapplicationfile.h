@@ -30,6 +30,7 @@
 #include <QNetworkRequest>
 #include <QFileInfo>
 #include <QDir>
+#include <qftp.h>
 
 class QApplicationFile : public AbstractServiceImplementation
 {
@@ -43,6 +44,7 @@ class QApplicationFile : public AbstractServiceImplementation
     Q_PROPERTY(TransferError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
+    Q_PROPERTY(bool networkReady READ networkReady NOTIFY networkReadyChanged)
     Q_ENUMS(TransferState TransferError)
 
 public:
@@ -107,6 +109,11 @@ public:
         return m_transferState;
     }
 
+    bool networkReady() const
+    {
+        return m_networkReady;
+    }
+
 public slots:
     void setUri(QString arg)
     {
@@ -155,6 +162,8 @@ public slots:
 
     void startUpload();
     void startDownload();
+    void refreshFiles();
+    void removeFile(QString name);
     void abort();
 
 private:
@@ -167,10 +176,11 @@ private:
     TransferError   m_error;
     QString         m_errorString;
     double          m_progress;
+    bool            m_networkReady;
 
     QNetworkAccessManager   *m_networkManager;
-    QNetworkReply           *m_reply;
     QFile                   *m_file;
+    QFtp                    *m_ftp;
 
     void start() {}
     void stop() {}
@@ -179,12 +189,14 @@ private:
     QString generateTempPath();
     void cleanupTempPath();
     QString applicationFilePath(const QString &remoteFilePath);
+    void initializeFtp();
+    void cleanupFtp();
 
 private slots:
-    void readyRead();
-    void replyFinished(QNetworkReply * reply);
     void transferProgress(qint64 bytesSent, qint64 bytesTotal);
-    void error(QNetworkReply::NetworkError code);
+    void networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accesible);
+    void addToList(const QUrlInfo &urlInfo);
+    void ftpCommandFinished(int, bool error);
 
 signals:
     void uriChanged(QString arg);
@@ -198,6 +210,7 @@ signals:
     void transferStateChanged(TransferState arg);
     void uploadFinished();
     void downloadFinished();
+    void networkReadyChanged(bool networkReady);
 };
 
 #endif // QAPPLICATIONFILE_H
