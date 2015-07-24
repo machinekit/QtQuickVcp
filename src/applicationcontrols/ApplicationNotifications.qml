@@ -48,11 +48,10 @@ ListView {
         id: notificationDelegate
         Rectangle {
 
-            //height: width * 0.4
             anchors.right: parent.right
             width: root.messageWidth
-            height: textLabel.height
-            radius: Screen.pixelDensity * 2
+            height: Math.max(textLabel.implicitHeight * 1.1, Screen.pixelDensity * 10)
+            radius: Screen.pixelDensity
             color: systemPalette.light
             border.color: systemPalette.mid
             border.width: 1
@@ -61,7 +60,9 @@ ListView {
                 id: textLabel
                 anchors.left: typeImage.right
                 anchors.right: parent.right
-                anchors.margins: Screen.pixelDensity * 5
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.margins: Screen.pixelDensity * 2
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.WordWrap
@@ -74,7 +75,7 @@ ListView {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: parent.width * 0.13
-                anchors.margins: Screen.pixelDensity * 5
+                anchors.margins: Screen.pixelDensity
                 fillMode: Image.PreserveAspectFit
                 source: {
                     switch (model.type) {
