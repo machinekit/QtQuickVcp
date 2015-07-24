@@ -89,19 +89,28 @@ Item {
     }
 
     function fileError() {
-        console.log("file error: " + file.errorString)
+        if (file.error != ApplicationFile.NoError) {
+            console.log("file error: " + file.errorString)
+            file.clearError()  // ignore errors from FTP
+        }
     }
 
     function statusError() {
-        console.log("status error: " + status.errorString)
+        if (status.error != ApplicationStatus.NoError) {
+            console.log("status error: " + status.errorString)
+        }
     }
 
     function commandError() {
-        console.log("command error: " + command.errorString)
+        if (command.error != ApplicationCommand.NoError) {
+            console.log("command error: " + command.errorString)
+        }
     }
 
     function errorError() {
-        console.log("error error: " + error.errorString)
+        if (error.error != ApplicationError.NoError) {
+            console.log("error error: " + error.errorString)
+        }
     }
 
     Service {
