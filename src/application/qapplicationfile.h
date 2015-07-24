@@ -31,6 +31,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <qftp.h>
+#include "qapplicationfilemodel.h"
 
 class QApplicationFile : public AbstractServiceImplementation
 {
@@ -45,6 +46,7 @@ class QApplicationFile : public AbstractServiceImplementation
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(bool networkReady READ networkReady NOTIFY networkReadyChanged)
+    Q_PROPERTY(QApplicationFileModel *model READ model NOTIFY modelChanged)
     Q_ENUMS(TransferState TransferError)
 
 public:
@@ -55,7 +57,9 @@ public:
         NoTransfer = 0,
         UploadRunning = 1,
         DownloadRunning = 2,
-        Error = 3
+        RefreshRunning = 3,
+        RemoveRunning = 4,
+        Error = 5
     };
 
     enum TransferError {
@@ -114,6 +118,11 @@ public:
         return m_networkReady;
     }
 
+    QApplicationFileModel * model() const
+    {
+        return m_model;
+    }
+
 public slots:
     void setUri(QString arg)
     {
@@ -165,6 +174,7 @@ public slots:
     void refreshFiles();
     void removeFile(QString name);
     void abort();
+    void clearError();
 
 private:
     QString         m_uri;
@@ -177,6 +187,7 @@ private:
     QString         m_errorString;
     double          m_progress;
     bool            m_networkReady;
+    QApplicationFileModel * m_model;
 
     QNetworkAccessManager   *m_networkManager;
     QFile                   *m_file;
@@ -210,7 +221,10 @@ signals:
     void transferStateChanged(TransferState arg);
     void uploadFinished();
     void downloadFinished();
+    void refreshFinished();
+    void removeFinished();
     void networkReadyChanged(bool networkReady);
+    void modelChanged(QApplicationFileModel * model);
 };
 
 #endif // QAPPLICATIONFILE_H
