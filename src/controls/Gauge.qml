@@ -240,10 +240,10 @@ Item {
 
 
     id: main
-    width: (orientation == Qt.Horizontal) ? 150 : 35
-    height: (orientation == Qt.Horizontal) ? 20 : 150
-    implicitHeight: (orientation == Qt.Horizontal) ? valueLabel.implicitHeight : progressBar.implicitWidth
-    implicitWidth: (orientation == Qt.Horizontal) ? progressBar.implicitWidth : valueLabel.implicitHeight
+    width: implicitWidth
+    height: implicitHeight
+    implicitHeight: (orientation == Qt.Horizontal) ? valueLabel.implicitHeight * 1.25 : progressBar.implicitWidth
+    implicitWidth: (orientation == Qt.Horizontal) ? progressBar.implicitWidth : valueLabel.implicitHeight * 1.25
 
     SystemPalette {
         id: systemPalette;
