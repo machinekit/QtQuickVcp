@@ -25,14 +25,19 @@ import QtQuick.Controls 1.2
 import Machinekit.Controls 1.0
 import Machinekit.Application 1.0
 
-ProgressBar {
+Gauge {
     property alias core: object.core
     property alias file: object.file
     property alias status: object.status
     property string _mode: getMode()
+    property string _fileName: object.file.remoteFilePath.split('/').reverse()[0]
 
     id: progressBar
     value: getProgress()
+    fancy: false
+    minimumValueVisible: false
+    maximumValueVisible: false
+    valueVisible: false
 
     function getMode() {
         if ((file !== undefined) && (file.transferState === ApplicationFile.UploadRunning)) {
@@ -57,10 +62,10 @@ ProgressBar {
             return qsTr("Downloading file ") + file.remoteFilePath.split('/').reverse()[0]
         }
         else if (_mode == "running") {
-            return qsTr("Progress ") + (value * 100).toFixed(2) + "%"
+            return (value * 100).toFixed(2) + "% - " + _fileName
         }
         else {
-            return ""
+            return _fileName
         }
     }
 
@@ -96,7 +101,7 @@ ProgressBar {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.top: parent.top
-        width: height
+        width: visible ? height : 0
         iconSource: "qrc:Machinekit/Application/Controls/icons/dialog-cancel"
         visible: (_mode == "upload") || (_mode == "download")
         onClicked: {
