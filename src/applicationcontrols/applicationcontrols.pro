@@ -63,7 +63,8 @@ CONTROLS_QML_FILES = \
     AxisComboBox.qml \
     TeleopAction.qml \
     ShutdownAction.qml \
-    UserCommandAction.qml
+    UserCommandAction.qml \
+    ApplicationRemoteFileDialog.qml
 
 QML_FILES += $$CONTROLS_QML_FILES
 

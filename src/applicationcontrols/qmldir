@@ -53,3 +53,4 @@ AxisComboBox 1.0 AxisComboBox.qml
 TeleopAction 1.0 TeleopAction.qml
 ShutdownAction 1.0 ShutdownAction.qml
 UserCommandAction 1.0 UserCommandAction.qml
+ApplicationRemoteFileDialog 1.0 ApplicationRemoteFileDialog.qml
