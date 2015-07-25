@@ -39,15 +39,10 @@ TableView {
     model: object.mdiHistory.model
     headerVisible: false
 
-    onClicked: {
-        commandSelected(model[row].command)
-    }
-    onDoubleClicked: {
-        commandTriggered(model[row].command)
-    }
-    onRowCountChanged: {
-        mdiTableView.positionViewAtRow(rowCount-1, ListView.End)
-    }
+    onClicked: commandSelected(model[row].command)
+    onDoubleClicked: commandTriggered(model[row].command)
+    onRowCountChanged: mdiTableView.positionViewAtRow(rowCount-1, ListView.End)
+    onPressAndHold: clearMenu.popup()
 
     Keys.onReturnPressed: {
         if (currentRow > -1) {
