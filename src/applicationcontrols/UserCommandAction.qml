@@ -31,6 +31,9 @@ MdiCommandAction {
             for (var i = 0; i < status.config.userCommand.length; ++i)
             {
                 var command = status.config.userCommand[i]
+                if (command === "") {
+                    continue
+                }
                 var splitted = command.split(";")
                 var nameSplit = splitted[splitted.length-1].split(" ")
                 splitted[splitted.length-1] = nameSplit[0]
