@@ -78,6 +78,7 @@ Dialog {
             }
 
             onDoubleClicked: _openFile(row)
+            onPressAndHold: fileMenu.popup()
             Keys.onReturnPressed: _openFile(currentRow)
             Keys.onDeletePressed: _removeFile(currentRow)
 
