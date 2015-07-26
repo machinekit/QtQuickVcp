@@ -57,6 +57,7 @@ QApplicationFile::~QApplicationFile()
 {
     cleanupTempPath();
     cleanupFtp();
+    cleanupFile();
     m_networkManager->deleteLater();
     m_model->deleteLater();
 }
@@ -77,7 +78,7 @@ void QApplicationFile::startUpload()
     m_remoteFilePath = QUrl::fromLocalFile(QDir(remotePath).filePath(fileInfo.fileName())).toString();
     emit remoteFilePathChanged(m_remoteFilePath);
 
-    m_file = new QFile(fileInfo.filePath());
+    m_file = new QFile(fileInfo.filePath(), this);
 
     if (m_file->open(QIODevice::ReadOnly))
     {
@@ -131,7 +132,7 @@ void QApplicationFile::startDownload()
         return;
     }
 
-    m_file = new QFile(localFilePath);
+    m_file = new QFile(localFilePath, this);
 
     if (m_file->open(QIODevice::WriteOnly))
     {
@@ -272,6 +273,18 @@ void QApplicationFile::cleanupFtp()
     emit readyChanged(m_networkReady);
 }
 
+void QApplicationFile::cleanupFile()
+{
+    if (m_file == NULL)
+    {
+        return;
+    }
+
+    m_file->close();
+    m_file->deleteLater();
+    m_file = NULL;
+}
+
 void QApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)
 {
     m_progress = (double)bytesSent / (double)bytesTotal;
@@ -312,12 +325,7 @@ void QApplicationFile::ftpCommandFinished(int, bool error)
 {
     if (error)
     {
-        if (m_file)
-        {
-            m_file->close();
-            m_file->deleteLater();
-            m_file = NULL;
-        }
+        cleanupFile();
         m_ftp->close();
 
         if (m_transferState != NoTransfer) // may be a user abort operation
@@ -331,9 +339,7 @@ void QApplicationFile::ftpCommandFinished(int, bool error)
 
     if (m_ftp->currentCommand() == QFtp::Get)
     {
-        m_file->close();
-        m_file->deleteLater();
-        m_file = NULL;
+        cleanupFile();
         emit downloadFinished();
         updateState(NoTransfer);
 
@@ -342,9 +348,7 @@ void QApplicationFile::ftpCommandFinished(int, bool error)
 
     if (m_ftp->currentCommand() == QFtp::Put)
     {
-        m_file->close();
-        m_file->deleteLater();
-        m_file = NULL;
+        cleanupFile();
         emit uploadFinished();
         updateState(NoTransfer);
         refreshFiles();

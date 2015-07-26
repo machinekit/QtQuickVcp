@@ -202,6 +202,7 @@ private:
     QString applicationFilePath(const QString &remoteFilePath);
     void initializeFtp();
     void cleanupFtp();
+    void cleanupFile();
 
 private slots:
     void transferProgress(qint64 bytesSent, qint64 bytesTotal);

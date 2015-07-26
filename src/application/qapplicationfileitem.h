@@ -26,7 +26,7 @@
 #include <QVariant>
 #include <QDateTime>
 
-class QApplicationFileItem : public QObject
+class QApplicationFileItem
 {
 public:
     explicit QApplicationFileItem();
