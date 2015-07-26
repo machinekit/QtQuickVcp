@@ -931,7 +931,7 @@ QServiceDiscoveryItem *QServiceDiscovery::addItem(QString name, QString type)
         }
     }
 
-    QServiceDiscoveryItem *item = new QServiceDiscoveryItem();
+    QServiceDiscoveryItem *item = new QServiceDiscoveryItem(this);
     item->setName(name);
     item->setType(type);
     serviceDiscoveryItems.append(item);
@@ -1012,9 +1012,10 @@ void QServiceDiscovery::clearItems(QString type)
     // delete all service discovery items
     for (int i = (serviceDiscoveryItems.count()-1); i >= 0; i--)
     {
-        stopItemQueries(serviceDiscoveryItems.at(i));
-        serviceDiscoveryItems.at(i)->deleteLater();
-        serviceDiscoveryItems.removeAt(i);
+        QServiceDiscoveryItem *item;
+        item = serviceDiscoveryItems.takeAt(i);
+        stopItemQueries(item);
+        item->deleteLater();
     }
 
     m_serviceItemsMap.insert(type, serviceDiscoveryItems);   // insert the empty list
