@@ -56,6 +56,7 @@
         <file>JogDistanceHandler.qml</file>
         <file>UserCommandAction.qml</file>
         <file>ApplicationRemoteFileDialog.qml</file>
+        <file>OverrideLimitsAction.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/Application/Controls/icons">
         <file alias="process-stop">icons/process-stop.png</file>

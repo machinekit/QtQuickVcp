@@ -64,7 +64,8 @@ CONTROLS_QML_FILES = \
     TeleopAction.qml \
     ShutdownAction.qml \
     UserCommandAction.qml \
-    ApplicationRemoteFileDialog.qml
+    ApplicationRemoteFileDialog.qml \
+    OverrideLimitsAction.qml
 
 QML_FILES += $$CONTROLS_QML_FILES
 

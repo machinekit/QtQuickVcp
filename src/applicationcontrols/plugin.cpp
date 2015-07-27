@@ -77,8 +77,9 @@ static const struct {
     { "AxisComboBox", 1, 0 },
     { "TeleopAction", 1, 0 },
     { "ShutdownAction", 1, 0 },
-    { "UserCommandAction", 1, 0},
-    { "ApplicationRemoteFileDialog", 1, 0}
+    { "UserCommandAction", 1, 0 },
+    { "ApplicationRemoteFileDialog", 1, 0 },
+    { "OverrideLimitsAction", 1, 0 }
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)
