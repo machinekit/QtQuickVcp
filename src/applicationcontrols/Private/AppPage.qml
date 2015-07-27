@@ -7,7 +7,8 @@ Item {
     property string applicationSource: ""
     property var applicationConfig: undefined
     property var serviceDiscovery: undefined
-    property bool active: applicationLoader.active
+    property alias active: applicationLoader.active
+    property alias status: applicationLoader.status
     property string title: (applicationLoader.active && (applicationLoader.item != null))
                            ? ((applicationLoader.item.title !== undefined) ? applicationLoader.item.title : "") : ""
     property var services: (((applicationLoader.item != null) && (applicationLoader.item.services !== undefined)) ? applicationLoader.item.services : [])

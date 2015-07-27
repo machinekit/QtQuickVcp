@@ -615,11 +615,12 @@ Rectangle {
         {
             return "error"
         }
-        else if (appPage.active)
+        else if (appPage.status == Loader.Ready)
         {
             return "app-loaded"
         }
-        else if (applicationConfig.selectedConfig.loading)
+        else if (applicationConfig.selectedConfig.loading
+                 || (appPage.active && (appPage.status == Loader.Loading)))
         {
             return "app-loading"
         }
@@ -643,95 +644,91 @@ Rectangle {
     states: [
         State {
             name: "network"
-            PropertyChanges { target: networkPage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; visible: true }
+            PropertyChanges { target: instancePage; visible: false }
+            PropertyChanges { target: launcherPage; visible: false }
+            PropertyChanges { target: selectedPage; visible: false }
+            PropertyChanges { target: configPage; visible: false }
+            PropertyChanges { target: appPage; visible: false }
+            PropertyChanges { target: errorPage; visible: false}
+            PropertyChanges { target: loadingPage; visible: false }
         },
         State {
             name: "instance"
-            PropertyChanges { target: instancePage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; visible: false }
+            PropertyChanges { target: instancePage; visible: true }
+            PropertyChanges { target: launcherPage; visible: false }
+            PropertyChanges { target: selectedPage; visible: false }
+            PropertyChanges { target: configPage; visible: false }
+            PropertyChanges { target: appPage; visible: false }
+            PropertyChanges { target: errorPage; visible: false}
+            PropertyChanges { target: loadingPage; visible: false }
         },
         State {
             name: "launcher"
-            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: launcherPage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; visible: false }
+            PropertyChanges { target: instancePage; visible: false }
+            PropertyChanges { target: launcherPage; visible: true }
+            PropertyChanges { target: selectedPage; visible: false }
+            PropertyChanges { target: configPage; visible: false }
+            PropertyChanges { target: appPage; visible: false }
+            PropertyChanges { target: errorPage; visible: false}
+            PropertyChanges { target: loadingPage; visible: false }
         },
         State {
             name: "launcher-selected"
-            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: selectedPage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; visible: false }
+            PropertyChanges { target: instancePage; visible: false }
+            PropertyChanges { target: launcherPage; visible: false }
+            PropertyChanges { target: selectedPage; visible: true }
+            PropertyChanges { target: configPage; visible: false }
+            PropertyChanges { target: appPage; visible: false }
+            PropertyChanges { target: errorPage; visible: false}
+            PropertyChanges { target: loadingPage; visible: false }
         },
         State {
             name: "config"
-            PropertyChanges { target: configPage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; visible: false }
+            PropertyChanges { target: instancePage; visible: false }
+            PropertyChanges { target: launcherPage; visible: false }
+            PropertyChanges { target: selectedPage; visible: false }
+            PropertyChanges { target: configPage; visible: true }
+            PropertyChanges { target: appPage; visible: false }
+            PropertyChanges { target: errorPage; visible: false}
+            PropertyChanges { target: loadingPage; visible: false }
         },
         State {
             name: "app-loading"
-            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: loadingPage; opacity: 1.0; z: 1; enabled: true }
+            PropertyChanges { target: networkPage; visible: false }
+            PropertyChanges { target: instancePage; visible: false }
+            PropertyChanges { target: launcherPage; visible: false }
+            PropertyChanges { target: selectedPage; visible: false }
+            PropertyChanges { target: configPage; visible: false }
+            PropertyChanges { target: appPage; visible: false }
+            PropertyChanges { target: errorPage; visible: false}
+            PropertyChanges { target: loadingPage; visible: true }
         },
         State {
             name: "app-loaded"
-            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: appPage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: errorPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; visible: false }
+            PropertyChanges { target: instancePage; visible: false }
+            PropertyChanges { target: launcherPage; visible: false }
+            PropertyChanges { target: selectedPage; visible: false }
+            PropertyChanges { target: configPage; visible: false }
+            PropertyChanges { target: appPage; visible: true }
+            PropertyChanges { target: errorPage; visible: false}
+            PropertyChanges { target: loadingPage; visible: false }
         },
         State {
             name: "error"
-            PropertyChanges { target: configPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: appPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: instancePage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: launcherPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: selectedPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: networkPage; opacity: 0.0; z: 0; enabled: false }
-            PropertyChanges { target: errorPage; opacity: 1.0; z: 1; enabled: true }
-            PropertyChanges { target: loadingPage; opacity: 0.0; z: 0; enabled: false }
+            PropertyChanges { target: networkPage; visible: false }
+            PropertyChanges { target: instancePage; visible: false }
+            PropertyChanges { target: launcherPage; visible: false }
+            PropertyChanges { target: selectedPage; visible: false }
+            PropertyChanges { target: configPage; visible: false }
+            PropertyChanges { target: appPage; visible: false }
+            PropertyChanges { target: errorPage; visible: true}
+            PropertyChanges { target: loadingPage; visible: false }
         }
     ]
-
-    transitions: Transition {
-            PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic }
-        }
 }
