@@ -30,7 +30,7 @@
 #include <QNetworkRequest>
 #include <QFileInfo>
 #include <QDir>
-#include <qftp.h>
+#include "qftp.h"
 #include "qapplicationfilemodel.h"
 
 class QApplicationFile : public AbstractServiceImplementation
