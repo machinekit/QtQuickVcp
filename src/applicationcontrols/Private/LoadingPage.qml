@@ -5,6 +5,7 @@ import QtQuick.Window 2.0
 
 Item {
     property var applicationConfig: {"selectedConfig": {"name": "TestConfig"}}
+    property string loadingName: applicationConfig.selectedConfig.name
 
     id: root
     width: 700
@@ -22,7 +23,7 @@ Item {
         anchors.bottom: connectingIndicator.top
         anchors.bottomMargin: Screen.pixelDensity
         font.pointSize: dummyText.font.pointSize * 1.3
-        text: qsTr("Loading ") + applicationConfig.selectedConfig.name + "..."
+        text: qsTr("Loading ") + (root.loadingName != "" ? root.loadingName : "user interface") + "..."
     }
 
     BusyIndicator {
