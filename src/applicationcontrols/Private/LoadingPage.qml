@@ -7,6 +7,8 @@ Item {
     property var applicationConfig: {"selectedConfig": {"name": "TestConfig"}}
     property string loadingName: applicationConfig.selectedConfig.name
 
+    signal goBack()
+
     id: root
     width: 700
     height: 600
@@ -14,6 +16,14 @@ Item {
     Label {
         id: dummyText
         visible: false
+    }
+
+    Button {
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.margins: Screen.pixelDensity
+        text: qsTr("Back")
+        onClicked: goBack()
     }
 
     Label {

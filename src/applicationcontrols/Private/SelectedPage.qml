@@ -36,6 +36,11 @@ Item {
         visible: false
     }
 
+    Button {
+        id: dummyButton
+        visible: false
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Screen.pixelDensity
@@ -45,10 +50,12 @@ Item {
             id: pageTitleText
 
             Layout.fillWidth: true
+            Layout.preferredHeight: Math.max(dummyButton.height, implicitHeight)
             text: titleText
             font.pointSize: dummyText.font.pointSize * 1.3
             font.bold: true
             horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
 
             RowLayout {

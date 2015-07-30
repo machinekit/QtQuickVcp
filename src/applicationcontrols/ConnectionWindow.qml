@@ -520,6 +520,8 @@ Rectangle {
         anchors.fill: parent
 
         applicationConfig: applicationConfig
+
+        onGoBack: mainWindow.goBack()
     }
 
     ErrorPage {
