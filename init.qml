@@ -23,18 +23,30 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
+import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: appWindow
 
     visibility: (Qt.platform.os == "android") ? "FullScreen" : "AutomaticVisibility"
     visible: true
+    x: (Qt.platform.os == "android") ? 0 : (Screen.width - width ) / 2
+    y: (Qt.platform.os == "android") ? 0 : (Screen.height - height ) / 2
     width: (Qt.platform.os == "android") ? Screen.width : Screen.width * 0.7
     height: (Qt.platform.os == "android") ? Screen.height : Screen.height * 0.7
     title: (mainAppLoader.item != undefined) ? mainAppLoader.item.title : "Loading"
     toolBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.toolBar : null
     statusBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.statusBar : null
     menuBar: (mainAppLoader.item != undefined) ? mainAppLoader.item.menuBar : null
+
+    Settings {
+        id: windowSettings
+        category: "window"
+        property alias width: appWindow.width
+        property alias height: appWindow.height
+        property alias x: appWindow.x
+        property alias y: appWindow.y
+    }
 
     // Loaders for the main application and the splash screen.
     Loader {

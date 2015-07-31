@@ -21,10 +21,14 @@
 ****************************************************************************/
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QIcon>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    app.setOrganizationName("Machinekit Project");
+    app.setOrganizationDomain("machinekit.io");
+    app.setApplicationName("MachinekitClient");
 
     QQmlApplicationEngine engine;
     engine.addImportPath(QStringLiteral("qml"));
