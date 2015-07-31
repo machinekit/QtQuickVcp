@@ -39,6 +39,9 @@ Rectangle {
         }
     ]
 
+    /* Disconnects this page */
+    signal disconnect()
+
     id: main
 
     color: systemPalette.window
@@ -48,30 +51,68 @@ Rectangle {
         colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
     }
 
+    Label {
+        id: dummyText
+        visible: false
+    }
+
+    Button {
+        id: dummyButton
+        visible: false
+    }
+
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Screen.logicalPixelDensity*3
-        spacing: Screen.logicalPixelDensity*3
+        anchors.margins: Screen.pixelDensity
+        spacing: Screen.pixelDensity
 
-        ListView {
+        Label {
+            id: pageTitleText
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: Math.max(dummyButton.height, implicitHeight)
+            text: qsTr("Discovered Services")
+            font.pointSize: dummyText.font.pointSize * 1.3
+            font.bold: true
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            wrapMode: Text.WordWrap
+
+            RowLayout {
+                anchors.fill: parent
+
+                Item { Layout.fillWidth: true }
+                Button {
+                    text: qsTr("Back")
+                    onClicked: main.disconnect()
+                }
+            }
+        }
+
+        ScrollView {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            spacing: Screen.logicalPixelDensity*3
 
-            model: allServices.items
+            ListView {
+                spacing: Screen.pixelDensity * 3
 
-            delegate: ColumnLayout {
-                anchors.left: parent.left
-                anchors.right: parent.right
+                model: allServices.items
 
-                Label {
-                    Layout.fillWidth: true
-                    text: name
-                    font.bold: true
-                }
-                Label {
-                    Layout.fillWidth: true
-                    text: txtRecords.join("\n")
+                delegate: ColumnLayout {
+                    anchors.leftMargin: Screen.pixelDensity * 3
+                    anchors.rightMargin: Screen.pixelDensity * 3
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    Label {
+                        Layout.fillWidth: true
+                        text: name
+                        font.bold: true
+                    }
+                    Label {
+                        Layout.fillWidth: true
+                        text: txtRecords.join("\n")
+                    }
                 }
             }
         }
