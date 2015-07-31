@@ -38,8 +38,14 @@ Dialog {
         file.removeFile(fileName)
     }
 
-    function _uploadFile() {
+    function _uploadFileDialog() {
+        dialog.close()
         fileDialog.open()
+    }
+
+    function _uploadFile(url) {
+        file.localFilePath = url
+        file.startUpload()
     }
 
     SystemPalette { id: systemPalette }
@@ -90,6 +96,15 @@ Dialog {
                 }
             }
 
+            DropArea {
+                anchors.fill: parent
+                onDropped: {
+                    if (drop.hasUrls) {
+                        _uploadFile(drop.urls[0])
+                    }
+                }
+            }
+
             Menu {
                 id: fileMenu
                 MenuItem {
@@ -105,7 +120,7 @@ Dialog {
                 MenuItem {
                     text: qsTr("Upload file...")
                     enabled: _ready
-                    onTriggered: _uploadFile()
+                    onTriggered: _uploadFileDialog()
                 }
             }
         }
@@ -130,7 +145,7 @@ Dialog {
                 text: qsTr("Upload...")
                 enabled: _ready
                 iconName: "document-open"
-                onClicked: _uploadFile()
+                onClicked: _uploadFileDialog()
             }
 
             Button {
