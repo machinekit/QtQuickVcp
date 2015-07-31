@@ -162,6 +162,13 @@ Rectangle {
         z: 100
         color: systemPalette.window
 
+        Button {
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: Screen.pixelDensity
+            text: qsTr("Back")
+            onClicked: main.disconnect()
+        }
 
         Label {
             id: connectingLabel
