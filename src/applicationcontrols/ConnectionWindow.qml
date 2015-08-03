@@ -126,7 +126,7 @@ Rectangle {
 
     /*! This property holds the currently selected application mode. Legal value are \c{"local"} and \c{"remote"}.
     */
-    property string mode: localVisible ? "local" : "remote"
+    property string mode: (localVisible && !remoteVisible) ? "local" : "remote"
 
     /*! \qmlproperty ServiceDiscoveryFilter instanceFilter
 
