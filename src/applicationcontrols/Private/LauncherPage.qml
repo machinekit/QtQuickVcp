@@ -196,7 +196,7 @@ Item {
                     anchors.centerIn: parent
                     running: true
                     visible: launcherListView.model.length === 0
-                    height: parent.height * 0.15
+                    height: Math.min(root.width, root.height) * 0.15
                     width: height
                 }
             }
