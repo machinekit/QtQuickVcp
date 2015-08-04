@@ -35,7 +35,8 @@ QApplicationCommand::QApplicationCommand(QObject *parent) :
     m_context(NULL),
     m_commandSocket(NULL),
     m_commandHeartbeatTimer(new QTimer(this)),
-    m_commandPingOutstanding(false)
+    m_commandPingErrorCount(0),
+    m_commandPingErrorThreshold(2)
 {
     connect(m_commandHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(commandHeartbeatTimerTick()));
@@ -615,7 +616,7 @@ void QApplicationCommand::cleanup()
 
 void QApplicationCommand::startCommandHeartbeat()
 {
-    m_commandPingOutstanding = false;
+    m_commandPingErrorCount = 0;
 
     if (m_heartbeatPeriod > 0)
     {
@@ -715,7 +716,7 @@ void QApplicationCommand::commandMessageReceived(const QList<QByteArray> &messag
 
     if (m_rx.type() == pb::MT_PING_ACKNOWLEDGE)
     {
-        m_commandPingOutstanding = false;
+        m_commandPingErrorCount = 0;
 
         if (m_commandSocketState != Up)
         {
@@ -763,7 +764,9 @@ void QApplicationCommand::pollError(int errorNum, const QString &errorMsg)
 
 void QApplicationCommand::commandHeartbeatTimerTick()
 {
-    if (m_commandPingOutstanding)
+    m_commandPingErrorCount++;  // increase error count by one, threshold 2 means two timer ticks
+
+    if (m_commandPingErrorCount > m_commandPingErrorThreshold)
     {
         m_commandSocketState = Trying;
         updateState(Timeout);
@@ -775,10 +778,8 @@ void QApplicationCommand::commandHeartbeatTimerTick()
 
     sendCommandMessage(pb::MT_PING);
 
-    m_commandPingOutstanding = true;
-
 #ifdef QT_DEBUG
-    DEBUG_TAG(2, "command", "ping")
+    DEBUG_TAG(2, "command", "ping error count" << m_commandPingErrorCount)
 #endif
 }
 

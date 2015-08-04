@@ -213,7 +213,8 @@ private:
     PollingZMQContext *m_context;
     ZMQSocket   *m_commandSocket;
     QTimer      *m_commandHeartbeatTimer;
-    bool         m_commandPingOutstanding;
+    int         m_commandPingErrorCount;
+    int         m_commandPingErrorThreshold;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;
