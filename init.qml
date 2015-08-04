@@ -46,6 +46,7 @@ ApplicationWindow {
         property alias height: appWindow.height
         property alias x: appWindow.x
         property alias y: appWindow.y
+        property alias  visibility: appWindow.visibility
     }
 
     // Loaders for the main application and the splash screen.
