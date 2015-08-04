@@ -93,6 +93,18 @@ Rectangle {
         return required
     }
 
+    /*!
+        Updates the services of this window.
+    */
+    function updateServices() {
+        var list = [] //main.services
+        var nestedList = _recurseObjects(main.data, "Service")
+        if (nestedList.length > 0) {
+            list = list.concat(nestedList)
+        }
+        main.services = list
+    }
+
     /*! \internal */
     function _evaluateReady() {
         for (var i = 0; i < _requiredServices.length; ++i) {
@@ -134,12 +146,7 @@ Rectangle {
     signal disconnect()
 
     Component.onCompleted: {
-        var list = main.services
-        var nestedList = _recurseObjects(main.data, "Service")
-        if (nestedList.length > 0) {
-            list = list.concat(nestedList)
-        }
-        main.services = list
+       updateServices()
     }
 
     id: main
