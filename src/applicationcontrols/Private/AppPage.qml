@@ -24,6 +24,7 @@ Item {
 
     Loader {
         id: applicationLoader
+        asynchronous: true
 
         anchors.fill: parent
         active: (applicationSource != "") ? true : applicationConfig.selectedConfig.loaded
@@ -38,13 +39,12 @@ Item {
             {
                 setError(qsTr("QML Error:"), "Loading QML file failed")
             }
-        }
-
-        onLoaded: {
-            console.log("Window " + applicationLoader.item.title + " loaded")
-            applicationLoader.item.onServicesChanged.connect(serviceDiscovery.updateServices)
-            if (applicationLoader.item.onDisconnect) {
-                applicationLoader.item.onDisconnect.connect(goBack)
+            else if (applicationLoader.status == Loader.Ready) {
+                console.log("Window " + applicationLoader.item.title + " loaded")
+                applicationLoader.item.onServicesChanged.connect(serviceDiscovery.updateServices)
+                if (applicationLoader.item.onDisconnect) {
+                    applicationLoader.item.onDisconnect.connect(goBack)
+                }
             }
         }
     }
