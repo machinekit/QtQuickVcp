@@ -625,8 +625,11 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
         for (int i = 0; i < m_rx.pin_size(); ++i)
         {
             pb::Pin remotePin = m_rx.pin(i);
-            QHalPin *localPin = m_pinsByHandle.value(remotePin.handle());
-            pinUpdate(remotePin, localPin);
+            QHalPin *localPin = m_pinsByHandle.value(remotePin.handle(), NULL);
+            if (localPin != NULL) // in case we received a wrong pin handle
+            {
+                pinUpdate(remotePin, localPin);
+            }
         }
 
         refreshHalrcompHeartbeat();

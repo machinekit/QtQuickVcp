@@ -248,8 +248,11 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
         for (int i = 0; i < m_rx.signal_size(); ++i)
         {
             pb::Signal remoteSignal = m_rx.signal(i);
-            QHalSignal *localSignal = m_signalsByHandle.value(remoteSignal.handle());
-            signalUpdate(remoteSignal, localSignal);
+            QHalSignal *localSignal = m_signalsByHandle.value(remoteSignal.handle(), NULL);
+            if (localSignal != NULL) // in case we received a wrong signal handle
+            {
+                signalUpdate(remoteSignal, localSignal);
+            }
         }
 
         refreshHalgroupHeartbeat();
