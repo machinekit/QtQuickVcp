@@ -78,7 +78,11 @@ Gauge {
         }
         else if (_mode == "running") {
             var totalLines = status.task.totalLines
-            return (totalLines > 0 ? (status.motion.motionLine / totalLines) : 0.0)
+            var currentLine = status.motion.motionLine
+            if (currentLine > totalLines) {
+                currentLine = 0
+            }
+            return (totalLines > 0 ? currentLine / totalLines : 0.0)
         }
         else {
             return 0.0
