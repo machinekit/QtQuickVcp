@@ -39,14 +39,13 @@ Item {
             {
                 setError(qsTr("QML Error:"), "Loading QML file failed")
             }
-            else if (applicationLoader.status == Loader.Ready) {
-                console.log("Window " + applicationLoader.item.title + " loaded")
-                applicationLoader.item.onServicesChanged.connect(serviceDiscovery.updateServices)
-                if (applicationLoader.item.onDisconnect) {
-                    applicationLoader.item.onDisconnect.connect(goBack)
-                }
-            }
         }
+    }
+
+    Connections {
+        target: applicationLoader.item
+        onServicesChanged: serviceDiscovery.updateServices()
+        onDisconnect: goBack()
     }
 }
 
