@@ -192,7 +192,7 @@ Rectangle {
 
             anchors.centerIn: parent
             running: true
-            height: Math.min(root.width, root.height) * 0.15
+            height: Math.min(main.width, main.height) * 0.15
             width: height
         }
 
