@@ -24,7 +24,7 @@ Item {
 
     Loader {
         id: applicationLoader
-        asynchronous: true
+        asynchronous: false
 
         anchors.fill: parent
         active: (applicationSource != "") ? true : applicationConfig.selectedConfig.loaded
