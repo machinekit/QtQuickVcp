@@ -3,42 +3,34 @@ import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
 
-Item {
+Loader {
     property string applicationSource: ""
     property var applicationConfig: undefined
     property var serviceDiscovery: undefined
-    property alias active: applicationLoader.active
-    property alias status: applicationLoader.status
-    property string title: (applicationLoader.active && (applicationLoader.item != null))
-                           ? ((applicationLoader.item.title !== undefined) ? applicationLoader.item.title : "") : ""
-    property var services: (((applicationLoader.item != null) && (applicationLoader.item.services !== undefined)) ? applicationLoader.item.services : [])
-    property var toolBar: ((applicationLoader.item != null) ? applicationLoader.item.toolBar : null)
-    property var statusBar: ((applicationLoader.item != null) ? applicationLoader.item.statusBar : null)
-    property var menuBar: ((applicationLoader.item != null) ? applicationLoader.item.menuBar : null)
+    property string title: (active && (item != null))
+                           ? ((item.title !== undefined) ? item.title : "") : ""
+    property var services: (((item != null) && (item.services !== undefined)) ? item.services : [])
+    property var toolBar: ((item != null) ? item.toolBar : null)
+    property var statusBar: ((item != null) ? item.statusBar : null)
+    property var menuBar: ((item != null) ? item.menuBar : null)
 
     signal goBack()
 
-    id: root
+    id: applicationLoader
     width: 600
     height: 500
 
-    Loader {
-        id: applicationLoader
-        asynchronous: false
+    active: (applicationSource != "") ? true : applicationConfig.selectedConfig.loaded
+    source: (applicationSource != "") ? applicationSource : applicationConfig.selectedConfig.mainFile
 
-        anchors.fill: parent
-        active: (applicationSource != "") ? true : applicationConfig.selectedConfig.loaded
-        source: (applicationSource != "") ? applicationSource : applicationConfig.selectedConfig.mainFile
+    onSourceChanged: {
+        console.log("Source changed: " + source + " " + active)
+    }
 
-        onSourceChanged: {
-            console.log("Source changed: " + source + " " + active)
-        }
-
-        onStatusChanged: {
-            if (applicationLoader.status === Loader.Error)
-            {
-                setError(qsTr("QML Error:"), "Loading QML file failed")
-            }
+    onStatusChanged: {
+        if (status === Loader.Error)
+        {
+            setError(qsTr("QML Error:"), "Loading QML file failed")
         }
     }
 
