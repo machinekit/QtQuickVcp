@@ -103,6 +103,14 @@ Item {
                         applicationSelected(0)
                     }
                 }
+
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    running: true
+                    visible: (root.mode == "remote") && !applicationConfig.connected
+                    height: Math.min(root.width, root.height) * 0.15
+                    width: height
+                }
             }
         }
     }
