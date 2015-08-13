@@ -6,22 +6,24 @@ Item {
     property color borderColor: "darkGray"
     property alias backgroundColor: base.color
     property alias foregroundColor: top.color
-    property alias textColor: text.color
-    property double value: 25
+    property alias textColor: label.color
+    property double value: defaultValue
     property alias minimumValue: mid.minimumValue
     property alias maximumValue: mid.maximumValue
+    property alias defaultValue: mid.defaultValue
     property alias stepSize: mid.stepSize
     property int decimals: 0
     property alias readOnly: mid.readOnly
-    property bool pieMultiColor: false
+    property alias pieMultiColor: mid.multicolor
     property bool meter: false
     property string style: "Pie"
     property string needleType: "Point"
-    property string pieType: "Flat"
+    property alias pieType: mid.style
     property string prefix: ""
     property string suffix: ""
-    property alias font: text.font
+    property alias font: label.font
     property real centerScale: needleType == "Groove" ? 0.8 : 0.66
+    property alias text: label.text
 
     id: root
     width: 200
@@ -39,11 +41,6 @@ Item {
         id: mid
         anchors.fill: parent
         z: 0.3
-        multicolor: root.pieMultiColor
-        style: root.pieType
-        minimumValue: root.minimumValue
-        maximumValue: root.maximumValue
-        stepSize: root.stepSize
 
         Binding { target: mid; property: "value"; value: root.value; when: !mid.animating } // decouple value from animation
         Binding { target: root; property: "value"; value: mid.value; when: !mid.animating }
@@ -64,7 +61,7 @@ Item {
     }
 
     Label {
-        id: text
+        id: label
         anchors.centerIn: parent
         z: 0.5
         text: root.prefix + root.value.toFixed(root.decimals) + root.suffix

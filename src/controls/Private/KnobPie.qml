@@ -6,6 +6,7 @@ Canvas {
     property double value: 25.0
     property double minimumValue: 0.0
     property double maximumValue: 100.0
+    property double defaultValue: (maximumValue - minimumValue) / 2
     property double stepSize: 0.1
     property bool readOnly: false
     property bool multicolor: false
@@ -13,7 +14,7 @@ Canvas {
 
     property double factor: (2*Math.PI/(maximumValue - minimumValue))
     property double scale: 1 / (factor * stepSize)
-    property double angle: value * factor - Math.PI/2
+    property double angle: (value-minimumValue) * factor - Math.PI/2
     property double spanAngle: (value - minimumValue) * factor
     property alias animating: animate.running
 
@@ -26,7 +27,6 @@ Canvas {
     smooth: true
 
     onAngleChanged: requestPaint()
-    onSpanAngleChanged: requestPaint()
     onColorChanged: requestPaint()
 
     onPaint:
@@ -57,11 +57,12 @@ Canvas {
         id: events
         anchors.fill: parent
         enabled: !readOnly
+        acceptedButtons: Qt.AllButtons
 
         function endValueFromPoint(x, y) {
             var theta = Math.atan2(x, -y)
             var angle = (theta + 2*Math.PI) % (2*Math.PI)
-            var newValue = Math.round(angle*root.scale) * root.stepSize
+            var newValue = Math.round(angle*root.scale) * root.stepSize + minimumValue
             return Math.max(Math.min(newValue, maximumValue), minimumValue)
         }
 
@@ -90,7 +91,15 @@ Canvas {
             }
         }
 
-        onClicked: calculateValue(mouseX,mouseY)
+        onClicked: {
+            if (mouse.button == Qt.LeftButton) {
+                calculateValue(mouse.x,mouse.y)
+            }
+            else
+            {
+                value = defaultValue
+            }
+        }
         onPositionChanged: calculateValue(mouseX,mouseY)
     }
 
