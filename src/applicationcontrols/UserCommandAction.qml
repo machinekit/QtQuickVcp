@@ -34,12 +34,11 @@ MdiCommandAction {
                 if (command === "") {
                     continue
                 }
-                var splitted = command.split(";")
-                var nameSplit = splitted[splitted.length-1].split(" ")
-                splitted[splitted.length-1] = nameSplit[0]
-                nameSplit.splice(0,1)
-                var name = nameSplit.join(" ")
-                commandList.push({"name": name, "commands": splitted})
+                var splitted = command.split(" ")
+                var mdiCommands = splitted[0].split(";")
+                splitted.splice(0,1)
+                var name = splitted.join(" ")
+                commandList.push({"name": name, "commands": mdiCommands})
             }
         }
         return commandList
