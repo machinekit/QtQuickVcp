@@ -358,7 +358,15 @@ Rectangle {
         }
 
         serviceDiscovery.lookupMode = sdSettings.values.lookupMode
-        mode = sdSettings.values.mode
+        if (localVisible && !remoteVisible) {
+            mode = "local"
+        }
+        else if (remoteVisible && !localVisible) {
+            mode = "remote"
+        }
+        else {
+            mode = sdSettings.values.mode
+        }
 
         if (manualConfig) {
             sdSettings.setValue("autoSaveConfiguration", false, false)
