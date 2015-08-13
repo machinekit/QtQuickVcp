@@ -98,7 +98,7 @@ Item {
                 }
 
                 onCountChanged: {
-                    if (root.visible && (autoSelectApplication == true) && (count > 0) && configService.ready)
+                    if ((autoSelectApplication == true) && (count > 0) && configService.ready)
                     {
                         applicationSelected(0)
                     }
