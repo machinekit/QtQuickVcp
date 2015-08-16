@@ -36,6 +36,7 @@ Loader {
 
     Connections {
         target: applicationLoader.item
+        ignoreUnknownSignals: true
         onServicesChanged: serviceDiscovery.updateServices()
         onDisconnect: goBack()
     }
