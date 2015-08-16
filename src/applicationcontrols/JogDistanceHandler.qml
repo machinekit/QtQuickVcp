@@ -28,10 +28,15 @@ ApplicationObject {
     property bool continousVisible: true
     property string continousText: qsTr("Continous")
     property var incrementsModel: continousVisible ? _incrementsModelBase.concat([continousText]) : _incrementsModelBase
-    property var incrementsModelReverse: incrementsModel.reverse()
+    property var incrementsModelReverse: incrementsModel.slice(0).reverse()
     property var distanceModel: continousVisible ? _incrementsModelBase.concat([0]) : _incrementsModelBase
-    property var distanceModelReverse: distanceModel.reverse()
+    property var distanceModelReverse: distanceModel.slice(0).reverse()
     property var _incrementsModelBase: object.status.synced ? getIncrements() : []
+
+    function _compareNumbers(a, b)
+    {
+        return a - b;
+    }
 
     id: object
 
@@ -43,7 +48,7 @@ ApplicationObject {
         if ((axisIncrements === undefined) || (axisIncrements === "")) {
             axisIncrements =  object.status.config.increments
         }
-        return axisIncrements.split(" ")
+        return axisIncrements.split(" ").sort(_compareNumbers)
     }
 }
 
