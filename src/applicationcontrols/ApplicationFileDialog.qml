@@ -45,6 +45,9 @@ FileDialog {
             for (var i = 0; i < status.config.programExtension.length; ++i)
             {
                 var extension = status.config.programExtension[i]
+                if (extension === "") {  // skip empty
+                    continue
+                }
                 var splitted = extension.split(",")
                 var nameSplit = splitted[splitted.length-1].split(" ")
                 splitted[splitted.length-1] = nameSplit[0]
