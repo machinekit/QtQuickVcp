@@ -11,12 +11,20 @@ Item {
     property var serviceDiscovery: {"lookupMode": ServiceDiscovery.MulticastDNS}
 
     signal nameServersChanged()
+    signal instanceSelected(string uuid)
+
+    function _evaluateAutoSelection() {
+        if (visible && (autoSelectInstance == true) && (instances.length > 0))
+        {
+            var uuid = instances[0].uuid
+            if (uuid !== "")
+                instanceSelected(uuid)
+        }
+    }
 
     id: root
     width: 1000
     height: 800
-
-    signal instanceSelected(string uuid)
 
     Button {
         id: dummyButton
@@ -55,14 +63,7 @@ Item {
                 onClicked: instanceSelected(root.instances[index].uuid)
             }
 
-            onCountChanged: {
-                if (root.visible && (root.autoSelectInstance == true) && (root.instances.length > 0))
-                {
-                    var uuid = root.instances[0].uuid
-                    if (uuid !== "")
-                        instanceSelected(uuid)
-                }
-            }
+            onCountChanged: _evaluateAutoSelection()
 
             BusyIndicator {
                 anchors.centerIn: parent

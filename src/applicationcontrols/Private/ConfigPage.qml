@@ -13,10 +13,24 @@ Item {
     property var configService: {"name": "Test on XYZ"}
     property var applications: []
 
+    property var _listModel: root.instanceSelected ? root.applications : 0
+
     signal applicationSelected(int index)
     signal goBack()
 
+    function _evaluateAutoSelection() {
+        if ((autoSelectApplication == true) && (_listModel.length > 0) && configService.ready)
+        {
+            applicationSelected(0)
+        }
+    }
+
     id: root
+
+    Connections {
+        target: configService
+        onReadyChanged: _evaluateAutoSelection()
+    }
 
     Label {
         id: dummyText
@@ -62,7 +76,7 @@ Item {
                 spacing: Screen.pixelDensity
                 clip: true
 
-                model: root.instanceSelected ? root.applications : 0
+                model: _listModel
                 delegate: Button {
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -97,12 +111,7 @@ Item {
                     onClicked: applicationSelected(index)
                 }
 
-                onCountChanged: {
-                    if ((autoSelectApplication == true) && (count > 0) && configService.ready)
-                    {
-                        applicationSelected(0)
-                    }
-                }
+                onCountChanged: _evaluateAutoSelection()
 
                 BusyIndicator {
                     anchors.centerIn: parent
