@@ -163,7 +163,8 @@ void QApplicationError::errorMessageReceived(const QList<QByteArray> &messageLis
         || (m_rx.type() == pb::MT_EMC_NML_TEXT)
         || (m_rx.type() == pb::MT_EMC_NML_DISPLAY)
         || (m_rx.type() == pb::MT_EMC_OPERATOR_TEXT)
-        || (m_rx.type() == pb::MT_EMC_OPERATOR_ERROR))
+        || (m_rx.type() == pb::MT_EMC_OPERATOR_ERROR)
+        || (m_rx.type() == pb::MT_EMC_OPERATOR_DISPLAY))
     {
         for (int i = 0; i < m_rx.note_size(); ++i)
         {
@@ -282,15 +283,15 @@ void QApplicationError::subscribe()
 {
     m_errorSocketState = Trying;
 
-    if (m_channels | ErrorChannel) {
+    if (m_channels & ErrorChannel) {
         m_errorSocket->subscribeTo("error");
         m_subscriptions.append("error");
     }
-    if (m_channels | TextChannel) {
+    if (m_channels & TextChannel) {
         m_errorSocket->subscribeTo("text");
         m_subscriptions.append("text");
     }
-    if (m_channels | DisplayChannel) {
+    if (m_channels & DisplayChannel) {
         m_errorSocket->subscribeTo("display");
         m_subscriptions.append("display");
     }
