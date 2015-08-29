@@ -143,7 +143,7 @@ Item {
         SlidePage {
             anchors.fill: parent
             anchors.margins: Screen.pixelDensity
-            title: qsTr("Remote")
+            title: qsTr("Remote UIs")
             visible: root.remoteVisible
 
             Loader {
@@ -156,7 +156,7 @@ Item {
         SlidePage {
             anchors.fill: parent
             anchors.margins: Screen.pixelDensity
-            title: qsTr("Local")
+            title: qsTr("Local UIs")
             visible: root.localVisible
 
             Loader {
