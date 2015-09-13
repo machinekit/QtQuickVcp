@@ -37,6 +37,5 @@ ApplicationAction {
         command.setOptionalStopEnabled(checked)
     }
     enabled: _ready
-
-    checked: _ready && (1)
+    checked: _ready && status.task.optionalStop
 }

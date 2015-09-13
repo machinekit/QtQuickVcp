@@ -415,7 +415,7 @@ void QApplicationCommand::setOptionalStopEnabled(bool enable)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_enable(enable);
 
-    sendCommandMessage(pb::MT_EMC_TASK_PLAN_OPTIONAL_STOP);
+    sendCommandMessage(pb::MT_EMC_TASK_PLAN_SET_OPTIONAL_STOP);
 }
 
 void QApplicationCommand::setSpindleOverrideEnabled(bool enable)
