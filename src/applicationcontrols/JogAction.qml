@@ -26,7 +26,7 @@ import Machinekit.Application 1.0
 
 ApplicationAction {
     property int axis: 0
-    property double velocity: settings.value("axis" + axis + ".jogVelocity")
+    property double velocity: settings.initialized ? settings.value("axis" + axis + ".jogVelocity") : 0.0
     property double distance: 0.0
 
     property bool _ready: status.synced && command.connected
