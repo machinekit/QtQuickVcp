@@ -55,3 +55,4 @@ ShutdownAction 1.0 ShutdownAction.qml
 UserCommandAction 1.0 UserCommandAction.qml
 ApplicationRemoteFileDialog 1.0 ApplicationRemoteFileDialog.qml
 OverrideLimitsAction 1.0 OverrideLimitsAction.qml
+OptionalStopAction 1.0 OptionalStopAction.qml

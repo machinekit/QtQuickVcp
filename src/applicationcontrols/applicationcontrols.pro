@@ -65,7 +65,8 @@ CONTROLS_QML_FILES = \
     ShutdownAction.qml \
     UserCommandAction.qml \
     ApplicationRemoteFileDialog.qml \
-    OverrideLimitsAction.qml
+    OverrideLimitsAction.qml \
+    OptionalStopAction.qml
 
 QML_FILES += $$CONTROLS_QML_FILES
 
