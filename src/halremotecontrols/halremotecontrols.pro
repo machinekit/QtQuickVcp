@@ -72,3 +72,6 @@ QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/HalVirtualJoystickSpecifics.qml
 
 include(../deployment.pri)
+
+DISTFILES += \
+    designer/halremotecontrols.metainfo
