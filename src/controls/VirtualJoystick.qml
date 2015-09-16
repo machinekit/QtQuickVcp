@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 import QtQuick 2.0
-import Machinekit.Controls 1.0
+import Machinekit.Controls.Private 1.0
 
 /*!
     \qmltype VirtualJoystick

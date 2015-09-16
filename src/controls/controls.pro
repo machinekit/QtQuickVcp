@@ -22,7 +22,6 @@ QML_FILES = \
     ColorPicker.qml \
     Knob.qml \
     Led.qml \
-    Line.qml \
     LogChart.qml \
     RoundGauge.qml \
     SlideView.qml \

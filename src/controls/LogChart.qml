@@ -20,7 +20,6 @@
 **
 ****************************************************************************/
 import QtQuick 2.0
-import Machinekit.Controls 1.0
 
 /*!
     \qmltype LogChart

@@ -19,10 +19,10 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-import QtQuick 2.3
-import QtQuick.Controls 1.2
+import QtQuick 2.0
+import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
-import QtQuick.Controls.Styles 1.2
+import QtQuick.Controls.Styles 1.1
 
 ToolButton {
     style: ButtonStyle {

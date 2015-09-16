@@ -56,7 +56,7 @@ void MachinekitHalRemoteControlsPlugin::registerTypes(const char *uri)
     initResources();
 
     // @uri Machinekit.HalRemote.Controls
-    qmlRegisterType<Dummy>(uri, 1, 0, "Dummy");
+    qmlRegisterUncreatableType<Dummy>(uri, 1, 0, "Dummy", QLatin1String("Do not create objects of type Dummy"));
 
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {

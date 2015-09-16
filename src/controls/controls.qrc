@@ -6,7 +6,6 @@
         <file>ValueModel.qml</file>
         <file>VirtualJoystick.qml</file>
         <file>ColorPicker.qml</file>
-        <file>Line.qml</file>
         <file>LogChart.qml</file>
         <file>Led.qml</file>
         <file>Gauge.qml</file>

@@ -36,7 +36,6 @@ static const struct {
     { "ColorPicker", 1, 0 },
     { "Knob", 1, 0 },
     { "Led", 1, 0 },
-    { "Line", 1, 0 },
     { "LogChart", 1, 0 },
     { "RoundGauge", 1, 0 },
     { "SlideView", 1, 0 },
@@ -55,7 +54,7 @@ void MachinekitControlsPlugin::registerTypes(const char *uri)
 
     // @uri Machinekit.Controls
     Q_ASSERT(uri == QLatin1String("Machinekit.Controls"));
-    qmlRegisterType<Dummy>(uri, 1, 0, "Dummy");
+    qmlRegisterUncreatableType<Dummy>(uri, 1, 0, "Dummy", QLatin1String("Do not create objects of type Dummy"));
 
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {

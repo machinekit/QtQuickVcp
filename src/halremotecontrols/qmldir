@@ -2,8 +2,12 @@ module Machinekit.HalRemote.Controls
 plugin machinekithalremotecontrolsplugin
 classname MachinekitHalRemoteControlsPlugin
 typeinfo plugins.qmltypes
+designersupported
 
 depends Qt.Quick.Controls 1.1
+depends Qt.Quick.Window 2.0
+depends Machinekit.HalRemote 1.0
+depends Machinekit.Service 1.0
 
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work
