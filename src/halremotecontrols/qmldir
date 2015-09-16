@@ -3,6 +3,8 @@ plugin machinekithalremotecontrolsplugin
 classname MachinekitHalRemoteControlsPlugin
 typeinfo plugins.qmltypes
 
+depends Qt.Quick.Controls 1.1
+
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work
 HalApplicationWindow 1.0 HalApplicationWindow.qml
