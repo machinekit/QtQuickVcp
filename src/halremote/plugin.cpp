@@ -38,4 +38,14 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
     qmlRegisterType<QHalSignal>(uri, 1, 0, "HalSignal");
 }
 
+void MachinekitHalRemotePlugin::initializeEngine(QQmlEngine *engine, const char *uri)
+{
+    Q_UNUSED(uri);
+    Q_UNUSED(engine);
+
+    const char *private_uri = "Machinekit.HalRemote.Private";
+    qmlRegisterUncreatableType<AbstractServiceImplementation>(private_uri, 1, 0, "AnstractServiceImplementation",
+                                                              QLatin1String("Do not create objects of type AbstractServiceImplementation"));
+}
+
 
