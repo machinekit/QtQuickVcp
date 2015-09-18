@@ -2,3 +2,4 @@ module Machinekit.VideoView
 plugin machinekitvideoviewplugin
 classname MachinekitVideoViewPlugin
 typeinfo plugins.qmltypes
+designersupported

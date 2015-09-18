@@ -2,6 +2,14 @@ module Machinekit.PathView
 plugin machinekitpathviewplugin
 classname MachinekitPathViewPlugin
 typeinfo plugins.qmltypes
+designersupported
+
+depends QtQuick.Window 2.0
+depends Machinekit.Service 1.0
+depends QtQuick.Controls 1.2
+depends QtQuick.Layouts 1.1
+depends Machinekit.Application 1.0
+depends Machinekit.Service 1.0
 
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work

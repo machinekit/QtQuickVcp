@@ -4,7 +4,6 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.0
 import Machinekit.Application 1.0
-import Machinekit.Application.Controls 1.0
 
 Dialog {
     property var core: null

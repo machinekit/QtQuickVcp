@@ -23,7 +23,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
-import Machinekit.Application.Controls 1.0
 
 Slider {
     property alias core: handler.core

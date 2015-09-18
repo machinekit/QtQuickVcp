@@ -21,7 +21,6 @@
 ****************************************************************************/
 import QtQuick 2.0
 import Machinekit.Application 1.0
-import Machinekit.Application.Controls 1.0
 
 MdiCommandAction {
     property var commands: {
