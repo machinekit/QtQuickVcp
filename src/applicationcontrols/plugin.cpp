@@ -20,10 +20,12 @@
 **
 ****************************************************************************/
 #include "plugin.h"
+#include "pluginprivate.h"
 
 static void initResources()
 {
     Q_INIT_RESOURCE(applicationcontrols);
+    Q_INIT_RESOURCE(applicationcontrolsprivate);
 }
 
 static const struct {
@@ -100,6 +102,14 @@ void MachinekitApplicationControlsPlugin::initializeEngine(QQmlEngine *engine, c
 
     if (isLoadedFromResource())
         engine->addImportPath(QStringLiteral("qrc:/"));
+
+
+    const QString filesLocation = fileLocation();
+    const char *private_uri = "Machinekit.Application.Controls.Private";
+    for (int i = 0; i < int(sizeof(qmldirprivate)/sizeof(qmldirprivate[0])); i++) {
+        qmlRegisterType(QUrl(filesLocation + "/Private/" + qmldirprivate[i].type + ".qml"), private_uri,
+                        qmldirprivate[i].major, qmldirprivate[i].minor, qmldirprivate[i].type);
+    }
 }
 
 QString MachinekitApplicationControlsPlugin::fileLocation() const

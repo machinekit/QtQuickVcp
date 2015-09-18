@@ -9,3 +9,12 @@ QML_FILES += $$PRIVATE_QML_FILES
 QML_PRIVATE_INFRA_FILES += \
     $$PRIVATE_QML_FILES \
     $$PWD/qmldir
+
+RESOURCES += \
+    $$PWD/controlsprivate.qrc
+
+HEADERS += \
+    $$PWD/pluginprivate.h
+
+INCLUDEPATH += \
+    $$PWD

@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/Machinekit/Controls/Private">
+        <file>KnobPart.qml</file>
+        <file>KnobPie.qml</file>
+        <file>Line.qml</file>
+    </qresource>
+</RCC>
