@@ -6,12 +6,10 @@ include(../plugin.pri)
 
 # Input
 SOURCES += \
-    plugin.cpp \
-    dummy.cpp
+    plugin.cpp
 
 HEADERS += \
-    plugin.h \
-    dummy.h
+    plugin.h
 
 RESOURCES += \
     halremotecontrols.qrc

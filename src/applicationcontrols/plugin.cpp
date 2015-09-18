@@ -20,7 +20,6 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "dummy.h"
 
 static void initResources()
 {
@@ -88,8 +87,7 @@ void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)
     initResources();
 
     // @uri Machinekit.Application.Controls
-    qmlRegisterType<Dummy>(uri, 1, 0, "Dummy");
-
+    Q_ASSERT(uri == QLatin1String("Machinekit.Application.Controls"));
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {
         qmlRegisterType(QUrl(filesLocation + "/" + qmldir[i].type + ".qml"), uri, qmldir[i].major, qmldir[i].minor, qmldir[i].type);

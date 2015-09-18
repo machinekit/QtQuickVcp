@@ -31,6 +31,7 @@ void MachinekitServicePlugin::registerTypes(const char *uri)
 {
 
     // @uri Machinekit.Service
+    Q_ASSERT(uri == QLatin1String("Machinekit.Service"));
     qmlRegisterType<QService>(uri, 1, 0, "Service");
     qmlRegisterType<QServiceList>(uri, 1, 0, "ServiceList");
     qmlRegisterType<QNameServer>(uri, 1, 0, "NameServer");

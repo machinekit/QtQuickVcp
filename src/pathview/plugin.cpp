@@ -63,6 +63,7 @@ void MachinekitPathViewPlugin::registerTypes(const char *uri)
     initResources();
 
     // @uri Machinekit.PathView
+    Q_ASSERT(uri == QLatin1String("Machinekit.PathView"));
     qmlRegisterType<QGLCamera>(uri, 1, 0, "Camera3D");
     qmlRegisterType<QGLLight>(uri, 1, 0, "Light3D");
     qmlRegisterType<QGLView>(uri, 1, 0, "GLView3D");
@@ -87,6 +88,10 @@ void MachinekitPathViewPlugin::initializeEngine(QQmlEngine *engine, const char *
 
     if (isLoadedFromResource())
         engine->addImportPath(QStringLiteral("qrc:/"));
+
+    const char *private_uri = "Machinekit.PathView.Private";
+    qmlRegisterUncreatableType<AbstractServiceImplementation>(private_uri, 1, 0, "AnstractServiceImplementation",
+                                                              QLatin1String("Do not create objects of type AbstractServiceImplementation"));
 }
 
 QString MachinekitPathViewPlugin::fileLocation() const

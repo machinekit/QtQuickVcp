@@ -32,6 +32,7 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     // @uri Machinekit.HalRemote
+    Q_ASSERT(uri == QLatin1String("Machinekit.HalRemote"));
     qmlRegisterType<QHalRemoteComponent>(uri, 1, 0, "HalRemoteComponent");
     qmlRegisterType<QHalPin>(uri, 1, 0, "HalPin");
     qmlRegisterType<QHalGroup>(uri, 1, 0, "HalGroup");

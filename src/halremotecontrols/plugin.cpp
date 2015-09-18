@@ -20,7 +20,6 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "dummy.h"
 
 static void initResources()
 {
@@ -56,8 +55,7 @@ void MachinekitHalRemoteControlsPlugin::registerTypes(const char *uri)
     initResources();
 
     // @uri Machinekit.HalRemote.Controls
-    qmlRegisterUncreatableType<Dummy>(uri, 1, 0, "Dummy", QLatin1String("Do not create objects of type Dummy"));
-
+    Q_ASSERT(uri == QLatin1String("Machinekit.HalRemote.Controls"));
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {
         qmlRegisterType(QUrl(filesLocation + "/" + qmldir[i].type + ".qml"), uri, qmldir[i].major, qmldir[i].minor, qmldir[i].type);

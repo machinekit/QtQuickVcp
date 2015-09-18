@@ -5,13 +5,13 @@ uri = Machinekit.Controls
 include(../plugin.pri)
 
 # Input
-SOURCES += \
-    plugin.cpp \
-    dummy.cpp
+SOURCES +=
 
 HEADERS += \
-    plugin.h \
-    dummy.h
+    plugin.h
+
+SOURCES += \
+    plugin.cpp
 
 RESOURCES += \
     controls.qrc

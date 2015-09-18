@@ -29,5 +29,6 @@ void MachinekitVideoViewPlugin::registerTypes(const char *uri)
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     // @uri Machinekit.VideoView
+    Q_ASSERT(uri == QLatin1String("Machinekit.VideoView"));
     qmlRegisterType<QMjpegStreamerClient>(uri, 1, 0, "MjpegStreamerClient");
 }
