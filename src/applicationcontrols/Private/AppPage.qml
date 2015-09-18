@@ -20,8 +20,8 @@ Loader {
     width: 600
     height: 500
 
-    active: (applicationSource != "") ? true : applicationConfig.selectedConfig.loaded
-    source: (applicationSource != "") ? applicationSource : applicationConfig.selectedConfig.mainFile
+    active: ((applicationSource !== "") || (applicationConfig === undefined)) ? true : applicationConfig.selectedConfig.loaded
+    source: ((applicationSource !== "") || (applicationConfig === undefined)) ? applicationSource : applicationConfig.selectedConfig.mainFile
 
     onSourceChanged: {
         console.log("Source changed: " + source + " " + active)

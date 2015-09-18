@@ -160,7 +160,7 @@ Item {
                 ListView {
                     id: dnsServerView
                     Layout.fillWidth: true
-                    Layout.preferredHeight: dummyButton.height * 1.5 * model.length + Screen.pixelDensity * 1.5 * Math.max(model.length-1, 0)
+                    Layout.preferredHeight: dummyButton.height * 1.5 * count + Screen.pixelDensity * 1.5 * Math.max(count-1, 0)
                     spacing: Screen.pixelDensity
 
                     model: serviceDiscovery.nameServers
@@ -226,7 +226,7 @@ Item {
                 Button {
                     Layout.fillWidth: true
                     Layout.preferredHeight: dummyButton.height * 1.5
-                    visible: dnsServerView.model.length === 0
+                    visible: dnsServerView.count === 0
                     onClicked: {
                         serviceDiscovery.addNameServer(nameServerComponent.createObject(root, {}))
                     }

@@ -10,7 +10,7 @@ Item {
     property bool localVisible: true
     property bool remoteVisible: true
     property string mode: "local"
-    property var configService: {"name": "Test on XYZ"}
+    property var configService: QtObject { property string name: "Test on XYZ" }
     property var applications: []
 
     property var _listModel: root.instanceSelected ? root.applications : 0
@@ -29,6 +29,7 @@ Item {
 
     Connections {
         target: configService
+        ignoreUnknownSignals: true
         onReadyChanged: _evaluateAutoSelection()
     }
 

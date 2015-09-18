@@ -4,11 +4,10 @@ import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
 
 Item {
-    property var launcher: {"name": "Test-config",
-                            "output": ["First line", "second line", "third line"]}
+    property var launcher: undefined
     property string stdoutText: (launcher !== undefined) && (launcher.output !== undefined) ?
                                     launcher.output.join("") : ""
-    property string launcherName: launcher != undefined ? launcher.name : ""
+    property string launcherName: (launcher !== undefined) ? launcher.name : ""
     property string titleText: {
         if (isRunning) {
             return qsTr("Starting ") + launcherName + "..."
@@ -20,7 +19,7 @@ Item {
             return launcherName + qsTr(" exited")
         }
     }
-    property var image: (launcher !== undefined) && (launcher.image !== undefined) ? launcher.image: undefined
+    property var image: (launcher !== undefined) && (launcher.image !== undefined) ? launcher.image : undefined
     property bool isRunning: (launcher !== undefined) && launcher.running
     property bool hasError: (launcher !== undefined) && (!launcher.running) && (launcher.returncode !== 0)
     property int returncode: (launcher !== undefined) ? launcher.returncode : 0
