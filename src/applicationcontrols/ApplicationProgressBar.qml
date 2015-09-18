@@ -30,7 +30,7 @@ Gauge {
     property alias file: object.file
     property alias status: object.status
     property string _mode: getMode()
-    property string _fileName: object.file.remoteFilePath.split('/').reverse()[0]
+    property string _fileName: object.file.remoteFilePath ? object.file.remoteFilePath.split('/').reverse()[0] : ""
 
     id: progressBar
     value: getProgress()

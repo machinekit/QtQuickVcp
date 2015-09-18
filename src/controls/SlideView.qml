@@ -273,7 +273,7 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.margins: Screen.pixelDensity
-        text: menuList.model[menuList.currentIndex].title
+        text: menuList.model.length > 0 ? menuList.model[menuList.currentIndex].title : ""
         visible: buttonVisible && !menuVisible
 
         onClicked: menuVisible = !menuVisible

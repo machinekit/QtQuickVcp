@@ -68,6 +68,8 @@ ApplicationObject {
     }
 
     Component.onDestruction: {
+        if (!settings.onValuesChanged) // for qmlplugindump
+            return
         settings.onValuesChanged.disconnect(_update)
         status.onConfigChanged.disconnect(_update)
         status.onMotionChanged.disconnect(_update)
