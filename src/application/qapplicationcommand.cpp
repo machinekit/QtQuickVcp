@@ -793,7 +793,7 @@ bool QApplicationCommand::connectSockets()
 
     m_commandSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
     m_commandSocket->setLinger(0);
-    m_commandSocket->setIdentity(QString("%1-%2").arg("command").arg(QCoreApplication::applicationPid()).toLocal8Bit());
+    m_commandSocket->setIdentity(QString("%1-%2").arg(QHostInfo::localHostName()).arg(QCoreApplication::applicationPid()).toLocal8Bit());
 
     try {
         m_commandSocket->connectTo(m_commandUri);

@@ -27,6 +27,7 @@
 #include <QTimer>
 #include <QUrl>
 #include <QCoreApplication>
+#include <QHostInfo>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
 #include "message.pb.h"
