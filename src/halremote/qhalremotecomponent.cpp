@@ -414,12 +414,12 @@ void QHalRemoteComponent::pinChange(QVariant value)
     // changed value since the last message of this type.
     // Each Pin message MUST carry the handle field.
     // Each Pin message MAY carry the name field.
+    // Each Pin message MUST carry the type field
     // Each Pin message MUST - depending on pin type - carry a halbit,
     // halfloat, hals32, or halu32 field.
     halPin = m_tx.add_pin();
 
     halPin->set_handle(pin->handle());
-    halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());
     halPin->set_type((pb::ValueType)pin->type());
     if (pin->type() == QHalPin::Float)
     {
