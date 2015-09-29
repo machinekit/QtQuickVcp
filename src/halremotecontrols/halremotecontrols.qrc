@@ -18,5 +18,6 @@
         <file>HalDial.qml</file>
         <file>HalRoundGauge.qml</file>
         <file>HalSwitch.qml</file>
+        <file>HalKnob.qml</file>
     </qresource>
 </RCC>

@@ -38,6 +38,7 @@ static const struct {
     { "HalContainer", 1, 0 },
     { "HalDial", 1, 0 },
     { "HalGauge", 1, 0 },
+    { "HalKnob", 1, 0 },
     { "HalLabel", 1, 0 },
     { "HalLed", 1, 0 },
     { "HalLogChart", 1, 0 },

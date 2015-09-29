@@ -117,6 +117,19 @@ MetaInfo {
     }
 
     Type {
+        name: "Machinekit.HalRemote.Controls.HalKnob"
+        icon: "images/item-icon.png"
+
+        ItemLibraryEntry {
+            name: "Knob"
+            category: "Machinekit - HalRemote Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.HalRemote.Controls"
+        }
+    }
+
+    Type {
         name: "Machinekit.HalRemote.Controls.HalLabel"
         icon: ":/componentsplugin/images/label16.png"
 

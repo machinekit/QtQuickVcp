@@ -23,6 +23,7 @@ QML_FILES = \
     HalContainer.qml \
     HalDial.qml \
     HalGauge.qml \
+    HalKnob.qml \
     HalLabel.qml \
     HalLed.qml \
     HalLogChart.qml \
