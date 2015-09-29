@@ -14,6 +14,19 @@ MetaInfo {
     }
 
     Type {
+        name: "Machinekit.Controls.Knob"
+        icon: "images/item-icon.png"
+
+        ItemLibraryEntry {
+            name: "Knob"
+            category: "Machinekit - Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Controls"
+        }
+    }
+
+    Type {
         name: "Machinekit.Controls.Gauge"
         icon: "images/progressbar16.png"
 
