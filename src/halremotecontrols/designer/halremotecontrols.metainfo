@@ -11,6 +11,7 @@ MetaInfo {
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
+            Property { name: "name"; type: "binding"; value: "\"button\""; }
             Property { name: "text"; type: "binding"; value: "qsTr(\"Button\")"; }
         }
     }
@@ -26,6 +27,7 @@ MetaInfo {
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
+            Property { name: "name"; type: "binding"; value: "\"checkBox\""; }
             Property { name: "text"; type: "binding"; value: "qsTr(\"Check Box\")"; }
         }
     }
@@ -40,6 +42,8 @@ MetaInfo {
             libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"colorPicker\""; }
         }
     }
 
@@ -54,7 +58,7 @@ MetaInfo {
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
-            QmlSource { source: "./halComboBox1.qml" }
+            QmlSource { source: "default/halComboBox1.qml" }
         }
 
         ItemLibraryEntry {
@@ -64,7 +68,7 @@ MetaInfo {
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
-            QmlSource { source: "./halComboBox2.qml" }
+            QmlSource { source: "default/halComboBox2.qml" }
         }
     }
 
@@ -78,6 +82,8 @@ MetaInfo {
             libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"container\""; }
         }
     }
 
@@ -91,6 +97,8 @@ MetaInfo {
             libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"dial\""; }
         }
     }
 
@@ -104,6 +112,8 @@ MetaInfo {
             libraryIcon: "images/progressbar.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"gauge\""; }
         }
 
         ItemLibraryEntry {
@@ -112,7 +122,9 @@ MetaInfo {
             libraryIcon: "images/progressbar.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
             Property { name: "orientation"; type: "int"; value: "0"; }
+            Property { name: "name"; type: "binding"; value: "\"gauge\""; }
          }
     }
 
@@ -126,6 +138,8 @@ MetaInfo {
             libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"knob\""; }
         }
     }
 
@@ -141,6 +155,7 @@ MetaInfo {
             requiredImport: "Machinekit.HalRemote.Controls"
 
             Property { name: "text"; type: "binding"; value: "qsTr(\"Label\")"; }
+            Property { name: "name"; type: "binding"; value: "\"label\""; }
         }
     }
 
@@ -154,6 +169,8 @@ MetaInfo {
             libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"led\""; }
         }
 
         ItemLibraryEntry {
@@ -164,6 +181,7 @@ MetaInfo {
             requiredImport: "Machinekit.HalRemote.Controls"
 
             Property { name: "radius"; type: "int"; value: "0"; }
+            Property { name: "name"; type: "binding"; value: "\"led\""; }
         }
     }
 
@@ -177,6 +195,8 @@ MetaInfo {
             libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"logChart\""; }
         }
     }
 
@@ -190,6 +210,8 @@ MetaInfo {
             libraryIcon: ":/componentsplugin/images/progressbar.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"progressBar\""; }
         }
     }
 
@@ -205,6 +227,7 @@ MetaInfo {
             requiredImport: "Machinekit.HalRemote.Controls"
 
             Property { name: "text"; type: "binding"; value: "qsTr(\"Radio Button\")"; }
+            Property { name: "name"; type: "binding"; value: "\"radioButton\""; }
         }
     }
 
@@ -218,6 +241,8 @@ MetaInfo {
             libraryIcon: "images/progressbar.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"roundGauge\""; }
         }
     }
 
@@ -231,6 +256,8 @@ MetaInfo {
             libraryIcon: ":/componentsplugin/images/slider.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"slider\""; }
         }
 
         ItemLibraryEntry {
@@ -239,7 +266,9 @@ MetaInfo {
             libraryIcon: ":/componentsplugin/images/sliderh.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
             Property { name: "orientation"; type: "int"; value: "0"; }
+            Property { name: "name"; type: "binding"; value: "\"slider\""; }
         }
     }
 
@@ -253,6 +282,8 @@ MetaInfo {
             libraryIcon: ":/componentsplugin/images/window.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"spinBox\""; }
         }
     }
 
@@ -266,6 +297,8 @@ MetaInfo {
             libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"switch\""; }
         }
     }
 
@@ -279,6 +312,8 @@ MetaInfo {
             libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
+
+            Property { name: "name"; type: "binding"; value: "\"joystick\""; }
         }
     }
 }
