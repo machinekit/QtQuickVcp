@@ -29,16 +29,10 @@ ComboBox {
     property alias status: object.status
     property int axis: currentIndex
     property var axisNames: ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
+    property int axes: status.synced ? status.config.axes : 3
 
     enabled: status.synced
-    model: {
-        var axes = status.synced ? status.config.axes : 3
-        var model = []
-        for (var i = 0; i < axes; ++i) {
-            model.push(axisNames[i])
-        }
-        return model
-    }
+    model: axisNames.slice(0, axes)
 
     ApplicationObject {
         id: object
