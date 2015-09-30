@@ -30,8 +30,9 @@ ComboBox {
     property int axis: currentIndex
     property var axisNames: ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
 
+    enabled: status.synced
     model: {
-        var axes = status.synced ? status.config.axes : 0
+        var axes = status.synced ? status.config.axes : 3
         var model = []
         for (var i = 0; i < axes; ++i) {
             model.push(axisNames[i])
