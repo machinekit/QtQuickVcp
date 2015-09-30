@@ -26,6 +26,7 @@
 #include <QCoreApplication>
 #include <QHash>
 #include <QTimer>
+#include <QUuid>
 #include "qhalpin.h"
 #include <nzmqt/nzmqt.hpp>
 #include "message.pb.h"
@@ -207,6 +208,7 @@ private:
     QTimer     *m_halrcmdHeartbeatTimer;
     QTimer     *m_halrcompHeartbeatTimer;
     bool        m_halrcmdPingOutstanding;
+    QUuid       m_uuid;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;

@@ -185,6 +185,8 @@ QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
     m_halrcompHeartbeatTimer(new QTimer(this)),
     m_halrcmdPingOutstanding(false)
 {
+    m_uuid = QUuid::createUuid();
+
     connect(m_halrcmdHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(halrcmdHeartbeatTimerTick()));
     connect(m_halrcompHeartbeatTimer, SIGNAL(timeout()),
@@ -251,7 +253,7 @@ bool QHalRemoteComponent::connectSockets()
 
     m_halrcmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
     m_halrcmdSocket->setLinger(0);
-    m_halrcmdSocket->setIdentity(QString("%1-%2").arg(m_name).arg(QCoreApplication::applicationPid()).toLocal8Bit());
+    m_halrcmdSocket->setIdentity(QString("%1-%2").arg(m_name).arg(m_uuid.toString()).toLocal8Bit());
 
 
     m_halrcompSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);

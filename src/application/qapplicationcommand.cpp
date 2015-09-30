@@ -38,6 +38,8 @@ QApplicationCommand::QApplicationCommand(QObject *parent) :
     m_commandPingErrorCount(0),
     m_commandPingErrorThreshold(2)
 {
+    m_uuid = QUuid::createUuid();
+
     connect(m_commandHeartbeatTimer, SIGNAL(timeout()),
             this, SLOT(commandHeartbeatTimerTick()));
 }
@@ -793,7 +795,7 @@ bool QApplicationCommand::connectSockets()
 
     m_commandSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
     m_commandSocket->setLinger(0);
-    m_commandSocket->setIdentity(QString("%1-%2").arg(QHostInfo::localHostName()).arg(QCoreApplication::applicationPid()).toLocal8Bit());
+    m_commandSocket->setIdentity(QString("%1-%2").arg(QHostInfo::localHostName()).arg(m_uuid.toString()).toLocal8Bit());
 
     try {
         m_commandSocket->connectTo(m_commandUri);

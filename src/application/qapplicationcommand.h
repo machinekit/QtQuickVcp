@@ -216,6 +216,7 @@ private:
     QTimer      *m_commandHeartbeatTimer;
     int         m_commandPingErrorCount;
     int         m_commandPingErrorThreshold;
+    QUuid       m_uuid;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;
