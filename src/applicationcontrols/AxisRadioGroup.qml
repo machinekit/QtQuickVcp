@@ -32,6 +32,7 @@ RowLayout {
     property var axisNames: ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
 
     id: root
+    enabled: status.synced
 
     ExclusiveGroup {
         property int currentIndex: 0
@@ -39,7 +40,7 @@ RowLayout {
     }
 
     Repeater {
-        model: status.synced ? status.config.axes : 0
+        model: status.synced ? status.config.axes : 3
         RadioButton {
             exclusiveGroup: axisGroup
             text: root.axisNames[index]
