@@ -60,6 +60,7 @@
         <file>OptionalStopAction.qml</file>
         <file>BlockDeleteAction.qml</file>
         <file>FeedHoldAction.qml</file>
+        <file>FeedOverrideAction.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/Application/Controls/icons">
         <file alias="process-stop">icons/process-stop.png</file>
