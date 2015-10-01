@@ -82,7 +82,8 @@ static const struct {
     { "ApplicationRemoteFileDialog", 1, 0 },
     { "OverrideLimitsAction", 1, 0 },
     { "OptionalStopAction", 1, 0 },
-    { "BlockDeleteAction", 1, 0 }
+    { "BlockDeleteAction", 1, 0 },
+    { "FeedHoldAction", 1, 0 }
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)

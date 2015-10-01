@@ -65,7 +65,8 @@ CONTROLS_QML_FILES = \
     ApplicationRemoteFileDialog.qml \
     OverrideLimitsAction.qml \
     OptionalStopAction.qml \
-    BlockDeleteAction.qml
+    BlockDeleteAction.qml \
+    FeedHoldAction.qml
 
 QML_FILES += $$CONTROLS_QML_FILES
 

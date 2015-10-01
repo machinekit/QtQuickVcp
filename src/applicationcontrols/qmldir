@@ -64,3 +64,4 @@ ApplicationRemoteFileDialog 1.0 ApplicationRemoteFileDialog.qml
 OverrideLimitsAction 1.0 OverrideLimitsAction.qml
 OptionalStopAction 1.0 OptionalStopAction.qml
 BlockDeleteAction 1.0 BlockDeleteAction.qml
+FeedHoldAction 1.0 FeedHoldAction.qml
