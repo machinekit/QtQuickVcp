@@ -84,7 +84,8 @@ static const struct {
     { "OptionalStopAction", 1, 0 },
     { "BlockDeleteAction", 1, 0 },
     { "FeedHoldAction", 1, 0 },
-    { "FeedOverrideAction", 1, 0 }
+    { "FeedOverrideAction", 1, 0 },
+    { "SpindleOverrideAction", 1, 0 }
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)
