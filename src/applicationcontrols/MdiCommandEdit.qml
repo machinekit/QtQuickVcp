@@ -34,9 +34,6 @@ RowLayout {
     property alias mdiHistory: mdiCommandAction.mdiHistory
     property int mdiHistoryPos: -1
 
-    Layout.fillWidth: true
-    Layout.fillHeight: false
-
     TextField {
 
         id: mdiTextField
