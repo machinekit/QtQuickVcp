@@ -2,12 +2,12 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalButton"
-        icon: ":/componentsplugin/images/button16.png"
+        icon: "images/button16.png"
 
         ItemLibraryEntry {
             name: "Button"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: ":/componentsplugin/images/button.png"
+            libraryIcon: "images/button.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -18,12 +18,12 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalCheckBox"
-        icon: ":/componentsplugin/images/checkbox16.png"
+        icon: "images/checkbox16.png"
 
         ItemLibraryEntry {
             name: "Check Box"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: ":/componentsplugin/images/checkbox.png"
+            libraryIcon: "images/checkbox.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -34,7 +34,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalColorPicker"
-        icon: "images/item-icon.png"
+        icon: "images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "Color Picker"
@@ -49,7 +49,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalComboBox"
-        icon: ":/componentsplugin/images/combobox16.png"
+        icon: "images/combobox16.png"
 
         ItemLibraryEntry {
             name: "Combo Box (Index)"
@@ -74,7 +74,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalContainer"
-        icon: "images/item-icon.png"
+        icon: "images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "Container"
@@ -89,7 +89,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalDial"
-        icon: "images/item-icon.png"
+        icon: "images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "Dial"
@@ -104,12 +104,12 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalGauge"
-        icon: "images/progressbar16.png"
+        icon: "images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "Gauge (Horizontal)"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: "images/progressbar.png"
+            libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -119,7 +119,7 @@ MetaInfo {
         ItemLibraryEntry {
             name: "Gauge (Vertical)"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: "images/progressbar.png"
+            libraryIcon: "images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -130,7 +130,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalKnob"
-        icon: "images/item-icon.png"
+        icon: "images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "Knob"
@@ -145,12 +145,12 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalLabel"
-        icon: ":/componentsplugin/images/label16.png"
+        icon: "images/label16.png"
 
         ItemLibraryEntry {
             name: "Label"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: ":/componentsplugin/images/label.png"
+            libraryIcon: "images/label.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -161,7 +161,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalLed"
-        icon: "images/item-icon.png"
+        icon: "images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "Led (Round)"
@@ -187,7 +187,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalLogChart"
-        icon: "images/item-icon.png"
+        icon: "images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "Log Chart"
@@ -202,12 +202,12 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalProgressBar"
-        icon: ":/componentsplugin/images/progressbar16.png"
+        icon: "images/progressbar16.png"
 
         ItemLibraryEntry {
             name: "Progress Bar"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: ":/componentsplugin/images/progressbar.png"
+            libraryIcon: "images/progressbar.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -217,12 +217,12 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalRadioButton"
-        icon: ":/componentsplugin/images/radiobutton16.png"
+        icon: "images/radiobutton16.png"
 
         ItemLibraryEntry {
             name: "Radio Button"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: ":/componentsplugin/images/radiobutton.png"
+            libraryIcon: "images/radiobutton.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -248,12 +248,12 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalSlider"
-        icon: ":/componentsplugin/images/slider16.png"
+        icon: "images/slider16.png"
 
         ItemLibraryEntry {
             name: "Slider (Horizontal)"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: ":/componentsplugin/images/slider.png"
+            libraryIcon: "images/slider.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -263,7 +263,7 @@ MetaInfo {
         ItemLibraryEntry {
            name: "Slider (Vertical)"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: ":/componentsplugin/images/sliderh.png"
+            libraryIcon: "images/sliderh.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -274,12 +274,12 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalSpinBox"
-        icon: ":/componentsplugin/images/window16.png"
+        icon: "images/window16.png"
 
         ItemLibraryEntry {
             name: "SpinBox"
             category: "Machinekit - HalRemote Controls"
-            libraryIcon: ":/componentsplugin/images/window.png"
+            libraryIcon: "images/window.png"
             version: "1.0"
             requiredImport: "Machinekit.HalRemote.Controls"
 
@@ -289,7 +289,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalSwitch"
-        icon: "images/item-icon.png"
+        icon: "images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "Switch"
@@ -304,7 +304,7 @@ MetaInfo {
 
     Type {
         name: "Machinekit.HalRemote.Controls.HalVirtualJoystick"
-        icon: "images/item-icon.png"
+        icon: "images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "Virtual Joystick"

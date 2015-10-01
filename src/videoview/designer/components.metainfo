@@ -2,12 +2,12 @@ MetaInfo {
 
     Type {
         name: "Machinekit.VideoView.MjpegStreamerClient"
-        icon: ":/machinekitplugin/images/slider16.png"
+        icon: ":/machinekitplugin/images/item-icon16.png"
 
         ItemLibraryEntry {
             name: "MjpegStreamerClient"
             category: "Machinekit - VideoView"
-            libraryIcon: ":/machinekitplugin/images/slider.png"
+            libraryIcon: ":/machinekitplugin/images/item-icon.png"
             version: "1.0"
             requiredImport: "Machinekit.VideoView"
         }
