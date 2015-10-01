@@ -91,6 +91,19 @@ MetaInfo {
     }
 
     Type {
+        name: "Machinekit.Application.Controls.GCodeLabel"
+        icon: "images/label16.png"
+
+        ItemLibraryEntry {
+            name: "Active GCodes Label"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/label.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
         name: "Machinekit.Application.Controls.JogButton"
         icon: "images/button16.png"
 
