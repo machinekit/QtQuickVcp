@@ -1,0 +1,192 @@
+MetaInfo {
+    Type {
+        name: "Machinekit.Application.Controls.ApplicationNotifications"
+        icon: "images/item-icon16.png"
+
+        ItemLibraryEntry {
+            name: "Notifications"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.ApplicationProgressBar"
+        icon: "images/progressbar16.png"
+
+        ItemLibraryEntry {
+            name: "Application Progress Bar"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/progressbar.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.AxisComboBox"
+        icon: "images/combobox16.png"
+
+        ItemLibraryEntry {
+            name: "Axis Combo Box"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/combobox.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.AxisRadioGroup"
+        icon: "images/radiobutton16.png"
+
+        ItemLibraryEntry {
+            name: "Axis Radio Group"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/radiobutton.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.DigitalReadOut"
+        icon: "images/item-icon16.png"
+
+        ItemLibraryEntry {
+            name: "Digital Read Out"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.DigitalReadOut"
+        icon: "images/item-icon16.png"
+
+        ItemLibraryEntry {
+            name: "Digital Read Out"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.FeedrateSlider"
+        icon: "images/slider16.png"
+
+        ItemLibraryEntry {
+            name: "Feedrate Slider"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/slider.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.JogButton"
+        icon: "images/button16.png"
+
+        ItemLibraryEntry {
+            name: "Jog Button"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/button.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+
+            Property { name: "axis"; type: "int"; value: "0"; }
+            Property { name: "direction"; type: "int"; value: "1"; }
+            Property { name: "distance"; type: "float"; value: "0.1"; }
+            Property { name: "text"; type: "binding"; value: "distance.toFixed(2)"; }
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.JogDistanceComboBox"
+        icon: "images/combobox16.png"
+
+        ItemLibraryEntry {
+            name: "Jog Distance Combo Box"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/combobox.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.JogStick"
+        icon: "images/item-icon16.png"
+
+        ItemLibraryEntry {
+            name: "Jog Stick"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+
+            Property { name: "xAxis"; type: "int"; value: "0"; }
+            Property { name: "yAxis"; type: "int"; value: "0"; }
+            Property { name: "maximumValue"; type: "float"; value: "10.0";}
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.MaximumVelocitySlider"
+        icon: "images/slider16.png"
+
+        ItemLibraryEntry {
+            name: "Maximum Velocity Slider"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/slider.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.MdiCommandEdit"
+        icon: "images/textfield16.png"
+
+        ItemLibraryEntry {
+            name: "MDI Command edit"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/textfield.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.MdiHistoryTable"
+        icon: "images/item-icon16.png"
+
+        ItemLibraryEntry {
+            name: "MDI History Table"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/item-icon.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+
+    Type {
+        name: "Machinekit.Application.Controls.SpindlerateSlider"
+        icon: "images/slider16.png"
+
+        ItemLibraryEntry {
+            name: "Spindlerate Slider"
+            category: "Machinekit - Application Controls"
+            libraryIcon: "images/slider.png"
+            version: "1.0"
+            requiredImport: "Machinekit.Application.Controls"
+        }
+    }
+}
