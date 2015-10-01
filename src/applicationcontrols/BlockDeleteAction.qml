@@ -45,5 +45,3 @@ ApplicationAction {
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && !status.running
 }
-
-
