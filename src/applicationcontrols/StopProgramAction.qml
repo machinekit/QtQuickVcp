@@ -35,7 +35,5 @@ ApplicationAction {
     onTriggered: {
         command.abort('execute')
     }
-    enabled: _ready
-             && (status.task.taskState === ApplicationStatus.TaskStateOn)
-             && status.running
+    enabled: _ready && status.motion.state === ApplicationStatus.MotionExec
 }
