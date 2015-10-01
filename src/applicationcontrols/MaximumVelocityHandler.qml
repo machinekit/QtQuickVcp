@@ -28,8 +28,8 @@ ApplicationObject {
     readonly property string distanceUnits: getDistanceUnits()
     readonly property string timeUnits: getTimeUnits()
     readonly property double displayValue: value * _timeFactor
-    property double minimumValue: 0.01
-    property double maximumValue: 5
+    property double minimumValue: 0.0
+    property double maximumValue: 5.0
     property double value: 0
     property bool enabled: _ready
     property bool synced: false
