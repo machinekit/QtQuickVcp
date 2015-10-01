@@ -64,7 +64,8 @@ CONTROLS_QML_FILES = \
     UserCommandAction.qml \
     ApplicationRemoteFileDialog.qml \
     OverrideLimitsAction.qml \
-    OptionalStopAction.qml
+    OptionalStopAction.qml \
+    BlockDeleteAction.qml
 
 QML_FILES += $$CONTROLS_QML_FILES
 
@@ -74,8 +75,8 @@ QML_INFRA_FILES += \
     $$CONTROLS_QML_FILES \
     qmldir
 
-#QML_DESIGNER_FILES = \
-#    designer
+QML_DESIGNER_FILES = \
+    designer
 
 QML_PROPERTY_EDITOR_FILES = 
 

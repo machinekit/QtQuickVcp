@@ -58,6 +58,7 @@
         <file>ApplicationRemoteFileDialog.qml</file>
         <file>OverrideLimitsAction.qml</file>
         <file>OptionalStopAction.qml</file>
+        <file>BlockDeleteAction.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/Application/Controls/icons">
         <file alias="process-stop">icons/process-stop.png</file>
