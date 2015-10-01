@@ -37,8 +37,6 @@ ApplicationAction {
     shortcut: checked ? resumeShortcut : pauseShortcut
     tooltip: (checked ? qsTr("Pause execution") : qsTr("Resume execution")) + " [" + shortcut + "]"
     onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)
         if (checked) {
             command.pauseProgram('execute');
         } else {
