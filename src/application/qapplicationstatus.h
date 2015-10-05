@@ -308,12 +308,6 @@ private:
     StatusChannels  m_syncedChannels;
     StatusChannels  m_channels;
 
-    pb::EmcStatusMotion statusMotion;
-    pb::EmcStatusConfig statusConfig;
-    pb::EmcStatusIo statusIo;
-    pb::EmcStatusTask statusTask;
-    pb::EmcStatusInterp statusInterp;
-
     PollingZMQContext *m_context;
     ZMQSocket   *m_statusSocket;
     QStringList  m_subscriptions;

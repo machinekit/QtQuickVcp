@@ -454,27 +454,27 @@ void QApplicationStatus::initializeObject(QApplicationStatus::StatusChannel chan
     {
     case MotionChannel:
         m_motion = QJsonObject();
-        Service::recurseDescriptor(statusMotion.GetDescriptor(), &m_motion);
+        Service::recurseDescriptor(pb::EmcStatusMotion::descriptor(), &m_motion);
         emit motionChanged(m_motion);
         return;
     case ConfigChannel:
         m_config = QJsonObject();
-        Service::recurseDescriptor(statusConfig.GetDescriptor(), &m_config);
+        Service::recurseDescriptor(pb::EmcStatusConfig::descriptor(), &m_config);
         emit configChanged(m_config);
         return;
     case IoChannel:
         m_io = QJsonObject();
-        Service::recurseDescriptor(statusIo.GetDescriptor(), &m_io);
+        Service::recurseDescriptor(pb::EmcStatusIo::descriptor(), &m_io);
         emit ioChanged(m_io);
         return;
     case TaskChannel:
         m_task = QJsonObject();
-        Service::recurseDescriptor(statusTask.GetDescriptor(), &m_task);
+        Service::recurseDescriptor(pb::EmcStatusTask::descriptor(), &m_task);
         emit taskChanged(m_task);
         return;
     case InterpChannel:
         m_interp = QJsonObject();
-        Service::recurseDescriptor(statusInterp.GetDescriptor(), &m_interp);
+        Service::recurseDescriptor(pb::EmcStatusInterp::descriptor(), &m_interp);
         emit interpChanged(m_interp);
         return;
     }
