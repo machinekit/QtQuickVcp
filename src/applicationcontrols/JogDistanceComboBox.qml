@@ -27,8 +27,8 @@ import Machinekit.Application 1.0
 ComboBox {
     property alias axis: handler.axis
     property double distance: handler.distanceModel[root.currentIndex]
-    property alias continousVisible: handler.continousVisible
-    property alias continousText: handler.continousText
+    property alias continuousVisible: handler.continuousVisible
+    property alias continuousText: handler.continuousText
     id: root
     model: handler.incrementsModel
 

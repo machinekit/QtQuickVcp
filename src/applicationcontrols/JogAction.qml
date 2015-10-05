@@ -41,7 +41,7 @@ ApplicationAction {
         }
         if (velocity !== 0.0) {
             if (distance == 0.0) {
-                command.jog(ApplicationCommand.ContinousJog, axis, velocity)
+                command.jog(ApplicationCommand.ContinuousJog, axis, velocity)
             }
             else {
                 command.jog(ApplicationCommand.IncrementJog, axis, velocity, distance)

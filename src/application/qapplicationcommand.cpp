@@ -193,7 +193,7 @@ void QApplicationCommand::jog(QApplicationCommand::JogType type, int axisIndex, 
     {
         containerType = pb::MT_EMC_AXIS_ABORT;
     }
-    else if (type == ContinousJog) {
+    else if (type == ContinuousJog) {
         containerType = pb::MT_EMC_AXIS_JOG;
         commandParams->set_velocity(velocity);
     }
@@ -741,7 +741,7 @@ void QApplicationCommand::commandMessageReceived(const QList<QByteArray> &messag
         }
 
         m_commandSocketState = Down;
-        updateState(Error, ServiceError, errorString);
+        updateState(Error, ServiceError, errorString); // not sure if we should really disconnect here
 
 #ifdef QT_DEBUG
         DEBUG_TAG(1, "command", "error" << errorString)

@@ -83,9 +83,9 @@ public:
     };
 
     enum JogType {
-        StopJog,
-        ContinousJog,
-        IncrementJog
+        StopJog = 0,
+        ContinuousJog = 1,
+        IncrementJog = 2
     };
 
     enum SpindleMode {
@@ -165,6 +165,7 @@ public slots:
     void pauseProgram(const QString &interpreter);
     void stepProgram(const QString &interpreter);
     void resumeProgram(const QString &interpreter);
+    void resetProgram(const QString &interpreter);
     void setTaskMode(const QString &interpreter, TaskMode mode);
     void setTaskState(const QString &interpreter, TaskState state);
     void openProgram(const QString &interpreter, const QString &fileName);
@@ -180,7 +181,6 @@ public slots:
     void loadToolTable();
     void setMaximumVelocity(double velocity);
     void setMistEnabled(bool enable);
-    void resetProgram(const QString &interpreter);
     void overrideLimits();
     void setAdaptiveFeedEnabled(bool enable);
     void setAnalogOutput(int index, double value);
@@ -193,7 +193,7 @@ public slots:
     void setOptionalStopEnabled(bool enable);
     void setSpindleOverrideEnabled(bool enable);
     void setSpindle(SpindleMode mode);
-    void setSpindle(SpindleMode mode, double speed);
+    void setSpindle(SpindleMode mode, double velocity);
     void setSpindleOverride(double scale);
     void setTeleopEnabled(bool enable);
     void setTeleopVector(double a, double b, double c, double u, double v, double w);

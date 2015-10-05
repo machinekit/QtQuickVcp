@@ -25,11 +25,11 @@ import Machinekit.Application 1.0
 
 ApplicationObject {
     property int axis: 0
-    property bool continousVisible: true
-    property string continousText: qsTr("Continous")
-    property var incrementsModel: continousVisible ? _incrementsModelBase.concat([continousText]) : _incrementsModelBase
+    property bool continuousVisible: true
+    property string continuousText: qsTr("Continuous")
+    property var incrementsModel: continuousVisible ? _incrementsModelBase.concat([continuousText]) : _incrementsModelBase
     property var incrementsModelReverse: incrementsModel.slice(0).reverse()
-    property var distanceModel: continousVisible ? _incrementsModelBase.concat([0]) : _incrementsModelBase
+    property var distanceModel: continuousVisible ? _incrementsModelBase.concat([0]) : _incrementsModelBase
     property var distanceModelReverse: distanceModel.slice(0).reverse()
     property var _incrementsModelBase: object.status.synced ? getIncrements() : []
 
