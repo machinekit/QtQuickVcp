@@ -38,7 +38,6 @@ RowLayout {
 
         id: mdiTextField
         Layout.fillWidth: true
-        Layout.fillHeight: true
 
         onAccepted: {
             if (text != "") {
@@ -76,7 +75,6 @@ RowLayout {
     }
 
     Button {
-        Layout.fillHeight: true
         Layout.fillWidth: false
         action: mdiCommandAction
     }
