@@ -73,7 +73,7 @@ void QApplicationFile::startUpload()
         return;
     }
 
-    url.setUrl(m_uri + "/" + fileInfo.fileName());
+    url.setUrl(m_uri);
     remotePath = QUrl(m_remotePath).toLocalFile();
     m_remoteFilePath = QUrl::fromLocalFile(QDir(remotePath).filePath(fileInfo.fileName())).toString();
     emit remoteFilePathChanged(m_remoteFilePath);
@@ -117,7 +117,7 @@ void QApplicationFile::startDownload()
     remotePath = QUrl(m_remotePath).toLocalFile();
     fileName = remoteFilePath.mid(remotePath.length() + 1);
 
-    url.setUrl(m_uri + "/" + fileName);
+    url.setUrl(m_uri);
 
     localFilePath = applicationFilePath(fileName);
     m_localFilePath = QUrl::fromLocalFile(localFilePath).toString();
