@@ -33,11 +33,15 @@ RowLayout {
     property alias command: mdiCommandAction.command
     property alias mdiHistory: mdiCommandAction.mdiHistory
     property int mdiHistoryPos: -1
+    property alias button: mdiButton
+    property alias textField: mdiTextField
 
     TextField {
 
         id: mdiTextField
         Layout.fillWidth: true
+
+        placeholderText: "MDI"
 
         onAccepted: {
             if (text != "") {
@@ -75,6 +79,7 @@ RowLayout {
     }
 
     Button {
+        id: mdiButton
         Layout.fillWidth: false
         action: mdiCommandAction
     }
