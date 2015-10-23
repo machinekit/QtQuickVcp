@@ -24,7 +24,9 @@ SOURCES += \
     qapplicationlauncher.cpp \
     qlocalsettings.cpp \
     qapplicationfilemodel.cpp \
-    qapplicationfileitem.cpp
+    qapplicationfileitem.cpp \
+    qapplicationplugins.cpp \
+    qapplicationpluginitem.cpp
 
 HEADERS += \
     plugin.h \
@@ -40,7 +42,9 @@ HEADERS += \
     qapplicationlauncher.h \
     qlocalsettings.h \
     qapplicationfilemodel.h \
-    qapplicationfileitem.h
+    qapplicationfileitem.h \
+    qapplicationplugins.h \
+    qapplicationpluginitem.h
 
 RESOURCES += \
     application.qrc

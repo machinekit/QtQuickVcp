@@ -30,6 +30,8 @@
 #include "qapplicationfile.h"
 #include "qapplicationfilemodel.h"
 #include "qapplicationlauncher.h"
+#include "qapplicationplugins.h"
+#include "qapplicationpluginitem.h"
 #include "qlocalsettings.h"
 
 static void initResources()
@@ -71,6 +73,8 @@ void MachinekitApplicationPlugin::registerTypes(const char *uri)
     qmlRegisterType<QApplicationFileModel>(uri, 1, 0, "ApplicationFileModel");
     qmlRegisterType<QApplicationLauncher>(uri, 1, 0, "ApplicationLauncher");
     qmlRegisterType<QLocalSettings>(uri, 1, 0, "LocalSettings");
+    qmlRegisterType<QApplicationPlugins>(uri, 1, 0, "ApplicationPlugins");
+    qmlRegisterType<QApplicationPluginItem>(uri, 1, 0, "ApplicationPluginItem");
 
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {
