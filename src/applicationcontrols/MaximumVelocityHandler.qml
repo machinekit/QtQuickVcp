@@ -72,6 +72,7 @@ ApplicationObject {
         minimumProportion = (minimumValue / maximumValue) * 100.0
 
         var maxVelocity = status.motion.maxVelocity
+        maxVelocity = Math.max(Math.min(maxVelocity, maximumValue), minimumValue)
         if (proportional) {
             maxVelocity /= maximumValue
             maxVelocity *= 100.0
