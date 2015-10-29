@@ -25,13 +25,15 @@ import Machinekit.Application 1.0
 
 ApplicationObject {
     property int axis: 0
-    readonly property string units: distanceUnits + "/" + timeUnits
+    readonly property string units: proportional ? "%" : distanceUnits + "/" + timeUnits
     readonly property string distanceUnits: getDistanceUnits()
     readonly property string timeUnits: getTimeUnits()
     readonly property double displayValue: value * _timeFactor
     property double value: 0
     property double minimumValue: 0
     property double maximumValue: 100
+    property bool proportional: false
+    property double minimumProportion: 0.0
     property bool enabled: _ready
     property bool synced: false
 
@@ -41,7 +43,12 @@ ApplicationObject {
 
     onValueChanged: {
         if (_ready && !_remoteUpdate) {
-            settings.setValue("axis" + axis + ".jogVelocity", value)
+            var velocity = value
+            if (proportional) {
+                velocity /= 100.0
+                velocity *= maximumValue
+            }
+            settings.setValue("axis" + axis + ".jogVelocity", velocity)
             synced = false
         }
     }
@@ -85,8 +92,15 @@ ApplicationObject {
         } else {
             maximumValue = axisMaxVel
         }
+        minimumProportion = (minimumValue / maximumValue) * 100.0
+
         var tmpValue = settings.value("axis" + axis + ".jogVelocity")
         tmpValue = Math.max(Math.min(tmpValue, maximumValue), minimumValue) // clamp value
+        if (proportional) {
+            tmpValue /= maximumValue
+            tmpValue *= 100.0
+        }
+
         if (value !== tmpValue) {
             value = tmpValue
         }
