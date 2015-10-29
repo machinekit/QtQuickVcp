@@ -45,8 +45,8 @@ Dialog {
     onVisibleChanged: {
         if (visible) {
             _done = false
-            coordinateSpin.value = 0
-            coordinateSystemCombo.currentIndex = 0
+            coordinateSpin.value = 0.0
+            coordinateSystemCombo.currentIndex = status.motion.g5xIndex - 1
         }
     }
 
