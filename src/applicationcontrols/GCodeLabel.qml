@@ -28,24 +28,30 @@ Label {
     property alias core: object.core
     property alias status: object.status
 
+    property var desiredGCodes: [1,2,3,4,5,6,7,8,9]
+    property var desiredMCodes: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+
     property bool _ready: status.synced
     property var _mcodes: _ready ? status.interp.mcodes : []
     property var _gcodes: _ready ? status.interp.gcodes : []
 
     text: {
-        var mcodes = ""
-        for (var i = 1; i < _mcodes.length; ++i) {
-            if (_mcodes[i] > -1) {
-                mcodes += "M" + _mcodes[i].toString() + " "
+        var mcodes = []
+        var gcodes = []
+        var desired = []
+        for (var i = 0; i < desiredMCodes.length; ++i) {
+            desired = desiredMCodes[i]
+            if (_mcodes[desired] > -1) {
+                mcodes.push("M" + _mcodes[desired].toString())
             }
         }
-        var gcodes = ""
-        for (i = 1; i < _gcodes.length; ++i) {
-            if (_gcodes[i] > -1) {
-                gcodes += "G" + (_gcodes[i]/10).toString() + " "
+        for (i = 0; i < desiredGCodes.length; ++i) {
+            desired = desiredGCodes[i]
+            if (_gcodes[desired] > -1) {
+                gcodes.push("G" + (_gcodes[desired]/10).toString())
             }
         }
-        return gcodes + mcodes
+        return gcodes.join(" ") + " " + mcodes.join(" ")
     }
 
     ApplicationObject {
