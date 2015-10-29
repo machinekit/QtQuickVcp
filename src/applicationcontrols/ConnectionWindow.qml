@@ -433,6 +433,9 @@ Rectangle {
             goBack()
             event.accepted = true
         }
+        else {
+            event.accepted = false
+        }
     }
 
     /* Global Variables */
