@@ -13,6 +13,7 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
 #include "config.pb.h"
+#include "preview.pb.h"
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;

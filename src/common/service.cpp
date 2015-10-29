@@ -43,7 +43,6 @@ void Service::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *
 
         field = descriptor->field(i);
         name = QString::fromStdString(field->camelcase_name());
-
         switch (field->cpp_type())
         {
         case gpb::FieldDescriptor::CPPTYPE_BOOL:
@@ -68,6 +67,15 @@ void Service::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *
             break;
         case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
             QJsonObject jsonObject;
+
+            if (field->message_type() == pb::Position::descriptor())  // add indexes to position messages
+            {
+                for (int i = 0; i < 9; ++i)
+                {
+                    jsonObject.insert(QString::number(i), QJsonValue(0.0));
+                }
+            }
+
             recurseDescriptor(field->message_type(), &jsonObject);
             jsonValue = jsonObject;
             break;
@@ -100,16 +108,21 @@ void Service::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *
 void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter, const QString &tempDir)
 {
     bool filterEnabled = !fieldFilter.isEmpty();
+    bool isPosition = false;
     const gpb::Reflection *reflection = message.GetReflection();
     gpb::vector< const gpb::FieldDescriptor * > output;
     reflection->ListFields(message, &output);
 
-    QString typeName = QString::fromStdString(message.GetTypeName());
-    if (typeName == "pb.File") { // handle files with binary data
+    if (message.GetDescriptor() == pb::File::descriptor())  // handle files with binary data
+    {
         pb::File file;
         file.MergeFrom(message);
         fileToJson(file, object, tempDir);
         return;
+    }
+    else if (message.GetDescriptor() == pb::Position::descriptor()) // handle position vecotors
+    {
+        isPosition = true;
     }
 
     for (int i = 0; i < (int)output.size(); ++i)
@@ -134,6 +147,9 @@ void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, c
                 break;
             case gpb::FieldDescriptor::CPPTYPE_DOUBLE:
                 jsonValue = reflection->GetDouble(message, field);
+                if (isPosition) {
+                    object->insert(QString::number(field->index()), jsonValue);
+                }
                 break;
             case gpb::FieldDescriptor::CPPTYPE_FLOAT:
                 jsonValue = (double)reflection->GetFloat(message, field);
