@@ -25,9 +25,9 @@
 #include <QObject>
 #include <QUrl>
 #include <QStringList>
-#include "message.pb.h"
-#include "types.pb.h"
-#include "config.pb.h"
+#include <machinetalk/protobuf/message.pb.h>
+#include <machinetalk/protobuf/types.pb.h>
+#include <machinetalk/protobuf/config.pb.h>
 
 class QApplicationConfigItem : public QObject
 {

@@ -32,8 +32,8 @@
 #include "qapplicationconfigitem.h"
 #include "qapplicationconfigfilter.h"
 #include "qapplicationdescription.h"
-#include "message.pb.h"
-#include "types.pb.h"
+#include <machinetalk/protobuf/message.pb.h>
+#include <machinetalk/protobuf/types.pb.h>
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;

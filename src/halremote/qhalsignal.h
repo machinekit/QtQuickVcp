@@ -25,7 +25,7 @@
 
 #include <QObject>
 #include <QVariant>
-#include "message.pb.h"
+#include <machinetalk/protobuf/message.pb.h>
 
 class QHalSignal : public QObject
 {

@@ -24,7 +24,7 @@
 
 #include <QObject>
 #include <QVariant>
-#include "message.pb.h"
+#include <machinetalk/protobuf/message.pb.h>
 
 class QHalPin : public QObject
 {

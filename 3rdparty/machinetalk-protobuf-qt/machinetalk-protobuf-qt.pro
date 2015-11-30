@@ -11,25 +11,27 @@ TEMPLATE = lib
 
 include(../../paths.pri)
 
+PROTOGEN = build/cpp/machinetalk/protobuf
+
 # Protobuf
-MACHINETALK_DIR = $$PWD/../machinetalk-protobuf
+MACHINETALK_DIR = $$PWD/../machinetalk-protobuf/proto
 PROTOS += \
-    $$MACHINETALK_DIR/proto/nanopb.proto \
-    $$MACHINETALK_DIR/proto/types.proto \
-    $$MACHINETALK_DIR/proto/emcclass.proto \
-    $$MACHINETALK_DIR/proto/motcmds.proto \
-    $$MACHINETALK_DIR/proto/object.proto \
-    $$MACHINETALK_DIR/proto/task.proto \
-    $$MACHINETALK_DIR/proto/value.proto \
-    $$MACHINETALK_DIR/proto/rtapicommand.proto \
-    $$MACHINETALK_DIR/proto/rtapi_message.proto \
-    $$MACHINETALK_DIR/proto/canon.proto \
-    $$MACHINETALK_DIR/proto/config.proto \
-    $$MACHINETALK_DIR/proto/log.proto \
-    $$MACHINETALK_DIR/proto/preview.proto \
-    $$MACHINETALK_DIR/proto/status.proto \
-    $$MACHINETALK_DIR/proto/message.proto \
-    $$MACHINETALK_DIR/proto/test.proto
+    $$MACHINETALK_DIR/nanopb.proto \
+    $$MACHINETALK_DIR/types.proto \
+    $$MACHINETALK_DIR/emcclass.proto \
+    $$MACHINETALK_DIR/motcmds.proto \
+    $$MACHINETALK_DIR/object.proto \
+    $$MACHINETALK_DIR/task.proto \
+    $$MACHINETALK_DIR/value.proto \
+    $$MACHINETALK_DIR/rtapicommand.proto \
+    $$MACHINETALK_DIR/rtapi_message.proto \
+    $$MACHINETALK_DIR/canon.proto \
+    $$MACHINETALK_DIR/config.proto \
+    $$MACHINETALK_DIR/log.proto \
+    $$MACHINETALK_DIR/preview.proto \
+    $$MACHINETALK_DIR/status.proto \
+    $$MACHINETALK_DIR/message.proto \
+    $$MACHINETALK_DIR/test.proto
 
 include(../../src/protobuf.pri)
 

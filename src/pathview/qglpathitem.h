@@ -25,7 +25,7 @@
 
 #include "qglitem.h"
 #include "qgcodeprogrammodel.h"
-#include "preview.pb.h"
+#include <machinetalk/protobuf/preview.pb.h>
 
 class QGLPathItem : public QGLItem
 {

@@ -24,7 +24,7 @@
 #define QGCODEPROGRAMITEM_H
 #include <QVariant>
 #include <QList>
-#include "preview.pb.h"
+#include <machinetalk/protobuf/preview.pb.h>
 
 class QGCodeProgramItem
 {
