@@ -4,8 +4,8 @@ classname MachinekitHalRemoteControlsPlugin
 typeinfo plugins.qmltypes
 designersupported
 
-depends Qt.Quick.Controls 1.1
-depends Qt.Quick.Window 2.0
+depends QtQuick.Controls 1.1
+depends QtQuick.Window 2.0
 depends Machinekit.HalRemote 1.0
 depends Machinekit.Service 1.0
 
