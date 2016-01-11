@@ -38,10 +38,10 @@ ApplicationItem {
     property var g5xNames: ["G54", "G55", "G56", "G57", "G58", "G59", "G59.1", "G59.2", "G59.3"]
     property int g5xIndex: _ready ? status.motion.g5xIndex : 1
     property var position: getPosition()
-    property var dtg: _ready ? status.motion.dtg : {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
-    property var g5xOffset: _ready ? status.motion.g5xOffset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
-    property var g92Offset: _ready ? status.motion.g92Offset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
-    property var toolOffset: _ready ? status.io.toolOffset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
+    property var dtg: _ready ? status.motion.dtg : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
+    property var g5xOffset: _ready ? status.motion.g5xOffset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
+    property var g92Offset: _ready ? status.motion.g92Offset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
+    property var toolOffset: _ready ? status.io.toolOffset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
     property double velocity: _ready ? status.motion.currentVel * _timeFactor : 0.0
     property double distanceToGo: _ready ? status.motion.distanceToGo : 0.0
     property bool offsetsVisible: settings.initialized && settings.values.dro.showOffsets
@@ -60,7 +60,7 @@ ApplicationItem {
             basePosition = (positionFeedback == ApplicationStatus.ActualPositionFeedback) ? status.motion.actualPosition : status.motion.position
         }
         else {
-            basePosition = {"x":0.0, "y":0.0, "z":0.0, "a":0.0}
+            basePosition = {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
         }
 
         if (positionOffset == ApplicationStatus.RelativePositionOffset) {
