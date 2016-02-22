@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("Machinekit Project");
     app.setOrganizationDomain("machinekit.io");
     app.setApplicationName("MachinekitClient");
+    app.setAttribute(Qt::AA_UseOpenGLES);
 
     QQmlApplicationEngine engine;
     engine.addImportPath(QStringLiteral("qml"));
