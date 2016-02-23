@@ -40,7 +40,7 @@ ApplicationAction {
     }
 
     id: root
-    text: qsTr("Home")
+    text: (axis > -1) ? qsTr("Home") : qsTr("Home All")
     shortcut: "Ctrl+Home"
     tooltip: ((axis > -1) ? (qsTr("Home axis ") + axis) : qsTr("Home all axes")) + " [" + shortcut + "]"
     enabled: _ready
