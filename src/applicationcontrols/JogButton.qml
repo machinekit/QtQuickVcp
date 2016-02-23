@@ -31,7 +31,7 @@ Button {
     property alias axis: jogAction.axis
     property alias distance: jogAction.distance
     property int direction: 1
-    property double velocity: jogAction.settings.initialized ? jogAction.settings.value("axis" + axis + ".jogVelocity") : 0.0
+    property double velocity: jogAction.settings.initialized ? jogAction.settings.values["axis" + axis]["jogVelocity"] : 0.0
 
     function _toggle(onOff) {
         if (onOff) {
