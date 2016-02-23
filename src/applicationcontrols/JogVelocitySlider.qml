@@ -31,10 +31,11 @@ Slider {
     property alias axis: handler.axis
     property alias displayValue: handler.displayValue
     property alias units: handler.units
+    property alias proportional: handler.proportional
 
     id: root
-    minimumValue: handler.minimumValue
-    maximumValue: handler.maximumValue
+    minimumValue: handler.proportional ? handler.minimumProportion : handler.minimumValue
+    maximumValue: handler.proportional ? 100.0 : handler.maximumValue
     enabled: handler.enabled
 
     JogVelocityHandler {

@@ -28,7 +28,7 @@ ApplicationObject {
     readonly property string units: proportional ? "%" : distanceUnits + "/" + timeUnits
     readonly property string distanceUnits: getDistanceUnits()
     readonly property string timeUnits: getTimeUnits()
-    readonly property double displayValue: value * _timeFactor
+    readonly property double displayValue: proportional ? value : value * _timeFactor
     property double value: 0
     property double minimumValue: 0
     property double maximumValue: 100
