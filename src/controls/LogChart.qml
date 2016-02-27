@@ -122,7 +122,7 @@ ValueChart {
         id: sampleTimer
 
         interval: 10
-        running: true
+        running: chart.enabled
         repeat: true
         onTriggered: {
             valueModel.addData(value)
@@ -133,7 +133,7 @@ ValueChart {
         id: updateTimer
 
         interval: 100
-        running: true
+        running: chart.enabled && chart.visible
         repeat: true
         onTriggered: {
             chart.update()
