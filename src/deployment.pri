@@ -1,5 +1,6 @@
 include(../paths.pri)
 TARGETPATH = $$replace(uri, \\., /)
+DESIGNER = designer
 DESTDIR = $$OUT_PWD/../../imports/$$TARGETPATH
 
 isEmpty(PLUGIN_VERSION): PLUGIN_VERSION = 1.0
@@ -22,14 +23,14 @@ copyqmlprivateinfra.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmlprivateinfra
 
 copyqmldesigner.input = QML_DESIGNER_FILES
-copyqmldesigner.output = $$OUT_PWD/../../imports/$$TARGETPATH/designer/
-copyqmldesigner.commands = $(COPY_DIR) ${QMAKE_FILE_IN} $$shell_path($$OUT_PWD/../../imports/$$TARGETPATH/designer/)
+copyqmldesigner.output = $$OUT_PWD/../../imports/$$DESIGNER/$$TARGETPATH/designer/
+copyqmldesigner.commands = $(COPY_DIR) ${QMAKE_FILE_IN} $$shell_path($$OUT_PWD/../../imports/$$DESIGNER/$$TARGETPATH/designer/)
 copyqmldesigner.CONFIG += no_link no_clean
 copyqmldesigner.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmldesigner
 
 copyqmlpropertyeditor.input = QML_PROPERTY_EDITOR_FILES
-copyqmlpropertyeditor.output = $$OUT_PWD/../../imports/$$TARGETPATH/propertyEditorQmlSources/${QMAKE_FILE_IN_BASE}${QMAKE_FILE_EXT}
+copyqmlpropertyeditor.output = $$OUT_PWD/../../imports/$$DESIGNER/$$TARGETPATH/propertyEditorQmlSources/${QMAKE_FILE_IN_BASE}${QMAKE_FILE_EXT}
 !win32: copyqmlpropertyeditor.commands = $$QMAKE_MKDIR $$shell_path($$dirname(copyqmlpropertyeditor.output)) $$escape_expand(\n\t)
 copyqmlpropertyeditor.commands += $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
 copyqmlpropertyeditor.CONFIG += no_link no_clean
