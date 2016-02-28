@@ -32,7 +32,7 @@ ApplicationAction {
     //iconName: "document-open"
     iconSource: "qrc:Machinekit/Application/Controls/icons/view-refresh"
     shortcut: "Ctrl+R"
-    tooltip: qsTr("Reopen curren file") + " [" + shortcut + "]"
+    tooltip: qsTr("Reopen current file") + " [" + shortcut + "]"
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
             command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)
