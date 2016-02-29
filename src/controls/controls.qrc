@@ -16,5 +16,6 @@
         <file>Private/KnobPart.qml</file>
         <file>Private/KnobPie.qml</file>
         <file>Knob.qml</file>
+        <file>TooltipArea.qml</file>
     </qresource>
 </RCC>

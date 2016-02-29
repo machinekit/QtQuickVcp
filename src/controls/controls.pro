@@ -27,6 +27,7 @@ QML_FILES = \
     SlideView.qml \
     SlidePage.qml \
     TemperatureSelector.qml \
+    TooltipArea.qml \
     TouchButton.qml \
     ValueChart.qml \
     ValueModel.qml \

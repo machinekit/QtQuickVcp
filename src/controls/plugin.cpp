@@ -42,6 +42,7 @@ static const struct {
     { "SlideView", 1, 0 },
     { "SlidePage", 1, 0 },
     { "TemperatureSelector", 1, 0 },
+    { "TooltipArea", 1, 0 },
     { "TouchButton", 1, 0 },
     { "VirtualJoystick", 1, 0 },
     { "ValueChart", 1, 0 },
