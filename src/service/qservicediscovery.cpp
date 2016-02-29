@@ -1098,6 +1098,9 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
                 newId = m_jdns->queryStart(r.name, QJDns::Srv);
                 m_queryIdTypeMap.insert(newId, QJDns::Srv);
                 m_queryIdItemMap.insert(newId, item);
+                newId = m_jdns->queryStart(r.name, QJDns::A);
+                m_queryIdTypeMap.insert(newId, QJDns::A);
+                m_queryIdItemMap.insert(newId, item);
             }
             else
             {
@@ -1130,10 +1133,6 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_jdns->queryCancel(id);    // we have our results
             m_queryIdTypeMap.remove(id);
             m_queryIdItemMap.remove(id);
-
-            newId = m_jdns->queryStart(r.name, QJDns::A);
-            m_queryIdTypeMap.insert(newId, QJDns::A);
-            m_queryIdItemMap.insert(newId, item);
 
             item->setPort(r.port);
 
@@ -1193,7 +1192,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
 #ifdef QT_DEBUG
             if (item) {
-                DEBUG_TAG(2, "SD", "AAA DNS record" << item->type() << item->name() << "Address:" << r.address.toString());
+                DEBUG_TAG(2, "SD", "AAAA DNS record" << item->type() << item->name() << "Address:" << r.address.toString());
             }
 #endif
         }
