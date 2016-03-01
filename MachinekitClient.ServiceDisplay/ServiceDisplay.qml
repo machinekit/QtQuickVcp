@@ -99,6 +99,9 @@ Rectangle {
                 model: allServices.items
 
                 delegate: ColumnLayout {
+                    property bool folded: true
+
+                    id: serviceItem
                     anchors.leftMargin: Screen.pixelDensity * 3
                     anchors.rightMargin: Screen.pixelDensity * 3
                     anchors.left: parent.left
@@ -108,10 +111,23 @@ Rectangle {
                         Layout.fillWidth: true
                         text: name
                         font.bold: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: serviceItem.folded ^= 1
+                            cursorShape: Qt.PointingHandCursor
+                        }
+                    }
+                    Label {
+                        Layout.fillWidth: true
+                        text: "host name = " + hostName +
+                              "\nhost address = " + hostAddress +
+                              "\nport = " + port
+                        visible: !serviceItem.folded
                     }
                     Label {
                         Layout.fillWidth: true
                         text: txtRecords.join("\n")
+                        visible: !serviceItem.folded
                     }
                 }
             }
