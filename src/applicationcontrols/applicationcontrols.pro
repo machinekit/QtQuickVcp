@@ -68,7 +68,8 @@ CONTROLS_QML_FILES = \
     BlockDeleteAction.qml \
     FeedHoldAction.qml \
     FeedOverrideAction.qml \
-    SpindleOverrideAction.qml
+    SpindleOverrideAction.qml \
+    EstopPowerAction.qml
 
 QML_FILES += $$CONTROLS_QML_FILES
 
