@@ -1091,11 +1091,14 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             if (r.ttl > 0)
             {
                 item = addItem(name, serviceType);
-                item->setOutstandingRequests(4);     // We have to do 3 requests before the item is fully resolved
+                // We have to do 3 requests before the item is fully resolved
+                // TXT, SRV and A or AAAA
                 newId = m_jdns->queryStart(r.name, QJDns::Txt);
+                item->addOutstandingRequest(newId);
                 m_queryIdTypeMap.insert(newId, QJDns::Txt);
                 m_queryIdItemMap.insert(newId, item);
                 newId = m_jdns->queryStart(r.name, QJDns::Srv);
+                item->addOutstandingRequest(newId);
                 m_queryIdTypeMap.insert(newId, QJDns::Srv);
                 m_queryIdItemMap.insert(newId, item);
             }
@@ -1110,6 +1113,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
             item = m_queryIdItemMap.value(id);
             m_jdns->queryCancel(id);    // we have our results
+            item->removeOutstandingRequest(id);
             m_queryIdTypeMap.remove(id);
             m_queryIdItemMap.remove(id);
 
@@ -1128,10 +1132,12 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         {
             item = m_queryIdItemMap.value(id);
             m_jdns->queryCancel(id);    // we have our results
+            item->removeOutstandingRequest(id);
             m_queryIdTypeMap.remove(id);
             m_queryIdItemMap.remove(id);
 
             newId = m_jdns->queryStart(r.name, QJDns::A);
+            item->addOutstandingRequest(newId);
             m_queryIdTypeMap.insert(newId, QJDns::A);
             m_queryIdItemMap.insert(newId, item);
 
@@ -1146,6 +1152,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         {
             item = m_queryIdItemMap.value(id);
             m_jdns->queryCancel(id);    // we have our results
+            item->removeOutstandingRequest(id);
             m_queryIdTypeMap.remove(id);
             m_queryIdItemMap.remove(id);
             item->setHostAddress(r.address.toString());
@@ -1159,8 +1166,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
         if (item != NULL)   // we got a answer to a request
         {
-            item->setOutstandingRequests(item->outstandingRequests() - 1);
-            if (item->outstandingRequests() <= 0)   // item is fully resolved
+            if (!(item->hasOutstandingRequests()))   // item is fully resolved
             {
                 updateItem(item->name(), item->type());
                 item->setUpdated(true);

@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QDateTime>
+#include <QSet>
 
 class QServiceDiscoveryItem : public QObject
 {
@@ -84,9 +85,14 @@ public:
         return m_uuid;
     }
 
-    int outstandingRequests() const
+    QSet<int> outstandingRequests() const
     {
         return m_outstandingRequests;
+    }
+
+    bool hasOutstandingRequests()
+    {
+        return (!m_outstandingRequests.isEmpty());
     }
 
     int version() const
@@ -163,9 +169,19 @@ public slots:
         }
     }
 
-    void setOutstandingRequests(int arg)
+    void addOutstandingRequest(int arg)
     {
-        m_outstandingRequests = arg;
+        m_outstandingRequests.insert(arg);
+    }
+
+    void removeOutstandingRequest(int arg)
+    {
+        m_outstandingRequests.remove(arg);
+    }
+
+    void clearOutstandingRequests()
+    {
+        m_outstandingRequests.clear();
     }
 
     void setVersion(int arg)
@@ -212,7 +228,7 @@ private:
     QString m_hostName;
     QString m_hostAddress;
     QStringList m_txtRecords;
-    int m_outstandingRequests;
+    QSet<int> m_outstandingRequests;
     bool m_updated;
     int m_errorCount;
 

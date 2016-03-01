@@ -294,8 +294,12 @@ void QService::updateUri()
         if (m_hostname.contains(host))  // hostname is in form .local. and host in .local
         {
             url.setHost(m_hostaddress); // use resolved address
+            m_uri = url.toString();
         }
-        m_uri = url.toString();
+        else
+        {
+            m_uri = m_rawUri;  // pass raw uri
+        }
         m_ready = true;
     }
 

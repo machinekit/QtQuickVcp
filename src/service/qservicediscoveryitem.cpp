@@ -94,7 +94,7 @@ QServiceDiscoveryItem::QServiceDiscoveryItem(QObject *parent) :
     m_hostName(""),
     m_hostAddress(""),
     m_txtRecords(QStringList()),
-    m_outstandingRequests(0),
+    m_outstandingRequests(QSet<int>()),
     m_updated(false),
     m_errorCount(0)
 {
