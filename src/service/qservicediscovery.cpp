@@ -1091,15 +1091,12 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             if (r.ttl > 0)
             {
                 item = addItem(name, serviceType);
-                item->setOutstandingRequests(3);     // We have to do 3 requests before the item is fully resolved
+                item->setOutstandingRequests(4);     // We have to do 3 requests before the item is fully resolved
                 newId = m_jdns->queryStart(r.name, QJDns::Txt);
                 m_queryIdTypeMap.insert(newId, QJDns::Txt);
                 m_queryIdItemMap.insert(newId, item);
                 newId = m_jdns->queryStart(r.name, QJDns::Srv);
                 m_queryIdTypeMap.insert(newId, QJDns::Srv);
-                m_queryIdItemMap.insert(newId, item);
-                newId = m_jdns->queryStart(r.name, QJDns::A);
-                m_queryIdTypeMap.insert(newId, QJDns::A);
                 m_queryIdItemMap.insert(newId, item);
             }
             else
@@ -1134,65 +1131,28 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_queryIdTypeMap.remove(id);
             m_queryIdItemMap.remove(id);
 
+            newId = m_jdns->queryStart(r.name, QJDns::A);
+            m_queryIdTypeMap.insert(newId, QJDns::A);
+            m_queryIdItemMap.insert(newId, item);
+
+            item->setHostName(r.name);
             item->setPort(r.port);
 
 #ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "Srv DNS record" << item->type() << item->name() << "Port:" << r.port);
 #endif
         }
-        else if (type == QJDns::A)
+        else if ((type == QJDns::A) || (type == QJDns::Aaaa))
         {
-            QString serviceType = m_queryIdServiceMap.value(id, QString());
-
-            if (serviceType.isEmpty()) // this request was started by another service
-            {
-                item = m_queryIdItemMap.value(id);
-                m_jdns->queryCancel(id);    // we have our results
-                m_queryIdTypeMap.remove(id);
-                m_queryIdItemMap.remove(id);
-                item->setHostAddress(r.address);
-            }
-            else
-            {
-                if (r.ttl > 0)
-                {
-                    item = addItem(serviceType, serviceType);
-                    item->setOutstandingRequests(1);     // With this request the item is resolved
-                    item->setHostAddress(r.address);
-                }
-                else
-                {
-                    removeItem(serviceType, serviceType);
-                }
-            }
+            item = m_queryIdItemMap.value(id);
+            m_jdns->queryCancel(id);    // we have our results
+            m_queryIdTypeMap.remove(id);
+            m_queryIdItemMap.remove(id);
+            item->setHostAddress(r.address.toString());
 
 #ifdef QT_DEBUG
             if (item) {
                 DEBUG_TAG(2, "SD", "A DNS record" << item->type() << item->name() << "Address:" << r.address.toString());
-            }
-#endif
-        }
-        else if (type == QJDns::Aaaa)
-        {
-            QString serviceType = m_queryIdServiceMap.value(id, QString());
-
-            if (!serviceType.isEmpty())
-            {
-                if (r.ttl != 0)
-                {
-                    item = addItem(serviceType, serviceType);
-                    item->setOutstandingRequests(1);     // With this request the item is resolved
-                    item->setHostAddress(r.address);
-                }
-                else
-                {
-                    removeItem(serviceType, serviceType);
-                }
-            }
-
-#ifdef QT_DEBUG
-            if (item) {
-                DEBUG_TAG(2, "SD", "AAAA DNS record" << item->type() << item->name() << "Address:" << r.address.toString());
             }
 #endif
         }

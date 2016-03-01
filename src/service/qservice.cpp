@@ -147,29 +147,21 @@ QService::QService(QObject *parent) :
     m_filter(new QServiceDiscoveryFilter(this)),
     m_required(false),
     m_serviceQuery(new QServiceDiscoveryQuery(this)),
-    m_hostnameQuery(new QServiceDiscoveryQuery(this)),
-    m_hostnameResolved(false),
     m_hostname(""),
     m_hostaddress("")
 {
     this->setObjectName("Service");
 
     m_serviceQuery->setQueryType(QJDns::Ptr);
-    m_hostnameQuery->setQueryType(QJDns::A);
     m_queries.append(m_serviceQuery);
-    m_queries.append(m_hostnameQuery);
 
     connect(m_serviceQuery, SIGNAL(serviceTypeChanged(QString)),
             this, SIGNAL(queriesChanged()));
     connect(m_serviceQuery, SIGNAL(filterChanged(QServiceDiscoveryFilter*)),
             this, SIGNAL(queriesChanged()));
-    connect(m_hostnameQuery, SIGNAL(serviceTypeChanged(QString)),
-            this, SIGNAL(queriesChanged()));
 
     connect(m_serviceQuery, SIGNAL(itemsChanged(QQmlListProperty<QServiceDiscoveryItem>)),
             this, SLOT(serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem>)));
-    connect(m_hostnameQuery, SIGNAL(itemsChanged(QQmlListProperty<QServiceDiscoveryItem>)),
-            this, SLOT(hostnameQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem>)));
 
     connect(this, SIGNAL(typeChanged(QString)),
             this, SLOT(updateServiceQuery()));
@@ -212,6 +204,8 @@ void QService::serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> 
         m_uuid = m_items.at(0)->uuid();
         m_name = m_items.at(0)->name();
         m_version = m_items.at(0)->version();
+        m_hostname = m_items.at(0)->hostName();
+        m_hostaddress = m_items.at(0)->hostAddress();
 
         m_itemsReady = true;
     }
@@ -221,6 +215,8 @@ void QService::serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> 
         m_uuid = "";
         m_name = "";
         m_version = 0;
+        m_hostname = "";
+        m_hostaddress = "";
         m_itemsReady = false;
     }
 
@@ -228,24 +224,6 @@ void QService::serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> 
     emit nameChanged(m_name);
     emit versionChanged(m_version);
     emit itemsChanged(items());
-
-    updateUri();
-}
-
-void QService::hostnameQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> newItems)
-{
-    if (newItems.count(&newItems) > 0)
-    {
-        QServiceDiscoveryItem *item;
-
-        item = newItems.at(&newItems, 0);
-        m_hostaddress = item->hostAddress().toString();
-        m_hostnameResolved = true;
-    }
-    else
-    {
-        m_hostnameResolved = false;
-    }
 
     updateUri();
 }
@@ -307,36 +285,18 @@ void QService::updateUri()
     {
         m_ready = false;
         m_uri = "";
-        m_hostname = "";
-        m_hostnameQuery->setServiceType(""); // disables the hostname query
     }
     else
     {
         QUrl url = QUrl(m_rawUri);
         QString host = url.host();
 
-        if (host.contains(".local")) // discovering the host necessary
+        if (m_hostname.contains(host))  // hostname is in form .local. and host in .local
         {
-            if (m_hostnameResolved && (host == m_hostname))
-            {
-                url.setHost(m_hostaddress);
-                m_uri = url.toString();
-                m_ready = true;
-            }
-            else
-            {
-                m_uri = "";
-                m_ready = false;
-                m_hostname = host;
-                m_hostnameQuery->setServiceType(host);  // may refresh the query
-            }
+            url.setHost(m_hostaddress); // use resolved address
         }
-        else {
-            m_uri = m_rawUri;
-            m_ready = true;
-            m_hostname = host;
-            m_hostnameQuery->setServiceType(""); // may refresh the query
-        }
+        m_uri = url.toString();
+        m_ready = true;
     }
 
     emit uriChanged(m_uri);

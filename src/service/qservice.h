@@ -180,12 +180,10 @@ private:
     QList<QServiceDiscoveryItem *> m_items;
     bool m_required;
     QServiceDiscoveryQuery *m_serviceQuery;
-    QServiceDiscoveryQuery *m_hostnameQuery;
     QList<QServiceDiscoveryQuery *> m_queries;
 
     bool m_itemsReady;        // true when we have items
     QString m_rawUri;         // the raw uri from the items
-    bool m_hostnameResolved;  // if the hostname was resolved
     QString m_hostname;       // the hostname that is queried
     QString m_hostaddress;    // the address that was resolved
 
@@ -196,7 +194,6 @@ private slots:
     void updateUri();
     void updateServiceQuery();
     void serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> newItems);
-    void hostnameQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> newItems);
 
 signals:
     void uriChanged(QString arg);
