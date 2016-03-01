@@ -73,6 +73,11 @@
     This property holds the host address of the service.
 */
 
+/*! \qmlproperty string ServiceDiscoveryItem::hostName
+
+    This property holds the host name of the service.
+*/
+
 /*! \qmlproperty list<string> ServiceDiscoveryItem::txtRecords
 
     This property holds the TXT records of the service.
@@ -86,7 +91,8 @@ QServiceDiscoveryItem::QServiceDiscoveryItem(QObject *parent) :
     m_uuid(""),
     m_version(0),
     m_port(0),
-    m_hostAddress(QHostAddress()),
+    m_hostName(""),
+    m_hostAddress(""),
     m_txtRecords(QStringList()),
     m_outstandingRequests(0),
     m_updated(false),
