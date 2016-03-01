@@ -48,16 +48,30 @@ Item {
                 anchors.right: parent.right
                 height: dummyButton.height * 3
 
-                Label {
-                    id: titleText2
+                ColumnLayout {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
 
-                    anchors.fill: parent
-                    font.pointSize: dummyText.font.pointSize*1.3
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    text: name
-                    elide: Text.ElideRight
+                    Label {
+                        id: titleText
+
+                        Layout.fillWidth: true
+                        font.pointSize: dummyText.font.pointSize*1.3
+                        font.bold: true
+                        text: name
+                        horizontalAlignment: Text.AlignHCenter
+                        elide: Text.ElideRight
+                    }
+                    Label {
+                        id: descriptionText
+
+                        Layout.fillWidth: true
+                        text: hostName + " - " + hostAddress
+                        color: systemPalette.dark
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                    }
                 }
 
                 onClicked: instanceSelected(root.instances[index].uuid)
