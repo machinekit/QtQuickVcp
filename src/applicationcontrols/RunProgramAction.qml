@@ -34,7 +34,7 @@ ApplicationAction {
     text: qsTr("Run")
     iconSource: "qrc:Machinekit/Application/Controls/icons/go-next-view"
     shortcut: "R"
-    tooltip: qsTr("Begin executing current file") + " [" + shortcut + "]"
+    tooltip: qsTr("Begin executing current file [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeAuto)
             command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)

@@ -35,7 +35,7 @@ ApplicationAction {
     id: root
     text: qsTr("Override Limits")
     shortcut: ""
-    tooltip: qsTr("Override the machine limits") + " [" + shortcut + "]"
+    tooltip: qsTr("Override the machine limits [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)

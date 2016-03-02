@@ -176,7 +176,7 @@ Rectangle {
 
     /*! This property holds the title of the window displayed if no application is loaded.
     */
-    property string defaultTitle: qsTr("Machinekit")
+    property string defaultTitle: "Machinekit"
 
     /*! This property holds the list of local applications.
     */

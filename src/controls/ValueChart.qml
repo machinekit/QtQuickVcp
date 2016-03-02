@@ -252,13 +252,18 @@ Item {
         onWheel: {
             var sign = (wheel.angleDelta.y < 0) ? -1 : 1
             var tempTimeSpan = timeSpan * (1-sign*scrollZoomFactor)
+            var displayUnit
+            var displaySpan
             if (tempTimeSpan > 1000) {
                 tempTimeSpan = Math.round(tempTimeSpan / 1000) * 1000
-                showMessage(qsTr("Timespan: ") + (tempTimeSpan / 1000) + "s")
+                displaySpan = tempTimeSpan / 1000
+                displayUnit = "s"
             }
             else {
-                showMessage(qsTr("Timespan: ") + tempTimeSpan + "ms")
+                displaySpan = tempTimeSpan
+                displayUnit = "ms"
             }
+            showMessage(qsTr("Timespan: %1%2").arg(displaySpan).arg(displayUnit))
 
             timeSpan = tempTimeSpan
         }
@@ -269,7 +274,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: parent.width * 0.02
         anchors.top: parent.top
-        text: qsTr("Value: <br>") + "<b>" + chart.prefix + ((valueModel != null) ? valueModel.currentValue.toFixed(chart.decimals) : 0) + chart.suffix + "</b>"
+        text: qsTr("Value: <br><b>%1</b>").arg(chart.prefix + ((valueModel != null) ? valueModel.currentValue.toFixed(chart.decimals) : 0) + chart.suffix)
     }
 
     Label {
@@ -279,7 +284,7 @@ Item {
         anchors.rightMargin: leftText.anchors.leftMargin
         anchors.top: parent.top
         height: (leftText.visible || rightText.visible) ? implicitHeight : 0    // hides top bar if no label visible
-        text: qsTr("Target: <br>") + "<b>" + chart.prefix + ((valueModel != null) ? valueModel.targetValue.toFixed(chart.decimals) : 0) + chart.suffix + "</b>"
+        text: qsTr("Target: <br><b>%1</b>").arg(chart.prefix + ((valueModel != null) ? valueModel.targetValue.toFixed(chart.decimals) : 0) + chart.suffix)
     }
 
     Label {

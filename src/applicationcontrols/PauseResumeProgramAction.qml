@@ -35,7 +35,7 @@ ApplicationAction {
     text: checked ? qsTr("Resume") : qsTr("Pause")
     iconSource: "qrc:Machinekit/Application/Controls/icons/go-pause"
     shortcut: checked ? resumeShortcut : pauseShortcut
-    tooltip: (checked ? qsTr("Pause execution") : qsTr("Resume execution")) + " [" + shortcut + "]"
+    tooltip: (checked ? qsTr("Pause execution [%1]") : qsTr("Resume execution [%1]")).arg(shortcut)
     onTriggered: {
         if (checked) {
             command.pauseProgram('execute');

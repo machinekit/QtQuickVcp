@@ -30,7 +30,7 @@ ApplicationAction {
     id: root
     text: qsTr("Mist")
     shortcut: ""
-    tooltip: qsTr("Enable mist") + " [" + shortcut + "]"
+    tooltip: qsTr("Enable mist [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)

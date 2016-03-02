@@ -33,7 +33,7 @@ ApplicationAction {
     id: root
     text: qsTr("Go")
     shortcut: ""
-    tooltip: qsTr("Execute MDI command") + " [" + shortcut + "]"
+    tooltip: qsTr("Execute MDI command [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeMdi)
             command.setTaskMode('execute', ApplicationCommand.TaskModeMdi)

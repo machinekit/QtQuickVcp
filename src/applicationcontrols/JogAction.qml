@@ -34,7 +34,7 @@ ApplicationAction {
     id: root
     text: ""
     shortcut: ""
-    tooltip: qsTr("Jog Axis ") + axis + " [" + shortcut + "]"
+    tooltip: qsTr("Jog Axis %1 [%2]").arg(axis).arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)

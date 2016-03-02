@@ -30,7 +30,7 @@ ApplicationAction {
     id: root
     text: qsTr("-")
     shortcut: "F11"
-    tooltip: qsTr("Turn spindle slower") + " [" + shortcut + "]"
+    tooltip: qsTr("Turn spindle slower [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)

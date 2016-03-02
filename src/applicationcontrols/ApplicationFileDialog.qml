@@ -61,9 +61,9 @@ FileDialog {
             }
         }
 
-        filters.unshift(qsTr("All machinable files") + " (" + allExtensions.join(" ") + ")")
-        filters.push(qsTr("rs274ngc files") + " (*.ngc)")
-        filters.push(qsTr("All files") + " (*)")
+        filters.unshift(qsTr("All machinable files (%1)").arg(allExtensions.join(" ")))
+        filters.push(qsTr("rs274ngc files (*.ngc)"))
+        filters.push(qsTr("All files (*)"))
         return filters
     }
 

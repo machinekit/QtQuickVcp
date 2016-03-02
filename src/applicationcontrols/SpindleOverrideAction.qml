@@ -30,7 +30,7 @@ ApplicationAction {
     id: root
     text: qsTr("Spindle Override")
     shortcut: ""
-    tooltip: qsTr("Enable spindle override") + " [" + shortcut + "]"
+    tooltip: qsTr("Enable spindle override [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)

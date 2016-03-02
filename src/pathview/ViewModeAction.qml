@@ -45,7 +45,7 @@ Action {
         case "Perspective":
             return qsTr("Perspective")
         default:
-            return "Error"
+            return qsTr("Error")
         }
     }
 

@@ -32,7 +32,7 @@ ApplicationAction {
     id: root
     text: qsTr("Unhome")
     shortcut: "Ctrl+Shift+Home"
-    tooltip: qsTr("Unhome axis ") + axis + " [" + shortcut + "]"
+    tooltip: qsTr("Unhome axis %1 [%2]").arg(axis).arg(shortcut)
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && !status.running

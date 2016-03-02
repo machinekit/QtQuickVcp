@@ -10,13 +10,13 @@ Item {
     property string launcherName: (launcher !== undefined) ? launcher.name : ""
     property string titleText: {
         if (isRunning) {
-            return qsTr("Starting ") + launcherName + "..."
+            return qsTr("Starting %1...").arg(launcherName)
         }
         else if (hasError) {
-            return qsTr("Error starting ") + launcherName
+            return qsTr("Error starting %1").arg(launcherName)
         }
         else {
-            return launcherName + qsTr(" exited")
+            return qsTr("%1 exited").arg(launcherName)
         }
     }
     property var image: (launcher !== undefined) && (launcher.image !== undefined) ? launcher.image : undefined
@@ -83,7 +83,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             visible: hasError
             wrapMode: Text.WordWrap
-            text: visible ? qsTr("Process exited with return code ") + returncode + qsTr(". See the log for details.") : ""
+            text: visible ? qsTr("Process exited with return code %1. See the log for details.").arg(returncode) : ""
         }
 
         TextArea {

@@ -206,7 +206,7 @@ Rectangle {
 
                 CheckBox {
                     id: checkBox
-                    text: _requiredServices[index].type + qsTr(" service")
+                    text: qsTr("%1 service").arg(_requiredServices[index].type)
                     checked: _requiredServices[index].ready
                 }
             }

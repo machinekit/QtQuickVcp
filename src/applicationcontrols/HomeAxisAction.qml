@@ -42,7 +42,7 @@ ApplicationAction {
     id: root
     text: (axis > -1) ? qsTr("Home") : qsTr("Home All")
     shortcut: "Ctrl+Home"
-    tooltip: ((axis > -1) ? (qsTr("Home axis ") + axis) : qsTr("Home all axes")) + " [" + shortcut + "]"
+    tooltip: ((axis > -1) ? (qsTr("Home axis %1 [%2]") + axis) : qsTr("Home all axes [%1]")).arg(shortcut)
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && !status.running

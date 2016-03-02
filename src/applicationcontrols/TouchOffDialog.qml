@@ -68,7 +68,7 @@ Dialog {
     ColumnLayout {
         anchors.fill: parent
         Label {
-            text: qsTr("Enter ") + dialog.axisNames[dialog.axis] + qsTr(" coordinate relative to workpiece:")
+            text: qsTr("Enter %1 coordinate relative to workpiece:").arg(dialog.axisNames[dialog.axis])
         }
         SpinBox {
             id: coordinateSpin

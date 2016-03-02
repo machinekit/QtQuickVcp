@@ -30,7 +30,7 @@ ApplicationAction {
     id: root
     text: qsTr("CCW")
     shortcut: "F10"
-    tooltip: qsTr("Turn spindle counterclockwise") + " [" + shortcut + "]"
+    tooltip: qsTr("Turn spindle counterclockwise [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)

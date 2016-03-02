@@ -56,10 +56,10 @@ Gauge {
 
     function getText() {
         if (_mode == "upload") {
-            return qsTr("Uploading file ") + file.localFilePath.split('/').reverse()[0]
+            return qsTr("Uploading file %1").arg(file.localFilePath.split('/').reverse()[0])
         }
         else if (_mode == "download") {
-            return qsTr("Downloading file ") + file.remoteFilePath.split('/').reverse()[0]
+            return qsTr("Downloading file %1").arg(file.remoteFilePath.split('/').reverse()[0])
         }
         else if (_mode == "running") {
             return (value * 100).toFixed(2) + "% - " + _fileName

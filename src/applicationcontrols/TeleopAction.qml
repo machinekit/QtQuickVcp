@@ -30,7 +30,7 @@ ApplicationAction {
     id: root
     text: qsTr("Teleop mode")
     shortcut: "$"
-    tooltip: qsTr("Enable teleop mode") + " [" + shortcut + "]"
+    tooltip: qsTr("Enable teleop mode [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)

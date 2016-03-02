@@ -31,7 +31,7 @@ ApplicationAction {
     text: qsTr("Optional stop (M1)")
     iconSource: "qrc:Machinekit/Application/Controls/icons/go-pause"
     shortcut: "Alt+M"
-    tooltip: qsTr("Optional stop") + " [" + shortcut + "]"
+    tooltip: qsTr("Optional stop [%1]").arg(shortcut)
     checkable: true
     onTriggered: {
         command.setOptionalStopEnabled(checked)

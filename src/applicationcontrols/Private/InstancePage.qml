@@ -186,7 +186,7 @@ Item {
                                 height: dummyButton.height * 1.5
 
                                 Label {
-                                    text: qsTr("Instance ") + (index + 1) + ":"
+                                    text: qsTr("Instance %1:").arg(index + 1)
                                     font.pointSize: dummyText.font.pointSize * 1.2
                                 }
 

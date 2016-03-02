@@ -32,7 +32,7 @@ ApplicationAction {
     //iconName: "system-shutdown"
     iconSource: "qrc:Machinekit/Application/Controls/icons/system-shutdown"
     shortcut: "F2"
-    tooltip: qsTr("Reset Machine") + " [" + shortcut + "]"
+    tooltip: qsTr("Reset Machine [%1]").arg(shortcut)
     checkable: true
     onTriggered: {
         if (!checked) {

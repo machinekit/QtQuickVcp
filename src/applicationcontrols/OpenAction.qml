@@ -34,7 +34,7 @@ ApplicationAction {
     //iconName: "document-open"
     iconSource: "qrc:Machinekit/Application/Controls/icons/document-open"
     shortcut: "O"
-    tooltip: qsTr("Open G-Code file") + " [" + shortcut + "]"
+    tooltip: qsTr("Open G-Code file [%1]").arg(shortcut)
     onTriggered: {
         if (_ready)
         {

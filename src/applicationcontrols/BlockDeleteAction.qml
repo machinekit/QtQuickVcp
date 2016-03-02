@@ -30,7 +30,7 @@ ApplicationAction {
     id: root
     text: qsTr("Block Delete")
     shortcut: ""
-    tooltip: qsTr("Enable block delete") + " [" + shortcut + "]"
+    tooltip: qsTr("Enable block delete [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
