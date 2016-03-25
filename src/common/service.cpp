@@ -223,7 +223,7 @@ void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, c
     }
 }
 
-void Service::updateValue(const google::protobuf::Message &message, QJsonValue *value, const QString &field, const QString &tempDir)
+void Service::updateValue(const gpb::Message &message, QJsonValue *value, const QString &field, const QString &tempDir)
 {
     QJsonObject object;
     object.insert(field, *value);
