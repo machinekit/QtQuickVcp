@@ -49,3 +49,13 @@ OTHER_FILES += \
     android/AndroidManifest.xml \
     Info.plist \
     mac_Info.plist
+
+target.path = /usr/bin
+
+desktop.path = /usr/share/applications
+desktop.files = misc/machinekit-client.desktop
+
+icon.path = /usr/share/pixmaps
+icon.files = icons/machinekit.png
+
+INSTALLS += target desktop icon
