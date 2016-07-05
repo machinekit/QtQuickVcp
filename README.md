@@ -231,9 +231,8 @@ in the repository and you will have a working installation with a few clicks.
 ### Generic Requirements
 QtQuickVcp has the following requirements:
 
-* [Qt SDK](http://qt-project.org/downloads) with Qt 5.2.1 or newer (Qt
-5.6 preferred)
-    Note that Qt 5.4.2 to Qt 5.5.1 will not work on Linux
+* [Qt SDK](http://qt-project.org/downloads) with Qt 5.4.0 or newer
+    **Note** that Qt 5.4.2 to Qt 5.5.1 will not work on Linux
 * [Protocol Buffers](https://developers.google.com/protocol-buffers/) - version 2.5.1 or newer
 * [ZeroMQ](http://zeromq.org/) - version 3.x or newer
 
@@ -463,7 +462,7 @@ Repeat for `x64` in `protobuf\vsprojects\x64\Release`.
 Even if you have the option to use MSVC2015, use MSVC2013 instead by changing the platform tool set to Visual Studio 2013,
 as you will get this kind of compiler error with MSVC2015:
 ````
-error C2338: <hash_*> is deprecated and will be REMOVED. Please use <unordered_*>.  
+error C2338: <hash_*> is deprecated and will be REMOVED. Please use <unordered_*>.
 You can define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
 ````
 If MSVC2015 is the only option you have, add  `_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=1;`  to "Preprocessor Definitions" entry under Project Properties.

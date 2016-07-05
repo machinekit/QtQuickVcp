@@ -23,9 +23,9 @@ defineTest(minQtVersion) {
     return(false)
 }
 
-!minQtVersion(5, 2, 0) {
+!minQtVersion(5, 4, 0) {
     message("Cannot build QtQuickVcp with Qt version $${QT_VERSION}.")
-    error("Use at least Qt 5.2.0.")
+    error("Use at least Qt 5.4.0.")
 }
 
 TEMPLATE = subdirs
