@@ -1,0 +1,33 @@
+# set logging to 'pretty high'
+log rt 5
+log user 5
+
+# start haltalk server
+# add -d or -d -d to log message transactions
+loadusr -W haltalk
+
+loadrt threads period1=1000000 name1=thread
+loadrt scale count=1
+
+# ################################################
+# THREADS
+# ################################################
+addf scale.0                              thread
+
+start
+
+# ################################################
+# REMOTE COMPONENT
+# ################################################
+# wait the halcmd script until the UI has created the remote component 'motorctrl':
+# waitexists servoctrl
+
+# OR preconfigure the remote component like so
+# in this case no waiting required
+# pin count, name, type, direction must match exactly what
+# is in the GUI
+newcomp halanduinoctrl timer=100 acceptdefaults
+newpin  halanduinoctrl halanduinoctrl.gauge1    float in
+newpin  halanduinoctrl halanduinoctrl.gauge2    float in
+newpin  halanduinoctrl halanduinoctrl.gauge3    float in
+ready   halanduinoctrl

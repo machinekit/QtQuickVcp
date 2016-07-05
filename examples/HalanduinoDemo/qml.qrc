@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>HalanduinoDemo.Control/HalanduinoDemo.qml</file>
+        <file>HalanduinoDemo.Control/description.ini</file>
+    </qresource>
+</RCC>
