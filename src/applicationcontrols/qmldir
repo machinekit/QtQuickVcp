@@ -10,6 +10,7 @@ depends QtQuick.Layouts 1.1
 depends Machinekit.Controls 1.0
 depends Machinekit.Service 1.0
 depends Machinekit.Application 1.0
+depends Machinekit.Application.Controls.Private 1.0
 
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work
