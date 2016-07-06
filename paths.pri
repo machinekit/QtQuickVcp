@@ -29,7 +29,7 @@ macx: {
     PROTOBUF_PROTOC = /opt/local/bin/protoc
     PROTOBUF_LIB_FLAGS = -Bstatic
 }
-win32-msvc2013: {
+win32-msvc2013 | win32-msvc2015 {
     PROTOBUF_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\src
     ZEROMQ_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\zeromq4-x\include
     contains(QMAKE_TARGET.arch, x86_64) {
@@ -43,7 +43,7 @@ win32-msvc2013: {
         PROTOBUF_PROTOC = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\vsprojects\Release\protoc.exe
     }
 }
-win32-g++: {
+win32-g++ {
     ZEROMQ_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\MinGW\include
     ZEROMQ_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\MinGW\lib
     PROTOBUF_INCLUDE_PATH =  $$(HOMEDRIVE)$$(HOMEPATH)\bin\MinGW\include
