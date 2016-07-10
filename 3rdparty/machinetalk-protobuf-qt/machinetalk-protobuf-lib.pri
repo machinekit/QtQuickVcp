@@ -17,4 +17,4 @@ macx: {
     LIBS += -lprotobuf
     LIBS += -Bstatic
 }
-LIBS += -lmachinetalk-protobuf
+LIBS += -lmachinetalk-pb2

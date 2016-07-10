@@ -74,7 +74,7 @@ public:
         InterpreterIdle = pb::INTERP_IDLE,
         InterpreterRunning = pb::INTERP_RUNNING,
         InterpreterPaused = pb::INTERP_PAUSED,
-        InterpreterQueueWait = pb::INTERP_QEUEUE_WAIT,
+        InterpreterQueueWait = pb::INTERP_QUEUE_WAIT,
         InterpreterSyncWait = pb::INTERP_SYNC_WAIT,
         InterpreterAbortWait = pb::INTERP_ABORT_WAIT,
         InterpreterStateUnset = pb::INTERP_STATE_UNSET
