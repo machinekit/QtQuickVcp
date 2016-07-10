@@ -19,7 +19,7 @@ isEmpty(PROTOGEN): PROTOGEN = generated
 
 !isEmpty(PROTOBUF_INCLUDE_PATH): PROTOPATH += $$PROTOBUF_INCLUDE_PATH
 PROTOPATHS =
-for(p, PROTOPATH):PROTOPATHS += --proto_path=$${p}
+for(p, PROTOPATH):PROTOPATHS += --proto_path=$$relative_path($${p}, $$OUT_PWD)
 
 message("Generating protocol buffer classes from .proto files.")
 
