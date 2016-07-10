@@ -492,20 +492,24 @@ Per default Qt Creator's QtQuick designer does not work with custom QML modules.
 #### Build from command line (Linux only)
 The following steps assume that you have the Qt SDK installed in `~/bin/Qt/`
 
-    # set QMAKE
-    QMAKE=~/bin/Qt/5.*/gcc*/bin/qmake
-    QT_INSTALL_PREFIX=~/bin/Qt/5.*/gcc*
+``` bash
+# set QMAKE
+QMAKE=~/bin/Qt/5.*/gcc*/bin/qmake
+QT_INSTALL_PREFIX=~/bin/Qt/5.*/gcc*
 
-    # download and install QtQuickVcp
-    git clone https://github.com/strahlex/QtQuickVcp
-    mkdir -p build/QtQuickVcp
-    cd build/QtQuickVcp
+# download and install QtQuickVcp
+git clone https://github.com/strahlex/QtQuickVcp
+mkdir -p build/QtQuickVcp
+cd build/QtQuickVcp
 
-    $QMAKE ../../QtQuickVcp
-    make
-    make docs
-    make install
-    make install_docs
+$QMAKE ../../QtQuickVcp
+# to build without plugins.qmltypes use:
+# $QMAKE ../../QtQuickVcp QMLPLUGINDUMP=0
+make
+make docs
+make install
+make install_docs
+```
 
 ### MachinekitSDK
 If you also want to have QtQuickVcp specific wizards and extensions
