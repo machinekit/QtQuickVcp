@@ -179,6 +179,7 @@ public slots:
     void jog(JogType type, int axisIndex, double velocity);
     void jog(JogType type, int axisIndex, double velocity, double distance);
     void loadToolTable();
+    void updateToolTable(const QJsonArray &toolTable);
     void setMaximumVelocity(double velocity);
     void setMistEnabled(bool enable);
     void overrideLimits();
