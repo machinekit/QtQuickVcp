@@ -221,6 +221,43 @@ void QApplicationCommand::loadToolTable()
     sendCommandMessage(pb::MT_EMC_TOOL_LOAD_TOOL_TABLE);
 }
 
+void QApplicationCommand::updateToolTable(const QJsonArray &toolTable)
+{
+    if (m_connectionState != Connected) {
+        return;
+    }
+
+    pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
+    for (int i = 0; i < toolTable.size(); ++i)
+    {
+        QJsonValue value = toolTable.at(i);
+        QJsonObject object = value.toObject();
+        pb::EmcToolData *toolData = commandParams->add_tool_table();
+        toolData->set_index(i);
+        toolData->set_id(object.value("id").toInt(0));
+        toolData->set_pocket(object.value("pocket").toInt(0));
+        toolData->set_diameter(object.value("diameter").toDouble(0.0));
+        toolData->set_backangle(object.value("backangle").toDouble(0.0));
+        toolData->set_frontangle(object.value("frontangle").toDouble(0.0));
+        toolData->set_orientation(object.value("orientation").toInt(0));
+        toolData->set_comment(object.value("comment").toString().toStdString());
+
+        pb::Position *offset = toolData->mutable_offset();
+        QJsonObject offsetObject = object.value("offset").toObject();
+        offset->set_x(offsetObject.value("x").toDouble(0.0));
+        offset->set_y(offsetObject.value("y").toDouble(0.0));
+        offset->set_z(offsetObject.value("z").toDouble(0.0));
+        offset->set_a(offsetObject.value("a").toDouble(0.0));
+        offset->set_b(offsetObject.value("b").toDouble(0.0));
+        offset->set_c(offsetObject.value("c").toDouble(0.0));
+        offset->set_u(offsetObject.value("u").toDouble(0.0));
+        offset->set_v(offsetObject.value("v").toDouble(0.0));
+        offset->set_w(offsetObject.value("w").toDouble(0.0));
+    }
+
+    sendCommandMessage(pb::MT_EMC_TOOL_UPDATE_TOOL_TABLE);
+}
+
 void QApplicationCommand::setMaximumVelocity(double velocity)
 {
     if (m_connectionState != Connected) {
