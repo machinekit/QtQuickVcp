@@ -11,6 +11,8 @@ Dialog {
     property var command: core === null ? {"ready": false} : core.command
     property var file: core === null ? {"localPath":"", "remotePath":"", "localFilePath":"", "ready":false} : core.file
     property var fileDialog: null
+    property alias width: root.implicitWidth
+    property alias height: root.implicitHeight
 
     property bool _ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
 
@@ -53,6 +55,7 @@ Dialog {
     title: qsTr("Remote files")
 
     contentItem: Rectangle {
+        id: root
         color: systemPalette.window
 
     ColumnLayout {
