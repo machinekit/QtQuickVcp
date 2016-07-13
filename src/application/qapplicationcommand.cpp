@@ -587,7 +587,7 @@ void QApplicationCommand::setToolOffset(int index, double zOffset, double xOffse
     sendCommandMessage(pb::MT_EMC_TOOL_SET_OFFSET);
 }
 
-void QApplicationCommand::setTrajectoryMode(QApplicationStatus::TrajectoryMode mode)
+void QApplicationCommand::setTrajectoryMode(TrajectoryMode mode)
 {
     if (m_connectionState != Connected) {
         return;
