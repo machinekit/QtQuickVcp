@@ -104,7 +104,7 @@ ApplicationObject {
     function getDistanceUnits() {
         if (_ready) {
             switch (status.config.programUnits) {
-            case ApplicationStatus.CanonUnitsInches:
+            case ApplicationStatus.CanonUnitsInch:
                 return "in"
             case ApplicationStatus.CanonUnitsMm:
                 return "mm"
