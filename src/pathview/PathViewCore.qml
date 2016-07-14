@@ -93,7 +93,7 @@ ApplicationItem {
         previewUri: previewService.uri
         ready: ((previewService.ready && previewStatusService.ready) || _connected)
         model: gcodeProgramModel
-        units: status.synced ? status.config.programUnits : PreviewClient.CanonUnitsInches
+        units: status.synced ? status.config.programUnits : PreviewClient.CanonUnitsInch
 
         onConnectedChanged: delayTimer.running = true
     }
