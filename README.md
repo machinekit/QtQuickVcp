@@ -179,7 +179,7 @@ command = python run.py
 variant = with one extruder
 ```
 
-More examples can be found here [https://github.com/strahlex/MendelMax-CRAMPS/blob/master/launcher.ini](MendelMax-CRAMPS) and here [https://github.com/thecooltool/machinekit-configs/blob/master/launcher.ini](thecooltool-config).
+More examples can be found here [MendelMax-CRAMPS](https://github.com/strahlex/MendelMax-CRAMPS/blob/master/launcher.ini) and here [thecooltool-config](https://github.com/thecooltool/machinekit-configs/blob/master/launcher.ini).
 
 Once you have create a `launcher.ini` file and you configuration is ready for testing you can start mklauncher by typing following command:
 
@@ -191,7 +191,7 @@ The dot in the end means that mklauncher will recursively search for `launcher.i
 
 Once you have successfully launched mklauncher you are ready to connect using the [Machinekit-Client](https://github.com/strahlex/MachinekitClient).
 
-If you have a embedded Machinekit setup e.g. on the BeagleBone Black, it is recommended to start mklauncher at boot using systemd. Use this guide for reference: [https://github.com/strahlex/asciidoc-sandbox/blob/master/Starting-a-Machinekit-configuration-at-boot.md](Starting a Machinekit configuration at boot) or use this script [https://gist.github.com/strahlex/3eaa42f79f7a19e2244a](register.py).
+If you have a embedded Machinekit setup e.g. on the BeagleBone Black, it is recommended to start mklauncher at boot using systemd. Use this guide for reference: [Starting a Machinekit configuration at boot](https://github.com/strahlex/asciidoc-sandbox/blob/master/Starting-a-Machinekit-configuration-at-boot.md) or use this script [register.py](https://gist.github.com/strahlex/3eaa42f79f7a19e2244a).
 
 <a name="contributing"/>
 ## Contributing
