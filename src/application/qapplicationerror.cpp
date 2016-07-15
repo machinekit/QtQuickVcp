@@ -110,6 +110,13 @@ void QApplicationError::updateState(QApplicationError::State state, QApplication
         if (m_connectionState == Connected) // we are not connected anymore
         {
             stopErrorHeartbeat();
+        }
+
+        m_connectionState = state;
+        emit connectionStateChanged(m_connectionState);
+
+        if (m_connectionState == Connected)
+        {
             if (m_connected != true) {
                 m_connected = true;
                 emit connectedChanged(true);
@@ -119,9 +126,6 @@ void QApplicationError::updateState(QApplicationError::State state, QApplication
             m_connected = false;
             emit connectedChanged(false);
         }
-
-        m_connectionState = state;
-        emit connectionStateChanged(m_connectionState);
     }
 
     updateError(error, errorString);

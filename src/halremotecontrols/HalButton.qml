@@ -56,7 +56,7 @@ Button {
 
     id: main
 
-    enabled: (pin.direction == HalPin.Out)
+    enabled: (pin.direction != HalPin.In)
 
     HalPin {
         id: pin
