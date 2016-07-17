@@ -38,6 +38,7 @@ static const struct {
     { "PowerAction", 1, 0 },
     { "OpenAction", 1, 0 },
     { "ReopenAction", 1, 0 },
+    { "EditProgramAction", 1, 0 },
     { "RunProgramAction", 1, 0 },
     { "StepProgramAction", 1, 0 },
     { "PauseResumeProgramAction", 1, 0 },

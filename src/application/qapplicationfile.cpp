@@ -24,6 +24,7 @@
 
 QApplicationFile::QApplicationFile(QObject *parent) :
     AbstractServiceImplementation(parent),
+    m_editMode(false),
     m_uri(""),
     m_localFilePath(""),
     m_remoteFilePath(""),

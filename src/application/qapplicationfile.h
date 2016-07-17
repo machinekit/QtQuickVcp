@@ -46,6 +46,7 @@ class QApplicationFile : public AbstractServiceImplementation
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(bool networkReady READ networkReady NOTIFY networkReadyChanged)
+    Q_PROPERTY(bool editMode READ editMode WRITE setEditMode NOTIFY editModeChanged)
     Q_PROPERTY(QApplicationFileModel *model READ model NOTIFY modelChanged)
     Q_ENUMS(TransferState TransferError)
 
@@ -67,6 +68,10 @@ public:
         FtpError = 1,
         FileError = 2
     };
+
+    bool editMode() const {
+        return m_editMode;
+    }
 
     QString uri() const
     {
@@ -124,6 +129,13 @@ public:
     }
 
 public slots:
+    void setEditMode(const bool &a) {
+        if (a != m_editMode) {
+            m_editMode = a;
+            emit editModeChanged();
+        }
+    }
+
     void setUri(QString arg)
     {
         if (m_uri == arg)
@@ -177,6 +189,7 @@ public slots:
     void clearError();
 
 private:
+    bool            m_editMode;
     QString         m_uri;
     QString         m_localFilePath;
     QString         m_remoteFilePath;
@@ -211,6 +224,7 @@ private slots:
     void ftpCommandFinished(int, bool error);
 
 signals:
+    void editModeChanged();
     void uriChanged(QString arg);
     void errorChanged(TransferError arg);
     void errorStringChanged(QString arg);
