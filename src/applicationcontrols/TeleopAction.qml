@@ -26,11 +26,13 @@ import Machinekit.Application 1.0
 
 ApplicationAction {
     property bool _ready: status.synced && command.connected
+    property bool _enabled: _ready && (status.motion.motionMode === ApplicationStatus.TeleopMode)
 
     id: root
     text: qsTr("Teleop mode")
     shortcut: "$"
     tooltip: qsTr("Enable teleop mode [%1]").arg(shortcut)
+    checked: _enabled
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)

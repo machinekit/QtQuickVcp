@@ -136,7 +136,7 @@ public:
     };
 
     enum CanonUnits {
-        CanonUnitsInches = pb::CANON_UNITS_INCHES,
+        CanonUnitsInch = pb::CANON_UNITS_INCH,
         CanonUnitsMm = pb::CANON_UNITS_MM,
         CanonUnitsCm = pb::CANON_UNITS_CM
     };

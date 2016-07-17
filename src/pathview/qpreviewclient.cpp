@@ -34,7 +34,7 @@ QPreviewClient::QPreviewClient(QObject *parent) :
     m_model(NULL),
     m_interpreterState(InterpreterStateUnset),
     m_interpreterNote(""),
-    m_units(CanonUnitsInches),
+    m_units(CanonUnitsInch),
     m_convertFactor(1.0),
     m_context(NULL),
     m_statusSocket(NULL),
@@ -51,7 +51,7 @@ void QPreviewClient::setUnits(QPreviewClient::CanonUnits arg)
         return;
 
     switch (arg) {
-    case CanonUnitsInches:
+    case CanonUnitsInch:
         m_convertFactor = 1.0;
         break;
     case CanonUnitsMm:
@@ -233,7 +233,7 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
 
             if (preview.has_pos())
             {
-                convertPos(preview.mutable_pos());  // messages come always with unit inches
+                convertPos(preview.mutable_pos());  // messages come always with unit inch
             }
 
             if (preview.has_first_axis())

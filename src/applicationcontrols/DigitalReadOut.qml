@@ -89,6 +89,7 @@ ApplicationItem {
     Label {
         id: dummyLabel
         font.bold: true
+        visible: false
     }
 
     Component {

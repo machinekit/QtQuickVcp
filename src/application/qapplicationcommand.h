@@ -52,7 +52,7 @@ class QApplicationCommand : public AbstractServiceImplementation
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_ENUMS(State ConnectionError SpindleBrake JogType TaskState TaskMode SpindleMode)
+    Q_ENUMS(State ConnectionError SpindleBrake JogType TaskState TaskMode SpindleMode TrajectoryMode)
 
 public:
     explicit QApplicationCommand(QObject *parent = 0);
@@ -108,6 +108,12 @@ public:
         TaskModeManual = pb::EMC_TASK_MODE_MANUAL,
         TaskModeAuto = pb::EMC_TASK_MODE_AUTO,
         TaskModeMdi = pb::EMC_TASK_MODE_MDI
+    };
+
+    enum TrajectoryMode {
+        FreeMode = pb::EMC_TRAJ_MODE_FREE,
+        CoordinatedMode = pb::EMC_TRAJ_MODE_COORD,
+        TeleopMode = pb::EMC_TRAJ_MODE_TELEOP
     };
 
     QString commandUri() const
@@ -179,6 +185,7 @@ public slots:
     void jog(JogType type, int axisIndex, double velocity);
     void jog(JogType type, int axisIndex, double velocity, double distance);
     void loadToolTable();
+    void updateToolTable(const QJsonArray &toolTable);
     void setMaximumVelocity(double velocity);
     void setMistEnabled(bool enable);
     void overrideLimits();
@@ -198,7 +205,7 @@ public slots:
     void setTeleopEnabled(bool enable);
     void setTeleopVector(double a, double b, double c, double u, double v, double w);
     void setToolOffset(int index, double zOffset, double xOffset, double diameter, double frontangle, double backangle, int orientation);
-    void setTrajectoryMode(QApplicationStatus::TrajectoryMode mode);
+    void setTrajectoryMode(TrajectoryMode mode);
     void unhomeAxis(int index);
     void shutdown();
 private:
