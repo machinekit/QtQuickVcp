@@ -33,6 +33,10 @@ TEMPLATE = subdirs
 CONFIG += ordered
 SUBDIRS += 3rdparty src # applications examples
 
+debug: CONFIG(debug, debug|release) {
+    SUBDIRS += tests
+}
+
 include(qtquickvcp_version.pri)
 include(paths.pri)
 include(doc/doc.pri)
