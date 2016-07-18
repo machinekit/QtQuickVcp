@@ -467,6 +467,7 @@ GLView3D {
         backplotTraverseColor: pathView.colors["backplottraverse"]
         selectedColor: pathView.colors["selected"]
         activeColor: pathView.colors["active"]
+        traverseLineStippleLength: (pathView.viewMode == "Perspective") ? 0.015 * camera.distance / pathView.cameraZoom : 0.015
         model: (pathView.model !== undefined) ? pathView.model : tmpModel
     }
 
