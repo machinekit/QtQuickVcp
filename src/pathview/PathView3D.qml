@@ -123,7 +123,7 @@ GLView3D {
             switch (pathView.viewMode) {
             case "Top":
             case "RotatedTop":
-                z = 100000
+                z = 10000
                 if (programExtents.valid && zoomToProgram) {
                     x += programExtents.center.x + programExtents.position.x
                     y += programExtents.center.y + programExtents.position.y
@@ -133,7 +133,7 @@ GLView3D {
                 }
                 break
             case "Front":
-                y = -100000
+                y = -10000
                 if (programExtents.valid && zoomToProgram) {
                     x += programExtents.center.x + programExtents.position.x
                     z += programExtents.center.z + programExtents.position.z
@@ -143,7 +143,7 @@ GLView3D {
                 }
                 break
             case "Side":
-                x = 100000
+                x = 10000
                 if (programExtents.valid && zoomToProgram) {
                     y += programExtents.center.y + programExtents.position.y
                     z += programExtents.center.z + programExtents.position.z
