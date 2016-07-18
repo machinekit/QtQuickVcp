@@ -59,6 +59,7 @@ LocalSettings {
             setValue("preview.showCoordinate", true, false)
             setValue("preview.showGrid", true, false)
             setValue("preview.zoomToProgram", true, false)
+            setValue("preview.gridInterval", 100.0, false)
             setValue("mdi.history", [], false)
             initialized = true
         }

@@ -86,6 +86,7 @@ GLView3D {
     property bool machineLimitsVisible: object.settings.initialized && object.settings.values.preview.showMachineLimits
     property bool coordinateVisible: object.settings.initialized && object.settings.values.preview.showCoordinate
     property bool offsetsVisible: object.settings.initialized && object.settings.values.dro.showOffsets
+    property real gridInterval: object.settings.initialized ? object.settings.values.preview.gridInterval : 100.0
 
     property bool _ready: status.synced
     property var _axisNames: ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
@@ -333,9 +334,9 @@ GLView3D {
                                                boundingBox.minimum.z) :
                                    boundingBox.minimum
         maximum: boundingBox.maximum
-        intervalAxis1: 10 * sizeFactor
+        intervalAxis1: pathView.gridInterval
         intervalAxis1Min: intervalAxis1 / 5
-        intervalAxis2: 10 * sizeFactor
+        intervalAxis2: pathView.gridInterval
         intervalAxis2Min: intervalAxis2 / 5
         plane: {
             switch (pathView.viewMode) {
