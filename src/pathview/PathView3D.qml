@@ -74,8 +74,9 @@ GLView3D {
     property real cameraPitch: 60
     property real sizeFactor: _ready ? status.config.linearUnits: 1
 
+    property bool zoomToProgram: object.settings.initialized && object.settings.values.preview.zoomToProgram
     property bool programVisible: object.settings.initialized && object.settings.values.preview.showProgram
-    property bool gridVisible: true
+    property bool gridVisible: object.settings.initialized && object.settings.values.preview.showGrid
     property bool programRapidsVisible: object.settings.initialized && object.settings.values.preview.showProgramRapids
     property bool alphaBlendProgram: object.settings.initialized && object.settings.values.preview.alphaBlendProgram
     property bool livePlotVisible: object.settings.initialized && object.settings.values.preview.showLivePlot
@@ -96,7 +97,7 @@ GLView3D {
     camera: Camera3D {
         property real heading: pathView.cameraHeading
         property real pitch: pathView.cameraPitch
-        property real distance: (programExtents.valid ? (programExtents.size.length() + 40 * sizeFactor) : boundingBox.size.length()) * 4.5
+        property real distance: ((programExtents.valid && zoomToProgram) ? (programExtents.size.length() + 40) : boundingBox.size.length()) * 4.5
         property vector3d centerOffset: pathView.cameraOffset
 
         id: camera
@@ -121,8 +122,8 @@ GLView3D {
             switch (pathView.viewMode) {
             case "Top":
             case "RotatedTop":
-                z = 1000
-                if (programExtents.valid) {
+                z = 100000
+                if (programExtents.valid && zoomToProgram) {
                     x += programExtents.center.x + programExtents.position.x
                     y += programExtents.center.y + programExtents.position.y
                 } else {
@@ -131,8 +132,8 @@ GLView3D {
                 }
                 break
             case "Front":
-                y = -1000
-                if (programExtents.valid) {
+                y = -100000
+                if (programExtents.valid && zoomToProgram) {
                     x += programExtents.center.x + programExtents.position.x
                     z += programExtents.center.z + programExtents.position.z
                 } else {
@@ -141,8 +142,8 @@ GLView3D {
                 }
                 break
             case "Side":
-                x = 1000
-                if (programExtents.valid) {
+                x = 100000
+                if (programExtents.valid && zoomToProgram) {
                     y += programExtents.center.y + programExtents.position.y
                     z += programExtents.center.z + programExtents.position.z
                 } else {
@@ -151,7 +152,7 @@ GLView3D {
                 }
                 break
             case "Perspective":
-                if (programExtents.valid) {
+                if (programExtents.valid && zoomToProgram) {
                     x += programExtents.center.x + programExtents.position.x
                     y += programExtents.center.y + programExtents.position.y
                     z += programExtents.center.z + programExtents.position.z
@@ -180,7 +181,7 @@ GLView3D {
             case "Top":
             case "RotatedTop":
             case "Perspective":
-                if (programExtents.valid) {
+                if (programExtents.valid && zoomToProgram) {
                     x += programExtents.center.x +  programExtents.position.x
                     y += programExtents.center.y +  programExtents.position.y
                     z += programExtents.center.z +  programExtents.position.z
@@ -192,7 +193,7 @@ GLView3D {
                 break
             case "Front":
                 y = 0
-                if (programExtents.valid) {
+                if (programExtents.valid && zoomToProgram) {
                     x += programExtents.center.x + programExtents.position.x
                     z += programExtents.center.z + programExtents.position.z
                 } else {
@@ -202,7 +203,7 @@ GLView3D {
                 break
             case "Side":
                 x = 0
-                if (programExtents.valid) {
+                if (programExtents.valid && zoomToProgram) {
                     y = programExtents.center.y + programExtents.position.y
                     z = programExtents.center.z + programExtents.position.z
                 } else {
@@ -235,21 +236,21 @@ GLView3D {
             switch (pathView.viewMode) {
             case "Top":
             case "RotatedTop":
-                if (programExtents.valid) {
+                if (programExtents.valid && zoomToProgram) {
                     side = (Math.max(programExtents.size.x, programExtents.size.y) + 40 * sizeFactor) / pathView.cameraZoom
                 } else {
                     side = Math.max(boundingBox.size.x, boundingBox.size.y) / pathView.cameraZoom
                 }
                 return Qt.size(side, side)
             case "Front":
-                if (programExtents.valid) {
+                if (programExtents.valid && zoomToProgram) {
                     side = (Math.max(programExtents.size.x, programExtents.size.z)  + 40 * sizeFactor) / pathView.cameraZoom
                 } else {
                     side = Math.max(boundingBox.size.x, boundingBox.size.z) / pathView.cameraZoom
                 }
                 return Qt.size(side, side)
             case "Side":
-                if (programExtents.valid) {
+                if (programExtents.valid && zoomToProgram) {
                     side = (Math.max(programExtents.size.y, programExtents.size.z)  + 40 * sizeFactor) / pathView.cameraZoom
                 } else {
                     side = Math.max(boundingBox.size.y, boundingBox.size.z) / pathView.cameraZoom
