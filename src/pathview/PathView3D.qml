@@ -64,7 +64,8 @@ GLView3D {
         "backplottraverse": Qt.rgba(0.3, 0.5, 0.5, 0.25),
         "backplottoolchange": Qt.rgba(1.0, 0.65, 0.0, 0.25),
         "backplotarc": Qt.rgba(0.75, 0.25, 0.5, 0.75),
-        "backplotfeed": Qt.rgba(0.75, 0.25, 0.25, 0.75)
+        "backplotfeed": Qt.rgba(0.75, 0.25, 0.25, 0.75),
+        "machine_limits": Qt.rgba(1.0, 0.0, 0.0, 1.0)
     }
     property int axes: _ready ? status.config.axes : 3
     property string viewMode: "Perspective"
@@ -72,7 +73,7 @@ GLView3D {
     property vector3d cameraOffset: Qt.vector3d(0, 0, 0)
     property real cameraHeading: -135
     property real cameraPitch: 60
-    property real sizeFactor: _ready ? status.config.linearUnits: 1
+    property real sizeFactor: camera.distance / cameraZoom * 0.0015
 
     property bool zoomToProgram: object.settings.initialized && object.settings.values.preview.zoomToProgram
     property bool programVisible: object.settings.initialized && object.settings.values.preview.showProgram
@@ -281,15 +282,41 @@ GLView3D {
     }
 
     Cylinder3D {
+        property var toolInfo: _ready ? getToolInfo() : {"diameter": 0.0, "length": 0.0, "valid": false}
+        property real toolDiameter: toolInfo.diameter
+        property real toolLength: toolInfo.length
+
+        function getToolInfo()
+        {
+            var toolInSpindle = status.io.toolInSpindle;
+            var toolTable = status.io.toolTable;
+            var diameter = 0.0;
+            var length = 0.0;
+            var valid = false;
+            for (var i = 0; i < toolTable.length; i++)
+            {
+                var tool = toolTable[i]
+                if (tool.id === toolInSpindle)
+                {
+                    diameter = tool.diameter;
+                    length = tool.offset.z;
+                    valid = true;
+                    break;
+                }
+            }
+
+            return {"diameter": diameter, "length": length, "valid": valid }
+        }
+
         id: tool
         visible: pathView.toolVisible
         position.x: _ready ? status.motion.position.x - status.io.toolOffset.x : 0
         position.y: _ready ? status.motion.position.y - status.io.toolOffset.y : 0
         position.z: (_ready ? status.motion.position.z - status.io.toolOffset.z : 0) + height
 
-        cone: true
-        radius: 5 * pathView.sizeFactor
-        height: 15 * pathView.sizeFactor
+        cone: toolInfo.valid ? false : true
+        radius: toolInfo.valid ? toolDiameter / 2.0 : 5
+        height: toolInfo.valid ? toolLength : 10
         color: pathView.colors["tool_diffuse"]
         rotationAngle: 180
         rotationAxis: Qt.vector3d(1,0,0)
@@ -331,6 +358,7 @@ GLView3D {
         id: boundingBox
         visible: pathView.machineLimitsVisible
         axes: pathView.axes
+        color: pathView.colors["machine_limits"]
         lineStippleLength: (pathView.viewMode == "Perspective") ? 0.02 * camera.distance / pathView.cameraZoom : 0.02
         minimum.x: _ready ? status.config.axis[0].minPositionLimit : 0
         minimum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].minPositionLimit : 0
@@ -349,8 +377,8 @@ GLView3D {
         minimum: path.minimumExtents
         limitMinimum: boundingBox.minimum.minus(position)
         limitMaximum: boundingBox.maximum.minus(position)
-        textSize: 8 * pathView.sizeFactor
-        decimals: 2
+        textSize: 4 * pathView.sizeFactor
+        decimals: (_ready && (status.interp.programUnits === ApplicationStatus.CanonUnitsInch)) ? 3 : 2
         color: pathView.colors["label_ok"]
         limitColor: pathView.colors["label_limit"]
         viewMode: pathView.viewMode
@@ -365,8 +393,8 @@ GLView3D {
         visible: pathView.coordinateVisible
         axes: pathView.axes
         position: getPosition()
-        textSize: 14 * pathView.sizeFactor
-        axesLength: 25 * pathView.sizeFactor
+        textSize: 7 * pathView.sizeFactor
+        axesLength: 20 * pathView.sizeFactor
         xAxisColor: pathView.colors["axis_x"]
         yAxisColor: pathView.colors["axis_y"]
         zAxisColor: pathView.colors["axis_z"]
@@ -394,19 +422,36 @@ GLView3D {
 
     ProgramOffsets3D {
         id: programOffsets
-        textSize: 14 * sizeFactor
+        textSize: 6 * sizeFactor
         color: pathView.colors["small_origin"]
         g5xIndex: status.synced ? status.motion.g5xIndex : 1
         g5xOffset: status.synced ? status.motion.g5xOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
         g92Offset: status.synced ? status.motion.g92Offset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
         visible: pathView.offsetsVisible && (status.config.positionOffset === ApplicationStatus.RelativePositionOffset)
+        viewMode: pathView.viewMode
     }
 
     Sphere3D {
         id: smallOrigin
         visible: pathView.offsetsVisible
-        radius: 2 * sizeFactor
+        radius: 0.75 * sizeFactor
         position: Qt.vector3d(0.0, 0.0, 0.0)
+        color: pathView.colors["small_origin"]
+    }
+
+    Sphere3D {
+        id: zeroOrigin
+        visible: !coordinateVisible
+        radius: 0.75 * sizeFactor
+        position: coordinates.position
+        color: pathView.colors["small_origin"]
+    }
+
+    Sphere3D {
+        id: g5xOrigin
+        visible: pathView.offsetsVisible
+        radius: 0.75 * sizeFactor
+        position: Qt.vector3d(coordinates.g5xOffset.x, coordinates.g5xOffset.y, coordinates.g5xOffset.z)
         color: pathView.colors["small_origin"]
     }
 

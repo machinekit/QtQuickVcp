@@ -143,8 +143,8 @@ Canvas3D {
                     context.translate(root.size.y, lineEnding/2.0, 0.0)
                     context.line(0.0, -lineEnding, 0.0)
 
-                    context.translate(root.size.y/2.0, textOffset + root.textSize, 0.0)
-                    context.rotate(180, 0.0, 0.0, 1.0)
+                    context.translate(root.size.y/2.0, textOffset, 0.0)
+                    context.rotate(0, 0.0, 0.0, 1.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
                     context.text(root.prefix + root.size.y.toFixed(root.decimals) + root.suffix, GLView3D.AlignCenter)
 
