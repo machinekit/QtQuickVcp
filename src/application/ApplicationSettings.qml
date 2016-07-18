@@ -57,6 +57,8 @@ LocalSettings {
             setValue("preview.showMachineLimits", true, false)
             setValue("preview.alphaBlendProgram", false, false)
             setValue("preview.showCoordinate", true, false)
+            setValue("preview.showGrid", true, false)
+            setValue("preview.zoomToProgram", true, false)
             setValue("mdi.history", [], false)
             initialized = true
         }
