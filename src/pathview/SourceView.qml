@@ -39,8 +39,12 @@ Item {
     PathViewObject {
         id: object
         onGcodeEditModeChanged: {
-            console.log("The gcodeEdit rectangle's color is", gcodeEdit.color)
-            console.log("TODO: implement edit mode switching, editMode:", object.gcodeEditMode)
+            if ((!object.gcodeEditMode) && (edit.text !== object.gcodeProgramLoader.text)) {
+                // switching from edit-mode to read-mode
+                console.log("TODO: confirm before saving")
+                object.gcodeProgramLoader.save(edit.text)
+                object.core.file.startUpload()
+            }
         }
     }
 
@@ -120,21 +124,12 @@ Item {
                 height: flick.height
                 focus: true
                 wrapMode: TextEdit.Wrap
-                textFormat: TextEdit.RichText
-
+                textFormat: TextEdit.PlainText
                 onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
-
-                text: "<h1>Text Selection</h1>"
-                      +"<p>This example is a whacky text selection mechanisms, showing how these can be implemented in the TextEdit element, to cater for whatever style is appropriate for the target platform."
-                      +"<p><b>Press-and-hold</b> to select a word, then drag the selection handles."
-                      +"<p><b>Drag outside the selection</b> to scroll the text."
-                      +"<p><b>Click inside the selection</b> to cut/copy/paste/cancel selection."
-                      +"<p>It's too whacky to let you paste if there is no current selection."
-
+                text: object.gcodeProgramLoader.text
             }
         }
     }
-
 
     ScrollView {
         id: gcodeScroll

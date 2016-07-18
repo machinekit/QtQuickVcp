@@ -122,6 +122,7 @@ ApplicationItem {
         remotePath: pathViewCore.file.remotePath
         localFilePath: pathViewCore.file.localFilePath
         onLoadingFailed: console.log("loading file failed: " + localFilePath)
+        onError: console.log("ERROR: GCodeProgramLoader: " + message)
     }
 
     GCodeSync {
