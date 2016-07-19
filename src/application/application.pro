@@ -52,6 +52,7 @@ RESOURCES += \
 QML_FILES = \
     ApplicationAction.qml \
     ApplicationCore.qml \
+    ApplicationHelper.qml \
     ApplicationItem.qml \
     ApplicationObject.qml \
     ApplicationSettings.qml \

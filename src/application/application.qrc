@@ -6,5 +6,6 @@
         <file>ApplicationAction.qml</file>
         <file>ApplicationObject.qml</file>
         <file>HomeAllAxesHelper.qml</file>
+        <file>ApplicationHelper.qml</file>
     </qresource>
 </RCC>

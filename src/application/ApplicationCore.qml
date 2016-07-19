@@ -29,6 +29,7 @@ Item {
     property ApplicationCommand command: applicationCommand
     property ApplicationFile file: applicationFile
     property ApplicationError error: applicationError
+    property ApplicationHelper helper: applicationHelper
     property ApplicationSettings settings: uiSettings
     property MdiHistory mdiHistory: mdiHistory
     property HomeAllAxesHelper homeAllAxesHelper: homeAllAxesHelper
@@ -156,6 +157,11 @@ Item {
         id: applicationFile
         uri: fileService.uri
         ready: fileService.ready
+    }
+
+    ApplicationHelper {
+        id: applicationHelper
+        status: applicationStatus
     }
 
     ApplicationSettings {
