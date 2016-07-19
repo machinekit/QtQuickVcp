@@ -38,6 +38,7 @@ Canvas3D {
     property string prefix: ""
     property string suffix: ""
     property int decimals: 2
+    property real scaleFactor: 1.0
     property string viewMode: "Perspective"
 
     id: root
@@ -111,7 +112,7 @@ Canvas3D {
 
                     context.translate(root.size.x/2.0, -textOffset - root.textSize, 0.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
-                    context.text(root.prefix + root.size.x.toFixed(root.decimals) + root.suffix, GLView3D.AlignCenter)
+                    context.text(_format(root.size.x), GLView3D.AlignCenter)
 
                     if (root.limitMaximum.x < root.maximum.x) {
                         context.color(root.limitColor)
@@ -119,7 +120,7 @@ Canvas3D {
                     context.translate(root.size.x + root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
                     context.rotate(90, 0.0, 0.0, 1.0)
-                    context.text(root.prefix + (root.minimum.x + root.size.x).toFixed(root.decimals) + root.suffix, GLView3D.AlignRight)
+                    context.text(_format(root.minimum.x + root.size.x), GLView3D.AlignRight)
 
                     if (root.limitMinimum.x > root.minimum.x) {
                         context.color(root.limitColor)
@@ -127,7 +128,7 @@ Canvas3D {
                     context.translate(root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
                     context.rotate(90, 0.0, 0.0, 1.0)
-                    context.text(root.prefix + root.minimum.x.toFixed(root.decimals) + root.suffix, GLView3D.AlignRight)
+                    context.text(_format(root.minimum.x), GLView3D.AlignRight)
                 context.endUnion()
             }
 
@@ -146,7 +147,7 @@ Canvas3D {
                     context.translate(root.size.y/2.0, textOffset, 0.0)
                     context.rotate(0, 0.0, 0.0, 1.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
-                    context.text(root.prefix + root.size.y.toFixed(root.decimals) + root.suffix, GLView3D.AlignCenter)
+                    context.text(_format(root.size.y), GLView3D.AlignCenter)
 
                     if (root.limitMaximum.y < root.maximum.y) {
                         context.color(root.limitColor)
@@ -154,7 +155,7 @@ Canvas3D {
                     context.translate(root.size.y - root.textSize/2.0, textOffset + lineEnding/2.0, 0.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
                     context.rotate(-90, 0.0, 0.0, 1.0)
-                    context.text(root.prefix + (root.minimum.y + root.size.y).toFixed(root.decimals) + root.suffix, GLView3D.AlignRight)
+                    context.text(_format(root.minimum.y + root.size.y), GLView3D.AlignRight)
 
                     if (root.limitMinimum.y > root.minimum.y) {
                         context.color(root.limitColor)
@@ -162,7 +163,7 @@ Canvas3D {
                     context.translate(-root.textSize/2.0, textOffset + lineEnding/2.0, 0.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
                     context.rotate(-90, 0.0, 0.0, 1.0)
-                    context.text(root.prefix + root.minimum.y.toFixed(root.decimals) + root.suffix, GLView3D.AlignRight)
+                    context.text(_format(root.minimum.y), GLView3D.AlignRight)
                 context.endUnion()
             }
 
@@ -182,7 +183,7 @@ Canvas3D {
 
                     context.translate(root.size.z/2.0, -textOffset - root.textSize, 0.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
-                    context.text(root.prefix + root.size.z.toFixed(root.decimals) + root.suffix, GLView3D.AlignCenter)
+                    context.text(_format(root.size.z), GLView3D.AlignCenter)
 
                     if (root.limitMaximum.z < root.maximum.z) {
                         context.color(root.limitColor)
@@ -190,7 +191,7 @@ Canvas3D {
                     context.translate(root.size.z - root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
                     context.rotate(-90, 0.0, 0.0, 1.0)
-                    context.text(root.prefix + (root.minimum.z + root.size.z).toFixed(root.decimals) + root.suffix, GLView3D.AlignLeft)
+                    context.text(_format(root.minimum.z + root.size.z), GLView3D.AlignLeft)
 
                     if (root.limitMinimum.z > root.minimum.z) {
                         context.color(root.limitColor)
@@ -198,7 +199,7 @@ Canvas3D {
                     context.translate(-root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0)
                     context.scale(root.textSize, root.textSize, root.textSize)
                     context.rotate(-90, 0.0, 0.0, 1.0)
-                    context.text(root.prefix + root.minimum.z.toFixed(root.decimals) + root.suffix, GLView3D.AlignLeft)
+                    context.text(_format(root.minimum.z), GLView3D.AlignLeft)
                 context.endUnion()
             }
 
@@ -216,5 +217,11 @@ Canvas3D {
         onSuffixChanged.connect(needsUpdate)
         onDecimalsChanged.connect(needsUpdate)
         onViewModeChanged.connect(needsUpdate)
+        onScaleFactorChanged.connect(needsUpdate)
+    }
+
+    function _format(number)
+    {
+        return root.prefix + (number * root.scaleFactor).toFixed(root.decimals) + root.suffix;
     }
 }

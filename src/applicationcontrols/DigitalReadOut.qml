@@ -29,21 +29,21 @@ import Machinekit.Application 1.0
 ApplicationItem {
     property alias textColor: dummyLabel.color
     property alias font: dummyLabel.font
-    property int decimals: 4
+    property int decimals: (_distanceUnits == "mm") ? 4 : 3
     property string prefix: ""
     property string suffix: ""
-    property int axes: _ready ? status.config.axes : 4
+    property int axes: _ready ? status.config.axes : axisNames.length
     property var axisHomed: _ready ? status.motion.axis : [{"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}]
-    property var axisNames: ["X:", "Y:", "Z:", "A:", "B:", "C:", "U:", "V:", "W:"]
+    property var axisNames: helper.ready ? helper.axisNamesUpper : ["X", "Y", "Z", "A"]
     property var g5xNames: ["G54", "G55", "G56", "G57", "G58", "G59", "G59.1", "G59.2", "G59.3"]
     property int g5xIndex: _ready ? status.motion.g5xIndex : 1
     property var position: getPosition()
-    property var dtg: _ready ? status.motion.dtg : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
-    property var g5xOffset: _ready ? status.motion.g5xOffset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
-    property var g92Offset: _ready ? status.motion.g92Offset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
-    property var toolOffset: _ready ? status.io.toolOffset : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
-    property double velocity: _ready ? status.motion.currentVel * _timeFactor : 0.0
-    property double distanceToGo: _ready ? status.motion.distanceToGo : 0.0
+    property var dtg: _ready ? scalePosition(status.motion.dtg) : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
+    property var g5xOffset: _ready ? scalePosition(status.motion.g5xOffset) : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
+    property var g92Offset: _ready ? scalePosition(status.motion.g92Offset) : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
+    property var toolOffset: _ready ? scalePosition(status.io.toolOffset) : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
+    property double velocity: _ready ? status.motion.currentVel * _timeFactor * _distanceFactor : 0.0
+    property double distanceToGo: _ready ? status.motion.distanceToGo * _distanceFactor : 0.0
     property bool offsetsVisible: settings.initialized && settings.values.dro.showOffsets
     property bool velocityVisible: settings.initialized && settings.values.dro.showVelocity
     property bool distanceToGoVisible: settings.initialized && settings.values.dro.showDistanceToGo
@@ -51,13 +51,26 @@ ApplicationItem {
     property int positionOffset: _ready ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
 
     property bool _ready: status.synced
-    property var _axisNames: ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
-    property double _timeFactor: (_ready && (status.config.timeUnits === ApplicationStatus.TimeUnitsMinute)) ? 60 : 1
+    property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z", "a"]
+    property double _timeFactor: helper.ready ? helper.timeFactor : 1
+    property double _distanceFactor: helper.ready ? helper.distanceFactor : 1
+    property string _distanceUnits: helper.ready ? helper.distanceUnits: "mm"
+
+    function scalePosition(pos)
+    {
+        var newPos = {};
+        for (var i = 0; i < axes; ++i) {
+            var axisName = _axisNames[i];
+            newPos[axisName] = pos[axisName] * _distanceFactor;
+        }
+        return newPos;
+    }
 
     function getPosition() {
         var basePosition
         if (_ready) {
             basePosition = (positionFeedback == ApplicationStatus.ActualPositionFeedback) ? status.motion.actualPosition : status.motion.position
+            basePosition = scalePosition(basePosition);
         }
         else {
             basePosition = {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
@@ -220,7 +233,7 @@ ApplicationItem {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){return droRect.axisNames[index]})
+                    item.title = Qt.binding(function(){return (droRect.axisNames[index] + ":"); })
                     item.type = ""
                     item.value = Qt.binding(function(){return droRect.position[droRect._axisNames[index]]})
                     item.homed = Qt.binding(function(){return ((index < droRect.axisHomed.length) && droRect.axisHomed[index].homed)})

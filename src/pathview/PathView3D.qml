@@ -27,6 +27,7 @@ import Machinekit.PathView 1.0
 
 GLView3D {
     property alias status: object.status
+    property alias helper: object.helper
     property alias model: pathViewObject.gcodeProgramModel
     property var colors: {
         "tool_diffuse": Qt.rgba(0.6, 0.6, 0.6, 0.8),
@@ -89,7 +90,7 @@ GLView3D {
     property real gridInterval: object.settings.initialized ? object.settings.values.preview.gridInterval : 100.0
 
     property bool _ready: status.synced
-    property var _axisNames: ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
+    property double _distanceFactor: helper.ready ? helper.distanceFactor : 1.0
 
     id: pathView
 
@@ -383,6 +384,7 @@ GLView3D {
         color: pathView.colors["label_ok"]
         limitColor: pathView.colors["label_limit"]
         viewMode: pathView.viewMode
+        scaleFactor: pathView._distanceFactor
     }
 
     Coordinate3D {
