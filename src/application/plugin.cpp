@@ -45,6 +45,7 @@ static const struct {
 } qmldir [] = {
     { "ApplicationAction", 1, 0 },
     { "ApplicationCore", 1, 0 },
+    { "ApplicationHelper", 1, 0 },
     { "ApplicationItem", 1, 0 },
     { "ApplicationObject", 1, 0 },
     { "ApplicationSettings", 1, 0 },

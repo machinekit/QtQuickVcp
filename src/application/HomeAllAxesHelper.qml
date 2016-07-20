@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import Machinekit.Application 1.0
 
-ApplicationItem {
+Item {
     property var status: {"synced": false}
     property var command: {"ready": false}
     property bool running: false

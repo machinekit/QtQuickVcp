@@ -35,6 +35,7 @@ QGLPathItem::QGLPathItem(QQuickItem *parent) :
     m_backplotTraverseColor(QColor(Qt::yellow)),
     m_selectedColor(QColor(Qt::magenta)),
     m_activeColor(QColor(Qt::red)),
+    m_traverseLineStippleLength(1.0),
     m_needsFullUpdate(true),
     m_minimumExtents(QVector3D(0, 0, 0)),
     m_maximumExtents(QVector3D(0, 0, 0))
@@ -84,7 +85,7 @@ void QGLPathItem::paint(QGLView *glView)
                 else
                 {
                     glView->color(m_traverseColor);
-                    glView->lineStipple(true, 1.0);
+                    glView->lineStipple(true, m_traverseLineStippleLength);
                 }
                 glView->translate(linePathItem->position);
                 drawablePointer = glView->line(linePathItem->lineVector);
@@ -202,6 +203,11 @@ QVector3D QGLPathItem::maximumExtents() const
     return m_maximumExtents;
 }
 
+float QGLPathItem::traverseLineStippleLength() const
+{
+    return m_traverseLineStippleLength;
+}
+
 QColor QGLPathItem::straightFeedColor() const
 {
     return m_straightFeedColor;
@@ -315,6 +321,14 @@ void QGLPathItem::setActiveColor(QColor arg)
     if (m_activeColor != arg) {
         m_activeColor = arg;
         emit activeColorChanged(arg);
+    }
+}
+
+void QGLPathItem::setTraverseLineStippleLength(float arg)
+{
+    if (m_traverseLineStippleLength != arg) {
+        m_traverseLineStippleLength = arg;
+        emit traverseLineStippleLengthChanged(arg);
     }
 }
 

@@ -4,6 +4,7 @@ classname MachinekitApplicationPlugin
 typeinfo plugins.qmltypes
 ApplicationAction 1.0 ApplicationAction.qml
 ApplicationCore 1.0 ApplicationCore.qml
+ApplicationHelper.qml 1.0 ApplicationHelper.qml
 ApplicationItem 1.0 ApplicationItem.qml
 ApplicationObject 1.0 ApplicationObject.qml
 ApplicationSettings 1.0 ApplicationSettings.qml
