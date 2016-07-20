@@ -31,7 +31,7 @@ RowLayout {
     property alias helper: object.helper
     property int axis: axisGroup.currentIndex
     property var axisNames:helper.ready ? helper.axisNamesUpper: ["X", "Y", "Z"]
-    property int axes: status.synced ? status.config.axes : 3
+    property int axes: axisNames.length
 
     id: root
     enabled: status.synced

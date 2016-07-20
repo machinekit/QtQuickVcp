@@ -32,7 +32,7 @@ ApplicationItem {
     property int decimals: (_distanceUnits == "mm") ? 4 : 3
     property string prefix: ""
     property string suffix: ""
-    property int axes: _ready ? status.config.axes : axisNames.length
+    property int axes: axisNames.length
     property var axisHomed: _ready ? status.motion.axis : [{"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}]
     property var axisNames: helper.ready ? helper.axisNamesUpper : ["X", "Y", "Z", "A"]
     property var g5xNames: ["G54", "G55", "G56", "G57", "G58", "G59", "G59.1", "G59.2", "G59.3"]
@@ -235,7 +235,7 @@ ApplicationItem {
                 onLoaded: {
                     item.title = Qt.binding(function(){return (droRect.axisNames[index] + ":"); })
                     item.type = ""
-                    item.value = Qt.binding(function(){return droRect.position[droRect._axisNames[index]]})
+                    item.value = Qt.binding(function(){return Number(droRect.position[droRect._axisNames[index]])})
                     item.homed = Qt.binding(function(){return ((index < droRect.axisHomed.length) && droRect.axisHomed[index].homed)})
                 }
             }
@@ -292,7 +292,7 @@ ApplicationItem {
                 onLoaded: {
                     item.title = Qt.binding(function(){return droRect.axisNames[index]})
                     item.type = "DTG"
-                    item.value = Qt.binding(function(){return droRect.dtg[droRect._axisNames[index]]})
+                    item.value = Qt.binding(function(){return Number(droRect.dtg[droRect._axisNames[index]])})
                 }
             }
         }
@@ -314,7 +314,7 @@ ApplicationItem {
                 onLoaded: {
                     item.title = Qt.binding(function(){return droRect.axisNames[index]})
                     item.type = Qt.binding(function(){return droRect.g5xNames[droRect.g5xIndex-1]})
-                    item.value = Qt.binding(function(){return droRect.g5xOffset[droRect._axisNames[index]]})
+                    item.value = Qt.binding(function(){return Number(droRect.g5xOffset[droRect._axisNames[index]])})
                 }
             }
         }
@@ -336,7 +336,7 @@ ApplicationItem {
                 onLoaded: {
                     item.title = Qt.binding(function(){return droRect.axisNames[index]})
                     item.type = "G92"
-                    item.value = Qt.binding(function(){return droRect.g92Offset[droRect._axisNames[index]]})
+                    item.value = Qt.binding(function(){return Number(droRect.g92Offset[droRect._axisNames[index]])})
                 }
             }
         }
@@ -358,7 +358,7 @@ ApplicationItem {
                 onLoaded: {
                     item.title = Qt.binding(function(){return droRect.axisNames[index]})
                     item.type = "TLO"
-                    item.value = Qt.binding(function(){return droRect.toolOffset[droRect._axisNames[index]]})
+                    item.value = Qt.binding(function(){return Number(droRect.toolOffset[droRect._axisNames[index]])})
                 }
             }
         }
