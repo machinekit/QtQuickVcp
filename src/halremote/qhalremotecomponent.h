@@ -27,6 +27,7 @@
 #include <QHash>
 #include <QTimer>
 #include <QUuid>
+#include <QQmlListProperty>
 #include "qhalpin.h"
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -54,6 +55,7 @@ class QHalRemoteComponent : public AbstractServiceImplementation
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QObject *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
     Q_PROPERTY(bool create READ create WRITE setCreate NOTIFY createChanged)
+    Q_PROPERTY(QQmlListProperty<QHalPin> pins READ pins NOTIFY pinsChanged)
     Q_ENUMS(SocketState)
     Q_ENUMS(State)
     Q_ENUMS(ConnectionError)
@@ -188,6 +190,10 @@ public slots:
         emit createChanged(arg);
     }
 
+    QQmlListProperty<QHalPin> pins();
+    int pinCount() const;
+    QHalPin *pin(int index) const;
+
 private:
     QString     m_halrcmdUri;
     QString     m_halrcompUri;
@@ -214,6 +220,7 @@ private:
     pb::Container   m_tx;
     QMap<QString, QHalPin*> m_pinsByName;
     QHash<int, QHalPin*>    m_pinsByHandle;
+    QList<QHalPin*>         m_pins;
 
 
     QObjectList recurseObjects(const QObjectList &list);
@@ -259,6 +266,7 @@ signals:
     void errorStringChanged(QString arg);
     void connectedChanged(bool arg);
     void createChanged(bool arg);
+    void pinsChanged(QQmlListProperty<QHalPin> arg);
 };
 
 #endif // QCOMPONENT_H

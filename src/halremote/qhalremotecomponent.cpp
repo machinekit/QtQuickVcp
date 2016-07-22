@@ -163,6 +163,11 @@
     The default value is \c{true}.
 */
 
+/*! \qmlproperty list<HalPin> HalRemoteComponent::pins
+
+    This property holds a list of HAL pins when bound or connected.
+*/
+
 /** Remote HAL Component implementation for use with C++ and QML */
 QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
     AbstractServiceImplementation(parent),
@@ -212,12 +217,15 @@ void QHalRemoteComponent::addPins()
             continue;
         }
         m_pinsByName[pin->name()] = pin;
+        m_pins.append(pin);
         connect(pin, SIGNAL(valueChanged(QVariant)),
                 this, SLOT(pinChange(QVariant)));
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_name, "pin added: " << pin->name())
 #endif
     }
+
+    emit pinsChanged(pins());
 }
 
 /** Removes all previously added pins */
@@ -231,6 +239,8 @@ void QHalRemoteComponent::removePins()
 
     m_pinsByHandle.clear();
     m_pinsByName.clear();
+    m_pins.clear();
+    emit pinsChanged(pins());
 }
 
 /** Sets synced of all pins to false */
@@ -441,6 +451,21 @@ void QHalRemoteComponent::pinChange(QVariant value)
     }
 
     sendHalrcmdMessage(pb::MT_HALRCOMP_SET);
+}
+
+QQmlListProperty<QHalPin> QHalRemoteComponent::pins()
+{
+    return QQmlListProperty<QHalPin>(this, m_pins);
+}
+
+int QHalRemoteComponent::pinCount() const
+{
+    return m_pins.count();
+}
+
+QHalPin *QHalRemoteComponent::pin(int index) const
+{
+    return m_pins.at(index);
 }
 
 void QHalRemoteComponent::start()
