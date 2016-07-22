@@ -152,7 +152,7 @@
     This property holds the item that should be scanned for
     \l{HalPin}s.
 
-    The default value is \c{NULL}.
+    The default value is \c{nullptr}.
 */
 
 /*! \qmlproperty Item HalRemoteComponent::create
@@ -192,9 +192,9 @@ QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
     m_containerItem(this),
     m_create(true),
     m_bind(true),
-    m_context(NULL),
-    m_halrcompSocket(NULL),
-    m_halrcmdSocket(NULL),
+    m_context(nullptr),
+    m_halrcompSocket(nullptr),
+    m_halrcmdSocket(nullptr),
     m_halrcmdHeartbeatTimer(new QTimer(this)),
     m_halrcompHeartbeatTimer(new QTimer(this)),
     m_halrcmdPingOutstanding(false)
@@ -212,7 +212,7 @@ void QHalRemoteComponent::addPins()
 {
     QObjectList halObjects;
 
-    if (m_containerItem == NULL)
+    if (m_containerItem == nullptr)
     {
         return;
     }
@@ -312,25 +312,25 @@ void QHalRemoteComponent::disconnectSockets()
     m_halrcmdSocketState = Down;
     m_halrcompSocketState = Down;
 
-    if (m_halrcmdSocket != NULL)
+    if (m_halrcmdSocket != nullptr)
     {
         m_halrcmdSocket->close();
         m_halrcmdSocket->deleteLater();
-        m_halrcmdSocket = NULL;
+        m_halrcmdSocket = nullptr;
     }
 
-    if (m_halrcompSocket != NULL)
+    if (m_halrcompSocket != nullptr)
     {
         m_halrcompSocket->close();
         m_halrcompSocket->deleteLater();
-        m_halrcompSocket = NULL;
+        m_halrcompSocket = nullptr;
     }
 
-    if (m_context != NULL)
+    if (m_context != nullptr)
     {
         m_context->stop();
         m_context->deleteLater();
-        m_context = NULL;
+        m_context = nullptr;
     }
 }
 
@@ -648,7 +648,7 @@ QObjectList QHalRemoteComponent::recurseObjects(const QObjectList &list)
     {
         QHalPin *halPin;
         halPin = qobject_cast<QHalPin *>(object);
-        if (halPin != NULL)
+        if (halPin != nullptr)
         {
             halObjects.append(object);
         }
@@ -681,8 +681,8 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
         for (int i = 0; i < m_rx.pin_size(); ++i)
         {
             pb::Pin remotePin = m_rx.pin(i);
-            QHalPin *localPin = m_pinsByHandle.value(remotePin.handle(), NULL);
-            if (localPin != NULL) // in case we received a wrong pin handle
+            QHalPin *localPin = m_pinsByHandle.value(remotePin.handle(), nullptr);
+            if (localPin != nullptr) // in case we received a wrong pin handle
             {
                 pinUpdate(remotePin, localPin);
             }
@@ -871,7 +871,7 @@ void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
 
 void QHalRemoteComponent::sendHalrcmdMessage(pb::ContainerType type)
 {
-    if (m_halrcmdSocket == NULL) {  // disallow sending messages when not connected
+    if (m_halrcmdSocket == nullptr) {  // disallow sending messages when not connected
         return;
     }
 
