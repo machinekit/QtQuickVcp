@@ -55,6 +55,7 @@ class QHalRemoteComponent : public AbstractServiceImplementation
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QObject *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
     Q_PROPERTY(bool create READ create WRITE setCreate NOTIFY createChanged)
+    Q_PROPERTY(bool bind READ bind WRITE setBind NOTIFY bindChanged)
     Q_PROPERTY(QQmlListProperty<QHalPin> pins READ pins NOTIFY pinsChanged)
     Q_ENUMS(SocketState)
     Q_ENUMS(State)
@@ -135,6 +136,11 @@ public:
         return m_create;
     }
 
+    bool bind() const
+    {
+        return m_bind;
+    }
+
 public slots:
     void pinChange(QVariant value);
 
@@ -194,6 +200,15 @@ public slots:
     int pinCount() const;
     QHalPin *pin(int index) const;
 
+    void setBind(bool bind)
+    {
+        if (m_bind == bind)
+            return;
+
+        m_bind = bind;
+        emit bindChanged(bind);
+    }
+
 private:
     QString     m_halrcmdUri;
     QString     m_halrcompUri;
@@ -207,6 +222,7 @@ private:
     QString     m_errorString;
     QObject     *m_containerItem;
     bool        m_create;
+    bool        m_bind;
 
     PollingZMQContext *m_context;
     ZMQSocket  *m_halrcompSocket;
@@ -221,7 +237,6 @@ private:
     QMap<QString, QHalPin*> m_pinsByName;
     QHash<int, QHalPin*>    m_pinsByHandle;
     QList<QHalPin*>         m_pins;
-
 
     QObjectList recurseObjects(const QObjectList &list);
     void start();
@@ -245,16 +260,18 @@ private slots:
     void pollError(int errorNum, const QString& errorMsg);
     void halrcmdHeartbeatTimerTick();
     void halrcompHeartbeatTimerTick();
+    QHalPin *addLocalPin(const pb::Pin &remotePin);
 
     void addPins();
     void removePins();
     void unsyncPins();
     bool connectSockets();
     void disconnectSockets();
-    void bind();
+    void bindPins();
     void subscribe();
     void unsubscribe();
 
+    static QString splitPinFromHalName(const QString &name);
 signals:
     void halrcmdUriChanged(QString arg);
     void halrcompUriChanged(QString arg);
@@ -267,6 +284,7 @@ signals:
     void connectedChanged(bool arg);
     void createChanged(bool arg);
     void pinsChanged(QQmlListProperty<QHalPin> arg);
+    void bindChanged(bool bind);
 };
 
 #endif // QCOMPONENT_H
