@@ -346,8 +346,8 @@ void QHalRemoteComponent::bindPins()
     {
         pb::Pin *halPin = component->add_pin();
         halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());  // pin name is always component.name
-        halPin->set_type((pb::ValueType)pin->type());
-        halPin->set_dir((pb::HalPinDirection)pin->direction());
+        halPin->set_type(static_cast<pb::ValueType>(pin->type()));
+        halPin->set_dir(static_cast<pb::HalPinDirection>(pin->direction()));
         if (pin->type() == QHalPin::Float)
         {
             halPin->set_halfloat(pin->value().toDouble());
@@ -461,7 +461,7 @@ void QHalRemoteComponent::pinChange(QVariant value)
     halPin = m_tx.add_pin();
 
     halPin->set_handle(pin->handle());
-    halPin->set_type((pb::ValueType)pin->type());
+    halPin->set_type(static_cast<pb::ValueType>(pin->type()));
     if (pin->type() == QHalPin::Float)
     {
         halPin->set_halfloat(pin->value().toDouble());
