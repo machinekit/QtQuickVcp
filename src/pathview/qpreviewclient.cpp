@@ -31,14 +31,14 @@ QPreviewClient::QPreviewClient(QObject *parent) :
     m_connected(false),
     m_error(NoError),
     m_errorString(""),
-    m_model(NULL),
+    m_model(nullptr),
     m_interpreterState(InterpreterStateUnset),
     m_interpreterNote(""),
     m_units(CanonUnitsInch),
     m_convertFactor(1.0),
-    m_context(NULL),
-    m_statusSocket(NULL),
-    m_previewSocket(NULL),
+    m_context(nullptr),
+    m_statusSocket(nullptr),
+    m_previewSocket(nullptr),
     m_previewUpdated(false)
 {
     m_previewStatus.fileName = "test.ngc";
@@ -209,7 +209,7 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
 
     if (m_rx.type() == pb::MT_PREVIEW)
     {
-        if (m_model == NULL)
+        if (m_model == nullptr)
         {
             return;
         }
@@ -264,7 +264,7 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
             previewList = static_cast<QList<pb::Preview>*>(m_model->data(m_previewStatus.fileName,
                                                                          m_previewStatus.lineNumber,
                                                                          QGCodeProgramModel::PreviewRole).value<void*>());
-            if (previewList == NULL)
+            if (previewList == nullptr)
             {
                 previewList = new QList<pb::Preview>();
             }
@@ -327,24 +327,24 @@ bool QPreviewClient::connectSockets()
 /** Disconnects the 0MQ sockets */
 void QPreviewClient::disconnectSockets()
 {
-    if (m_statusSocket != NULL)
+    if (m_statusSocket != nullptr)
     {
         m_statusSocket->close();
         m_statusSocket->deleteLater();
-        m_statusSocket = NULL;
+        m_statusSocket = nullptr;
     }
 
-    if (m_previewSocket != NULL)
+    if (m_previewSocket != nullptr)
     {
         m_previewSocket->close();
         m_previewSocket->deleteLater();
-        m_previewSocket = NULL;
+        m_previewSocket = nullptr;
     }
 
-    if (m_context != NULL)
+    if (m_context != nullptr)
     {
         m_context->stop();
         m_context->deleteLater();
-        m_context = NULL;
+        m_context = nullptr;
     }
 }

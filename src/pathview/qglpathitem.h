@@ -120,7 +120,7 @@ private:
         PathItem():
             pathType(Line),
             movementType(FeedMove),
-            drawablePointer(NULL){}
+            drawablePointer(nullptr){}
 
         PathType pathType;
         MovementType movementType;

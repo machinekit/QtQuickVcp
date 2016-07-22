@@ -29,7 +29,7 @@ QGCodeProgramItem::QGCodeProgramItem(const QString &fileName, int lineNumber):
     m_selected(false),
     m_active(false),
     m_executed(false),
-    m_previewList(NULL)
+    m_previewList(nullptr)
 {
 }
 

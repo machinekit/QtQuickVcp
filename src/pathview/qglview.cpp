@@ -38,7 +38,7 @@ QGLView::QGLView(QQuickItem *parent)
     , m_backgroundColor(QColor(Qt::black))
     , m_pathEnabled(false)
     , m_selectionModeActive(false)
-    , m_currentGlItem(NULL)
+    , m_currentGlItem(nullptr)
     , m_propertySignalMapper(new QSignalMapper(this))
     , m_camera(new QGLCamera(this))
     , m_light(new QGLLight(this))
@@ -102,7 +102,7 @@ void QGLView::updatePerspectiveAspectRatio()
     int w;
     int h;
 
-    if (window() != NULL) {
+    if (window() != nullptr) {
         ratio = window()->devicePixelRatio();
     }
     else {
@@ -172,7 +172,7 @@ void QGLView::updateChildren()
     {
         QGLItem* glItem;
         glItem = qobject_cast<QGLItem*>(objectChildren.at(i));
-        if (glItem != NULL)
+        if (glItem != nullptr)
         {
             newItems.append(glItem);
         }
@@ -1339,7 +1339,7 @@ void *QGLView::lineTo(float x, float y, float z)
         m_lineParameters->vertices.append(vector);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void *QGLView::lineTo(const QVector3D &vector)
@@ -1426,7 +1426,7 @@ void *QGLView::arc(float x, float y, float radius, float startAngle, float endAn
     }
     else
     {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -1551,7 +1551,7 @@ void QGLView::paint()
     if (m_selectionModeActive)
     {
         quint32 id = getSelection();
-        emit drawableSelected(m_drawableIdMap.value(id, NULL));
+        emit drawableSelected(m_drawableIdMap.value(id, nullptr));
 
         m_drawableIdMap.clear();
         m_selectionModeActive = false;

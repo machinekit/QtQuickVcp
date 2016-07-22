@@ -232,10 +232,10 @@ QServiceDiscovery::QServiceDiscovery(QObject *parent) :
     m_unicastLookupInterval(5000),
     m_unicastErrorThreshold(2),
     m_filter(new QServiceDiscoveryFilter(this)),
-    m_networkSession(NULL),
-    m_networkConfigManager(NULL),
+    m_networkSession(nullptr),
+    m_networkConfigManager(nullptr),
     m_networkConfigTimer(new QTimer(this)),
-    m_jdns(NULL),
+    m_jdns(nullptr),
     m_unicastLookupTimer(new QTimer(this))
 {
     m_networkConfigTimer->setInterval(3000);
@@ -272,7 +272,7 @@ bool QServiceDiscovery::initializeMdns()
 {
     bool initialized;
 
-    if (m_jdns != NULL) // already initialized
+    if (m_jdns != nullptr) // already initialized
     {
         return true;
     }
@@ -317,7 +317,7 @@ bool QServiceDiscovery::initializeMdns()
 #endif
 
         m_jdns->deleteLater();
-        m_jdns = NULL;
+        m_jdns = nullptr;
         return false;
     }
     else
@@ -347,7 +347,7 @@ bool QServiceDiscovery::initializeMdns()
 
 void QServiceDiscovery::deinitializeMdns()
 {
-    if (m_jdns == NULL)
+    if (m_jdns == nullptr)
     {
         return;
     }
@@ -370,7 +370,7 @@ void QServiceDiscovery::deinitializeMdns()
     }
 
     m_jdns->deleteLater();
-    m_jdns = NULL;
+    m_jdns = nullptr;
 
 #if defined(Q_OS_ANDROID)
     QAndroidJniObject::callStaticMethod<void>("io/machinekit/service/MulticastActivator",
@@ -567,7 +567,7 @@ void QServiceDiscovery::updateNameServers()
 {
     QList<QJDns::NameServer> nameServers;
 
-    if ((m_jdns == NULL) || (m_lookupMode != UnicastDNS))
+    if ((m_jdns == nullptr) || (m_lookupMode != UnicastDNS))
     {
         return;
     }
@@ -920,7 +920,7 @@ QServiceDiscoveryItem *QServiceDiscovery::addItem(QString name, QString type)
     }
     else
     {
-        return NULL;
+        return nullptr;
     }
 
     foreach (QServiceDiscoveryItem *item, serviceDiscoveryItems)
@@ -950,7 +950,7 @@ QServiceDiscoveryItem *QServiceDiscovery::getItem(QString name, QString type)
     }
     else
     {
-        return NULL;
+        return nullptr;
     }
 
     foreach (QServiceDiscoveryItem *item, serviceDiscoveryItems)
@@ -961,7 +961,7 @@ QServiceDiscoveryItem *QServiceDiscovery::getItem(QString name, QString type)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void QServiceDiscovery::updateItem(QString name, QString type)
@@ -1077,7 +1077,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
         QServiceDiscoveryItem * item;
         int newId;
 
-        item = NULL;
+        item = nullptr;
 
         if (type == QJDns::Ptr)
         {
@@ -1164,7 +1164,7 @@ void QServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 #endif
         }
 
-        if (item != NULL)   // we got a answer to a request
+        if (item != nullptr)   // we got a answer to a request
         {
             if (!(item->hasOutstandingRequests()))   // item is fully resolved
             {
@@ -1226,7 +1226,7 @@ void QServiceDiscovery::openNetworkSession()
 #ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
 #endif
-            if (m_networkSession != NULL)
+            if (m_networkSession != nullptr)
             {
                 m_networkSession->deleteLater();
             }
@@ -1255,7 +1255,7 @@ void QServiceDiscovery::openNetworkSession()
 
 void QServiceDiscovery::updateNetConfig()
 {
-    if ((m_networkSession == NULL)
+    if ((m_networkSession == nullptr)
             || (!m_networkSession->isOpen())
             || (!m_networkReady))
     {
