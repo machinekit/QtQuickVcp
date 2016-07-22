@@ -424,6 +424,8 @@ QHalPin *QHalRemoteComponent::addLocalPin(const pb::Pin &remotePin)
     localPin->setDirection(static_cast<QHalPin::HalPinDirection>(remotePin.dir()));
     m_pinsByName[name] = localPin;
     m_pins.append(localPin);
+    connect(localPin, SIGNAL(valueChanged(QVariant)),
+            this, SLOT(pinChange(QVariant)));
 
     return localPin;
 }
