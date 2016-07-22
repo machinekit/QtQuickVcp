@@ -252,14 +252,7 @@ private:
     void updateError(ConnectionError error, QString errorString);
     void sendHalrcmdMessage(pb::ContainerType type);
 
-private slots:
     void pinUpdate(const pb::Pin &remotePin, QHalPin *localPin);
-
-    void halrcompMessageReceived(QList<QByteArray> messageList);
-    void halrcmdMessageReceived(QList<QByteArray> messageList);
-    void pollError(int errorNum, const QString& errorMsg);
-    void halrcmdHeartbeatTimerTick();
-    void halrcompHeartbeatTimerTick();
     QHalPin *addLocalPin(const pb::Pin &remotePin);
 
     void addPins();
@@ -272,6 +265,14 @@ private slots:
     void unsubscribe();
 
     static QString splitPinFromHalName(const QString &name);
+
+private slots:
+    void halrcompMessageReceived(QList<QByteArray> messageList);
+    void halrcmdMessageReceived(QList<QByteArray> messageList);
+    void pollError(int errorNum, const QString& errorMsg);
+    void halrcmdHeartbeatTimerTick();
+    void halrcompHeartbeatTimerTick();
+
 signals:
     void halrcmdUriChanged(QString arg);
     void halrcompUriChanged(QString arg);
