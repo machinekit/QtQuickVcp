@@ -24,7 +24,7 @@
 
 QGLCanvas::QGLCanvas(QQuickItem *parent) :
     QGLItem(parent),
-    m_context(NULL)
+    m_context(nullptr)
 {
 }
 

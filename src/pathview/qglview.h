@@ -223,7 +223,7 @@ private:
     class Parameters {
     public:
         Parameters():
-            creator(NULL),
+            creator(nullptr),
             modelMatrix(QMatrix4x4()),
             color(QColor(Qt::yellow)),
             deleteFlag(false)

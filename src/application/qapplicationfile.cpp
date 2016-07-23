@@ -34,10 +34,10 @@ QApplicationFile::QApplicationFile(QObject *parent) :
     m_errorString(""),
     m_progress(0.0),
     m_networkReady(false),
-    m_model(NULL),
-    m_networkManager(NULL),
-    m_file(NULL),
-    m_ftp(NULL)
+    m_model(nullptr),
+    m_networkManager(nullptr),
+    m_file(nullptr),
+    m_ftp(nullptr)
 {
     m_localPath = generateTempPath();
 
@@ -260,14 +260,14 @@ void QApplicationFile::initializeFtp()
 
 void QApplicationFile::cleanupFtp()
 {
-    if (m_ftp == NULL)
+    if (m_ftp == nullptr)
     {
         return;
     }
 
     m_ftp->abort();
     m_ftp->deleteLater();
-    m_ftp = NULL;
+    m_ftp = nullptr;
 
     m_networkReady = false;
     emit readyChanged(m_networkReady);
@@ -275,14 +275,14 @@ void QApplicationFile::cleanupFtp()
 
 void QApplicationFile::cleanupFile()
 {
-    if (m_file == NULL)
+    if (m_file == nullptr)
     {
         return;
     }
 
     m_file->close();
     m_file->deleteLater();
-    m_file = NULL;
+    m_file = nullptr;
 }
 
 void QApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)

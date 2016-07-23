@@ -34,8 +34,8 @@ QApplicationStatus::QApplicationStatus(QObject *parent) :
     m_running(false),
     m_synced(false),
     m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel),
-    m_context(NULL),
-    m_statusSocket(NULL),
+    m_context(nullptr),
+    m_statusSocket(nullptr),
     m_statusHeartbeatTimer(new QTimer(this))
 {
     connect(m_statusHeartbeatTimer, SIGNAL(timeout()),
@@ -362,18 +362,18 @@ void QApplicationStatus::disconnectSockets()
 {
     m_statusSocketState = Down;
 
-    if (m_statusSocket != NULL)
+    if (m_statusSocket != nullptr)
     {
         m_statusSocket->close();
         m_statusSocket->deleteLater();
-        m_statusSocket = NULL;
+        m_statusSocket = nullptr;
     }
 
-    if (m_context != NULL)
+    if (m_context != nullptr)
     {
         m_context->stop();
         m_context->deleteLater();
-        m_context = NULL;
+        m_context = nullptr;
     }
 }
 

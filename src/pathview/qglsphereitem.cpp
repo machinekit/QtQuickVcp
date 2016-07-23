@@ -24,7 +24,7 @@
 
 QGLSphereItem::QGLSphereItem(QQuickItem *parent) :
     QGLItem(parent),
-    m_spherePointer(NULL),
+    m_spherePointer(nullptr),
     m_radius(1.0),
     m_color(QColor(Qt::yellow)),
     m_selected(false)
@@ -50,7 +50,7 @@ void QGLSphereItem::selectDrawable(void *pointer)
 {
     bool selected;
 
-    if (m_spherePointer == NULL)
+    if (m_spherePointer == nullptr)
     {
         return;
     }

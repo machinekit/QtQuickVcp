@@ -135,7 +135,7 @@ QHalPin::QHalPin(QObject *parent) :
 {
 }
 
-void QHalPin::setType(QHalPin::ValueType arg)
+void QHalPin::setType(QHalPin::HalPinType arg)
 {
     if (m_type != arg) {
         m_type = arg;

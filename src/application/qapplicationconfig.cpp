@@ -170,8 +170,8 @@ QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
      m_errorString(""),
      m_selectedConfig(new QApplicationConfigItem(this)),
      m_filter(new QApplicationConfigFilter(this)),
-     m_context(NULL),
-     m_configSocket(NULL)
+     m_context(nullptr),
+     m_configSocket(nullptr)
 {
 }
 
@@ -390,18 +390,18 @@ bool QApplicationConfig::connectSocket()
 
 void QApplicationConfig::disconnectSocket()
 {
-    if (m_configSocket != NULL)
+    if (m_configSocket != nullptr)
     {
         m_configSocket->close();
         m_configSocket->deleteLater();
-        m_configSocket = NULL;
+        m_configSocket = nullptr;
     }
 
-    if (m_context != NULL)
+    if (m_context != nullptr)
     {
         m_context->stop();
         m_context->deleteLater();
-        m_context = NULL;
+        m_context = nullptr;
     }
 }
 
@@ -466,7 +466,7 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
                 QStringList fileList;
                 QDir dir;
 
-                if (m_selectedConfig == NULL)
+                if (m_selectedConfig == nullptr)
                 {
                     return;
                 }
@@ -548,7 +548,7 @@ void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
 
 void QApplicationConfig::sendConfigMessage(const QByteArray &data)
 {
-    if (m_configSocket == NULL) {  // disallow sending messages when not connected
+    if (m_configSocket == nullptr) {  // disallow sending messages when not connected
         return;
     }
 

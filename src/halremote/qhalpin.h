@@ -30,19 +30,19 @@ class QHalPin : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(ValueType type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(HalPinType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(HalPinDirection direction READ direction WRITE setDirection NOTIFY directionChanged)
     Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(int handle READ handle NOTIFY handleChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
-    Q_ENUMS(ValueType)
+    Q_ENUMS(HalPinType)
     Q_ENUMS(HalPinDirection)
 
 public:
     explicit QHalPin(QObject *parent = 0);
 
-    enum ValueType {
+    enum HalPinType {
         Bit = pb::HAL_BIT,
         Float = pb::HAL_FLOAT,
         S32 = pb::HAL_S32,
@@ -60,7 +60,7 @@ public:
         return m_name;
     }
 
-    ValueType type() const
+    HalPinType type() const
     {
         return m_type;
     }
@@ -93,7 +93,7 @@ public:
 signals:
 
     void nameChanged(QString arg);
-    void typeChanged(ValueType arg);
+    void typeChanged(HalPinType arg);
     void directionChanged(HalPinDirection arg);
     void valueChanged(QVariant arg);
     void handleChanged(int arg);
@@ -102,7 +102,7 @@ signals:
 
 public slots:
 
-void setType(ValueType arg);
+void setType(HalPinType arg);
 void setName(QString arg);
 void setDirection(HalPinDirection arg);
 void setValue(QVariant arg, bool synced = false);
@@ -112,7 +112,7 @@ void setSynced(bool arg);
 
 private:
     QString         m_name;
-    ValueType       m_type;
+    HalPinType       m_type;
     HalPinDirection m_direction;
     QVariant        m_value;
     QVariant        m_syncValue;
