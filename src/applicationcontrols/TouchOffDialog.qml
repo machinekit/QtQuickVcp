@@ -58,7 +58,7 @@ Dialog {
             }
             var axisName = _axisNames[axis]
             var position = status.motion.position[axisName] - status.motion.g92Offset[axisName] - status.io.toolOffset[axisName]
-            var newOffset = (position - coordinateSpin.value) / status.config.axis[axis].units
+            var newOffset = (position - coordinateSpin.value)
             var mdi = "G10 L2 P" + (coordinateSystemCombo.currentIndex + 1) + " " + axisNames[axis] + newOffset.toFixed(6)
             command.executeMdi('execute', mdi)
         }
