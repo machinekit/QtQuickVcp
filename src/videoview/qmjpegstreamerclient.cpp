@@ -99,8 +99,8 @@ QMjpegStreamerClient::QMjpegStreamerClient(QQuickPaintedItem *parent) :
     m_componentCompleted(false),
     m_framerateTimer(new QTimer(this)),
     m_streamBufferTimer(new QTimer(this)),
-    m_context(NULL),
-    m_updateSocket(NULL),
+    m_context(nullptr),
+    m_updateSocket(nullptr),
     m_videoUri(""),
     m_running(false),
     m_fps(0.0),
@@ -208,18 +208,18 @@ void QMjpegStreamerClient::connectSocket()
 
 void QMjpegStreamerClient::disconnectSocket()
 {
-    if (m_updateSocket != NULL)
+    if (m_updateSocket != nullptr)
     {
         m_updateSocket->close();
         m_updateSocket->deleteLater();
-        m_updateSocket = NULL;
+        m_updateSocket = nullptr;
     }
 
-    if (m_context != NULL)
+    if (m_context != nullptr)
     {
         m_context->stop();
         m_context->deleteLater();
-        m_context = NULL;
+        m_context = nullptr;
     }
 }
 

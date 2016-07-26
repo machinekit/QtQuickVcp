@@ -30,6 +30,7 @@ Item {
     property alias command: object.command
     property alias file: object.file
     property alias error: object.error
+    property alias helper: object.helper
     property alias mdiHistory: object.mdiHistory
     property alias homeAllAxesHelper: object.homeAllAxesHelper
 

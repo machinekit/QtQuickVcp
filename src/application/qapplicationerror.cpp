@@ -32,8 +32,8 @@ QApplicationError::QApplicationError(QObject *parent) :
     m_error(NoError),
     m_errorString(""),
     m_channels(ErrorChannel | TextChannel | DisplayChannel),
-    m_context(NULL),
-    m_errorSocket(NULL),
+    m_context(nullptr),
+    m_errorSocket(nullptr),
     m_errorHeartbeatTimer(new QTimer(this))
 {
    connect(m_errorHeartbeatTimer, SIGNAL(timeout()),
@@ -268,18 +268,18 @@ void QApplicationError::disconnectSockets()
 {
     m_errorSocketState = Down;
 
-    if (m_errorSocket != NULL)
+    if (m_errorSocket != nullptr)
     {
         m_errorSocket->close();
         m_errorSocket->deleteLater();
-        m_errorSocket = NULL;
+        m_errorSocket = nullptr;
     }
 
-    if (m_context != NULL)
+    if (m_context != nullptr)
     {
         m_context->stop();
         m_context->deleteLater();
-        m_context = NULL;
+        m_context = nullptr;
     }
 }
 

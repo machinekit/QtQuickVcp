@@ -32,8 +32,8 @@ QApplicationCommand::QApplicationCommand(QObject *parent) :
     m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
-    m_context(NULL),
-    m_commandSocket(NULL),
+    m_context(nullptr),
+    m_commandSocket(nullptr),
     m_commandHeartbeatTimer(new QTimer(this)),
     m_commandPingErrorCount(0),
     m_commandPingErrorThreshold(2)
@@ -722,7 +722,7 @@ void QApplicationCommand::updateError(QApplicationCommand::ConnectionError error
 
 void QApplicationCommand::sendCommandMessage(pb::ContainerType type)
 {
-    if (m_commandSocket == NULL) {  // disallow sending messages when not connected
+    if (m_commandSocket == nullptr) {  // disallow sending messages when not connected
         return;
     }
 
@@ -860,17 +860,17 @@ void QApplicationCommand::disconnectSockets()
 {
     m_commandSocketState = Down;
 
-    if (m_commandSocket != NULL)
+    if (m_commandSocket != nullptr)
     {
         m_commandSocket->close();
         m_commandSocket->deleteLater();
-        m_commandSocket = NULL;
+        m_commandSocket = nullptr;
     }
 
-    if (m_context != NULL)
+    if (m_context != nullptr)
     {
         m_context->stop();
         m_context->deleteLater();
-        m_context = NULL;
+        m_context = nullptr;
     }
 }

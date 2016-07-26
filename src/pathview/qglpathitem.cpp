@@ -26,7 +26,7 @@
 
 QGLPathItem::QGLPathItem(QQuickItem *parent) :
     QGLItem(parent),
-    m_model(NULL),
+    m_model(nullptr),
     m_arcFeedColor(QColor(Qt::white)),
     m_straightFeedColor(QColor(Qt::white)),
     m_traverseColor(QColor(Qt::cyan)),
@@ -35,6 +35,7 @@ QGLPathItem::QGLPathItem(QQuickItem *parent) :
     m_backplotTraverseColor(QColor(Qt::yellow)),
     m_selectedColor(QColor(Qt::magenta)),
     m_activeColor(QColor(Qt::red)),
+    m_traverseLineStippleLength(1.0),
     m_needsFullUpdate(true),
     m_minimumExtents(QVector3D(0, 0, 0)),
     m_maximumExtents(QVector3D(0, 0, 0))
@@ -72,7 +73,7 @@ void QGLPathItem::paint(QGLView *glView)
 
         for (int i = 0; i < m_previewPathItems.size(); ++i)
         {
-            void* drawablePointer = NULL;
+            void* drawablePointer = nullptr;
             PathItem *pathItem = m_previewPathItems.at(i);
             if (pathItem->pathType == Line)
             {
@@ -84,7 +85,7 @@ void QGLPathItem::paint(QGLView *glView)
                 else
                 {
                     glView->color(m_traverseColor);
-                    glView->lineStipple(true, 1.0);
+                    glView->lineStipple(true, m_traverseLineStippleLength);
                 }
                 glView->translate(linePathItem->position);
                 drawablePointer = glView->line(linePathItem->lineVector);
@@ -109,7 +110,7 @@ void QGLPathItem::paint(QGLView *glView)
                                               arcPathItem->helixOffset);
             }
 
-            if (drawablePointer != NULL)
+            if (drawablePointer != nullptr)
             {
                 pathItem->drawablePointer = drawablePointer;
                 m_drawablePathMap.insert(drawablePointer, pathItem);
@@ -127,7 +128,7 @@ void QGLPathItem::paint(QGLView *glView)
             PathItem *pathItem;
 
             pathItem = m_modifiedPathItems.at(i);
-            if (pathItem != NULL)
+            if (pathItem != nullptr)
             {
                 QColor color;
                 if (m_model->data(pathItem->modelIndex, QGCodeProgramModel::SelectedRole).toBool()) {
@@ -202,6 +203,11 @@ QVector3D QGLPathItem::maximumExtents() const
     return m_maximumExtents;
 }
 
+float QGLPathItem::traverseLineStippleLength() const
+{
+    return m_traverseLineStippleLength;
+}
+
 QColor QGLPathItem::straightFeedColor() const
 {
     return m_straightFeedColor;
@@ -232,13 +238,13 @@ void QGLPathItem::selectDrawable(void *pointer)
     PathItem *mappedPathItem;
     QModelIndex mappedModelIndex;
 
-    if (m_model == NULL)
+    if (m_model == nullptr)
     {
         return;
     }
 
-    mappedPathItem = m_drawablePathMap.value(pointer, NULL);
-    if (mappedPathItem != NULL)
+    mappedPathItem = m_drawablePathMap.value(pointer, nullptr);
+    if (mappedPathItem != nullptr)
     {
         mappedModelIndex = mappedPathItem->modelIndex;
         m_model->setData(mappedModelIndex, true, QGCodeProgramModel::SelectedRole);
@@ -247,7 +253,7 @@ void QGLPathItem::selectDrawable(void *pointer)
     if (m_previousSelectedDrawable != pointer)
     {
         mappedPathItem = m_drawablePathMap.value(m_previousSelectedDrawable);
-        if (mappedPathItem != NULL)
+        if (mappedPathItem != nullptr)
         {
             mappedModelIndex = mappedPathItem->modelIndex;
             m_model->setData(mappedModelIndex, false, QGCodeProgramModel::SelectedRole);
@@ -263,7 +269,7 @@ void QGLPathItem::setModel(QGCodeProgramModel *arg)
         m_model = arg;
         emit modelChanged(arg);
 
-        if (m_model != NULL)
+        if (m_model != nullptr)
         {
             connect(m_model, SIGNAL(modelReset()),
                     this, SLOT(drawPath()));
@@ -315,6 +321,14 @@ void QGLPathItem::setActiveColor(QColor arg)
     if (m_activeColor != arg) {
         m_activeColor = arg;
         emit activeColorChanged(arg);
+    }
+}
+
+void QGLPathItem::setTraverseLineStippleLength(float arg)
+{
+    if (m_traverseLineStippleLength != arg) {
+        m_traverseLineStippleLength = arg;
+        emit traverseLineStippleLengthChanged(arg);
     }
 }
 
@@ -849,7 +863,7 @@ QVector3D QGLPathItem::positionToVector3D(const QGLPathItem::Position &position)
 void QGLPathItem::drawPath()
 {
 
-    if (m_model == NULL)
+    if (m_model == nullptr)
     {
         return;
     }
@@ -863,7 +877,7 @@ void QGLPathItem::drawPath()
 
     m_modelPathMap.clear();
     m_drawablePathMap.clear();
-    m_previousSelectedDrawable = NULL;
+    m_previousSelectedDrawable = nullptr;
 
     for (int i = 0; i < m_model->rowCount(); ++i)
     {
@@ -876,7 +890,7 @@ void QGLPathItem::drawPath()
         }
         previewList = static_cast<QList<pb::Preview>* >(m_model->data(index, QGCodeProgramModel::PreviewRole).value<void*>());
 
-        if (previewList != NULL)
+        if (previewList != nullptr)
         {
             m_currentModelIndex = index;
             for (int j = 0; j < previewList->size(); ++j)

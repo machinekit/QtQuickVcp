@@ -41,6 +41,7 @@ class QGLPathItem : public QGLItem
     Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(QVector3D minimumExtents READ minimumExtents NOTIFY minimumExtentsChanged)
     Q_PROPERTY(QVector3D maximumExtents READ maximumExtents NOTIFY maximumExtentsChanged)
+    Q_PROPERTY(float traverseLineStippleLength READ traverseLineStippleLength WRITE setTraverseLineStippleLength NOTIFY traverseLineStippleLengthChanged)
 
 public:
     explicit QGLPathItem(QQuickItem *parent = 0);
@@ -59,6 +60,7 @@ public:
     QColor activeColor() const;
     QVector3D minimumExtents() const;
     QVector3D maximumExtents() const;
+    float traverseLineStippleLength() const;
 
 public slots:
     virtual void selectDrawable(void *pointer);
@@ -72,6 +74,7 @@ public slots:
     void setBackplotStraightFeedColor(QColor arg);
     void setBackplotTraverseColor(QColor arg);
     void setActiveColor(QColor arg);
+    void setTraverseLineStippleLength(float arg);
 
 private:
     struct Position {
@@ -117,7 +120,7 @@ private:
         PathItem():
             pathType(Line),
             movementType(FeedMove),
-            drawablePointer(NULL){}
+            drawablePointer(nullptr){}
 
         PathType pathType;
         MovementType movementType;
@@ -167,6 +170,7 @@ private:
     QColor m_backplotTraverseColor;
     QColor m_selectedColor;
     QColor m_activeColor;
+    float m_traverseLineStippleLength;
 
     Offsets m_activeOffsets;
     Position m_currentPosition;
@@ -218,6 +222,7 @@ signals:
     void backplotArcFeedColorChanged(QColor arg);
     void backplotStraightFeedColorChanged(QColor arg);
     void backplotTraverseColorChanged(QColor arg);
+    void traverseLineStippleLengthChanged(float traverseLineStippleLength);
 };
 
 #endif // QGLPATHITEM_H

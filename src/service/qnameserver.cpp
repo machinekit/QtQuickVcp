@@ -27,7 +27,7 @@ QNameServer::QNameServer(QObject *parent) :
     m_hostName(QString()),
     m_hostAddress(QHostAddress()),
     m_port(5353),
-    m_dnsLookup(NULL)
+    m_dnsLookup(nullptr)
 {
 }
 
@@ -45,7 +45,7 @@ void QNameServer::updateHostAddress()
 
         if (!m_hostName.isEmpty())
         {
-            if (m_dnsLookup != NULL)
+            if (m_dnsLookup != nullptr)
             {
                 m_dnsLookup->abort();
                 m_dnsLookup->deleteLater();
@@ -72,7 +72,7 @@ void QNameServer::handleServers()
       qDebug() << "DNS lookup error:" << m_dnsLookup->errorString();
 #endif
        m_dnsLookup->deleteLater();
-       m_dnsLookup = NULL;
+       m_dnsLookup = nullptr;
        return;
    }
 
@@ -84,5 +84,5 @@ void QNameServer::handleServers()
    }
 
    m_dnsLookup->deleteLater();
-   m_dnsLookup = NULL;
+   m_dnsLookup = nullptr;
 }

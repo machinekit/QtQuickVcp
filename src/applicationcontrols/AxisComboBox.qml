@@ -27,9 +27,10 @@ import Machinekit.Application 1.0
 ComboBox {
     property alias core: object.core
     property alias status: object.status
+    property alias helper: object.helper
     property int axis: currentIndex
-    property var axisNames: ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
-    property int axes: status.synced ? status.config.axes : 3
+    property var axisNames: helper.ready ? helper.axisNamesUpper: ["X", "Y", "Z"]
+    property int axes: axisNames.length
 
     enabled: status.synced
     model: axisNames.slice(0, axes)

@@ -39,8 +39,8 @@ QHalGroup::QHalGroup(QObject *parent) :
     m_error(NoError),
     m_errorString(""),
     m_containerItem(this),
-    m_context(NULL),
-    m_halgroupSocket(NULL),
+    m_context(nullptr),
+    m_halgroupSocket(nullptr),
     m_halgroupHeartbeatTimer(new QTimer(this))
 {
     connect(m_halgroupHeartbeatTimer, SIGNAL(timeout()),
@@ -56,7 +56,7 @@ QList<QHalSignal *> QHalGroup::recurseObjects(const QObjectList &list) const
     {
         QHalSignal *halSignal;
         halSignal = qobject_cast<QHalSignal*>(object);
-        if (halSignal != NULL)
+        if (halSignal != nullptr)
         {
             halSignals.append(halSignal);
         }
@@ -248,8 +248,8 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
         for (int i = 0; i < m_rx.signal_size(); ++i)
         {
             pb::Signal remoteSignal = m_rx.signal(i);
-            QHalSignal *localSignal = m_signalsByHandle.value(remoteSignal.handle(), NULL);
-            if (localSignal != NULL) // in case we received a wrong signal handle
+            QHalSignal *localSignal = m_signalsByHandle.value(remoteSignal.handle(), nullptr);
+            if (localSignal != nullptr) // in case we received a wrong signal handle
             {
                 signalUpdate(remoteSignal, localSignal);
             }
@@ -276,8 +276,8 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
                     {
                         name = name.mid(dotIndex + 1);
                     }
-                    QHalSignal *localSignal = m_signalsByName.value(name, NULL);
-                    if (localSignal == NULL)
+                    QHalSignal *localSignal = m_signalsByName.value(name, nullptr);
+                    if (localSignal == nullptr)
                     {
                         localSignal = new QHalSignal(this); // create a local signal
                         localSignal->setName(name);
@@ -367,7 +367,7 @@ void QHalGroup::addSignals()
 {
     QList<QHalSignal*> halSignals;
 
-    if (m_containerItem == NULL)
+    if (m_containerItem == nullptr)
     {
         return;
     }
@@ -449,18 +449,18 @@ void QHalGroup::disconnectSockets()
 {
     m_halgroupSocketState = Down;
 
-    if (m_halgroupSocket != NULL)
+    if (m_halgroupSocket != nullptr)
     {
         m_halgroupSocket->close();
         m_halgroupSocket->deleteLater();
-        m_halgroupSocket = NULL;
+        m_halgroupSocket = nullptr;
     }
 
-    if (m_context != NULL)
+    if (m_context != nullptr)
     {
         m_context->stop();
         m_context->deleteLater();
-        m_context = NULL;
+        m_context = nullptr;
     }
 }
 

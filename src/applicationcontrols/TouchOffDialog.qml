@@ -30,9 +30,10 @@ Dialog {
     property alias core: object.core
     property alias status: object.status
     property alias command: object.command
+    property alias helper: object.helper
     property int axis: 0
-    property var axisNames: ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
-    property var _axisNames: ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
+    property var axisNames: helper.ready ? helper.axisNamesUpper : ["X", "Y", "Z"]
+    property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z"]
 
     property bool _ready: status.synced && command.connected
     property bool _done: true
@@ -57,7 +58,7 @@ Dialog {
             }
             var axisName = _axisNames[axis]
             var position = status.motion.position[axisName] - status.motion.g92Offset[axisName] - status.io.toolOffset[axisName]
-            var newOffset = (position - coordinateSpin.value) / status.config.axis[axis].units
+            var newOffset = (position - coordinateSpin.value)
             var mdi = "G10 L2 P" + (coordinateSystemCombo.currentIndex + 1) + " " + axisNames[axis] + newOffset.toFixed(6)
             command.executeMdi('execute', mdi)
         }

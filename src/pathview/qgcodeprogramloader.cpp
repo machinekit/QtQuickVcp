@@ -27,7 +27,7 @@ QGCodeProgramLoader::QGCodeProgramLoader(QObject *parent) :
     m_localFilePath(""),
     m_localPath(""),
     m_remotePath(""),
-    m_model(NULL)
+    m_model(nullptr)
 {
 }
 
@@ -50,7 +50,7 @@ void QGCodeProgramLoader::saveAs(const QString &localFilePath, const QString &te
 
 void QGCodeProgramLoader::load()
 {
-    if (m_model == NULL)
+    if (m_model == nullptr)
     {
         emit loadingFailed();
         return;

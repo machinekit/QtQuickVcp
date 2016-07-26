@@ -25,9 +25,9 @@ import Machinekit.Application 1.0
 
 ApplicationObject {
     readonly property string units: proportional ? "%" : distanceUnits + "/" + timeUnits
-    readonly property string distanceUnits: getDistanceUnits()
-    readonly property string timeUnits: getTimeUnits()
-    readonly property double displayValue: proportional ? value : value * _timeFactor
+    readonly property string distanceUnits: helper.ready ? helper.distanceUnits : "mm"
+    readonly property string timeUnits: helper.ready ? helper.timeUnits : "min"
+    readonly property double displayValue: proportional ? value : value * _timeFactor * _distanceFactor
     property double minimumValue: 0.0
     property double maximumValue: 5.0
     property bool proportional: false
@@ -36,7 +36,8 @@ ApplicationObject {
     property bool enabled: _ready
     property bool synced: false
 
-    property double _timeFactor: (timeUnits == "min") ? 60 : 1
+    property double _timeFactor: helper.ready ? helper.timeFactor : 1
+    property double _distanceFactor: helper.ready ? helper.distanceFactor : 1
     property bool _ready: status.synced && command.connected
     property bool _remoteUpdate: false
 
@@ -86,33 +87,5 @@ ApplicationObject {
             synced = true
         }
         _remoteUpdate = false                   // clear remote
-    }
-
-    function getTimeUnits() {
-        if (_ready) {
-            switch (status.config.timeUnits) {
-            case ApplicationStatus.TimeUnitsMinute:
-                return "min"
-            case ApplicationStatus.TimeUnitsSecond:
-                return "s"
-            }
-        }
-
-        return "min"
-    }
-
-    function getDistanceUnits() {
-        if (_ready) {
-            switch (status.config.programUnits) {
-            case ApplicationStatus.CanonUnitsInch:
-                return "in"
-            case ApplicationStatus.CanonUnitsMm:
-                return "mm"
-            case ApplicationStatus.CanonUnitsCm:
-                return "cm"
-            }
-        }
-
-        return "mm"
     }
 }

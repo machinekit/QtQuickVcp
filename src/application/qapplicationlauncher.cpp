@@ -15,9 +15,9 @@ QApplicationLauncher::QApplicationLauncher(QObject *parent) :
     m_errorString(""),
     m_launchers(QJsonValue(QJsonArray())),
     m_synced(false),
-    m_context(NULL),
-    m_subscribeSocket(NULL),
-    m_commandSocket(NULL),
+    m_context(nullptr),
+    m_subscribeSocket(nullptr),
+    m_commandSocket(nullptr),
     m_commandHeartbeatTimer(new QTimer(this)),
     m_subscribeHeartbeatTimer(new QTimer(this)),
     m_commandPingOutstanding(false)
@@ -143,25 +143,25 @@ void QApplicationLauncher::disconnectSockets()
     m_commandSocketState = Service::Down;
     m_subscribeSocketState = Service::Down;
 
-    if (m_commandSocket != NULL)
+    if (m_commandSocket != nullptr)
     {
         m_commandSocket->close();
         m_commandSocket->deleteLater();
-        m_commandSocket = NULL;
+        m_commandSocket = nullptr;
     }
 
-    if (m_subscribeSocket != NULL)
+    if (m_subscribeSocket != nullptr)
     {
         m_subscribeSocket->close();
         m_subscribeSocket->deleteLater();
-        m_subscribeSocket = NULL;
+        m_subscribeSocket = nullptr;
     }
 
-    if (m_context != NULL)
+    if (m_context != nullptr)
     {
         m_context->stop();
         m_context->deleteLater();
-        m_context = NULL;
+        m_context = nullptr;
     }
 }
 
@@ -446,7 +446,7 @@ void QApplicationLauncher::commandMessageReceived(QList<QByteArray> messageList)
 
 void QApplicationLauncher::sendCommandMessage(pb::ContainerType type)
 {
-    if (m_commandSocket == NULL) {  // disallow sending messages when not connected
+    if (m_commandSocket == nullptr) {  // disallow sending messages when not connected
         return;
     }
 

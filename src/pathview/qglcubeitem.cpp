@@ -24,7 +24,7 @@
 
 QGLCubeItem::QGLCubeItem(QQuickItem *parent) :
     QGLItem(parent),
-    m_cubePointer(NULL),
+    m_cubePointer(nullptr),
     m_size(QVector3D(1,1,1)),
     m_color(QColor(Qt::yellow)),
     m_centered(false),
@@ -53,7 +53,7 @@ void QGLCubeItem::selectDrawable(void *pointer)
 {
     bool selected;
 
-    if (m_cubePointer == NULL)
+    if (m_cubePointer == nullptr)
     {
         return;
     }

@@ -27,6 +27,7 @@
 #include <QHash>
 #include <QTimer>
 #include <QUuid>
+#include <QQmlListProperty>
 #include "qhalpin.h"
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -54,6 +55,8 @@ class QHalRemoteComponent : public AbstractServiceImplementation
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QObject *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
     Q_PROPERTY(bool create READ create WRITE setCreate NOTIFY createChanged)
+    Q_PROPERTY(bool bind READ bind WRITE setBind NOTIFY bindChanged)
+    Q_PROPERTY(QQmlListProperty<QHalPin> pins READ pins NOTIFY pinsChanged)
     Q_ENUMS(SocketState)
     Q_ENUMS(State)
     Q_ENUMS(ConnectionError)
@@ -133,6 +136,11 @@ public:
         return m_create;
     }
 
+    bool bind() const
+    {
+        return m_bind;
+    }
+
 public slots:
     void pinChange(QVariant value);
 
@@ -188,6 +196,19 @@ public slots:
         emit createChanged(arg);
     }
 
+    QQmlListProperty<QHalPin> pins();
+    int pinCount() const;
+    QHalPin *pin(int index) const;
+
+    void setBind(bool bind)
+    {
+        if (m_bind == bind)
+            return;
+
+        m_bind = bind;
+        emit bindChanged(bind);
+    }
+
 private:
     QString     m_halrcmdUri;
     QString     m_halrcompUri;
@@ -201,6 +222,7 @@ private:
     QString     m_errorString;
     QObject     *m_containerItem;
     bool        m_create;
+    bool        m_bind;
 
     PollingZMQContext *m_context;
     ZMQSocket  *m_halrcompSocket;
@@ -214,7 +236,7 @@ private:
     pb::Container   m_tx;
     QMap<QString, QHalPin*> m_pinsByName;
     QHash<int, QHalPin*>    m_pinsByHandle;
-
+    QList<QHalPin*>         m_pins;
 
     QObjectList recurseObjects(const QObjectList &list);
     void start();
@@ -230,23 +252,26 @@ private:
     void updateError(ConnectionError error, QString errorString);
     void sendHalrcmdMessage(pb::ContainerType type);
 
-private slots:
     void pinUpdate(const pb::Pin &remotePin, QHalPin *localPin);
-
-    void halrcompMessageReceived(QList<QByteArray> messageList);
-    void halrcmdMessageReceived(QList<QByteArray> messageList);
-    void pollError(int errorNum, const QString& errorMsg);
-    void halrcmdHeartbeatTimerTick();
-    void halrcompHeartbeatTimerTick();
+    QHalPin *addLocalPin(const pb::Pin &remotePin);
 
     void addPins();
     void removePins();
     void unsyncPins();
     bool connectSockets();
     void disconnectSockets();
-    void bind();
+    void bindPins();
     void subscribe();
     void unsubscribe();
+
+    static QString splitPinFromHalName(const QString &name);
+
+private slots:
+    void halrcompMessageReceived(QList<QByteArray> messageList);
+    void halrcmdMessageReceived(QList<QByteArray> messageList);
+    void pollError(int errorNum, const QString& errorMsg);
+    void halrcmdHeartbeatTimerTick();
+    void halrcompHeartbeatTimerTick();
 
 signals:
     void halrcmdUriChanged(QString arg);
@@ -259,6 +284,8 @@ signals:
     void errorStringChanged(QString arg);
     void connectedChanged(bool arg);
     void createChanged(bool arg);
+    void pinsChanged(QQmlListProperty<QHalPin> arg);
+    void bindChanged(bool bind);
 };
 
 #endif // QCOMPONENT_H

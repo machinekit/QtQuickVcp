@@ -28,8 +28,10 @@ import Machinekit.Application 1.0
 RowLayout {
     property alias core: object.core
     property alias status: object.status
+    property alias helper: object.helper
     property int axis: axisGroup.currentIndex
-    property var axisNames: ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
+    property var axisNames:helper.ready ? helper.axisNamesUpper: ["X", "Y", "Z"]
+    property int axes: axisNames.length
 
     id: root
     enabled: status.synced
@@ -40,7 +42,7 @@ RowLayout {
     }
 
     Repeater {
-        model: status.synced ? status.config.axes : 3
+        model: axes
         RadioButton {
             exclusiveGroup: axisGroup
             text: root.axisNames[index]

@@ -29,6 +29,7 @@ QtObject {
     property var command: core === null ? {"connected": false} : core.command
     property var file: core === null ? {"localPath":"", "remotePath":"", "localFilePath":"", "ready":false} : core.file
     property var error: core === null ? {"connected": false} : core.error
+    property var helper: core === null ? {"ready": false} : core.helper
     property var mdiHistory: core == null ? {"model": []} : core.mdiHistory
     property var homeAllAxesHelper: core == null ? {"running": false} : core.homeAllAxesHelper
 

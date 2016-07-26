@@ -24,7 +24,7 @@
 
 QGLCylinderItem::QGLCylinderItem(QQuickItem *parent) :
     QGLItem(parent),
-    m_cylinderPointer(NULL),
+    m_cylinderPointer(nullptr),
     m_radius(1.0),
     m_height(1.0),
     m_color(QColor(Qt::yellow)),
@@ -63,7 +63,7 @@ void QGLCylinderItem::selectDrawable(void *pointer)
 {
     bool selected;
 
-    if (m_cylinderPointer == NULL)
+    if (m_cylinderPointer == nullptr)
     {
         return;
     }
