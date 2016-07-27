@@ -76,27 +76,6 @@ Item {
         visible: object.gcodeEditMode
         color: "white"
         anchors.fill: parent
-        anchors.margins: 20
-
-        BorderImage {
-            id: startHandle
-            source: "pics/startHandle.sci"
-            opacity: 0.0
-            width: 10
-            x: edit.positionToRectangle(edit.selectionStart).x - flick.contentX-width
-            y: edit.positionToRectangle(edit.selectionStart).y - flick.contentY
-            height: edit.positionToRectangle(edit.selectionStart).height
-        }
-
-        BorderImage {
-            id: endHandle
-            source: "pics/endHandle.sci"
-            opacity: 0.0
-            width: 10
-            x: edit.positionToRectangle(edit.selectionEnd).x - flick.contentX
-            y: edit.positionToRectangle(edit.selectionEnd).y - flick.contentY
-            height: edit.positionToRectangle(edit.selectionEnd).height
-        }
 
         Flickable {
             id: flick
@@ -120,13 +99,19 @@ Item {
 
             TextEdit {
                 id: edit
+                text: object.gcodeProgramLoader.text
+
+                color: "#2B2C2E"
+                cursorVisible: activeFocus
                 width: flick.width
                 height: flick.height
                 focus: true
                 wrapMode: TextEdit.Wrap
                 textFormat: TextEdit.PlainText
                 onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
-                text: object.gcodeProgramLoader.text
+                selectionColor: Qt.rgba(1.0, 1.0, 0.0, 0.75)
+                selectedTextColor: Qt.rgba(0.0, 0.0, 0.0, 0.8)
+                selectByMouse: true
             }
         }
     }
