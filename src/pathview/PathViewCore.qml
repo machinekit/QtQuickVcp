@@ -28,8 +28,9 @@ import Machinekit.Application 1.0
 ApplicationItem {
     property alias gcodeProgramModel: gcodeProgramModel
     property alias gcodeProgramLoader: gcodeProgramLoader
+    property bool  gcodeEditMode: file === null ? false : file.editMode
 
-    property bool _ready: file.ready
+    property bool _ready: file === null ? false : file.ready
     property bool _previewEnabled: settings.initialized && settings.values.preview.enable
 
     id: pathViewCore
@@ -39,6 +40,11 @@ ApplicationItem {
             file.onUploadFinished.connect(fileUploadFinished)
             file.onDownloadFinished.connect(fileDownloadFinished)
         }
+    }
+
+    onGcodeEditModeChanged: {
+        console.log("PathViewCore.qml: onGcodeEditModeChanged: ", gcodeEditMode);
+        console.log("TODO: if edit-mode changed, update gcodePorgramModel");
     }
 
     function fileUploadFinished() {
@@ -116,6 +122,7 @@ ApplicationItem {
         remotePath: pathViewCore.file.remotePath
         localFilePath: pathViewCore.file.localFilePath
         onLoadingFailed: console.log("loading file failed: " + localFilePath)
+        onError: console.log("ERROR: GCodeProgramLoader: " + message)
     }
 
     GCodeSync {

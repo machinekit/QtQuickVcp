@@ -37,9 +37,15 @@ class QGCodeProgramLoader : public QObject
     Q_PROPERTY(QString localPath READ localPath WRITE setLocalPath NOTIFY localPathChanged)
     Q_PROPERTY(QString remotePath READ remotePath WRITE setRemotePath NOTIFY remotePathChanged)
     Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
 
 public:
     explicit QGCodeProgramLoader(QObject *parent = 0);
+
+    QString text() const
+    {
+        return m_text;
+    }
 
     QString localFilePath() const
     {
@@ -62,15 +68,26 @@ public:
     }
 
 signals:
+    void textChanged();
     void localFilePathChanged(QString arg);
     void localPathChanged(QString arg);
     void remotePathChanged(QString arg);
     void modelChanged(QGCodeProgramModel * arg);
     void loadingFinished();
     void loadingFailed();
+    void error(QString message);
 
 public slots:
+    void save(const QString &text);
+    void saveAs(const QString &localFilePath, const QString &text);
     void load();
+
+    void setText(const QString &arg) {
+        if (m_text != arg) {
+            m_text = arg;
+            emit textChanged();
+        }
+    }
 
     void setLocalFilePath(QString arg)
     {
@@ -111,6 +128,7 @@ private:
     QString m_localPath;
     QString m_remotePath;
     QGCodeProgramModel * m_model;
+    QString m_text;
 };
 
 #endif // QGCODEPROGRAMLOADER_H

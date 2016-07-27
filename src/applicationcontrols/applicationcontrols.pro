@@ -19,6 +19,7 @@ CONTROLS_QML_FILES = \
     PowerAction.qml \
     OpenAction.qml \
     ReopenAction.qml \
+    EditProgramAction.qml \
     RunProgramAction.qml \
     StepProgramAction.qml \
     StopProgramAction.qml \

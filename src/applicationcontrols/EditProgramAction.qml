@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2014 Alexander Rössler
+** Copyright (C) 2016 Yishin Li
 ** License: LGPL version 2.1
 **
 ** This file is part of QtQuickVcp.
@@ -16,32 +16,29 @@
 ** Lesser General Public License for more details.
 **
 ** Contributors:
+** Yishin Li @ Arais Robot Technology Inc <ysli AT araisrobo DOT com>
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
 
 import QtQuick 2.0
-import Machinekit.PathView 1.0
+import QtQuick.Controls 1.2
+import Machinekit.Application 1.0
 
-QtObject {
-    property var core: null
-    property var gcodeProgramLoader: core === null ? {} : core.gcodeProgramLoader
-    property var gcodeProgramModel: core === null ? null : core.gcodeProgramModel
-    property bool gcodeEditMode: core === null ? false : core.gcodeEditMode
+ApplicationAction {
+    property bool _ready: status.synced && command.connected && (file.localFilePath !== "")
 
-    onGcodeEditModeChanged: {
-        console.log("gcodeEditMode has changed:", gcodeEditMode);
+    id: root
+    text: qsTr("Edit")
+    //iconName: "mode-edit-white"
+    iconSource: "qrc:Machinekit/Application/Controls/icons/mode-edit-white"
+    shortcut: "F4"
+    tooltip: qsTr("Edit current file [%1]").arg(shortcut)
+    checkable: true
+    onTriggered: {
+        file.editMode = !file.editMode
     }
 
-    Component.onCompleted: {
-        if (core == null)
-        {
-            try {
-                var x = pathViewCore
-                core = Qt.binding(function() {return x})
-            }
-            catch (err) {
-            }
-        }
-    }
+    checked: _ready && file.editMode
+    enabled: _ready
 }

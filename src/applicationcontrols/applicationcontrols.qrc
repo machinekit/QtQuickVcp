@@ -63,10 +63,13 @@
         <file>FeedOverrideAction.qml</file>
         <file>SpindleOverrideAction.qml</file>
         <file>EstopPowerAction.qml</file>
+        <file>EditProgramAction.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/Application/Controls/icons">
         <file alias="process-stop">icons/process-stop.png</file>
         <file alias="system-shutdown">icons/system-shutdown.png</file>
+        <file alias="mode-edit-black">icons/mode-edit-black.png</file>
+        <file alias="mode-edit-white">icons/mode-edit-white.png</file>
         <file alias="document-open">icons/document-open.png</file>
         <file alias="dialog-cancel">icons/dialog-cancel.png</file>
         <file alias="dialog-error">icons/dialog-error.png</file>
