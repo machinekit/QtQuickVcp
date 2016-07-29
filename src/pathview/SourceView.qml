@@ -74,10 +74,10 @@ Item {
             model: object.gcodeProgramModel
             delegate:
                 Item {
-                    property bool lineActive: active
+                    property bool lineActive: Boolean(active)
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    anchors.left: parent ? parent.left : undefined
+                    anchors.right: parent ? parent.right : undefined
                     height: dummyLabel.height
 
                     /*onLineActiveChanged: {
@@ -95,7 +95,7 @@ Item {
                         Label {
                             anchors.fill: parent
                             anchors.rightMargin: 5
-                            text: lineNumber
+                            text: String(lineNumber)
                             horizontalAlignment: Text.AlignRight
                             color: selected ? "white" : label.color
                             font: dummyLabel.font
@@ -114,7 +114,7 @@ Item {
                             id: label
                             anchors.fill: parent
                             anchors.leftMargin: 5
-                            text: gcode
+                            text: String(gcode)
                             font: dummyLabel.font
                         }
                     }
