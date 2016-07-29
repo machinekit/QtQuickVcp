@@ -43,6 +43,11 @@ bool QGCodeProgramModel::setData(const QModelIndex &index, const QVariant &value
     return internalSetData(index, value, role);
 }
 
+QVariant QGCodeProgramModel::getData(const QModelIndex &index, int role) const
+{
+    return data(index, role);
+}
+
 QModelIndex QGCodeProgramModel::index(const QString &fileName, int lineNumber) const
 {
     FileIndex fileIndex;
