@@ -47,6 +47,7 @@ public:
 
     QVariant data(const QModelIndex &index, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
+    Q_INVOKABLE QVariant getData(const QModelIndex &index, int role) const;
     QModelIndex index(const QString &fileName, int lineNumber) const;
     QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
