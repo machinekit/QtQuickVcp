@@ -29,7 +29,7 @@ import Machinekit.Application 1.0
 ApplicationItem {
     property alias textColor: dummyLabel.color
     property alias font: dummyLabel.font
-    property int decimals: (_distanceUnits == "mm") ? 4 : 3
+    property int decimals: (_distanceUnits == "mm") ? 3 : 4
     property string prefix: ""
     property string suffix: ""
     property int axes: axisNames.length
