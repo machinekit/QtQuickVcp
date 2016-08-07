@@ -482,6 +482,7 @@ Rectangle {
 
         onGoBack: mainWindow.goBack()
         onLauncherSelected: mainWindow.selectLauncher(index)
+        onSystemShutdown: applicationLauncher.shutdown()
     }
 
     SelectedPage {
