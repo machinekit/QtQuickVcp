@@ -1,6 +1,7 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
+import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.0
 
 Item {
@@ -13,6 +14,7 @@ Item {
 
     signal launcherSelected(int index)
     signal goBack()
+    signal systemShutdown()
 
     id: root
     width: 600
@@ -26,6 +28,21 @@ Item {
     Button {
         id: dummyButton
         visible: false
+    }
+
+    Dialog {
+        id: shutdownDialog
+        title: qsTr("System Shutdown")
+        standardButtons: StandardButton.Yes | StandardButton.No
+
+        onYes: {
+            systemShutdown();
+            goBack();
+        }
+
+        Label {
+            text: qsTr("Do you really want to shutdown the Machinekit system?")
+        }
     }
 
     ColumnLayout {
@@ -70,6 +87,10 @@ Item {
                     Binding { target: bigButton; property: "checked"; value: root.viewMode == "big" }
                 }
                 Item { Layout.fillWidth: true }
+                Button {
+                    text: qsTr("Shutdown")
+                    onClicked: shutdownDialog.visible = true
+                }
                 Button {
                     text: qsTr("Back")
                     onClicked: goBack()
