@@ -173,7 +173,8 @@ private:
     float m_traverseLineStippleLength;
 
     Offsets m_activeOffsets;
-    Position m_currentPosition;
+    pb::Position m_relativePosition; // current relative position (without offsets)
+    Position m_currentPosition;  // current absolute position (with offsets)
     Plane m_activePlane;
     QList<PathItem*> m_previewPathItems;
     QModelIndex m_currentModelIndex;
@@ -186,9 +187,11 @@ private:
 
     QVector3D m_minimumExtents;
     QVector3D m_maximumExtents;
+    bool m_extentsUpdated;
 
     void resetActiveOffsets();
     void resetCurrentPosition();
+    void resetRelativePosition();
     void resetActivePlane();
     void resetExtents();
     void updateExtents(const QVector3D &vector);

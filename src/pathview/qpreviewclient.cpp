@@ -34,8 +34,6 @@ QPreviewClient::QPreviewClient(QObject *parent) :
     m_model(nullptr),
     m_interpreterState(InterpreterStateUnset),
     m_interpreterNote(""),
-    m_units(CanonUnitsInch),
-    m_convertFactor(1.0),
     m_context(nullptr),
     m_statusSocket(nullptr),
     m_previewSocket(nullptr),
@@ -43,29 +41,6 @@ QPreviewClient::QPreviewClient(QObject *parent) :
 {
     m_previewStatus.fileName = "test.ngc";
     m_previewStatus.lineNumber = 0;
-}
-
-void QPreviewClient::setUnits(QPreviewClient::CanonUnits arg)
-{
-    if (m_units == arg)
-        return;
-
-    switch (arg) {
-    case CanonUnitsInch:
-        m_convertFactor = 1.0;
-        break;
-    case CanonUnitsMm:
-        m_convertFactor = 25.4;
-        break;
-    case CanonUnitsCm:
-        m_convertFactor = 2.54;
-        break;
-    default:
-        m_convertFactor = 1.0;
-    }
-
-    m_units = arg;
-    emit unitsChanged(arg);
 }
 
 void QPreviewClient::start()
@@ -138,24 +113,6 @@ void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString 
     }
 }
 
-double QPreviewClient::convertValue(double value)
-{
-    return value * m_convertFactor;
-}
-
-void QPreviewClient::convertPos(pb::Position *position)
-{
-    position->set_x(convertValue(position->x()));
-    position->set_y(convertValue(position->y()));
-    position->set_z(convertValue(position->z()));
-    position->set_a(convertValue(position->a()));
-    position->set_b(convertValue(position->b()));
-    position->set_c(convertValue(position->c()));
-    position->set_u(convertValue(position->u()));
-    position->set_v(convertValue(position->v()));
-    position->set_w(convertValue(position->w()));
-}
-
 /** Processes all message received on the status 0MQ socket */
 void QPreviewClient::statusMessageReceived(QList<QByteArray> messageList)
 {
@@ -183,13 +140,6 @@ void QPreviewClient::statusMessageReceived(QList<QByteArray> messageList)
 
         emit interpreterNoteChanged(m_interpreterNote);
         emit interpreterStateChanged(m_interpreterState);
-
-        if ((m_interpreterState == InterpreterIdle)
-                && m_previewUpdated
-                && m_model)
-        {
-            m_model->endUpdate();
-        }
     }
 }
 
@@ -216,14 +166,14 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
 
         for (int i = 0; i < m_rx.preview_size(); ++i)
         {
-            QList<pb::Preview> *previewList;
             pb::Preview preview;
+            QModelIndex index;
 
             preview = m_rx.preview(i);
 
             if (preview.has_line_number())
             {
-                m_previewStatus.lineNumber = preview.line_number();
+                m_previewStatus.lineNumber = qMax(preview.line_number(), 1); // line number 0 == at beginning of file
             }
 
             if (preview.has_filename())
@@ -231,49 +181,22 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
                 m_previewStatus.fileName = QString::fromStdString(preview.filename());
             }
 
-            if (preview.has_pos())
+            if (preview.type() == pb::PV_PREVIEW_START)
             {
-                convertPos(preview.mutable_pos());  // messages come always with unit inch
+                m_previewUpdated = false;
+                m_model->beginUpdate();
+                m_model->clearPreview(false);
+                continue;
             }
 
-            if (preview.has_first_axis())
+            if (preview.type() == pb::PV_PREVIEW_END)
             {
-                preview.set_first_axis(convertValue(preview.first_axis()));
+                m_model->endUpdate();
+                continue;
             }
 
-            if (preview.has_second_axis())
-            {
-                preview.set_second_axis(convertValue(preview.second_axis()));
-            }
-
-            if (preview.has_first_end())
-            {
-                preview.set_first_end(convertValue(preview.first_end()));
-            }
-
-            if (preview.has_second_end())
-            {
-                preview.set_second_end(convertValue(preview.second_end()));
-            }
-
-            if (preview.has_axis_end_point())
-            {
-                preview.set_axis_end_point(convertValue(preview.axis_end_point()));
-            }
-
-            previewList = static_cast<QList<pb::Preview>*>(m_model->data(m_previewStatus.fileName,
-                                                                         m_previewStatus.lineNumber,
-                                                                         QGCodeProgramModel::PreviewRole).value<void*>());
-            if (previewList == nullptr)
-            {
-                previewList = new QList<pb::Preview>();
-            }
-
-            previewList->append(preview);
-
-            m_model->setData(m_previewStatus.fileName, m_previewStatus.lineNumber,
-                             QVariant::fromValue(static_cast<void*>(previewList)),
-                             QGCodeProgramModel::PreviewRole);
+            index = m_model->index(m_previewStatus.fileName, m_previewStatus.lineNumber);
+            m_model->addPreviewItem(index, preview);
 
             m_previewUpdated = true;
         }

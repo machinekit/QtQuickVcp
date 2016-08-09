@@ -24,6 +24,7 @@
 #define QGCODEPROGRAMMODEL_H
 
 #include <QAbstractListModel>
+#include <QLinkedList>
 #include "qgcodeprogramitem.h"
 
 class QGCodeProgramModel : public QAbstractListModel
@@ -32,11 +33,16 @@ class QGCodeProgramModel : public QAbstractListModel
     Q_ENUMS(GCodeProgramRoles)
 
 public:
+    class PreviewItem {
+    public:
+        QModelIndex modelIndex;
+        pb::Preview previewItem;
+    };
+
     enum GCodeProgramRoles {
             FileNameRole = Qt::UserRole,
             LineNumberRole,
             GCodeRole,
-            PreviewRole,
             SelectedRole,
             ActiveRole,
             ExecutedRole
@@ -53,14 +59,17 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QHash<int, QByteArray> roleNames() const;
+    QLinkedList<PreviewItem> previewItems() const;
 
 public slots:
     void prepareFile(const QString &fileName, int lineCount);
     void removeFile(const QString &fileName);
     void addLine(const QString &fileName);
+    void addPreviewItem(const QModelIndex &index, const pb::Preview &previewItem);
     QVariant data(const QString &fileName, int lineNumber, int role) const;
     bool setData(const QString &fileName, int lineNumber, const QVariant &value, int role);
     void clear();
+    void clearPreview(bool update = true);
     void beginUpdate();
     void endUpdate();
 
@@ -72,6 +81,7 @@ private:
 
     QList<QGCodeProgramItem*> m_items;
     QHash<QString, FileIndex> m_fileIndices;
+    QLinkedList<PreviewItem> m_previewItems;
 
     QVariant internalData(const QModelIndex &index, int role) const;
     bool internalSetData(const QModelIndex &index, const QVariant &value, int role);

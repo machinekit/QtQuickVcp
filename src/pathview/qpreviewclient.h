@@ -50,7 +50,6 @@ class QPreviewClient : public AbstractServiceImplementation
     Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(InterpreterState interpreterState READ interpreterState NOTIFY interpreterStateChanged)
     Q_PROPERTY(QString interpreterNote READ interpreterNote NOTIFY interpreterNoteChanged)
-    Q_PROPERTY(CanonUnits units READ units WRITE setUnits NOTIFY unitsChanged)
     Q_ENUMS(State ConnectionError InterpreterState CanonUnits)
 
 public:
@@ -131,11 +130,6 @@ public:
         return m_connected;
     }
 
-    CanonUnits units() const
-    {
-        return m_units;
-    }
-
 public slots:
 
     void setStatusUri(QString arg)
@@ -162,8 +156,6 @@ public slots:
         }
     }
 
-    void setUnits(CanonUnits arg);
-
 private:
     typedef struct {
         QString fileName;
@@ -179,8 +171,6 @@ private:
     QGCodeProgramModel *m_model;
     InterpreterState    m_interpreterState;
     QString             m_interpreterNote;
-    CanonUnits          m_units;
-    double              m_convertFactor;
 
     PollingZMQContext *m_context;
     ZMQSocket  *m_statusSocket;
@@ -197,9 +187,6 @@ private:
     void updateState(State state);
     void updateState(State state, ConnectionError error, QString errorString);
     void updateError(ConnectionError error, QString errorString);
-
-    double convertValue(double value);
-    void convertPos(pb::Position *position);
 
 private slots:
     void statusMessageReceived(QList<QByteArray> messageList);
@@ -219,7 +206,6 @@ signals:
     void interpreterStateChanged(InterpreterState arg);
     void interpreterNoteChanged(QString arg);
     void connectedChanged(bool arg);
-    void unitsChanged(CanonUnits arg);
 };
 
 #endif // QPREVIEWCLIENT_H

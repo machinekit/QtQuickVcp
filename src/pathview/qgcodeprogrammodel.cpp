@@ -98,11 +98,15 @@ QHash<int, QByteArray> QGCodeProgramModel::roleNames() const
     roles[FileNameRole] = "fileName";
     roles[LineNumberRole] = "lineNumber";
     roles[GCodeRole] = "gcode";
-    roles[PreviewRole] = "preview";
     roles[SelectedRole] = "selected";
     roles[ActiveRole] = "active";
     roles[ExecutedRole] = "executed";
     return roles;
+}
+
+QLinkedList<QGCodeProgramModel::PreviewItem> QGCodeProgramModel::previewItems() const
+{
+    return m_previewItems;
 }
 
 void QGCodeProgramModel::prepareFile(const QString &fileName, int lineCount)
@@ -214,6 +218,14 @@ void QGCodeProgramModel::addLine(const QString &fileName)
     m_fileIndices.insert(fileName, fileIndex);
 }
 
+void QGCodeProgramModel::addPreviewItem(const QModelIndex &index, const pb::Preview &previewItem)
+{
+    PreviewItem item;
+    item.modelIndex = index;
+    item.previewItem = previewItem;
+    m_previewItems.append(item);
+}
+
 QVariant QGCodeProgramModel::data(const QString &fileName, int lineNumber, int role) const
 {
     QModelIndex modelIndex;
@@ -240,9 +252,23 @@ void QGCodeProgramModel::clear()
     beginRemoveRows(QModelIndex(), 0, (m_items.count()-1));
     qDeleteAll(m_items);
     m_items.clear();
+    m_previewItems.clear();
     endRemoveRows();
 
     m_fileIndices.clear();
+}
+
+void QGCodeProgramModel::clearPreview(bool update)
+{
+    if (update)
+    {
+        beginUpdate();
+    }
+    m_previewItems.clear();
+    if (update)
+    {
+        endUpdate();
+    }
 }
 
 void QGCodeProgramModel::beginUpdate()
@@ -272,8 +298,6 @@ QVariant QGCodeProgramModel::internalData(const QModelIndex &index, int role) co
         return QVariant(item->fileName());
     case GCodeRole:
         return QVariant(item->gcode());
-    case PreviewRole:
-        return QVariant::fromValue(static_cast<void*>(item->previewList()));
     case SelectedRole:
         return QVariant(item->selected());
     case ActiveRole:
@@ -307,9 +331,6 @@ bool QGCodeProgramModel::internalSetData(const QModelIndex &index, const QVarian
         break;
     case GCodeRole:
         item->setGcode(value.toString());
-        break;
-    case PreviewRole:
-        item->setPreviewList(static_cast<QList<pb::Preview>* >(value.value<void*>()));
         break;
     case SelectedRole:
         item->setSelected(value.toBool());
