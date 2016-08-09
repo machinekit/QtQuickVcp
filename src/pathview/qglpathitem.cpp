@@ -392,6 +392,19 @@ void QGLPathItem::resetCurrentPosition()
     m_currentPosition.w = 0.0;
 }
 
+void QGLPathItem::resetRelativePosition()
+{
+    m_relativePosition.set_x(0.0);
+    m_relativePosition.set_y(0.0);
+    m_relativePosition.set_z(0.0);
+    m_relativePosition.set_a(0.0);
+    m_relativePosition.set_b(0.0);
+    m_relativePosition.set_c(0.0);
+    m_relativePosition.set_u(0.0);
+    m_relativePosition.set_v(0.0);
+    m_relativePosition.set_w(0.0);
+}
+
 void QGLPathItem::resetActivePlane()
 {
     m_activePlane = XYPlane;
@@ -401,28 +414,30 @@ void QGLPathItem::resetExtents()
 {
     m_maximumExtents = QVector3D();
     m_minimumExtents = QVector3D();
+    m_extentsUpdated = false;
 }
 
 void QGLPathItem::updateExtents(const QVector3D &vector)
 {
-    if (vector.x() < m_minimumExtents.x()) {
+    if ((vector.x() < m_minimumExtents.x()) || !m_extentsUpdated) {
         m_minimumExtents.setX(vector.x());
     }
-    if (vector.y() < m_minimumExtents.y()) {
+    if ((vector.y() < m_minimumExtents.y()) || !m_extentsUpdated) {
         m_minimumExtents.setY(vector.y());
     }
-    if (vector.z() < m_minimumExtents.z()) {
+    if ((vector.z() < m_minimumExtents.z()) || !m_extentsUpdated) {
         m_minimumExtents.setZ(vector.z());
     }
-    if (vector.x() > m_maximumExtents.x()) {
+    if ((vector.x() > m_maximumExtents.x()) || !m_extentsUpdated) {
         m_maximumExtents.setX(vector.x());
     }
-    if (vector.y() > m_maximumExtents.y()) {
+    if ((vector.y() > m_maximumExtents.y()) || !m_extentsUpdated) {
         m_maximumExtents.setY(vector.y());
     }
-    if (vector.z() > m_maximumExtents.z()) {
+    if ((vector.z() > m_maximumExtents.z()) || !m_extentsUpdated) {
         m_maximumExtents.setZ(vector.z());
     }
+    m_extentsUpdated = true;
 }
 
 void QGLPathItem::releaseExtents()
@@ -477,8 +492,8 @@ void QGLPathItem::processStraightMove(const pb::Preview &preview, MovementType m
     LinePathItem *linePathItem;
 
     linePathItem = new LinePathItem();
-    newPosition = calculateNewPosition(preview.pos());
     currentVector = positionToVector3D(m_currentPosition);
+    newPosition = calculateNewPosition(preview.pos());
     newVector = positionToVector3D(newPosition);
 
     linePathItem->position = currentVector;
@@ -489,6 +504,7 @@ void QGLPathItem::processStraightMove(const pb::Preview &preview, MovementType m
     m_modelPathMap.insert(m_currentModelIndex, linePathItem);   // mapping model index to the item
 
     m_currentPosition = newPosition;
+    m_relativePosition = preview.pos();
 
     updateExtents(newVector);
 }
@@ -706,12 +722,15 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     m_modelPathMap.insertMulti(m_currentModelIndex, arcPathItem);   // mapping model index to the item
 
     m_currentPosition = newPosition;
+    m_relativePosition = preview.pos();
 }
 
 void QGLPathItem::processSetG5xOffset(const pb::Preview &preview)
 {
-    if (preview.has_pos()) {
-        m_activeOffsets.g5xOffsets.replace(preview.g5_index(), previewPositionToPosition(preview.pos()));
+    if (preview.has_pos() && preview.has_g5_index()) {
+        m_activeOffsets.g5xOffsetIndex = preview.g5_index();
+        m_activeOffsets.g5xOffsets.replace(preview.g5_index()-1, previewPositionToPosition(preview.pos()));
+        m_currentPosition = calculateNewPosition(m_relativePosition);
     }
 }
 
@@ -719,6 +738,7 @@ void QGLPathItem::processSetG92Offset(const pb::Preview &preview)
 {
     if (preview.has_pos()) {
         m_activeOffsets.g92Offset = previewPositionToPosition(preview.pos());
+        m_currentPosition = calculateNewPosition(m_relativePosition);
     }
 }
 
@@ -726,6 +746,7 @@ void QGLPathItem::processUseToolOffset(const pb::Preview &preview)
 {
     if (preview.has_pos()) {
         m_activeOffsets.toolOffset = previewPositionToPosition(preview.pos());
+        m_currentPosition = calculateNewPosition(m_relativePosition);
     }
 }
 
