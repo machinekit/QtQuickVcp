@@ -140,13 +140,6 @@ void QPreviewClient::statusMessageReceived(QList<QByteArray> messageList)
 
         emit interpreterNoteChanged(m_interpreterNote);
         emit interpreterStateChanged(m_interpreterState);
-
-        if ((m_interpreterState == InterpreterIdle)
-                && m_previewUpdated
-                && m_model)
-        {
-            m_model->endUpdate();
-        }
     }
 }
 
@@ -188,12 +181,18 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
                 m_previewStatus.fileName = QString::fromStdString(preview.filename());
             }
 
-            if (preview.has_first_axis())
+            if (preview.type() == pb::PV_PREVIEW_START)
             {
+                m_previewUpdated = false;
+                m_model->beginUpdate();
+                m_model->clearPreview(false);
+                continue;
             }
 
-            if (preview.has_second_axis())
+            if (preview.type() == pb::PV_PREVIEW_END)
             {
+                m_model->endUpdate();
+                continue;
             }
 
             index = m_model->index(m_previewStatus.fileName, m_previewStatus.lineNumber);
