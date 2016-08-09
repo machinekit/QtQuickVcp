@@ -45,7 +45,7 @@ ApplicationItem {
         gcodeProgramModel.clear()
         gcodeProgramLoader.load()
         if (_previewEnabled) {
-            executePreview()
+            _executePreview();
         }
     }
 
@@ -53,7 +53,7 @@ ApplicationItem {
         gcodeProgramModel.clear()
         gcodeProgramLoader.load()
         if (_previewEnabled) {
-            executePreview()
+            _executePreview();
         }
     }
 
@@ -63,17 +63,26 @@ ApplicationItem {
             && (file.localFilePath !== "")
             && (file.transferState === ApplicationFile.NoTransfer))
         {
-            gcodeProgramModel.clear()
-            gcodeProgramLoader.load()
-            executePreview()
+            gcodeProgramModel.clearPreview();
+            _executePreview();
         }
     }
 
-    function executePreview() {
+    function _executePreview() {
         if (file.remoteFilePath.split('.').pop() === 'ngc') {   // only open ngc files
-            command.openProgram('preview', file.remoteFilePath)
-            command.runProgram('preview', 0)
+            command.openProgram('preview', file.remoteFilePath);
+            command.runProgram('preview', 0);
         }
+    }
+
+    function updatePreview() {
+        if (file.remoteFilePath !== "") {
+            _executePreview();
+        }
+    }
+
+    function clearPreview() {
+        gcodeProgramModel.clearPreview();
     }
 
     Service {
