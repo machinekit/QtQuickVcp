@@ -180,7 +180,7 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
 
             if (preview.has_line_number())
             {
-                m_previewStatus.lineNumber = preview.line_number();
+                m_previewStatus.lineNumber = qMax(preview.line_number(), 1); // line number 0 == at beginning of file
             }
 
             if (preview.has_filename())
