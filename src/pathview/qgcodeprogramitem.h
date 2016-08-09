@@ -41,9 +41,6 @@ public:
     QString gcode() const;
     void setGcode(const QString &gcode);
 
-    QList<pb::Preview> *previewList() const;
-    void setPreviewList(QList<pb::Preview> *previewList);
-
     bool selected() const;
     void setSelected(bool selected);
 
@@ -60,7 +57,6 @@ private:
     bool m_selected;
     bool m_active;
     bool m_executed;
-    QList<pb::Preview> *m_previewList;
 };
 
 #endif // QGCODEPROGRAMITEM_H

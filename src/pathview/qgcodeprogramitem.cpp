@@ -28,8 +28,7 @@ QGCodeProgramItem::QGCodeProgramItem(const QString &fileName, int lineNumber):
     m_gcode(QString("")),
     m_selected(false),
     m_active(false),
-    m_executed(false),
-    m_previewList(nullptr)
+    m_executed(false)
 {
 }
 
@@ -64,15 +63,7 @@ void QGCodeProgramItem::setGcode(const QString &gcode)
 {
     m_gcode = gcode;
 }
-QList<pb::Preview> *QGCodeProgramItem::previewList() const
-{
-    return m_previewList;
-}
 
-void QGCodeProgramItem::setPreviewList(QList<pb::Preview> *previewList)
-{
-    m_previewList = previewList;
-}
 bool QGCodeProgramItem::selected() const
 {
     return m_selected;

@@ -872,32 +872,21 @@ void QGLPathItem::drawPath()
     m_previewPathItems.clear();
     resetActiveOffsets(); // clear the offsets
     resetActivePlane();
-    resetCurrentPosition(); // reset position
+    resetCurrentPosition();  // reset current position
+    resetRelativePosition(); // reset relative position
     resetExtents();
 
     m_modelPathMap.clear();
     m_drawablePathMap.clear();
     m_previousSelectedDrawable = nullptr;
 
-    for (int i = 0; i < m_model->rowCount(); ++i)
+    QLinkedList<QGCodeProgramModel::PreviewItem> previewItems = m_model->previewItems();
+    QLinkedListIterator<QGCodeProgramModel::PreviewItem> i(previewItems);
+    while (i.hasNext())
     {
-        QModelIndex index;
-        QList<pb::Preview>* previewList;
-
-        index = m_model->index(i);
-        if (!index.isValid()) {
-            continue;
-        }
-        previewList = static_cast<QList<pb::Preview>* >(m_model->data(index, QGCodeProgramModel::PreviewRole).value<void*>());
-
-        if (previewList != nullptr)
-        {
-            m_currentModelIndex = index;
-            for (int j = 0; j < previewList->size(); ++j)
-            {
-                processPreview(previewList->at(j));
-            }
-        }
+        QGCodeProgramModel::PreviewItem item = i.next();
+        m_currentModelIndex = item.modelIndex;
+        processPreview(item.previewItem);
     }
 
     m_needsFullUpdate = true;

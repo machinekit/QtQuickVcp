@@ -173,8 +173,8 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
 
         for (int i = 0; i < m_rx.preview_size(); ++i)
         {
-            QList<pb::Preview> *previewList;
             pb::Preview preview;
+            QModelIndex index;
 
             preview = m_rx.preview(i);
 
@@ -196,19 +196,8 @@ void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
             {
             }
 
-            previewList = static_cast<QList<pb::Preview>*>(m_model->data(m_previewStatus.fileName,
-                                                                         m_previewStatus.lineNumber,
-                                                                         QGCodeProgramModel::PreviewRole).value<void*>());
-            if (previewList == nullptr)
-            {
-                previewList = new QList<pb::Preview>();
-            }
-
-            previewList->append(preview);
-
-            m_model->setData(m_previewStatus.fileName, m_previewStatus.lineNumber,
-                             QVariant::fromValue(static_cast<void*>(previewList)),
-                             QGCodeProgramModel::PreviewRole);
+            index = m_model->index(m_previewStatus.fileName, m_previewStatus.lineNumber);
+            m_model->addPreviewItem(index, preview);
 
             m_previewUpdated = true;
         }
