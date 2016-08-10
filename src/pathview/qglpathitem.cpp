@@ -470,6 +470,8 @@ void QGLPathItem::processPreview(const pb::Preview &preview)
     case pb::PV_SET_PARAMS: /*nothing*/ return;
     case pb::PV_SET_FEED_MODE: /*nothing*/ return;
     case pb::PV_SOURCE_CONTEXT: /*nothing*/ return;
+    case pb::PV_PREVIEW_START: /*nothing*/ return;
+    case pb::PV_PREVIEW_END: /*nothing*/ return;
     }
 }
 
