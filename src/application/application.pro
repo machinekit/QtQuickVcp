@@ -26,7 +26,8 @@ SOURCES += \
     qapplicationfilemodel.cpp \
     qapplicationfileitem.cpp \
     qapplicationplugins.cpp \
-    qapplicationpluginitem.cpp
+    qapplicationpluginitem.cpp \
+    fileio.cpp
 
 HEADERS += \
     plugin.h \
@@ -44,7 +45,8 @@ HEADERS += \
     qapplicationfilemodel.h \
     qapplicationfileitem.h \
     qapplicationplugins.h \
-    qapplicationpluginitem.h
+    qapplicationpluginitem.h \
+    fileio.h
 
 RESOURCES += \
     application.qrc
