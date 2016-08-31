@@ -55,9 +55,10 @@ void FileIO::read()
 
     setWorking(true);
     QTextStream in(&file);
-    in >> m_text;
+    m_text = in.readAll();
     file.close();
     setWorking(false);
 
+    emit textChanged(m_text);
     emit readingCompleted();
 }
