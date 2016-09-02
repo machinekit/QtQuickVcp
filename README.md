@@ -14,8 +14,10 @@ Online documentation for some QtQuickVcp classes can be found here [QtQuickVcp D
 
 **<a href="#getting_started">Getting Started</a>**
 
+* <a href="#hello_world_video">Hello World in QtQuickVcp</a>
+* <a href="#qt5_uis_with_machinekitsdk">Building Qt5 UIs with MachinekitSDK</a>
 * <a href="#module_overview">QtQuick Module Overview</a>
-* <a href="#testing_mkwrapper">Testing mkwrapper</a>
+* <a href="#using_mkwrapper">Using mkwrapper</a>
 * <a href="#using_mklauncher">Using mklauncher</a>
 
 **<a href="#build_and_install">Building and Installing</a>**
@@ -47,9 +49,18 @@ or desktop device over the network.
 
 <a name="getting_started" />
 ## Getting Started
-Please take a look at "Hello World in QtQuickVcp" tutorial on YouTube. 
+A good way to get started is to watch the video tutorials on YouTube.
 
+Another resource for learning about QtQuickVcp, Machinekit and other
+machine control related stuff is [Machine Koder Blog](http://machinekoder.com)
+
+<a name="hello_world_video" />
+### HelloWorld in QtQuickVcp
 [![HelloWorld in QtQuickVcp](http://img.youtube.com/vi/hyY1DoJ3mOA/0.jpg)](http://www.youtube.com/watch?v=hyY1DoJ3mOA)
+
+<a name="qt5_uis_with_machinekitsdk" />
+### Building Qt5 UIs with MachinekitSDK
+[![Building Qt5 UIs with MachinekitSDK](http://img.youtube.com/vi/IdB5769JtqI/0.jpg)](https://www.youtube.com/watch?v=IdB5769JtqI)
 
 More detailed videos for specific areas will follow.
 
@@ -65,8 +76,12 @@ QtQuickVcp comes with the following QtQuick modules.
 * *Machinekit.PathView* - GCode path and progress views
 * *Machinekit.VideoView* - Video views, e.g. for mjpeg-webcam streams
 
-<a name="testing_mkwrapper" />
-### Testing mkwrapper
+<a name="using_mkwrapper" />
+### Using mkwrapper
+Mkwrapper is the Machinekit server side application for the
+Machinekit.Application modules. This short intro will help you making
+your Machinekit configuration work with mkwrapper.
+
 #### Install or Update Machinekit
 If you have no Machinekit installation please follow the installation steps in the wiki [Debian Packages](http://www.machinekit.io/docs/packages-debian/)
 
