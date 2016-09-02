@@ -428,7 +428,7 @@ Wait a few seconds until parsing the header files is finished. Then select the R
 
 Now right click on the libzmq project in the Solutions Explorer and click build.
 
-Now select the x64 build.
+Now select the Win32 build.
 
 Now right click on the `libzmq11` project in the Solutions Explorer and click build.
 
