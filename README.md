@@ -2,9 +2,9 @@
 
 A remote user interface implementation for [Machinekit](https://github.com/machinekit/machinekit) written in Qt/C++/QML.
 
-This repository contains the QtQuickVcp library. A generic client implementation and binary distributions can be found here [Machinekit-Client](https://github.com/strahlex/MachinekitClient)
+This repository contains the QtQuickVcp library. A generic client implementation and binary distributions can be found here [Machinekit-Client](https://github.com/machinekoder/MachinekitClient)
 
-More details about QtQuickVcp and how it can be installed can be found in the [QtQuickVcp Wiki](https://github.com/strahlex/QtQuickVcp/wiki/QtQuick-Virtual-Control-Panel)
+More details about QtQuickVcp and how it can be installed can be found in the [QtQuickVcp Wiki](https://github.com/machinekoder/QtQuickVcp/wiki/QtQuick-Virtual-Control-Panel)
 
 Online documentation for some QtQuickVcp classes can be found here [QtQuickVcp Docu](http://static.machinekit.io/html/qtquickvcp/index.html)
 
@@ -163,19 +163,19 @@ while True:
 ```
 
 ##### Modifications for 3D Printers
-The Machineface user interface is especially designed for controlling 3D printers. Therefore it features some additional controls for heatbed, extruder temperature and more. It implements following a set of [MCodes](https://github.com/strahlex/TCT3D/blob/revision2/UNIPRINT-3D.ini#L86) as well as a few [HAL signals](https://github.com/strahlex/TCT3D/blob/revision2/UNIPRINT-3D.hal#L610). You may also want to take a look at the source code of Machineface: [DisplayPanel.qml](https://github.com/strahlex/Machineface/blob/master/Machineface/DisplayPanel.qml#L54)
+The Machineface user interface is especially designed for controlling 3D printers. Therefore it features some additional controls for heatbed, extruder temperature and more. It implements following a set of [MCodes](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.ini#L86) as well as a few [HAL signals](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.hal#L610). You may also want to take a look at the source code of Machineface: [DisplayPanel.qml](https://github.com/machinekoder/Machineface/blob/master/Machineface/DisplayPanel.qml#L54)
 
 #### Cloning the User Interfaces
 At the moment two user interfaces based on QtQuickVcp exist:
 
-[Machineface](https://github.com/strahlex/Machineface): a user interfaces designed for the use with small screens especially for 3D printers
+[Machineface](https://github.com/machinekoder/Machineface): a user interfaces designed for the use with small screens especially for 3D printers
 
-[Cetus](https://github.com/strahlex/Cetus.git): a full-featured user interfaces that should provide something like Axis
+[Cetus](https://github.com/machinekoder/Cetus.git): a full-featured user interfaces that should provide something like Axis
 
 Clone both user interfaces on your device with Machinekit installed. I recommend **forking the user interfaces on GitHub** and cloning the fork so you can push modifications upstream quickly. To modify these user interfaces a simple text editor is sufficient. Using a text editor with syntax highlighting for QML might improve the development experience. (e.g. Kate or Qt Creator)
 
-    git clone https://github.com/strahlex/Cetus.git
-    git clone https://github.com/strahlex/Machineface.git
+    git clone https://github.com/machinekoder/Cetus.git
+    git clone https://github.com/machinekoder/Machineface.git
 
 #### Install the Machinekit-Client
 For desktop platforms (**Linux, Windows, Mac**) you can find binaries here: [Machinekit-Client releases](http://buildbot.roessler.systems/files/machinekit-client/)
@@ -192,12 +192,12 @@ Now its time to start your configuration:
 
     ./<name of your start script>.py
 
-It may be useful to start the configuration at boot: [Starting a Machinekit configuration at boot](https://github.com/strahlex/asciidoc-sandbox/wiki/Starting-a-Machinekit-configuration-at-boot)
+It may be useful to start the configuration at boot: [Starting a Machinekit configuration at boot](https://github.com/machinekoder/asciidoc-sandbox/wiki/Starting-a-Machinekit-configuration-at-boot)
 
 Now start the Machinekit-Client on the desired platform. For some networks it may be necessary to enter the IP address of the Machinekit device manually (Unicast).
 
 #### Setup mklauncher
-With newer versions of QtQuickVcp the entry point for the Machinekit-Client has been changed to the mklauncher service. Please follow the steps here for more details [Using mklauncher](https://github.com/strahlex/QtQuickVcp/wiki/Using-mklauncher)
+With newer versions of QtQuickVcp the entry point for the Machinekit-Client has been changed to the mklauncher service. Please follow the steps here for more details [Using mklauncher](https://github.com/machinekoder/QtQuickVcp/wiki/Using-mklauncher)
 
 <a name="using_mklauncher" />
 ### Using mklauncher
@@ -211,7 +211,7 @@ command = python run.py
 variant = with one extruder
 ```
 
-More examples can be found here [MendelMax-CRAMPS](https://github.com/strahlex/MendelMax-CRAMPS/blob/master/launcher.ini) and here [thecooltool-config](https://github.com/thecooltool/machinekit-configs/blob/master/launcher.ini).
+More examples can be found here [MendelMax-CRAMPS](https://github.com/machinekoder/MendelMax-CRAMPS/blob/master/launcher.ini) and here [thecooltool-config](https://github.com/thecooltool/machinekit-configs/blob/master/launcher.ini).
 
 Once you have create a `launcher.ini` file and you configuration is ready for testing you can start mklauncher by typing following command:
 
@@ -221,9 +221,9 @@ mklauncher .
 
 The dot in the end means that mklauncher will recursively search for `launcher.ini` files in the current directory. NOTE that this can be very slow if you do this in your home directory.
 
-Once you have successfully launched mklauncher you are ready to connect using the [Machinekit-Client](https://github.com/strahlex/MachinekitClient).
+Once you have successfully launched mklauncher you are ready to connect using the [Machinekit-Client](https://github.com/machinekoder/MachinekitClient).
 
-If you have a embedded Machinekit setup e.g. on the BeagleBone Black, it is recommended to start mklauncher at boot using systemd. Use this guide for reference: [Starting a Machinekit configuration at boot](https://github.com/strahlex/asciidoc-sandbox/blob/master/Starting-a-Machinekit-configuration-at-boot.md) or use this script [register.py](https://gist.github.com/strahlex/3eaa42f79f7a19e2244a).
+If you have a embedded Machinekit setup e.g. on the BeagleBone Black, it is recommended to start mklauncher at boot using systemd. Use this guide for reference: [Starting a Machinekit configuration at boot](https://github.com/machinekoder/asciidoc-sandbox/blob/master/Starting-a-Machinekit-configuration-at-boot.md) or use this script [register.py](https://gist.github.com/machinekoder/3eaa42f79f7a19e2244a).
 
 <a name="build_and_install"/>
 ## Building and installing
@@ -239,9 +239,9 @@ Please note that intalling QtQuickVcp can be very cumbersome for most
 platforms. However, since QtQuickVcp use **remote deployment** of it
 is not necessary that you build QtQuickVcp e.g. for Android. Instead
 please **take the easy way** and use the
-[Machinekit Vagrant box](https://github.com/strahlex/machinekit-vagrant)
+[Machinekit Vagrant box](https://github.com/machinekoder/machinekit-vagrant)
 for development. The
-[Machinekit-Client](https://github.com/strahlex/MachinekitClient) serves
+[Machinekit-Client](https://github.com/machinekoder/MachinekitClient) serves
 as universal client application. You can download binaries for all
 supported platforms. Please only try to build and install QtQuickVcp
 on you own if you feel confident to do so and if you plan to
@@ -250,7 +250,7 @@ contribute to the QtQuickVcp project.
 <a name="easy_way" />
 ### Easy Way - Vagrant Box
 The easiest way to get a running MachinekitSDK, QtQuickVcp and Machinekit installation is to use
-the [Vagrant configuration](https://github.com/strahlex/machinekit-vagrant). Follow the steps provided
+the [Vagrant configuration](https://github.com/machinekoder/machinekit-vagrant). Follow the steps provided
 in the repository and you will have a working installation with a few clicks.
 
 <a name="generic_requirements" />
@@ -369,7 +369,7 @@ Install ZeroMQ to `/opt/local`
 ##### iOS
 Installs ZeroMQ libraries for iOS to `/opt/zeromq-ios`
 
-    git clone https://github.com/strahlex/libzmq-ios
+    git clone https://github.com/machinekoder/libzmq-ios
     cd libzmq-ios
     chmod +x libzmq-ios.sh
     sudo ./libzmq-ios.sh
@@ -387,9 +387,9 @@ Since Yosemite one needs to compile a protobuf library that is compatible with l
     sudo make install
 
 ##### iOS
-See https://gist.github.com/strahlex/847dc5f320a21f1a9977 installs protobuf to `/opt/protobuf-ios`
+See https://gist.github.com/machinekoder/847dc5f320a21f1a9977 installs protobuf to `/opt/protobuf-ios`
 
-    curl    https://gist.githubusercontent.com/strahlex/847dc5f320a21f1a9977/raw/f3baa89c9aa7ff3300d4453b847fc3d786d02ba8/build-protobuf-2.6.1.sh --output build-protobuf-2.6.1.sh
+    curl    https://gist.githubusercontent.com/machinekoder/847dc5f320a21f1a9977/raw/f3baa89c9aa7ff3300d4453b847fc3d786d02ba8/build-protobuf-2.6.1.sh --output build-protobuf-2.6.1.sh
     chmod +x build-protobuf-2.6.1.sh
     sudo ./build-protobuf-2.6.1.sh
 
@@ -508,9 +508,9 @@ See also [C++ Hash Deprecation Warning](http://stackoverflow.com/q/30430789/4599
 <a name="building_qtquickvcp" />
 ### Building QtQuickVcp
 
-After you have all the requirements installed clone and build the [QtQuickVcp repo](https://github.com/strahlex/QtQuickVcp).
+After you have all the requirements installed clone and build the [QtQuickVcp repo](https://github.com/machinekoder/QtQuickVcp).
 
-    git clone https://github.com/strahlex/QtQuickVcp
+    git clone https://github.com/machinekoder/QtQuickVcp
 
 Before building the project **modify the paths.pri file if necessary**.
 
@@ -535,7 +535,7 @@ QMAKE=~/bin/Qt/5.*/gcc*/bin/qmake
 QT_INSTALL_PREFIX=~/bin/Qt/5.*/gcc*
 
 # download and install QtQuickVcp
-git clone https://github.com/strahlex/QtQuickVcp
+git clone https://github.com/machinekoder/QtQuickVcp
 mkdir -p build/QtQuickVcp
 cd build/QtQuickVcp
 
@@ -551,7 +551,7 @@ make install_docs
 <a name="machinekit_sdk" />
 ### MachinekitSDK
 If you also want to have QtQuickVcp specific wizards and extensions
-for QtCreator please continue with the install instructions for the [MachinekitSDK](https://github.com/strahlex/MachinekitSDK)
+for QtCreator please continue with the install instructions for the [MachinekitSDK](https://github.com/machinekoder/MachinekitSDK)
 
 <a name="contributing"/>
 ## Contributing
