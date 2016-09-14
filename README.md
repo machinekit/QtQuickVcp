@@ -1,12 +1,20 @@
 # QtQuick Virtual Control Panel
 
-A remote user interface implementation for [Machinekit](https://github.com/machinekit/machinekit) written in Qt/C++/QML.
+A remote UI implementation for [Machinekit](https://github.com/machinekit/machinekit) written in Qt/C++/QML.
 
-This repository contains the QtQuickVcp library. A generic client implementation and binary distributions can be found here [Machinekit-Client](https://github.com/machinekoder/MachinekitClient)
+This repository contains the QtQuickVcp library. A generic client implementation and binary distributions are available here [MachinekitClient](https://github.com/machinekoder/MachinekitClient)
 
-More details about QtQuickVcp and how it can be installed can be found in the [QtQuickVcp Wiki](https://github.com/machinekoder/QtQuickVcp/wiki/QtQuick-Virtual-Control-Panel)
+## Features
 
-Online documentation for some QtQuickVcp classes can be found here [QtQuickVcp Docu](http://static.machinekit.io/html/qtquickvcp/index.html)
+* enables building remote user interfaces for Machinekit
+* automatic service discovery
+* control one or multiple Machinekit instance
+* remote UI deployment via [MachinekitClient](https://github.com/machinekoder/MachinekitClient/)
+* remote Machinekit instance launcher
+* UI components for machine control applications
+* textual GCode preview
+* 3D GCode preview
+
 
 ## Contents
 
