@@ -14,12 +14,24 @@ Online documentation for some QtQuickVcp classes can be found here [QtQuickVcp D
 
 **<a href="#getting_started">Getting Started</a>**
 
-* Testing Mkwrapper
-* Bla
+* <a href="#module_overview">QtQuick Module Overview</a>
+* <a href="#testing_mkwrapper">Testing mkwrapper</a>
+* <a href="#using_mklauncher">Using mklauncher</a>
+
+**<a href="#build_and_install">Building and Installing</a>**
+
+* <a href="#easy_way">Easy Way - Vagrant Box</a>
+* <a href="#generic_requirements">Generic Requirements</a>
+* <a href="#linux_install">Linux</a>
+* <a href="#windows_install">Windows</a>
+* <a href="#android_install">Android</a>
+* <a href="#mac_install">Mac and iOS</a>
+* <a href="#building_qtquickvcp">Building QtQuickVcp</a>
+* <a href="#machinekit_sdk">MachinekitSDK</a>
 
 **<a href="#contributing">Contributing</a>**
 
-**<a href="#build_and_install">Building and Installing</a>**
+**<a href="#developing_qtquickvcp">Developing QtQuickVcp</a>**
 
 <a name="qtquickvcp" />
 ## What is QtQuickVcp?
@@ -41,7 +53,10 @@ Please take a look at "Hello World in QtQuickVcp" tutorial on YouTube.
 
 More detailed videos for specific areas will follow.
 
-### QtQuick modules
+<a name="module_overview" />
+### QtQuick Module Overview
+QtQuickVcp comes with the following QtQuick modules.
+
 * *Machinekit.HalRemote* - Non GUI HAL remote pins and components
 * *Machinekit.HalRemote.Controls* - GUI items such as Slider and ProgressBar combined with HAL pins
 * *Machinekit.Application* - Non GUI CNC stack application components
@@ -50,6 +65,7 @@ More detailed videos for specific areas will follow.
 * *Machinekit.PathView* - GCode path and progress views
 * *Machinekit.VideoView* - Video views, e.g. for mjpeg-webcam streams
 
+<a name="testing_mkwrapper" />
 ### Testing mkwrapper
 #### Install or Update Machinekit
 If you have no Machinekit installation please follow the installation steps in the wiki [Debian Packages](http://www.machinekit.io/docs/packages-debian/)
@@ -168,6 +184,7 @@ Now start the Machinekit-Client on the desired platform. For some networks it ma
 #### Setup mklauncher
 With newer versions of QtQuickVcp the entry point for the Machinekit-Client has been changed to the mklauncher service. Please follow the steps here for more details [Using mklauncher](https://github.com/strahlex/QtQuickVcp/wiki/Using-mklauncher)
 
+<a name="using_mklauncher" />
 ### Using mklauncher
 Mklauncher is the new entry point for Machinekit-Client. It acts as a remote version of the Machinekit Launcher. Usage is quite simple (use =mklauncher --help= for details) the only thing you need to add to your Machinekit configarion is a =launcher.ini= file.
 
@@ -193,14 +210,6 @@ Once you have successfully launched mklauncher you are ready to connect using th
 
 If you have a embedded Machinekit setup e.g. on the BeagleBone Black, it is recommended to start mklauncher at boot using systemd. Use this guide for reference: [Starting a Machinekit configuration at boot](https://github.com/strahlex/asciidoc-sandbox/blob/master/Starting-a-Machinekit-configuration-at-boot.md) or use this script [register.py](https://gist.github.com/strahlex/3eaa42f79f7a19e2244a).
 
-<a name="contributing"/>
-## Contributing
-
-### Work flow
-* Create an issue in the issue tracker (e.g. Fan control missing)
-* Fork the git repository.
-* After you have coded some cool new stuff please create a pull request and link it to the issue.
-
 <a name="build_and_install"/>
 ## Building and installing
 QtQuickVcp is very versatile and is available for following platforms:
@@ -223,11 +232,13 @@ supported platforms. Please only try to build and install QtQuickVcp
 on you own if you feel confident to do so and if you plan to
 contribute to the QtQuickVcp project.
 
-### Easy Way - Vagrant
+<a name="easy_way" />
+### Easy Way - Vagrant Box
 The easiest way to get a running MachinekitSDK, QtQuickVcp and Machinekit installation is to use
 the [Vagrant configuration](https://github.com/strahlex/machinekit-vagrant). Follow the steps provided
 in the repository and you will have a working installation with a few clicks.
 
+<a name="generic_requirements" />
 ### Generic Requirements
 QtQuickVcp has the following requirements:
 
@@ -236,6 +247,14 @@ QtQuickVcp has the following requirements:
 * [Protocol Buffers](https://developers.google.com/protocol-buffers/) - version 2.5.1 or newer
 * [ZeroMQ](http://zeromq.org/) - version 3.x or newer
 
+```
+error C2338: <hash_*> is deprecated and will be REMOVED. Please use <unordered_*>.
+You can define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+```
+If MSVC2015 is the only option you have, add  `_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=1;`  to "Preprocessor Definitions" entry under Project Properties.
+See also [C++ Hash Deprecation Warning](http://stackoverflow.com/q/30430789/4599792)
+
+<a name="android_install" />
 ### Android
 Build instruction for Android toolchain on Linux
 #### Prerequisites
@@ -305,6 +324,7 @@ Alter and execute the following commands
     make
     sudo make install
 
+<a name="mac_install" />
 ### Mac - OS X and iOS
 #### Prerequisites
 * Update [OSX to the latest version](http://www.apple.com/osx/how-to-upgrade/) (or you may not be able to deploy to your device)
@@ -358,6 +378,7 @@ See https://gist.github.com/strahlex/847dc5f320a21f1a9977 installs protobuf to `
     chmod +x build-protobuf-2.6.1.sh
     sudo ./build-protobuf-2.6.1.sh
 
+<a name="linux_install" />
 ### Linux
 The following steps are tested on **Debian Jessie**. For other
 distributions please use the äquivalent packages if available.
@@ -401,6 +422,7 @@ not enable 3D acceleration or OpenGL will not work inside the VM.
     make check
     sudo make install
 
+<a name="windows_install" />
 ### Windows
 If you want to use Windows in a VirtualBox VM please enable 3D acceleration for Qt to work properly.
 
@@ -468,6 +490,7 @@ You can define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS to acknowledge that you
 If MSVC2015 is the only option you have, add  `_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=1;`  to "Preprocessor Definitions" entry under Project Properties.
 See also [C++ Hash Deprecation Warning](http://stackoverflow.com/q/30430789/4599792)
 
+<a name="building_qtquickvcp" />
 ### Building QtQuickVcp
 
 After you have all the requirements installed clone and build the [QtQuickVcp repo](https://github.com/strahlex/QtQuickVcp).
@@ -510,10 +533,19 @@ make install
 make install_docs
 ```
 
+<a name="machinekit_sdk" />
 ### MachinekitSDK
 If you also want to have QtQuickVcp specific wizards and extensions
 for QtCreator please continue with the install instructions for the [MachinekitSDK](https://github.com/strahlex/MachinekitSDK)
 
+<a name="contributing"/>
+## Contributing
+
+* Create an issue in the issue tracker (e.g. Fan control missing)
+* Fork the git repository.
+* After you have coded some cool new stuff please create a pull request and link it to the issue.
+
+<a name="developing_qtquickvcp" />
 ## Developing QtQuickVcp
 This wiki page is for developers who want to extend the functionality of QtQuickVcp.
 
