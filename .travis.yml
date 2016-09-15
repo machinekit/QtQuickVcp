@@ -1,0 +1,126 @@
+language: cpp
+sudo: false
+
+env:
+  global:
+    - "FOO=bar"
+
+matrix:
+  fast_finish: true
+  allow_failures:
+            - env: "JOB=AppImage_x86_64"
+            - env: "JOB=AppImage_i686"
+            - env: "JOB=AppImage_armhf"
+            - env: "JOB=MacOSX"
+  include:
+    # 1st parallel build job - debug build on Ubuntu
+    # - env: "JOB=Tests"
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - ubuntu-toolchain-r-test
+    #       packages:
+    #         - g++-4.9
+    #         # not white listed - alsa
+    #         - libsndfile1
+    #         - wget
+    #         - make
+    #         - ant
+    #         - curl
+    #         - libasound2-dev
+    #         - portaudio19-dev
+    #         - libsndfile1-dev
+    #         - zlib1g-dev
+    #         - libfreetype6-dev
+    #         - libfontconfig1-dev
+    #         - lame
+    #         - libmp3lame-dev
+    #         - libegl1-mesa-dev
+    #         - libegl1-mesa
+    #         - ccache
+    #         - libpulse-dev
+    #   cache:
+    #     directories:
+    #       - $HOME/.ccache
+    #   before_install:
+    #     - "source build/travis/job1_Tests/environment.sh"
+    #   install:
+    #     - "./build/travis/job1_Tests/install.sh"
+    #   before_script:
+    #     - "./build/travis/job1_Tests/before_script.sh"
+    #   script:
+    #     - "./build/travis/job1_Tests/run_tests.sh"
+    #   after_script:
+    #     - ARTIFACTS_CACHE_CONTROL='public, max-age=315360000'
+    #     - 'ARTIFACTS_PATHS="$(ls vtest/html | tr "\n" ":")" artifacts upload'
+
+    # 2nd parallel build job - portable Linux AppImage 64-bit x86 build on CentOS
+    - env: "JOB=AppImage_x86_64"
+      addons:
+        apt:
+          packages:
+          - bsdtar
+          - curl
+          - zsync
+      services:
+        - docker
+      script:
+        - "if [[ $APPIMAGE_BUILD_ARCHS == *x86_64* ]]; then ./build/travis/job2_AppImage/build.sh --x86_64 --upload-branches $APPIMAGE_UPLOAD_BRANCHES; fi"
+
+    # 3rd parallel build job - portable Linux AppImage 32-bit x86 build on CentOS
+    #- env: "JOB=AppImage_i686"
+    #  addons:
+    #    apt:
+    #      packages:
+    #      - bsdtar
+    #      - curl
+    #      - zsync
+    #  services:
+    #    - docker
+    #  script:
+    #    - "if [[ $APPIMAGE_BUILD_ARCHS == *i686* ]]; then ./build/travis/job2_AppImage/build.sh --i686 --upload-branches $APPIMAGE_UPLOAD_BRANCHES; fi"
+
+    # 4th parallel build job - portable Linux AppImage armhf build on Debian crosscompiler
+    #- env: "JOB=AppImage_armhf"
+    #  addons:
+    #    apt:
+    #      packages:
+    #      - bsdtar
+    #      - curl
+    #      - zsync
+    #  services:
+    #    - docker
+    #  before_script:
+    #    - "sudo ./build/travis/job2_AppImage/set-binfmt-misc.sh"
+    #  script:
+    #    - "if [[ $APPIMAGE_BUILD_ARCHS == *armhf* ]]; then ./build/travis/job2_AppImage/build.sh --armhf --upload-branches $APPIMAGE_UPLOAD_BRANCHES; fi"
+
+    # 5th parallel build job - mac osx build
+    # - env: "JOB=MacOSX"
+    #   os: osx
+    #   osx_image: xcode7.3
+    #   #cache:
+    #   #  directories:
+    #   #    - /usr/local/Cellar
+    #   before_install:
+    #     - source build/travis/job_macos/before_install.sh
+    #   install:
+    #     - "./build/travis/job_macos/install.sh"
+    #   script:
+    #     - "./build/travis/job_macos/script.sh"
+
+notifications:
+  email:
+    recipients:
+      secure: "fZIMy64OEMyZC/pwIQT9ZF/9PIfNnBVjrkssLZy8REG7zKuikpk1mMDPsvhnPcadopOR09AyiUcKUSNAc+A8TOCPDg0hK4dzJvoMpCCceU0THgJqgauxONMX9BNi6sfkqrARnt3ahar2AoxjBWvqq2PUVl/rUjN3Y0YZcxmMRyApeu9SY16KL3B9i79UsQ5pQBpDQ8UDfSaRLfvUJcf2Lw8/IWIcW2r5kC86aVF38GAz5fMFLEd+4/6MLtWDDni+gbh3yMqEd1Qbwsv9y/Dwt/NHs2ucUVk3QCX2vLJEKnBDatJkP2ESdRdKit+IyAOoB9MCsjKht+Kl3Axe7cTuVLYRg4lqV6vPEqRkpjQEuMvfFEjnP3vWcY1Iwdzwr1ywziP/Bc70ql891q7b1Koh8exUyM0bSHrKRTTaoihcMhfEcTPx/NHxue7C0CGOetKq87ukWx1CnYkBIkUc67lvsPyiMVCTDi9RynslEEy51jTeMcmX/th+SA+PAtEjBtZNUqXOZ3pcz0OypwW5b/TkXegEs6Gp5qxyqJU4oU3fRqitWGIf+z3kxX114Zh1xGnAYDy9nf9UcM0PiFglJCQsTMZV1ckGPOQz+MjqPc1n6NQL0UypwEac2g/N5wtPl7yZe34j4hlQhgC7W6bJanZWPqk4ZFhSzPVoo4i4bQHIdsg="
+    on_success: change
+    on_failure: always
+  # irc:
+  #   channels:
+  #     secure: "m/euey6Ov37mM7VY6EFfpy2iIE4QyjQoPTVNffCx7xOk99jr5uWMAKr5UlLItLDmviHgnmNHZEOPXwpoRPZA9kDnpKRuE4lPhMYrHqf5uX/7Zw8D84PbNGJgBAuciVLB0Bn+pm1zYtMNb38yu2VEunDED1Q92CegAjygknb/gFw="
+  #   on_success: change
+  #   on_failure: change
+  #   skip_join: true # reduces spam. Channel must not have mode +n set.
+  # webhooks:
+  #   # trigger Buildtime Trend Service to parse Travis CI log
+  #   - https://buildtimetrend.herokuapp.com/travis
