@@ -30,17 +30,18 @@ macx: {
     PROTOBUF_LIB_FLAGS = -Bstatic
 }
 win32-msvc2013 | win32-msvc2015 {
-    PROTOBUF_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\src
-    ZEROMQ_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\zeromq4-x\include
+    PROTOBUF_INCLUDE_PATH = $$(HOMEDRIVE)\Libraries\protobuf_2_6_1_msvc2015\src
+    ZEROMQ_INCLUDE_PATH = $$(HOMEDRIVE)\Libraries\zeromq4-x_4_0_7_msvc2015\include
+
     contains(QMAKE_TARGET.arch, x86_64) {
-        ZEROMQ_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\zeromq4-x\lib\x64
-        PROTOBUF_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\vsprojects\x64\Release
-        PROTOBUF_PROTOC = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\vsprojects\x64\Release\protoc.exe
+        ZEROMQ_LIB_PATH = $$(HOMEDRIVE)\Libraries\zeromq4-x_4_0_7_msvc2015\lib\x64
+        PROTOBUF_LIB_PATH = $$(HOMEDRIVE)\Libraries\protobuf_2_6_1_msvc2015\lib\x64
+        PROTOBUF_PROTOC = $$(HOMEDRIVE)\Libraries\protobuf_2_6_1_msvc2015\bin\x64\release\protoc.exe
     }
     else {
-        ZEROMQ_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\zeromq4-x\lib\Win32
-        PROTOBUF_LIB_PATH = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\vsprojects\Release
-        PROTOBUF_PROTOC = $$(HOMEDRIVE)$$(HOMEPATH)\bin\protobuf\vsprojects\Release\protoc.exe
+        ZEROMQ_LIB_PATH = $$(HOMEDRIVE)\Libraries\zeromq4-x_4_0_7_msvc2015\lib\Win32
+        PROTOBUF_LIB_PATH = $$(HOMEDRIVE)\Libraries\protobuf_2_6_1_msvc2015\lib\Win32
+        PROTOBUF_PROTOC = $$(HOMEDRIVE)\Libraries\protobuf_2_6_1_msvc2015\bin\Win32\release\protoc.exe
     }
 }
 win32-g++ {

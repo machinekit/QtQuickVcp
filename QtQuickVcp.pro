@@ -34,7 +34,7 @@ CONFIG += ordered
 SUBDIRS += 3rdparty src # applications examples
 
 debug: CONFIG(debug, debug|release) {
-    SUBDIRS += tests
+    SUBDIRS +=
 }
 
 include(qtquickvcp_version.pri)

@@ -3,7 +3,7 @@ CONFIG += ordered
 SUBDIRS += halremote \
     controls \
     halremotecontrols \
-    videoview \
+#    videoview \
     pathview \
     service \
     application \

@@ -38,6 +38,7 @@ void MachinekitServicePlugin::registerTypes(const char *uri)
     qmlRegisterType<QServiceDiscovery>(uri, 1, 0, "ServiceDiscovery");
     qmlRegisterType<QServiceDiscoveryItem>(uri, 1, 0, "ServiceDiscoveryItem");
     qmlRegisterType<QServiceDiscoveryFilter>(uri, 1, 0, "ServiceDiscoveryFilter");
+    qmlRegisterType<QServiceDiscoveryQuery>(uri, 1, 0, "ServiceDiscoveryQuery");
 }
 
 

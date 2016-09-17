@@ -16,7 +16,7 @@
 isEmpty(PROTOBUF_PROTOC): PROTOBUF_PROTOC = protoc
 
 isEmpty(PROTOGEN): PROTOGEN = generated
-
+message("PROTOGEN" $$PROTOGEN)
 !isEmpty(PROTOBUF_INCLUDE_PATH): PROTOPATH += $$PROTOBUF_INCLUDE_PATH
 PROTOPATHS =
 for(p, PROTOPATH):PROTOPATHS += --proto_path=$$relative_path($${p}, $$OUT_PWD)

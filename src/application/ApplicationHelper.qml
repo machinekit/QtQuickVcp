@@ -27,8 +27,20 @@ Item {
     property var axisNames: getAxisNames()
     property string timeUnits: getTimeUnits()
     property string distanceUnits: getDistanceUnits()
+    property string machineUnits: getMachineUnits()
     property double timeFactor: (timeUnits == "min") ? 60 : 1
-    property double distanceFactor: (distanceUnits == "mm") ? 1.0 : ((distanceUnits == "in") ? 0.03937 : 0.1)
+    property double distanceFactor: {
+        if(machineUnits == "mm") {
+            return (distanceUnits == "mm") ? 1.0 : ((distanceUnits == "in") ? 0.0393700787 : 0.1)
+        }
+        else if (machineUnits == "in"){
+            return (distanceUnits == "mm") ? 25.4 : ((distanceUnits == "in") ? 1.0 : 2.54)
+        }
+        else
+        {
+            return (distanceUnits == "mm") ? 10.0 : ((distanceUnits == "in") ? 0.393700787 : 1.0)
+        }
+    }
 
     function getTimeUnits() {
         if (status.synced) {
@@ -46,6 +58,21 @@ Item {
     function getDistanceUnits() {
         if (status.synced) {
             switch (status.interp.programUnits) {
+            case ApplicationStatus.CanonUnitsInch:
+                return "in";
+            case ApplicationStatus.CanonUnitsMm:
+                return "mm";
+            case ApplicationStatus.CanonUnitsCm:
+                return "cm";
+            }
+        }
+
+        return "mm";
+    }
+
+    function getMachineUnits() {
+        if (status.synced) {
+            switch (status.config.linearUnits) {
             case ApplicationStatus.CanonUnitsInch:
                 return "in";
             case ApplicationStatus.CanonUnitsMm:
