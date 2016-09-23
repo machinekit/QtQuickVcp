@@ -24,7 +24,8 @@ ios: {
 }
 
 android: {
-    LIBS += -lmachinetalk-protobuf
+    include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)
+    QML_IMPORT_PATH = $$OUT_PWD/../../imports
 }
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
