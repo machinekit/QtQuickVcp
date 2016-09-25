@@ -30,11 +30,14 @@ defineTest(minQtVersion) {
 
 TEMPLATE = subdirs
 
-CONFIG += ordered
-SUBDIRS += 3rdparty src # applications examples
+SUBDIRS += 3rdparty src apps # examples
+
+src.depends = 3rdparty
+apps.depends = src
 
 debug: CONFIG(debug, debug|release) {
     SUBDIRS += tests
+    tests.depends = src
 }
 
 include(qtquickvcp_version.pri)
