@@ -38,7 +38,7 @@ sh -c \
     /etc/apt/sources.list.d/machinekit.list"
 apt update
 # basic dependencies (needed by Docker image)
-apt install -y git wget automake unzip gcc g++ binutils
+apt install -y git wget automake unzip gcc g++ binutils bzip2
 # QtQuickVcp's dependencies:
 apt-get install -y pkg-config libprotobuf-dev protobuf-compiler libzmq3-dev
 apt-get install -y build-essential gdb dh-autoreconf libgl1-mesa-dev libxslt1.1 git
@@ -64,8 +64,8 @@ cd AppImageKit
 #Qt // TODO this is Qt x86_64, fix me for i686 and arm...
 #yum -y install qt5-qtbase-devel qt5-qttools-libs-designercomponents qt5-qttools-devel qt5-qtdeclarative-devel qt5-qtscript-devel qt5-qtwebkit-devel qt5-qtxmlpatterns-devel qt5-qtquick1-devel qt5-qtsvg-devel qt5-qttools-devel qt5-qttools-static qt5-qtmultimedia-devel qt5-qtwebchannel-devel qt5-qtimageformats qt5-qtquickcontrols
 
-mkdir -p qt5 && wget -q -O qt5.zip http://utils.musescore.org.s3.amazonaws.com/qt560.zip
-unzip -qq qt5.zip -d qt5
+mkdir -p qt5 && wget -q -O qt5.tar.bz2 http://buildbot.roessler.systems/files/qt-bin/Qt-5.7-Linux-x64.tar.bz2
+tar xjf qt5.tar.bz2 -C qt5
 export PATH="${PWD}/qt5/bin:$PATH"
 export LD_LIBRARY_PATH="${PWD}/qt5/lib:$LD_LIBRARY_PATH"
 export QT_PLUGIN_PATH="${PWD}/qt5/plugins"
