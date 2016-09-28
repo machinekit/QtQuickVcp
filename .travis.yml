@@ -67,6 +67,19 @@ matrix:
       script:
         - "if [[ $APPIMAGE_BUILD_ARCHS == *x86_64* ]]; then ./build/travis/job2_AppImage/build.sh --x86_64 --upload-branches $APPIMAGE_UPLOAD_BRANCHES; fi"
 
+    - env: "JOB=Android_armv7"
+      addons:
+        apt:
+          packages:
+            - bsdtar
+            - curl
+            - zsync
+      services:
+        - docker
+      install:
+          - "pip install android-publish-cli"
+      script:
+          - "./build/travis/job3_Android/build.sh --upload-branches $ANDROID_UPLOAD_BRANCHES; fi"
     # 3rd parallel build job - portable Linux AppImage 32-bit x86 build on CentOS
     #- env: "JOB=AppImage_i686"
     #  addons:
