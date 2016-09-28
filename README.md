@@ -15,6 +15,8 @@ This repository contains the QtQuickVcp library. A generic client implementation
 * textual GCode preview
 * 3D GCode preview
 
+## More info
+* Build status: [![Build Status](https://secure.travis-ci.org/machinekoder/QtQuickVcp.png)](http://travis-ci.org/machinekoder/QtQuickVcp)
 
 ## Contents
 
