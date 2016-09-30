@@ -34,14 +34,6 @@ manifest="${PWD}/apps/MachinekitClient/android/AndroidManifest.xml"
 sed -i -E "s/(android:versionName=\")([^ ]+)(\")/\1${version_name}\3/" $manifest
 sed -i -E "s/(android:versionCode=\")([^ ]+)(\")/\1${version_code}\3/" $manifest
 
-# prepare credentials
-cd ./build/Linux/android/
-openssl aes-256-cbc -K $encrypted_3915c3e19012_key -iv $encrypted_3915c3e19012_iv -in android_release.keystore.enc -out android_release.keystore -d
-openssl aes-256-cbc -K $encrypted_3915c3e19012_key -iv $encrypted_3915c3e19012_iv -in google_play_credentials.json.enc -out google_play_credentials.json -d
-echo "$ANDROID_STOREPASS" > storepass
-echo "$ANDROID_KEYPASS" > storepass
-cd ../../../
-
 # run build
 docker run -i -v "${PWD}:/QtQuickVcp" machinekoder/qtquickvcp-docker:android-armv7 \
        /bin/bash -c "/QtQuickVcp/build/Linux/android/Recipe"
