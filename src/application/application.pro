@@ -46,7 +46,9 @@ HEADERS += \
     qapplicationfileitem.h \
     qapplicationplugins.h \
     qapplicationpluginitem.h \
-    fileio.h
+    fileio.h \
+    revisionsingleton.h \
+    revision.h
 
 RESOURCES += \
     application.qrc
