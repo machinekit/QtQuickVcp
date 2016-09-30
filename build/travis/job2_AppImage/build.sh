@@ -54,7 +54,7 @@ case "$1" in
   * )
     [ "$1" == "--x86_64" ] && shift || true
     # Build QtQuickVcp AppImage inside native (64-bit x86) Docker image
-    docker run -i -v "${PWD}:/QtQuickVcp" machinekoder/qtquickvcp-docker:linux-x64 \
+    docker run -i -v "${PWD}:/QtQuickVcp" machinekoder/qtquickvcp-docker-linux-x64:latest \
            /bin/bash -c "/QtQuickVcp/build/Linux/portable/Recipe"
     platform="x64"
     ;;
