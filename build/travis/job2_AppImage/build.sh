@@ -25,6 +25,8 @@ else
     version="$(git describe --tags)"
 fi
 
+echo "#define REVISION \"${version}\"" > ./src/application/revision.h
+
 # Build AppImage depending on arch specified in $1 if cross-compiling, else default build x86_64
 case "$1" in
 
