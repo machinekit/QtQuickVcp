@@ -79,7 +79,7 @@ matrix:
       install:
           - "pip install android-publish-cli"
       script:
-          - "./build/travis/job3_Android/build.sh --upload-branches $ANDROID_UPLOAD_BRANCHES; fi"
+          - "./build/travis/job3_Android/build.sh --upload-branches $ANDROID_UPLOAD_BRANCHES"
     # 3rd parallel build job - portable Linux AppImage 32-bit x86 build on CentOS
     #- env: "JOB=AppImage_i686"
     #  addons:
