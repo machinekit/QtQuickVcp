@@ -52,7 +52,7 @@ Item {
         id: connectionWindow
 
         anchors.fill: parent
-        defaultTitle: qsTr("Machinekit Client")
+        defaultTitle: qsTr("Machinekit Client") + " - " + Revision.name
         mode: "remote"
         remoteVisible: true
         localVisible: true
