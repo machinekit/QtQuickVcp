@@ -35,7 +35,7 @@ sed -i -E "s/(android:versionName=\")([^ ]+)(\")/\1${version_name}\3/" $manifest
 sed -i -E "s/(android:versionCode=\")([^ ]+)(\")/\1${version_code}\3/" $manifest
 
 # run build
-docker run -i -v "${PWD}:/QtQuickVcp" machinekoder/qtquickvcp-docker:android-armv7 \
+docker run -i -v "${PWD}:/QtQuickVcp" machinekoder/qtquickvcp-docker-android-armv7:latest \
        /bin/bash -c "/QtQuickVcp/build/Linux/android/Recipe"
 
 # Should the Package be uploaded?
