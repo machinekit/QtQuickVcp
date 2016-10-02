@@ -1,0 +1,47 @@
+# AppVeyor build configuration
+# http://www.appveyor.com/docs/build-configuration
+version: build{build}
+
+environment:
+  matrix:
+   - QTDIR: C:\Qt\5.7\msvc2015_64
+     VSVER: 14.0
+
+configuration:
+  - release
+
+install:
+  - '%QTDIR%\bin\qtenv2.bat'
+  - '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64'
+  - qmake -v
+
+before_build:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - mkdir build.release
+  - cd build.release
+  - qmake ..
+
+build_script:
+  - cd %APPVEYOR_BUILD_FOLDER%/build.release
+  - nmake
+  - nmake install
+
+after_build:
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+artifacts:
+  - path: '*.zip'
+    name: QtQuickVcp-archives
+
+# deploy:
+#     provider: GitHub
+#     description: 'New release of libpointing'
+#     auth_token:
+#       secure: 1UNYGNi45HjR94wYYU6mMM1n9M2VE0gIVcyEjjJgixN1zkWxd16B/Bwz6PDksRv3
+#     on:
+#       appveyor_repo_tag: true
+
+notifications:
+  on_build_success: false
+  on_build_failure: false
+  on_build_status_changed: false
