@@ -83,7 +83,7 @@ matrix:
         - tar xvf ./build/Linux/android/secrets.tar -C ./build/Linux/android/
 
       install:
-          - "pip install android-publish-cli"
+          - "sudo pip install google-api-python-client"
       script:
           - "./build/travis/job3_Android/build.sh --upload-branches $ANDROID_UPLOAD_BRANCHES"
     # 3rd parallel build job - portable Linux AppImage 32-bit x86 build on CentOS

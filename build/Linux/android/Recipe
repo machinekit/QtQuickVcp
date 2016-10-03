@@ -84,3 +84,22 @@ while [ "$(dirname "$parent_dir")" != "$parent_dir" ]; do
 done
 
 ls -lh "$package"
+
+##########################################################################
+# UPLOAD ANDROID PACKAGE
+##########################################################################
+
+if [ "${upload}" ]; then
+    # rename binaries
+    if [ $release -eq 1 ]; then
+        target="MachinekitClient"
+    else
+        target="MachinekitClient_Development"
+    fi
+    mv build.release/MachinekitClient.apk ${target}-${version}-${platform}.apk
+    # deploy apk file to Play Store
+    android-publish -s ./build/Linux/android/google_play_credentials.json -p io.machinekit.appdiscover -t alpha -a MachinekitClient*.apk
+
+else
+  echo "On branch '$branch' so Package will not be uploaded." >&2
+fi

@@ -37,10 +37,6 @@ manifest="${PWD}/apps/MachinekitClient/android/AndroidManifest.xml"
 sed -i -E "s/(android:versionName=\")([^ ]+)(\")/\1${version_name}\3/" $manifest
 sed -i -E "s/(android:versionCode=\")([^ ]+)(\")/\1${version_code}\3/" $manifest
 
-# run build
-docker run -i -v "${PWD}:/QtQuickVcp" machinekoder/qtquickvcp-docker-android-armv7:latest \
-       /bin/bash -c "/QtQuickVcp/build/Linux/android/Recipe"
-
 # Should the Package be uploaded?
 if [ "$1" == "--upload-branches" ] && [ "$2" != "ALL" ]; then
   # User passed in a list of zero or more branches so only upload those listed
@@ -52,18 +48,17 @@ else
   # No list passed in (or specified "ALL"), so upload on every branch
   upload=true
 fi
+platform="armv7"
 
-if [ "${upload}" ]; then
-    # rename binaries
-    if [ $release -eq 1 ]; then
-        target="MachinekitClient"
-    else
-        target="MachinekitClient_Development"
-    fi
-    mv build.release/MachinekitClient.apk ${target}-${version}-${platform}.apk
-    # deploy apk file to Play Store
-    android-publish -s ./build/Linux/android/google_play_credentials.json -p io.machinekit.appdiscover -t alpha -a MachinekitClient*.apk
+# write env file
+echo -e "upload=${upload}" >> env.list
+echo -e "platform=${platform}" >> env.list
+echo -e "target=${target}" >> env.list
+echo -e "version=${version}" >> env.list
+echo -e "release=${release}" >> env.list
+echo -e "branch=${branch}" >> env.list
 
-else
-  echo "On branch '$branch' so Package will not be uploaded." >&2
-fi
+# run build
+docker run --env-file ./env.list -i -v "${PWD}:/QtQuickVcp" \
+       machinekoder/qtquickvcp-docker-android-armv7:latest \
+       /bin/bash -c "/QtQuickVcp/build/Linux/android/Recipe"
