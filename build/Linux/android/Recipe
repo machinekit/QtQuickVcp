@@ -65,7 +65,7 @@ make INSTALL_ROOT=android-build install
 # create apk file
 qt-deploy ../build/deployment-scripts/android_armv7.ini --deploy
 
-package=${PWD}/apps/MachinekitClient/MachinekitClient.apk
+package=${PWD}/MachinekitClient.apk
 
 # back to home folder
 cd ../
