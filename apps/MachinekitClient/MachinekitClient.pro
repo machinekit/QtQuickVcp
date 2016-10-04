@@ -13,12 +13,15 @@ RESOURCES += qml.qrc
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
+# deactivate installs for applications
+INSTALLS =
+
 ios: {
     LIBS += -L$$PROTOBUF_LIB_PATH
     LIBS += -L$$ZEROMQ_LIB_PATH
     LIBS += -L$$LIBSODIUM_LIB_PATH
     LIBS += -lsodium -lzmq -lprotobuf
-    LIBS += -lmachinetalk-protobuf
+    LIBS += -lmachinetalk-pb2
     QMAKE_INFO_PLIST = Info.plist
     QMAKE_POST_LINK += cp -n $$PWD/icons/machinekit2.iconset/* $${OUT_PWD}/.
 }
@@ -46,6 +49,7 @@ OTHER_FILES += \
     Info.plist \
     mac_Info.plist
 
+linux: {
 target.path = /usr/bin
 
 desktop.path = /usr/share/applications
@@ -55,3 +59,4 @@ icon.path = /usr/share/pixmaps
 icon.files = icons/machinekit.png
 
 INSTALLS += target desktop icon
+}
