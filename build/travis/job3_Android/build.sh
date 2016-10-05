@@ -32,10 +32,10 @@ echo "#define REVISION \"${version}\"" > ./src/application/revision.h
 
 # update version number in Android manifest
 version_name="$(git describe --tags --abbrev=0)"
-version_code="$(git rev-list HEAD --count)"
+version_code="$(git rev-list --first-parent --count HEAD)"
 manifest="${PWD}/apps/MachinekitClient/android/AndroidManifest.xml"
 sed -i -E "s/(android:versionName=\")([^ ]+)(\")/\1${version_name}\3/" $manifest
-sed -i -E "s/(android:versionCode=\")([^ ]+)(\")/\1${version_code}\3/" $manifest
+sed -i -E "s/(android:versionCode=\")([^ ]+)(\")/\1${version_code}0\3/" $manifest
 
 # Should the Package be uploaded?
 if [ "$1" == "--upload-branches" ] && [ "$2" != "ALL" ]; then
