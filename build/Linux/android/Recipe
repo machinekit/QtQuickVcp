@@ -64,6 +64,9 @@ make
 make install
 make INSTALL_ROOT=android-build install
 
+# check if machinetalk library is installed
+ls -lh "${QT_INSTALL_PREFIX}/lib/libmachinetalk-pb2.so"
+
 # create apk file
 qt-deploy ../build/deployment-scripts/android_armv7.ini --deploy
 
