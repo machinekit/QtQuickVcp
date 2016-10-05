@@ -7,7 +7,14 @@ set -x # Be verbose
 # GET DEPENDENCIES
 ##########################################################################
 
-add Machinekit repository
+# select fastet mirror
+apt-get update
+apt-get install -y netselect-apt
+netselect-apt
+mv sources.list /etc/apt/sources.list
+apt-get clean
+
+# add Machinekit repository
 apt-key adv --keyserver keyserver.ubuntu.com --recv 43DDF224
 sh -c \
    "echo 'deb http://deb.machinekit.io/debian jessie main' > \
@@ -21,9 +28,16 @@ apt-get install -y build-essential gdb dh-autoreconf libgl1-mesa-dev libxslt1.1 
 # dependencies of qmlplugindump
 apt-get install -y libfontconfig1 libxrender1 libdbus-1-3 libegl1-mesa
 # Android dependencies
-apt install -y libtool-bin make curl file libgtest-dev python
+apt install -y libtool-bin make curl file libgtest-dev python default-jdk ant lib32z1 lib32ncurses5 lib32stdc++6 python-pip
+
+# install android-publish
+pip install -q google-api-python-client
+curl -fsSL -o android-publish https://gist.githubusercontent.com/machinekoder/2137bc2ebabfb3fb8daadc1f431e21a5/raw/de171f7c228dd6b14b981cddb3662a0d86cc53ec/android-publish.py
+chmod +x android-publish
+mv android-publish /usr/bin/
 
 
+# install Qt-Deployment-Scripts
  [ -d "Qt-Deployment-Scripts" ] || git clone --depth 1 https://github.com/machinekoder/Qt-Deployment-Scripts.git
  cd Qt-Deployment-Scripts
  make install
@@ -43,9 +57,11 @@ mv */* .
 cd ..
 
 # download Android SDK
-mkdir -p android-sdk && wget -q -O android-sdk.tgz https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
-tar xfz android-sdk.tgz -C android-sdk
-rm android-sdk.zip
+#mkdir -p android-sdk && wget -q -O android-sdk.tgz https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
+#tar xfz android-sdk.tgz -C android-sdk
+#rm android-sdk.tgz
+mkdir -p android-sdk && wget -q -O android-sdk.tar.bz2 http://buildbot.roessler.systems/files/qt-bin/android-sdk.tar.bz2
+tar xjf android-sdk.tar.bz2 -C android-sdk
 cd android-sdk
 mv */* .
 cd ..
@@ -57,13 +73,13 @@ cd ..
 export PATH=/opt/android-toolchain/bin:$PATH
 
 # Build ZeroMQ for Android
-mkdir tmp
+mkdir -p tmp
 cd tmp/
 
 export OUTPUT_DIR=/opt/zeromq-android
 export RANLIB=/opt/android-toolchain/bin/arm-linux-androideabi-ranlib
 
-[ -d "zeromq4-x" ] || git clone --depth 1 https://github.com/zeromq/zeromq4-x.git
+[ -d "zeromq4-x" ] || git clone https://github.com/zeromq/zeromq4-x.git
 cd zeromq4-x/
 git checkout v4.0.8
 
@@ -89,11 +105,14 @@ export NDK=~/bin/android-ndk
 export SYSROOT=$NDK/platform/android-9/arch-arm
 export OUTPUT_DIR=/opt/protobuf-android
 
-[ -d "protobuf" ] || git clone --depth 1 https://github.com/google/protobuf.git
+[ -d "protobuf" ] || git clone https://github.com/google/protobuf.git
 cd protobuf
 git checkout v2.6.1
 
-#./autogen.sh
+# trick that outdated autogen script
+mkdir -p gtest/msvc
+touch gtest/msvc/foo.vcproj
+./autogen.sh
 ./configure --enable-static --disable-shared --host=arm-eabi --with-sysroot=$SYSROOT CC=$CC CXX=$CXX --enable-cross-compile --with-protoc=protoc LIBS="-lc" --prefix=$OUTPUT_DIR
 make
 make install

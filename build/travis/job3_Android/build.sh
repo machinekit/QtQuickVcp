@@ -62,3 +62,17 @@ echo -e "branch=${branch}" >> env.list
 docker run --env-file ./env.list -i -v "${PWD}:/QtQuickVcp" \
        machinekoder/qtquickvcp-docker-android-armv7:latest \
        /bin/bash -c "/QtQuickVcp/build/Linux/android/Recipe"
+
+if [ "${upload}" ]; then
+    # rename binaries
+    if [ $release -eq 1 ]; then
+        target="MachinekitClient"
+    else
+        target="MachinekitClient_Development"
+    fi
+    mv build.release/MachinekitClient.apk ${target}-${version}-${platform}.apk
+    # Upload AppImage to Bintray
+    ./build/travis/job3_AppImage/bintray_android.sh MachinekitClient*.apk
+else
+  echo "On branch '$branch' so AppImage will not be uploaded." >&2
+fi
