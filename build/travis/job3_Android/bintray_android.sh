@@ -60,7 +60,7 @@ FILE="$1"
 # GENERAL NAMING SCHEME FOR APPIMAGES:
 # File: <appName>-<version>-<arch>.apk
 #
-# QTQUICKVCP NAMING SCHEME:
+# MACHINEKITCLIENT NAMING SCHEME:
 # File:    MachinekitClient-X.Y.Z-<arch>.apk (e.g. MachinekitClient-2.0.3-x64.apk)
 # Version: X.Y.Z
 # Package: MachinekitClient-Android-<arch>
