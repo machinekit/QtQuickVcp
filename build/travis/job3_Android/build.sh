@@ -70,8 +70,7 @@ if [ "${upload}" ]; then
     else
         target="MachinekitClient_Development"
     fi
-    mv build.release/MachinekitClient.apk ${target}-${version}-${platform}.apk
-    # Upload AppImage to Bintray
+    # Upload apk to Bintray
     ./build/travis/job3_AppImage/bintray_android.sh MachinekitClient*.apk
 else
   echo "On branch '$branch' so AppImage will not be uploaded." >&2
