@@ -314,7 +314,7 @@ Alter and execute the following commands
 
     git clone https://github.com/zeromq/zeromq4-x.git
     cd zeromq4-x/
-    git checkout v4.0.7
+    git checkout v4.0.8
 
     # fix compile problems
     mv tools/curve_keygen.c tools/curve_keygen.cpp
@@ -344,7 +344,7 @@ Alter and execute the following commands
     cd protobuf
     git checkout v2.6.1
 
-    ./autogen.sh
+    # ./autogen.sh skip since gtest1.5 is missing
     ./configure --enable-static --disable-shared --host=arm-eabi --with-sysroot=$SYSROOT CC=$CC CXX=$CXX --enable-cross-compile --with-protoc=protoc LIBS="-lc" --prefix=$OUTPUT_DIR
     make
     sudo make install

@@ -67,6 +67,25 @@ matrix:
       script:
         - "if [[ $APPIMAGE_BUILD_ARCHS == *x86_64* ]]; then ./build/travis/job2_AppImage/build.sh --x86_64 --upload-branches $APPIMAGE_UPLOAD_BRANCHES; fi"
 
+    - env: "JOB=Android_armv7"
+      addons:
+        apt:
+          packages:
+            - bsdtar
+            - curl
+            - zsync
+      services:
+        - docker
+      before_install:
+        - echo "$ANDROID_STOREPASS" > ./build/Linux/android/storepass
+        - echo "$ANDROID_KEYPASS" > ./build/Linux/android/keypass
+        - openssl aes-256-cbc -K $encrypted_3915c3e19012_key -iv $encrypted_3915c3e19012_iv -in ./build/Linux/android/secrets.tar.enc -out ./build/Linux/android/secrets.tar -d
+        - tar xvf ./build/Linux/android/secrets.tar -C ./build/Linux/android/
+
+      install:
+          - "sudo pip install google-api-python-client"
+      script:
+          - "./build/travis/job3_Android/build.sh --upload-branches $ANDROID_UPLOAD_BRANCHES"
     # 3rd parallel build job - portable Linux AppImage 32-bit x86 build on CentOS
     #- env: "JOB=AppImage_i686"
     #  addons:
