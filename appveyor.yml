@@ -2,6 +2,9 @@
 # http://www.appveyor.com/docs/build-configuration
 version: build{build}
 
+platform:
+  - Win64
+
 environment:
   matrix:
    - QTDIR: C:\Qt\5.7\msvc2015_64
@@ -15,19 +18,8 @@ install:
   - '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64'
   - qmake -v
 
-before_build:
-  - cd %APPVEYOR_BUILD_FOLDER%
-  - mkdir build.release
-  - cd build.release
-  - qmake ..
-
 build_script:
-  - cd %APPVEYOR_BUILD_FOLDER%/build.release
-  - nmake
-  - nmake install
-
-after_build:
-  - cd %APPVEYOR_BUILD_FOLDER%
+  - CALL %APPVEYOR_BUILD_FOLDER%/build/appveyor/appveyor.bat
 
 artifacts:
   - path: '*.zip'
