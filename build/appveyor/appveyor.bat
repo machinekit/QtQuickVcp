@@ -15,23 +15,31 @@ cp libprotobuf.lib %PROTODIR%\
 mv libprotobuf.lib %QTDIR%\lib\
 cd ..
 
-appveyor DownloadFile https://github.com/google/protobuf/archive/2.7.0.zip -Filename protosrc.zip
+SET PROTOVERSION=2.6.1
+appveyor DownloadFile https://github.com/google/protobuf/archive/v%PROTOVERSION%.zip -Filename protosrc.zip
 7z x protosrc.zip
-
-cd protobuf-2.7.0
+cd protobuf-%PROTOVERSION%
 SET PROTODIR=%HOMEDRIVE%%HOMEPATH%\bin\protobuf\
 cp -r src %PROTODIR%
 cd ..
 
 appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/zeromq-win64.7z -Filename zmqlibs.7z
 7z x zmqlibs.7z
-
 cd zmqlibs
 SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x\lib\x64
 mkdir -p %ZEROMQDIR%
 cp libzmq.lib %ZEROMQDIR%\
 mv libzmq.lib %QTDIR%\lib\
 cd ..
+
+SET ZMQVERSION=4.0.8
+appveyor DownloadFile https://github.com/zeromq/zeromq4-x/archive/v%ZMQVERSION%.zip -Filename zmqsrc.zip
+7z x zmqsrc.zip
+cd zeromq4-x-%ZMQVERSION%
+SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x
+cp -r include %ZEROMQDIR%
+cd ..
+
 
 cd %APPVEYOR_BUILD_FOLDER%
 mkdir build.release
