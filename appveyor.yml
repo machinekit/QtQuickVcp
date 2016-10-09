@@ -43,7 +43,6 @@ deploy:
   subject: machinekoder
   repo: QtQuickVcp-Development
   package: QtQuickVcp_Development-Windows-master-x64
-  version: {version}
   publish: true
   override: true
   explode: false
@@ -59,7 +58,6 @@ deploy:
   subject: machinekoder
   repo: MachinekitClient-Development
   package: MachinekitClient_Development-Windows-master-x64
-  version: {version}
   publish: true
   override: true
   explode: false
@@ -75,7 +73,6 @@ deploy:
   subject: machinekoder
   repo: QtQuickVcp
   package: QtQuickVcp-Windows-master-x64
-  version: {version}
   publish: true
   override: true
   explode: false
@@ -91,7 +88,6 @@ deploy:
   subject: machinekoder
   repo: MachinekitClient
   package: MachinekitClient-Windows-master-x64
-  version: {version}
   publish: true
   override: true
   explode: false
@@ -107,7 +103,6 @@ deploy:
   subject: machinekoder
   repo: QtQuickVcp-Development
   package: QtQuickVcp_Development-Windows-master-x86
-  version: {version}
   publish: true
   override: true
   explode: false
@@ -123,7 +118,6 @@ deploy:
   subject: machinekoder
   repo: MachinekitClient-Development
   package: MachinekitClient_Development-Windows-master-x86
-  version: {version}
   publish: true
   override: true
   explode: false
@@ -139,7 +133,6 @@ deploy:
   subject: machinekoder
   repo: QtQuickVcp
   package: QtQuickVcp-Windows-master-x86
-  version: {version}
   publish: true
   override: true
   explode: false
@@ -155,7 +148,6 @@ deploy:
   subject: machinekoder
   repo: MachinekitClient
   package: MachinekitClient-Windows-master-x86
-  version: {version}
   publish: true
   override: true
   explode: false
