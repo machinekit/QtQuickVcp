@@ -30,6 +30,7 @@ SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x\lib\x64
 mkdir -p %ZEROMQDIR%
 cp libzmq.lib %ZEROMQDIR%\
 mv libzmq.lib %QTDIR%\lib\
+mv libzmq.dll %QTDIR%\bin\
 cd ..
 
 SET ZMQVERSION=4.0.8
@@ -47,6 +48,11 @@ cd build.release
 qmake ..
 nmake
 nmake install
+
+mkdir machinekit-client
+cd machinekit-client
+cp ../apps/MachinekitClient/release/machinekit-client.exe .
+windeployqt --angle --release --qmldir ../../apps/MachinekitClient/ machinekit-client.exe
 
 goto :EOF
 
