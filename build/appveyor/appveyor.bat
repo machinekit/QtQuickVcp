@@ -49,10 +49,16 @@ qmake ..
 nmake
 nmake install
 
-mkdir machinekit-client
-cd machinekit-client
+mkdir MachinekitClient
+cd MachinekitClient
 cp ../apps/MachinekitClient/release/machinekit-client.exe .
 windeployqt --angle --release --qmldir ../../apps/MachinekitClient/ machinekit-client.exe
+cd ..
+7z a MachinekitClient.zip MachinekitClient/
+
+mkdir qml
+cp -r %QTDIR%/qml/Machinekit qml/
+7z a QtQuickVcp.zip qml/
 
 goto :EOF
 
