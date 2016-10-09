@@ -63,7 +63,7 @@ deploy:
   publish: true
   override: true
   explode: false
-  artifact: QtQuickVcp-x64-archive
+  artifact: MachinekitClient-x64-archive
   on:
     branch: master
     appveyor_repo_tag: false
@@ -127,7 +127,7 @@ deploy:
   publish: true
   override: true
   explode: false
-  artifact: QtQuickVcp-x86-archive
+  artifact: MachinekitClient-x86-archive
   on:
     branch: master
     appveyor_repo_tag: false
