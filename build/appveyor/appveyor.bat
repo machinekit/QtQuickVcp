@@ -33,7 +33,7 @@ if %release% == 0 (
     set version=%datetime%-%branch%-%revision%
 )
 echo #define REVISION "%version%" > src\application\revision.h
-appveyor UpdateBuild -Version "%datetime%"
+appveyor UpdateBuild -Version "%version%"
 
 
 cd tmp
