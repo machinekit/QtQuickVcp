@@ -33,14 +33,18 @@ if %release% == 0 (
     set version=%datetime%-%branch%-%revision%
 )
 echo #define REVISION "%version%" > src\application\revision.h
-appveyor UpdateBuild -Version "%version%"
+appveyor UpdateBuild -Version "%datetime%"
 
 
 cd tmp
-appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/protobuf-win64.7z -Filename protolibs.7z
+appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/protobuf-win-%ARCH%.7z -Filename protolibs.7z
 7z x protolibs.7z
 cd protolibs
-SET PROTODIR=%HOMEDRIVE%%HOMEPATH%\bin\protobuf\vsprojects\x64\Release
+if %ARCH% == x64 (
+    SET PROTODIR=%HOMEDRIVE%%HOMEPATH%\bin\protobuf\vsprojects\x64\Release
+) else (
+    SET PROTODIR=%HOMEDRIVE%%HOMEPATH%\bin\protobuf\vsprojects\Release
+)
 mkdir -p %PROTODIR%
 mv protoc.exe %PROTODIR%\
 mv libprotoc.lib %PROTODIR%\
@@ -56,10 +60,14 @@ SET PROTODIR=%HOMEDRIVE%%HOMEPATH%\bin\protobuf\
 cp -r src %PROTODIR%
 cd ..
 
-appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/zeromq-win64.7z -Filename zmqlibs.7z
+appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/zeromq-win-%ARCH%.7z -Filename zmqlibs.7z
 7z x zmqlibs.7z
 cd zmqlibs
-SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x\lib\x64
+if %ARCH% == x64 (
+    SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x\lib\x64
+) else (
+    SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x\lib\Win32
+)
 mkdir -p %ZEROMQDIR%
 cp libzmq.lib %ZEROMQDIR%\
 mv libzmq.lib %QTDIR%\lib\
@@ -94,12 +102,11 @@ cp -r %QTDIR%/qml/Machinekit qml/
 7z a QtQuickVcp.zip qml/
 
 :: rename deployment files
-set platform=x64
+set platform=%ARCH%
 if %release% == 0 (
     set target1="QtQuickVcp_Development"
     set target2="MachinekitClient_Development"
-)
-else (
+) else (
     set target1="QtQuickVcp"
     set target2="MachinekitClient"
 )
