@@ -49,7 +49,7 @@ deploy:
   explode: false
   artifact: QtQuickVcp-x64-archive
   on:
-    branch: appveyor
+    branch: master
     appveyor_repo_tag: false
 
 - provider: BinTray
@@ -65,7 +65,7 @@ deploy:
   explode: false
   artifact: QtQuickVcp-x64-archive
   on:
-    branch: appveyor
+    branch: master
     appveyor_repo_tag: false
 
 - provider: BinTray
