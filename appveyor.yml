@@ -9,13 +9,14 @@ environment:
   matrix:
    - QTDIR: C:\Qt\5.7\msvc2015_64
      VSVER: 14.0
+     PLATFORM: x64
 
 configuration:
   - release
 
 install:
   - '%QTDIR%\bin\qtenv2.bat'
-  - '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64'
+  - '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %PLATFORM%'
   - qmake -v
 
 build_script:
@@ -27,13 +28,70 @@ artifacts:
   - path: 'build.release\QtQuickVcp*.zip'
     name: QtQuickVcp-archive
 
-# deploy:
-#     provider: GitHub
-#     description: 'New release of libpointing'
-#     auth_token:
-#       secure: 1UNYGNi45HjR94wYYU6mMM1n9M2VE0gIVcyEjjJgixN1zkWxd16B/Bwz6PDksRv3
-#     on:
-#       appveyor_repo_tag: true
+deploy:
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: QtQuickVcp-Development
+  package: QtQuickVcp_Development-Windows-master-x64
+  version: version
+  publish: true
+  override: true
+  explode: false
+  artifact: QtQuickVcp-archive
+  on:
+    branch: master
+    appveyor_repo_tag: false
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: MachinekitClient-Development
+  package: MachinekitClient_Development-Windows-master-x64
+  version: version
+  publish: true
+  override: true
+  explode: false
+  artifact: QtQuickVcp-archive
+  on:
+    branch: master
+    appveyor_repo_tag: false
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: QtQuickVcp
+  package: QtQuickVcp-Windows-master-x64
+  version: version
+  publish: true
+  override: true
+  explode: false
+  artifact: QtQuickVcp-archive
+  on:
+    branch: master
+    appveyor_repo_tag: true
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: MachinekitClient
+  package: MachinekitClient-Windows-master-x64
+  version: version
+  publish: true
+  override: true
+  explode: false
+  artifact: MachinekitClient-archive
+  on:
+    branch: master
+    appveyor_repo_tag: true
 
 notifications:
   on_build_success: false
