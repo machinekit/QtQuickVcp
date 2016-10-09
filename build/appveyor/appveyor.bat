@@ -1,9 +1,42 @@
 setlocal
 @echo ON
 
+cd %APPVEYOR_BUILD_FOLDER%
 mkdir -p tmp
 cd tmp
 
+:: get version label
+appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/UnxUtils.zip -Filename UnxUtils.zip
+7z x UnxUtils.zip
+cp usr\local\wbin\date.exe .
+
+cd ..
+
+git describe --exact-match HEAD
+if %ERRORLEVEL% == 0 (
+    SET release=1
+) else (
+    SET release=0
+)
+if %release% == 0 (
+    for /f %%i in ('tmp\date.exe -u +"%%Y%%m%%d%%H%%M"') do set datetime=%%i
+
+    ::for /f %%i in ('git rev-parse --abbrev-ref HEAD') do set branch=%%i
+    set branch=%APPVEYOR_REPO_BRANCH%
+
+    for /f %%i in ('git rev-parse --short HEAD') do set revision=%%i
+) else (
+    for /f %%i in ('git describe --tags') do set version=%%i
+)
+
+if %release% == 0 (
+    set version=%datetime%-%branch%-%revision%
+)
+echo #define REVISION "%version%" > src\application\revision.h
+appveyor UpdateBuild -Version "%version%"
+
+
+cd tmp
 appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/protobuf-win64.7z -Filename protolibs.7z
 7z x protolibs.7z
 cd protolibs
@@ -41,7 +74,7 @@ SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x
 cp -r include %ZEROMQDIR%
 cd ..
 
-
+:: start build
 cd %APPVEYOR_BUILD_FOLDER%
 mkdir build.release
 cd build.release
@@ -59,6 +92,20 @@ cd ..
 mkdir qml
 cp -r %QTDIR%/qml/Machinekit qml/
 7z a QtQuickVcp.zip qml/
+
+:: rename deployment files
+set platform=x64
+if %release% == 0 (
+    set target1="QtQuickVcp_Development"
+    set target2="MachinekitClient_Development"
+)
+else (
+    set target1="QtQuickVcp"
+    set target2="MachinekitClient"
+)
+
+mv QtQuickVcp.zip %target1%-%version%-%platform%.zip
+mv MachinekitClient.zip %target2%-%version%-%platform%.zip
 
 goto :EOF
 
