@@ -22,8 +22,10 @@ build_script:
   - CALL %APPVEYOR_BUILD_FOLDER%/build/appveyor/appveyor.bat
 
 artifacts:
-  - path: '*.zip'
-    name: QtQuickVcp-archives
+  - path: 'build.release\MachinekitClient*.zip'
+    name: MachinekitClient-archive
+  - path: 'build.release\QtQuickVcp*.zip'
+    name: QtQuickVcp-archive
 
 # deploy:
 #     provider: GitHub
