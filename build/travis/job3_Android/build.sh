@@ -48,6 +48,10 @@ else
   # No list passed in (or specified "ALL"), so upload on every branch
   upload=true
 fi
+# skip pull requests
+if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+    upload=
+fi
 platform="armv7"
 
 # write env file

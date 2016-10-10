@@ -76,6 +76,10 @@ else
   # No list passed in (or specified "ALL"), so upload on every branch
   upload=true
 fi
+# skip pull requests
+if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+    upload=
+fi
 
 if [ "${upload}" ]; then
     # rename binaries
