@@ -121,7 +121,7 @@ else
   # Get Git commit from $VERSION (get characters after last dash)
   COMMIT="$(echo $VERSION | sed -r 's|^.*-([^-]*)$|\1|')"
 
-  PCK_NAME="$APPNAME-$BRANCH-$ARCH"
+  PCK_NAME="$APPNAME-Linux-$BRANCH-$ARCH"
   BINTRAY_REPO="${BINTRAY_REPO:-MachinekitClient-Development}" # env, or use "MachinekitClient-Development"
   LABELS="unofficial"
 
