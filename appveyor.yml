@@ -47,6 +47,7 @@ deploy:
   override: true
   explode: false
   artifact: QtQuickVcp-x64-archive
+  version: $(appveyor_build_version)
   on:
     branch: master
     appveyor_repo_tag: false
@@ -77,6 +78,7 @@ deploy:
   override: true
   explode: false
   artifact: QtQuickVcp-x64-archive
+  version: $(appveyor_build_version)
   on:
     branch: master
     appveyor_repo_tag: true
@@ -92,6 +94,7 @@ deploy:
   override: true
   explode: false
   artifact: MachinekitClient-x64-archive
+  version: $(appveyor_build_version)
   on:
     branch: master
     appveyor_repo_tag: true
@@ -122,6 +125,7 @@ deploy:
   override: true
   explode: false
   artifact: MachinekitClient-x86-archive
+  version: $(appveyor_build_version)
   on:
     branch: master
     appveyor_repo_tag: false
@@ -137,6 +141,7 @@ deploy:
   override: true
   explode: false
   artifact: QtQuickVcp-x86-archive
+  version: $(appveyor_build_version)
   on:
     branch: master
     appveyor_repo_tag: true
@@ -152,6 +157,7 @@ deploy:
   override: true
   explode: false
   artifact: MachinekitClient-x86-archive
+  version: $(appveyor_build_version)
   on:
     branch: master
     appveyor_repo_tag: true
