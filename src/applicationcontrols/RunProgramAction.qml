@@ -45,4 +45,5 @@ ApplicationAction {
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && (status.task.file !== "")
              && !status.running
+             && (status.motion.state !== ApplicationStatus.MotionExec)
 }

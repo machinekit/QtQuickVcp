@@ -114,7 +114,7 @@ Item {
                             id: label
                             anchors.fill: parent
                             anchors.leftMargin: 5
-                            text: String(gcode)
+                            text: String(gcode).trim()
                             font: dummyLabel.font
                         }
                     }
