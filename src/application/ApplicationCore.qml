@@ -80,6 +80,7 @@ Item {
         var fileName = file.localFilePath.split('/').reverse()[0]
         var newPath = file.remotePath + '/' + fileName
         file.remoteFilePath = newPath
+        command.resetProgram('execute');
         command.openProgram('execute', newPath)
     }
 
