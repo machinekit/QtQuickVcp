@@ -104,6 +104,7 @@ if [ "${upload}" ]; then
     mv build.release/MachinekitClient.apk ${target}-${version}-${platform}.apk
     # deploy apk file to Play Store
     android-publish -s ./build/Linux/android/google_play_credentials.json -p io.machinekit.appdiscover -t alpha -a MachinekitClient*.apk
+    chmod a+rwx MachinekitClient*.apk
 
 else
   echo "On branch '$branch' so Package will not be uploaded." >&2

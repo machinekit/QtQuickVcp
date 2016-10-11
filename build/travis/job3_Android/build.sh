@@ -68,12 +68,6 @@ docker run --env-file ./env.list -i -v "${PWD}:/QtQuickVcp" \
        /bin/bash -c "/QtQuickVcp/build/Linux/android/Recipe"
 
 if [ "${upload}" ]; then
-    # rename binaries
-    if [ $release -eq 1 ]; then
-        target="MachinekitClient"
-    else
-        target="MachinekitClient_Development"
-    fi
     # Upload apk to Bintray
     ./build/travis/job3_AppImage/bintray_android.sh MachinekitClient*.apk
 else
