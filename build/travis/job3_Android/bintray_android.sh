@@ -78,7 +78,7 @@ APPNAME="$(basename "$FILE" | sed -r 's|^([^-]*)-.*$|\1|')"
 VERSION="$(basename "$FILE" | sed -r 's|^[^-]*-(.*)-[^-]*$|\1|')"
 
 # Read architecture from file name (characters between last dash and .apk)
-ARCH="$(basename "$FILE" | sed -r 's|^.*-([^-]*)\.tar.gz$|\1|')"
+ARCH="$(basename "$FILE" | sed -r 's|^.*-([^-]*)\.apk$|\1|')"
 
 case "${ARCH}" in
   x86_64|x64|amd64 )
