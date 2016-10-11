@@ -1,17 +1,14 @@
 language: cpp
 sudo: false
 
-env:
-  global:
-    - "FOO=bar"
-
 matrix:
   fast_finish: true
-  allow_failures:
-            - env: "JOB=AppImage_x86_64"
-            - env: "JOB=AppImage_i686"
-            - env: "JOB=AppImage_armhf"
-            - env: "JOB=MacOSX"
+  # allow_failures:
+  #          - env: "JOB=AppImage_x64"
+  #          - env: "JOB=AppImage_i686"
+  #          - env: "JOB=AppImage_armhf"
+  #          - env: "JOB=Android_armv7"
+  #          - env: "JOB=MacOSX"
   include:
     # 1st parallel build job - debug build on Ubuntu
     # - env: "JOB=Tests"
@@ -55,7 +52,7 @@ matrix:
     #     - 'ARTIFACTS_PATHS="$(ls vtest/html | tr "\n" ":")" artifacts upload'
 
     # 2nd parallel build job - portable Linux AppImage 64-bit x86 build on CentOS
-    - env: "JOB=AppImage_x86_64"
+    - env: "JOB=AppImage_x64"
       addons:
         apt:
           packages:
@@ -82,8 +79,6 @@ matrix:
         - openssl aes-256-cbc -K $encrypted_3915c3e19012_key -iv $encrypted_3915c3e19012_iv -in ./build/Linux/android/secrets.tar.enc -out ./build/Linux/android/secrets.tar -d
         - tar xvf ./build/Linux/android/secrets.tar -C ./build/Linux/android/
 
-      install:
-          - "sudo pip install google-api-python-client"
       script:
           - "./build/travis/job3_Android/build.sh --upload-branches $ANDROID_UPLOAD_BRANCHES"
     # 3rd parallel build job - portable Linux AppImage 32-bit x86 build on CentOS
@@ -115,18 +110,18 @@ matrix:
     #    - "if [[ $APPIMAGE_BUILD_ARCHS == *armhf* ]]; then ./build/travis/job2_AppImage/build.sh --armhf --upload-branches $APPIMAGE_UPLOAD_BRANCHES; fi"
 
     # 5th parallel build job - mac osx build
-    # - env: "JOB=MacOSX"
-    #   os: osx
-    #   osx_image: xcode7.3
-    #   #cache:
-    #   #  directories:
-    #   #    - /usr/local/Cellar
-    #   before_install:
-    #     - source build/travis/job_macos/before_install.sh
-    #   install:
-    #     - "./build/travis/job_macos/install.sh"
-    #   script:
-    #     - "./build/travis/job_macos/script.sh"
+    - env: "JOB=MacOSX"
+      os: osx
+      osx_image: xcode7.3
+      #cache:
+      #  directories:
+      #    - /usr/local/Cellar
+      before_install:
+        - source build/travis/job_macos/before_install.sh
+      install:
+        - "./build/travis/job_macos/install.sh"
+      script:
+        - "./build/travis/job_macos/build.sh --upload-branches $MACOSX_UPLOAD_BRANCHES"
 
 notifications:
   email:
@@ -134,12 +129,3 @@ notifications:
       secure: "fZIMy64OEMyZC/pwIQT9ZF/9PIfNnBVjrkssLZy8REG7zKuikpk1mMDPsvhnPcadopOR09AyiUcKUSNAc+A8TOCPDg0hK4dzJvoMpCCceU0THgJqgauxONMX9BNi6sfkqrARnt3ahar2AoxjBWvqq2PUVl/rUjN3Y0YZcxmMRyApeu9SY16KL3B9i79UsQ5pQBpDQ8UDfSaRLfvUJcf2Lw8/IWIcW2r5kC86aVF38GAz5fMFLEd+4/6MLtWDDni+gbh3yMqEd1Qbwsv9y/Dwt/NHs2ucUVk3QCX2vLJEKnBDatJkP2ESdRdKit+IyAOoB9MCsjKht+Kl3Axe7cTuVLYRg4lqV6vPEqRkpjQEuMvfFEjnP3vWcY1Iwdzwr1ywziP/Bc70ql891q7b1Koh8exUyM0bSHrKRTTaoihcMhfEcTPx/NHxue7C0CGOetKq87ukWx1CnYkBIkUc67lvsPyiMVCTDi9RynslEEy51jTeMcmX/th+SA+PAtEjBtZNUqXOZ3pcz0OypwW5b/TkXegEs6Gp5qxyqJU4oU3fRqitWGIf+z3kxX114Zh1xGnAYDy9nf9UcM0PiFglJCQsTMZV1ckGPOQz+MjqPc1n6NQL0UypwEac2g/N5wtPl7yZe34j4hlQhgC7W6bJanZWPqk4ZFhSzPVoo4i4bQHIdsg="
     on_success: change
     on_failure: always
-  # irc:
-  #   channels:
-  #     secure: "m/euey6Ov37mM7VY6EFfpy2iIE4QyjQoPTVNffCx7xOk99jr5uWMAKr5UlLItLDmviHgnmNHZEOPXwpoRPZA9kDnpKRuE4lPhMYrHqf5uX/7Zw8D84PbNGJgBAuciVLB0Bn+pm1zYtMNb38yu2VEunDED1Q92CegAjygknb/gFw="
-  #   on_success: change
-  #   on_failure: change
-  #   skip_join: true # reduces spam. Channel must not have mode +n set.
-  # webhooks:
-  #   # trigger Buildtime Trend Service to parse Travis CI log
-  #   - https://buildtimetrend.herokuapp.com/travis
