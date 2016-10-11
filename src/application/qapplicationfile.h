@@ -41,6 +41,7 @@ class QApplicationFile : public AbstractServiceImplementation
     Q_PROPERTY(QString localFilePath READ localFilePath WRITE setLocalFilePath NOTIFY localFilePathChanged)
     Q_PROPERTY(QString remotePath READ remotePath WRITE setRemotePath NOTIFY remotePathChanged)
     Q_PROPERTY(QString localPath READ localPath WRITE setLocalPath NOTIFY localPathChanged)
+    Q_PROPERTY(QString serverDirectory READ serverDirectory WRITE setServerDirectory NOTIFY serverDirectoryChanged)
     Q_PROPERTY(TransferState transferState READ transferState NOTIFY transferStateChanged)
     Q_PROPERTY(TransferError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
@@ -59,7 +60,9 @@ public:
         DownloadRunning = 2,
         RefreshRunning = 3,
         RemoveRunning = 4,
-        Error = 5
+        RemoveDirectoryRunning = 5,
+        CreateDirectoryRunning = 6,
+        Error = 7
     };
 
     enum TransferError {
@@ -123,6 +126,11 @@ public:
         return m_model;
     }
 
+    QString serverDirectory() const
+    {
+        return m_serverDirectory;
+    }
+
 public slots:
     void setUri(QString arg)
     {
@@ -169,10 +177,21 @@ public slots:
         emit remotePathChanged(arg);
     }
 
+    void setServerDirectory(QString serverDirectory)
+    {
+        if (m_serverDirectory == serverDirectory)
+            return;
+
+        m_serverDirectory = serverDirectory;
+        emit serverDirectoryChanged(serverDirectory);
+    }
+
     void startUpload();
     void startDownload();
     void refreshFiles();
-    void removeFile(QString name);
+    void removeFile(const QString &name);
+    void removeDirectory(const QString &name);
+    void createDirectory(const QString &name);
     void abort();
     void clearError();
 
@@ -182,6 +201,7 @@ private:
     QString         m_remoteFilePath;
     QString         m_localPath;
     QString         m_remotePath;
+    QString         m_serverDirectory;
     TransferState   m_transferState;
     TransferError   m_error;
     QString         m_errorString;
@@ -218,12 +238,15 @@ signals:
     void remoteFilePathChanged(QString arg);
     void localPathChanged(QString arg);
     void remotePathChanged(QString arg);
+    void serverDirectoryChanged(QString serverDirectory);
     void progressChanged(double arg);
     void transferStateChanged(TransferState arg);
     void uploadFinished();
     void downloadFinished();
     void refreshFinished();
     void removeFinished();
+    void removeDirectoryFinished();
+    void createDirectoryFinished();
     void networkReadyChanged(bool networkReady);
     void modelChanged(QApplicationFileModel * model);
 };
