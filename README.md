@@ -18,6 +18,27 @@ This repository contains the QtQuickVcp library. A generic client implementation
 ## More info
 * Build status: [![Build Status](https://secure.travis-ci.org/machinekoder/QtQuickVcp.png)](http://travis-ci.org/machinekoder/QtQuickVcp)
 
+## Download
+Binaries for the QtQuickVcp library and MachinekitClient can be found here:
+
+#### Development releases
+| Operating System   |  MachinekitClient  | QtQuickVcp |
+|----------|:-------------:|:----:|
+| Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/_latestVersion#files) |
+| Windows 32bit  |  [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/_latestVersion#files) |
+| Linux 64bit    | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Linux-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Linux-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Linux-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Linux-master-x64/_latestVersion#files)  |
+| Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/_latestVersion#files) | |
+| Android armv7  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/_latestVersion#files) | |
+
+#### Stable releases
+| Operating System   |  MachinekitClient  | QtQuickVcp |
+|----------|:-------------:|:----:|
+| Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Windows-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Windows-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x64/_latestVersion#files) |
+| Windows 32bit  |  [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Windows-x86/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Windows-x86/_latestVersion#files)   | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x86/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x86/_latestVersion#files)  |
+| Linux 64bit    | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Linux-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Linux-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Linux-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Linux-x64/_latestVersion#files) |
+| Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/_latestVersion#files) | |
+| Android armv7 | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/_latestVersion#files) | |
+
 ## Contents
 
 **<a href="#qtquickvcp">What is QtQuickVcp?</a>**
