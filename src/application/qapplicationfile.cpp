@@ -29,6 +29,7 @@ QApplicationFile::QApplicationFile(QObject *parent) :
     m_remoteFilePath(""),
     m_localPath(""),
     m_remotePath(""),
+    m_serverDirectory(""),
     m_transferState(NoTransfer),
     m_error(NoError),
     m_errorString(""),
@@ -75,6 +76,11 @@ void QApplicationFile::startUpload()
 
     url.setUrl(m_uri);
     remotePath = QUrl(m_remotePath).toLocalFile();
+    if (!m_serverDirectory.isEmpty())
+    {
+        remotePath.append("/");
+        remotePath.append(m_serverDirectory);
+    }
     m_remoteFilePath = QUrl::fromLocalFile(QDir(remotePath).filePath(fileInfo.fileName())).toString();
     emit remoteFilePathChanged(m_remoteFilePath);
 
@@ -84,6 +90,10 @@ void QApplicationFile::startUpload()
     {
         m_ftp->connectToHost(url.host(), url.port());
         m_ftp->login();
+        if (!m_serverDirectory.isEmpty())
+        {
+            m_ftp->cd(m_serverDirectory);
+        }
         m_ftp->put(m_file, fileInfo.fileName(), QFtp::Binary);
         m_ftp->close();
 
@@ -117,6 +127,14 @@ void QApplicationFile::startDownload()
     remotePath = QUrl(m_remotePath).toLocalFile();
     fileName = remoteFilePath.mid(remotePath.length() + 1);
 
+    int i = fileName.indexOf("/");
+    if (i > -1) // not in root directory
+    {
+        m_serverDirectory = fileName.left(i);
+        emit serverDirectoryChanged(m_serverDirectory);
+        fileName = fileName.mid(i + 1);
+    }
+
     url.setUrl(m_uri);
 
     localFilePath = applicationFilePath(fileName);
@@ -128,7 +146,7 @@ void QApplicationFile::startDownload()
     if (!dir.mkpath(fileInfo.absolutePath()))
     {
         updateState(Error);
-        updateError(FileError, tr("Cannot create directory"));
+        updateError(FileError, tr("Cannot create directory: %1").arg(fileInfo.absolutePath()));
         return;
     }
 
@@ -138,6 +156,10 @@ void QApplicationFile::startDownload()
     {
         m_ftp->connectToHost(url.host(), url.port());
         m_ftp->login();
+        if (!m_serverDirectory.isEmpty())
+        {
+            m_ftp->cd(m_serverDirectory);
+        }
         m_ftp->get(fileName, m_file, QFtp::Binary);
         m_ftp->close();
         m_progress = 0.0;
@@ -164,12 +186,16 @@ void QApplicationFile::refreshFiles()
     m_model->clear();
     m_ftp->connectToHost(url.host(), url.port());
     m_ftp->login();
+    if (!m_serverDirectory.isEmpty())
+    {
+        m_ftp->cd(m_serverDirectory);
+    }
     m_ftp->list();
     m_ftp->close();
     updateState(RefreshRunning);
 }
 
-void QApplicationFile::removeFile(QString name)
+void QApplicationFile::removeFile(const QString &name)
 {
     QUrl url(m_uri);
 
@@ -180,9 +206,53 @@ void QApplicationFile::removeFile(QString name)
 
     m_ftp->connectToHost(url.host(), url.port());
     m_ftp->login();
+    if (!m_serverDirectory.isEmpty())
+    {
+        m_ftp->cd(m_serverDirectory);
+    }
     m_ftp->remove(name);
     m_ftp->close();
     updateState(RemoveRunning);
+}
+
+void QApplicationFile::removeDirectory(const QString &name)
+{
+    QUrl url(m_uri);
+
+    if (!ready() || (m_transferState != NoTransfer))
+    {
+        return;
+    }
+
+    m_ftp->connectToHost(url.host(), url.port());
+    m_ftp->login();
+    if (!m_serverDirectory.isEmpty())
+    {
+        m_ftp->cd(m_serverDirectory);
+    }
+    m_ftp->rmdir(name);
+    m_ftp->close();
+    updateState(RemoveDirectoryRunning);
+}
+
+void QApplicationFile::createDirectory(const QString &name)
+{
+    QUrl url(m_uri);
+
+    if (!ready() || (m_transferState != NoTransfer))
+    {
+        return;
+    }
+
+    m_ftp->connectToHost(url.host(), url.port());
+    m_ftp->login();
+    if (!m_serverDirectory.isEmpty())
+    {
+        m_ftp->cd(m_serverDirectory);
+    }
+    m_ftp->mkdir(name);
+    m_ftp->close();
+    updateState(CreateDirectoryRunning);
 }
 
 void QApplicationFile::abort()
@@ -287,7 +357,7 @@ void QApplicationFile::cleanupFile()
 
 void QApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)
 {
-    m_progress = (double)bytesSent / (double)bytesTotal;
+    m_progress = static_cast<double>(bytesSent) / static_cast<double>(bytesTotal);
     emit progressChanged(m_progress);
 }
 
@@ -307,18 +377,15 @@ void QApplicationFile::addToList(const QUrlInfo &urlInfo)
 {
     QApplicationFileItem *item;
 
-    if (!urlInfo.isDir()) // for now disable folders
-    {
-        item = new QApplicationFileItem();
-        item->setName(urlInfo.name());
-        item->setSize(urlInfo.size());
-        item->setOwner(urlInfo.owner());
-        item->setGroup(urlInfo.group());
-        item->setLastModified(urlInfo.lastModified());
-        item->setDir(urlInfo.isDir());
+    item = new QApplicationFileItem();
+    item->setName(urlInfo.name());
+    item->setSize(urlInfo.size());
+    item->setOwner(urlInfo.owner());
+    item->setGroup(urlInfo.group());
+    item->setLastModified(urlInfo.lastModified());
+    item->setDir(urlInfo.isDir());
 
-        m_model->addItem(item);
-    }
+    m_model->addItem(item);
 }
 
 void QApplicationFile::ftpCommandFinished(int, bool error)
@@ -337,37 +404,34 @@ void QApplicationFile::ftpCommandFinished(int, bool error)
         return;
     }
 
-    if (m_ftp->currentCommand() == QFtp::Get)
+    switch (m_ftp->currentCommand())
     {
+    case QFtp::Get:
         cleanupFile();
         emit downloadFinished();
         updateState(NoTransfer);
-
         return;
-    }
-
-    if (m_ftp->currentCommand() == QFtp::Put)
-    {
-        cleanupFile();
-        emit uploadFinished();
-        updateState(NoTransfer);
-        refreshFiles();
-
-        return;
-    }
-
-    if (m_ftp->currentCommand() == QFtp::List)
-    {
+    case QFtp::List:
         emit refreshFinished();
         updateState(NoTransfer);
-
+        return;
+    case QFtp::Put:
+        cleanupFile();
+        emit uploadFinished();
+        break;
+    case QFtp::Remove:
+        emit removeFinished();
+        break;
+    case QFtp::Rmdir:
+        emit removeDirectoryFinished();
+        break;
+    case QFtp::Mkdir:
+        emit createDirectoryFinished();
+        break;
+    default:
         return;
     }
 
-    if (m_ftp->currentCommand() == QFtp::Remove)
-    {
-        emit removeFinished();
-        updateState(NoTransfer);
-        refreshFiles();
-    }
+    updateState(NoTransfer);
+    refreshFiles();
 }

@@ -22,9 +22,7 @@ Dialog {
 
         if (status.task.taskMode !== ApplicationStatus.TaskModeAuto)
             command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)
-        if (status.task.file !== "") {
-            command.resetProgram('execute')
-        }
+        command.resetProgram('execute')
         var fileName = tableView.model.getName(row)
         var newPath = file.remotePath + '/' + fileName
         command.openProgram('execute', newPath)
