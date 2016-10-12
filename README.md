@@ -16,7 +16,13 @@ This repository contains the QtQuickVcp library. A generic client implementation
 * 3D GCode preview
 
 ## More info
-* Build status: [![Build Status](https://secure.travis-ci.org/machinekoder/QtQuickVcp.png)](http://travis-ci.org/machinekoder/QtQuickVcp)
+
+**Build status:**
+
+|   |  Travis CI | AppVeyor |
+|----------|:----:|:----:|
+| Status | [![Build Status](https://api.travis-ci.org/machinekoder/QtQuickVcp.svg?branch=master)](http://travis-ci.org/machinekoder/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true)](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true) |
+
 
 ## Download
 Binaries for the QtQuickVcp library and MachinekitClient can be found here:
