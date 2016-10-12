@@ -2,8 +2,6 @@
 
 A remote UI implementation for [Machinekit](https://github.com/machinekit/machinekit) written in Qt/C++/QML.
 
-This repository contains the QtQuickVcp library. A generic client implementation and binary distributions are available here [MachinekitClient](https://github.com/machinekoder/MachinekitClient)
-
 ## Features
 
 * enables building remote user interfaces for Machinekit
@@ -14,13 +12,50 @@ This repository contains the QtQuickVcp library. A generic client implementation
 * UI components for machine control applications
 * textual GCode preview
 * 3D GCode preview
+* cross-platform: runs on **Windows**, **Linux**, **Mac OS X**, **Android** and **iOS**
 
 ## More info
-* Build status: [![Build Status](https://secure.travis-ci.org/machinekoder/QtQuickVcp.png)](http://travis-ci.org/machinekoder/QtQuickVcp)
+
+**Build status:**
+
+|   |  Travis CI | AppVeyor |
+|----------|:----:|:----:|
+| Status | [![Build Status](https://api.travis-ci.org/machinekoder/QtQuickVcp.svg?branch=master)](http://travis-ci.org/machinekoder/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true)](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true) |
+
+<a name="download" />
+## Download
+Binaries for the QtQuickVcp library and MachinekitClient can be found here:
+
+### From App Store
+The MachinekitClient is available in following app stores:
+
+| Store | Link |
+|-------|:----:|
+| Google Play Store | [![Get it on Google Play!](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=io.machinekit.appdiscover) |
+
+### Development releases
+| Operating System   |  MachinekitClient  | QtQuickVcp |
+|----------|:-------------:|:----:|
+| Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/_latestVersion#files) |
+| Windows 32bit  |  [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/_latestVersion#files) |
+| Linux 64bit    | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Linux-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Linux-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Linux-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Linux-master-x64/_latestVersion#files)  |
+| Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/_latestVersion#files) | |
+| Android armv7  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/_latestVersion#files) | |
+
+### Stable releases
+| Operating System   |  MachinekitClient  | QtQuickVcp |
+|----------|:-------------:|:----:|
+| Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Windows-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Windows-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x64/_latestVersion#files) |
+| Windows 32bit  |  [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Windows-x86/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Windows-x86/_latestVersion#files)   | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x86/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x86/_latestVersion#files)  |
+| Linux 64bit    | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Linux-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Linux-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Linux-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Linux-x64/_latestVersion#files) |
+| Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/_latestVersion#files) | |
+| Android armv7 | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/_latestVersion#files) | |
 
 ## Contents
 
 **<a href="#qtquickvcp">What is QtQuickVcp?</a>**
+
+**<a href="#machinekitclient">What is the MachinekitClient?</a>**
 
 **<a href="#getting_started">Getting Started</a>**
 
@@ -56,6 +91,13 @@ all user interface functionality can be implemented in QML only.
 QtQuickVcp is designed with the aspect of remote interfaces on mobile devices and embedded systems
 in mind. A UI is designed once for a specific form factor and can then be deployed to any mobile, embedded
 or desktop device over the network.
+
+<a name="machinekitclient" />
+## What is the MachinekitClient?
+
+The MachinekitClient application is intended to be used as generic client for QtQuickVcp based user interfaces. MachinekitClient serves as client for remote distribution of QtQuickVcp-based user interfaces.
+
+Using the generic MachinekitClient is the easiest way to use QtQuickVcp. However, you can also build QtQuickVcp UIs as standalone applications.
 
 <a name="getting_started" />
 ## Getting Started
@@ -187,15 +229,8 @@ Clone both user interfaces on your device with Machinekit installed. I recommend
     git clone https://github.com/machinekoder/Cetus.git
     git clone https://github.com/machinekoder/Machineface.git
 
-#### Install the Machinekit-Client
-For desktop platforms (**Linux, Windows, Mac**) you can find binaries here: [Machinekit-Client releases](http://buildbot.roessler.systems/files/machinekit-client/)
-
-You can find the **Android** client here
-[![Get it on Google Play!](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=io.machinekit.appdiscover)
-
-Please note: the Android client installed on Android >= 5.0 is not able to discover Machinekit.
-
-If you an idea how to deploy the **iOS** client besides the Apple App Store please contact me.
+#### Install the MachinekitClient
+Please download and install the MachinekitClient from the <a href="#download">Download section</a>.
 
 #### Test it
 Now its time to start your configuration:
@@ -204,14 +239,14 @@ Now its time to start your configuration:
 
 It may be useful to start the configuration at boot: [Starting a Machinekit configuration at boot](https://github.com/machinekoder/asciidoc-sandbox/wiki/Starting-a-Machinekit-configuration-at-boot)
 
-Now start the Machinekit-Client on the desired platform. For some networks it may be necessary to enter the IP address of the Machinekit device manually (Unicast).
+Now start the MachinekitClient on the desired platform. For some networks it may be necessary to enter the IP address of the Machinekit device manually (Unicast).
 
 #### Setup mklauncher
-With newer versions of QtQuickVcp the entry point for the Machinekit-Client has been changed to the mklauncher service. Please follow the steps here for more details [Using mklauncher](https://github.com/machinekoder/QtQuickVcp/wiki/Using-mklauncher)
+With newer versions of QtQuickVcp the entry point for the MachinekitClient has been changed to the mklauncher service.
 
 <a name="using_mklauncher" />
 ### Using mklauncher
-Mklauncher is the new entry point for Machinekit-Client. It acts as a remote version of the Machinekit Launcher. Usage is quite simple (use =mklauncher --help= for details) the only thing you need to add to your Machinekit configarion is a =launcher.ini= file.
+Mklauncher is the new entry point for MachinekitClient. It acts as a remote version of the Machinekit Launcher. Usage is quite simple (use =mklauncher --help= for details) the only thing you need to add to your Machinekit configarion is a =launcher.ini= file.
 
 ```ini
 [MendelMax]
@@ -231,7 +266,7 @@ mklauncher .
 
 The dot in the end means that mklauncher will recursively search for `launcher.ini` files in the current directory. NOTE that this can be very slow if you do this in your home directory.
 
-Once you have successfully launched mklauncher you are ready to connect using the [Machinekit-Client](https://github.com/machinekoder/MachinekitClient).
+Once you have successfully launched mklauncher you are ready to connect using the *MachinekitClient*.
 
 If you have a embedded Machinekit setup e.g. on the BeagleBone Black, it is recommended to start mklauncher at boot using systemd. Use this guide for reference: [Starting a Machinekit configuration at boot](https://github.com/machinekoder/asciidoc-sandbox/blob/master/Starting-a-Machinekit-configuration-at-boot.md) or use this script [register.py](https://gist.github.com/machinekoder/3eaa42f79f7a19e2244a).
 
@@ -250,8 +285,7 @@ platforms. However, since QtQuickVcp use **remote deployment** of it
 is not necessary that you build QtQuickVcp e.g. for Android. Instead
 please **take the easy way** and use the
 [Machinekit Vagrant box](https://github.com/machinekoder/machinekit-vagrant)
-for development. The
-[Machinekit-Client](https://github.com/machinekoder/MachinekitClient) serves
+for development. MachinekitClient serves
 as universal client application. You can download binaries for all
 supported platforms. Please only try to build and install QtQuickVcp
 on you own if you feel confident to do so and if you plan to

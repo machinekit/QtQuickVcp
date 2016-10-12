@@ -61,7 +61,7 @@ matrix:
           packages:
           - bsdtar
           - curl
-          - zsync
+          # - zsync
       services:
         - docker
       script:
@@ -73,7 +73,7 @@ matrix:
           packages:
             - bsdtar
             - curl
-            - zsync
+            # - zsync
       services:
         - docker
       before_install:
