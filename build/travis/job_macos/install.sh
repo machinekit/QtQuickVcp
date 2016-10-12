@@ -1,22 +1,27 @@
 #!/bin/bash
 
+set -e
+
 # install mac ports
-MACPORTS_VERSION=2.3.4
-wget https://distfiles.macports.org/MacPorts/MacPorts-${MACPORTS_VERSION}.tar.bz2
-tar xfj MacPorts-${MACPORTS_VERSION}.tar.bz2
-cd MacPorts-${MACPORTS_VERSION}
-./configure && sudo make install
-export PATH=/opt/local/bin:$PATH
-cd ..
-sudo port selfupdate
-sudo port install libtool automake m4 autoconf pkgconfig
+# MACPORTS_VERSION=2.3.4
+# wget https://distfiles.macports.org/MacPorts/MacPorts-${MACPORTS_VERSION}.tar.bz2
+# tar xfj MacPorts-${MACPORTS_VERSION}.tar.bz2
+# cd MacPorts-${MACPORTS_VERSION}
+# ./configure && sudo make install
+# export PATH=/opt/local/bin:$PATH
+# cd ..
+# sudo port selfupdate
+# sudo port install libtool automake m4 autoconf pkgconfig
+
+brew update
+brew install libtool automake autoconf pkg-config
 
 # install zeromq
 git clone https://github.com/zeromq/zeromq4-x.git
 cd zeromq4-x
 git checkout v4.0.8
 sh autogen.sh
-./configure --disable-static --enable-shared --prefix=/opt/local CC=clang CXX=clang++ CXXFLAGS="-std=c++11 -stdlib=libstdc++ -O3" LDFLAGS="-stdlib=libstdc++"
+./configure --disable-static --enable-shared --prefix=/opt/local CC=clang CXX=clang++ CFLAGS="-arch x86_64" CXXFLAGS="-std=c++11 -stdlib=libstdc++ -O3 -arch x86_64" LDFLAGS="-stdlib=libstdc++"
 make
 sudo make install
 cd ..
@@ -30,7 +35,7 @@ git checkout v2.6.1
 mkdir -p gtest/msvc
 touch gtest/msvc/foo.vcproj
 ./autogen.sh
-./configure --disable-shared --enable-static --prefix=/opt/local CC=clang CXX=clang++ CXXFLAGS="-std=c++11 -stdlib=libstdc++ -O3" LDFLAGS="-stdlib=libstdc++"
+./configure --disable-shared --enable-static --prefix=/opt/local CC=clang CXX=clang++ CFLAGS="-arch x86_64" CXXFLAGS="-std=c++11 -stdlib=libstdc++ -O3 -arch x86_64" LDFLAGS="-stdlib=libstdc++"
 make
 sudo make install
 cd ..
