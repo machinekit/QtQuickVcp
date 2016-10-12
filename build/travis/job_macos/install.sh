@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -x
 
 # install mac ports
 # MACPORTS_VERSION=2.3.4

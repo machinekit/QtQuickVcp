@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 
 # do not build mac for PR
 #if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
