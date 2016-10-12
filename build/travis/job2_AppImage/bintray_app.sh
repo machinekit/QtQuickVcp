@@ -30,7 +30,6 @@ trap 'exit 1' ERR
 which curl || exit 1
 which bsdtar || exit 1 # https://github.com/libarchive/libarchive/wiki/ManPageBsdtar1 ; isoinfo cannot read zisofs
 which grep || exit 1
-which zsyncmake || exit 1
 
 # Do not upload artefacts generated as part of a pull request
 if [ $(env | grep TRAVIS_PULL_REQUEST ) ] ; then
