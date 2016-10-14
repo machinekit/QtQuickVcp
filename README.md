@@ -319,6 +319,8 @@ Build instruction for Android toolchain on Linux
 #### Prerequisites
 * Install [Qt SDK for Android](http://www.qt.io/download-open-source/)
 * Download and extract [Android NDK](http://developer.android.com/ndk/downloads/index.html) and [Android SDK](http://developer.android.com/sdk/index.html#Other) to `~/bin`
+* Install dependency packages: `sudo apt install -y libtool-bin make curl file libgtest-dev python default-jdk ant lib32z1 lib32ncurses5 lib32stdc++6 python-pip`
+
 
 #### Stand-alone Android toolchain
 First create a Android Stand-alone toolchain:
@@ -378,7 +380,9 @@ Alter and execute the following commands
     cd protobuf
     git checkout v2.6.1
 
-    # ./autogen.sh skip since gtest1.5 is missing
+    mkdir -p gtest/msvc
+    touch gtest/msvc/foo.vcproj
+    ./autogen.sh
     ./configure --enable-static --disable-shared --host=arm-eabi --with-sysroot=$SYSROOT CC=$CC CXX=$CXX --enable-cross-compile --with-protoc=protoc LIBS="-lc" --prefix=$OUTPUT_DIR
     make
     sudo make install
