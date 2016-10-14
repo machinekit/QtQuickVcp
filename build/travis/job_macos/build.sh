@@ -45,11 +45,13 @@ qmake -r ..
 make
 make install
 
+ls
 # create Mac disk image
 qmldir=${PWD}/../apps/MachinekitClient/
 appdir=./apps/MachinekitClient/
 cd $appdir
-macdeployqt machinekit-client -qmldir=$qmldir -dmg -verbose=2
+ls
+macdeployqt machinekit-client.app -qmldir=$qmldir -dmg -verbose=2
 cd ../../
 mv ${appdir}/machinekit-client.dmg MachinekitClient.dmg
 

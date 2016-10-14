@@ -50,7 +50,7 @@ LDFLAGS="-stdlib=libc++"
 LIBS="-lc++ -lc++abi"
 PREFIX=/opt/local
 ./autogen.sh
-./configure --disable-shared --enable-static --prefix=${PREFIX} --exec-prefix=${PREFIX}/platform/x86_64 "CC=${CC}" "CFLAGS=${CFLAGS} -arch x86_64" "CXX=${CXX}" "CXXFLAGS=${CXXFLAGS} -arch x86_64" "LDFLAGS=${LDFLAGS}" "LIBS=${LIBS}"
+./configure --disable-shared --enable-static --prefix=${PREFIX} "CC=${CC}" "CFLAGS=${CFLAGS} -arch x86_64" "CXX=${CXX}" "CXXFLAGS=${CXXFLAGS} -arch x86_64" "LDFLAGS=${LDFLAGS}" "LIBS=${LIBS}"
 make
 sudo make install
 cd ..
