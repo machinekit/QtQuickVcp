@@ -4,9 +4,9 @@ set -e
 set -x
 
 # do not build mac for PR
-#if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
-#  exit 0
-#fi
+if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+  exit 0
+fi
 
 # create a full clone
 git fetch --unshallow
@@ -68,7 +68,7 @@ else
   # No list passed in (or specified "ALL"), so upload on every branch
   upload=true
 fi
-plaform=x64
+platform=x64
 # skip pull requests
 if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
     upload=

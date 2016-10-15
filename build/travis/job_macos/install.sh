@@ -2,6 +2,11 @@
 
 set -x
 
+# do not build mac for PR
+if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+  exit 0
+fi
+
 # install mac ports
 # MACPORTS_VERSION=2.3.4
 # wget https://distfiles.macports.org/MacPorts/MacPorts-${MACPORTS_VERSION}.tar.bz2
@@ -15,7 +20,8 @@ set -x
 # sudo port install libtool automake m4 autoconf pkgconfig protobuf-cpp
 
 brew update
-brew install libtool automake autoconf pkg-config
+brew install libtool automake autoconf pkg-config bash coreutils
+brew install gnu-sed --with-default-names
 
 # install zeromq
 git clone https://github.com/zeromq/zeromq4-x.git

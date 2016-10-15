@@ -30,7 +30,6 @@ trap 'exit 1' ERR
 which curl || exit 1
 which bsdtar || exit 1 # https://github.com/libarchive/libarchive/wiki/ManPageBsdtar1 ; isoinfo cannot read zisofs
 which grep || exit 1
-which zsyncmake || exit 1
 
 # Do not upload artefacts generated as part of a pull request
 if [ $(env | grep TRAVIS_PULL_REQUEST ) ] ; then
@@ -259,7 +258,7 @@ if [ "${APPNAME}" != "MachinekitClient" ]; then
   fi
 
   # Delete older versions of non-release packages (nightlies and dev. builds)
-  HERE="$(dirname "$(readlink -f "${0}")")"
+  HERE="$( cd "$(dirname "${0}")" ; pwd -P )"
   "${HERE}/bintray-tidy.sh" archive "${BINTRAY_REPO_OWNER}/${BINTRAY_REPO}/${PCK_NAME}"
 fi
 
