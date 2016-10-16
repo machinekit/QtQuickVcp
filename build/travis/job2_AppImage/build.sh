@@ -26,6 +26,7 @@ if [ $release -eq 0 ]; then
     version="${date}-${branch}-${revision}"
 else
     version="$(git describe --tags)"
+    upload=true
 fi
 
 echo "#define REVISION \"${version}\"" > ./src/application/revision.h
@@ -66,19 +67,22 @@ case "$1" in
 esac
 
 # Should the AppImage be uploaded?
-if [ "$1" == "--upload-branches" ] && [ "$2" != "ALL" ]; then
-  # User passed in a list of zero or more branches so only upload those listed
-  shift
-  for upload_branch in "$@" ; do
-    [ "$branch" == "$upload_branch" ] && upload=true || true # bypass `set -e`
-  done
-else
-  # No list passed in (or specified "ALL"), so upload on every branch
-  upload=true
-fi
-# skip pull requests
-if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
-    upload=
+# upload is already on release
+if [ "${upload}" != "true" ]; then
+    if [ "$1" == "--upload-branches" ] && [ "$2" != "ALL" ]; then
+        # User passed in a list of zero or more branches so only upload those listed
+        shift
+        for upload_branch in "$@" ; do
+            [ "$branch" == "$upload_branch" ] && upload=true || true # bypass `set -e`
+        done
+    else
+        # No list passed in (or specified "ALL"), so upload on every branch
+        upload=true
+    fi
+    # skip pull requests
+    if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+        upload=
+    fi
 fi
 
 if [ "${upload}" ]; then

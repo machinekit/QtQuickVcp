@@ -63,6 +63,7 @@ deploy:
   override: true
   explode: false
   artifact: MachinekitClient-x64-archive
+  version: $(appveyor_build_version)
   on:
     branch: master
     appveyor_repo_tag: false
@@ -73,14 +74,13 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: QtQuickVcp
-  package: QtQuickVcp-Windows-master-x64
+  package: QtQuickVcp-Windows-x64
   publish: true
   override: true
   explode: false
   artifact: QtQuickVcp-x64-archive
   version: $(appveyor_build_version)
   on:
-    branch: master
     appveyor_repo_tag: true
 
 - provider: BinTray
@@ -89,14 +89,13 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: MachinekitClient
-  package: MachinekitClient-Windows-master-x64
+  package: MachinekitClient-Windows-x64
   publish: true
   override: true
   explode: false
   artifact: MachinekitClient-x64-archive
   version: $(appveyor_build_version)
   on:
-    branch: master
     appveyor_repo_tag: true
 
 - provider: BinTray
@@ -110,6 +109,7 @@ deploy:
   override: true
   explode: false
   artifact: QtQuickVcp-x86-archive
+  version: $(appveyor_build_version)
   on:
     branch: master
     appveyor_repo_tag: false
@@ -136,14 +136,13 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: QtQuickVcp
-  package: QtQuickVcp-Windows-master-x86
+  package: QtQuickVcp-Windows-x86
   publish: true
   override: true
   explode: false
   artifact: QtQuickVcp-x86-archive
   version: $(appveyor_build_version)
   on:
-    branch: master
     appveyor_repo_tag: true
 
 - provider: BinTray
@@ -152,14 +151,13 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: MachinekitClient
-  package: MachinekitClient-Windows-master-x86
+  package: MachinekitClient-Windows-x86
   publish: true
   override: true
   explode: false
   artifact: MachinekitClient-x86-archive
   version: $(appveyor_build_version)
   on:
-    branch: master
     appveyor_repo_tag: true
 
 notifications:
