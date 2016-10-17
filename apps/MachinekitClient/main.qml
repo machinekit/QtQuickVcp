@@ -62,7 +62,7 @@ Item {
         applicationFilter: ApplicationConfigFilter { name: "" }
         applications: [
             ApplicationDescription {
-                sourceDir: "qrc:/MachinekitClient.ServiceDisplay"
+                sourceDir: "./MachinekitClient.ServiceDisplay"
             }
         ]
     }
