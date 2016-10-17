@@ -259,7 +259,7 @@ if [ "${APPNAME}" != "MachinekitClient" ]; then
 
   # Delete older versions of non-release packages (nightlies and dev. builds)
   HERE="$(dirname "$(readlink -f "${0}")")"
-  "${HERE}/bintray-tidy.sh" archive "${BINTRAY_REPO_OWNER}/${BINTRAY_REPO}/${PCK_NAME}"
+  "${HERE}/bintray-tidy.sh" archive "${BINTRAY_REPO_OWNER}/${BINTRAY_REPO}/${PCK_NAME}" || true
 fi
 
 
