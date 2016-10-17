@@ -98,8 +98,10 @@ cd ..
 7z a MachinekitClient.zip MachinekitClient/
 
 mkdir qml
+mkdir lib
 cp -r %QTDIR%/qml/Machinekit qml/
-7z a QtQuickVcp.zip qml/
+cp -r %QTDIR%/bin/libzmq.dll lib/
+7z a QtQuickVcp.zip qml/ lib/
 
 :: rename deployment files
 set platform=%ARCH%

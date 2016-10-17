@@ -62,8 +62,11 @@ make install
 
 # compress QtQuick module
 zipfile="QtQuickVcp.tar.gz"
-cp -r imports qml
-tar -zcf $zipfile qml
+mkdir qml
+mkdir lib
+cp -r $QML_IMPORT_PATH/Machinekit qml/Machinekit
+cp ${QT_INSTALL_PREFIX}/lib/libmachinetalk* lib/
+tar -zcf $zipfile qml lib
 # allow access to archive from outside the chroot
 chmod a+rwx $zipfile
 chmod a+rwx .
