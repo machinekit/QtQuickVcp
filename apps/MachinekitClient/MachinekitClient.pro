@@ -47,9 +47,10 @@ macx: {
 OTHER_FILES += \
     android/AndroidManifest.xml \
     Info.plist \
-    mac_Info.plist
+    mac_Info.plist \
+    misc/*.*
 
-linux: {
+linux: !android: {
 target.path = /usr/bin
 
 desktop.path = /usr/share/applications

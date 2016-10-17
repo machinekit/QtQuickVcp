@@ -31,7 +31,7 @@ Rectangle {
     color: "#008080"
 
     Image {
-        source: "../images/background.png"
+        source: "images/background.png"
         fillMode: Image.Tile
         sourceSize.width: parent.smallerSide * 0.3
         anchors.fill: parent
@@ -45,7 +45,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         anchors.verticalCenterOffset: -parent.smallerSide*0.08
-        source: "../images/logo_text.png"
+        source: "images/logo_text.png"
         smooth: true
         width: parent.smallerSide*0.55
         height: width
