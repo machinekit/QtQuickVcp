@@ -29,6 +29,9 @@ ApplicationAction {
     property int programResetLine: 0
 
     property bool _ready: status.synced && command.connected
+    property bool _fileValid: status.synced
+                              && (status.task.file !== "")
+                              && (status.task.file.indexOf(status.config.remotePath) === 0)
 
     id: root
     text: qsTr("Run")
@@ -42,8 +45,8 @@ ApplicationAction {
         programStartLine = programResetLine
     }
     enabled: _ready
+             && _fileValid
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
-             && (status.task.file !== "")
              && !status.running
              && (status.motion.state !== ApplicationStatus.MotionExec)
 }
