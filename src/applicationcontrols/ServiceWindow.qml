@@ -168,7 +168,6 @@ Rectangle {
         if (background !== discoveryPage) {
             background.parent = main;
             background.z = 1000;
-            background.visible = false;
         }
     }
 
@@ -196,6 +195,16 @@ Rectangle {
                 duration: 500;
                 properties: "opacity";
                 easing.type: Easing.InCubic;
+            }
+        }
+
+        /* This timer is a workaround to make the discoveryPage invisible in QML designer */
+        Timer {
+            interval: 10
+            repeat: false
+            running: discoveryPage.active
+            onTriggered: {
+                discoveryPage.visible = true;
             }
         }
     }
@@ -250,16 +259,6 @@ Rectangle {
                     }
                 }
             }
-        }
-    }
-
-    /* This timer is a workaround to make the discoveryPage invisible in QML designer */
-    Timer {
-        interval: 10
-        repeat: false
-        running: true
-        onTriggered: {
-            background.visible = true;
         }
     }
 
