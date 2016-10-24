@@ -67,6 +67,19 @@ make INSTALL_ROOT=android-build install
 # check if machinetalk library is installed
 ls -lh "${QT_INSTALL_PREFIX}/lib/libmachinetalk-pb2.so"
 
+# compress QtQuick module
+zipfile="QtQuickVcp.tar.gz"
+mkdir qml
+mkdir lib
+cp -r $QML_IMPORT_PATH/Machinekit qml/Machinekit
+cp ${QT_INSTALL_PREFIX}/lib/libmachinetalk* lib/
+tar -zcf $zipfile qml lib
+# allow access to archive from outside the chroot
+chmod a+rwx $zipfile
+chmod a+rwx .
+ls -lh $zipfile
+rm -r qml
+
 # create apk file
 qt-deploy ../build/deployment-scripts/android_armv7.ini --deploy
 
@@ -97,13 +110,19 @@ ls -lh "$package"
 if [ "${upload}" ]; then
     # rename binaries
     if [ $release -eq 1 ]; then
+        target="QtQuickVcp"
+    else
+        target="QtQuickVcp_Development"
+    fi
+    mv build.release/QtQuickVcp.tar.gz ${target}-${version}-${platform}.tar.gz
+    if [ $release -eq 1 ]; then
         target="MachinekitClient"
     else
         target="MachinekitClient_Development"
     fi
     mv build.release/MachinekitClient.apk ${target}-${version}-${platform}.apk
     # deploy apk file to Play Store
-    android-publish -s ./build/Linux/android/google_play_credentials.json -p io.machinekit.appdiscover -t alpha -a MachinekitClient*.apk
+    android-publish -s ./build/Linux/android/google_play_credentials.json -p io.machinekit.appdiscover -t alpha -a MachinekitClient*.apk || true
     chmod a+rwx MachinekitClient*.apk
 
 else
