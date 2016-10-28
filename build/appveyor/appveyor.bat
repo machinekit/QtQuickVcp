@@ -94,6 +94,7 @@ mkdir MachinekitClient
 cd MachinekitClient
 cp ../apps/MachinekitClient/release/machinekit-client.exe .
 windeployqt --angle --release --qmldir ../../apps/MachinekitClient/ machinekit-client.exe
+cp %QTDIR%\bin\libzmq.dll .
 cd ..
 7z a MachinekitClient.zip MachinekitClient/
 
