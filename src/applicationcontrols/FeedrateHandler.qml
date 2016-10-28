@@ -26,7 +26,7 @@ import Machinekit.Application 1.0
 ApplicationObject {
     property double value : 0
     property double minimumValue: 0
-    property double maximumValue: 100
+    property double maximumValue: 1.0
     property bool enabled: _ready
     property bool synced: false
 
