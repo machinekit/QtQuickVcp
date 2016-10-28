@@ -245,7 +245,7 @@ void QHalRemoteComponent::removePins()
         disconnect(pin, SIGNAL(valueChanged(QVariant)),
                 this, SLOT(pinChange(QVariant)));
 
-        if (pin->parent() == this) // pin was created this class
+        if (pin->parent() == this) // pin was created by this class
         {
             pin->deleteLater();
         }

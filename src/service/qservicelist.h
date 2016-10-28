@@ -30,6 +30,7 @@ class QServiceList : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<QService> services READ services)
+    Q_CLASSINFO("DefaultProperty", "services")
 
 public:
     explicit QServiceList(QObject *parent = 0);
