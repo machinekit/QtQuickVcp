@@ -141,6 +141,18 @@ void QApplicationCommand::setFeedOverride(double scale)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_SCALE);
 }
 
+void QApplicationCommand::setRapidOverride(double scale)
+{
+    if (m_connectionState != Connected) {
+        return;
+    }
+
+    pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
+    commandParams->set_scale(scale);
+
+    sendCommandMessage(pb::MT_EMC_TRAJ_SET_RAPID_SCALE);
+}
+
 void QApplicationCommand::setFloodEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
