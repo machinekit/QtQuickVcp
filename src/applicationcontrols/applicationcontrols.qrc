@@ -63,6 +63,8 @@
         <file>FeedOverrideAction.qml</file>
         <file>SpindleOverrideAction.qml</file>
         <file>EstopPowerAction.qml</file>
+        <file>RapidrateHandler.qml</file>
+        <file>RapidrateSlider.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/Application/Controls/icons">
         <file alias="process-stop">icons/process-stop.png</file>
