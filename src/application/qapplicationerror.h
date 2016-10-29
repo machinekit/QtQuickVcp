@@ -30,14 +30,6 @@
 #include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/message.pb.h>
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
-
 class QApplicationError : public AbstractServiceImplementation
 {
     Q_OBJECT
@@ -148,8 +140,8 @@ private:
     QString         m_errorString;
     ErrorChannels   m_channels;
 
-    PollingZMQContext *m_context;
-    ZMQSocket   *m_errorSocket;
+    nzmqt::PollingZMQContext *m_context;
+    nzmqt::ZMQSocket *m_errorSocket;
     QStringList  m_subscriptions;
     QTimer      *m_errorHeartbeatTimer;
     // more efficient to reuse a protobuf Message

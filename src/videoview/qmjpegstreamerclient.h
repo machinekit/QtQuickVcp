@@ -34,14 +34,6 @@
 #include "package.pb.h"
 #include <google/protobuf/text_format.h>
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
-
 class QMjpegStreamerClient : public QQuickPaintedItem
 {
     Q_OBJECT
@@ -131,8 +123,8 @@ private:
     QImage      m_frameImg;
     QTimer     *m_framerateTimer;
     QTimer     *m_streamBufferTimer;
-    ZMQContext *m_context;
-    ZMQSocket  *m_updateSocket;
+    nzmqt::ZMQContext *m_context;
+    nzmqt::ZMQSocket *m_updateSocket;
     pb::Package m_rx; // more efficient to reuse a protobuf Message
 
 

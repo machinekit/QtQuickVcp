@@ -1,6 +1,14 @@
 #include "qapplicationlauncher.h"
 #include "debughelper.h"
 
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
+
+using namespace nzmqt;
+
 QApplicationLauncher::QApplicationLauncher(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_subscribeUri(""),

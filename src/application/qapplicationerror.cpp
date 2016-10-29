@@ -23,6 +23,14 @@
 #include "qapplicationerror.h"
 #include "debughelper.h"
 
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
+
+using namespace nzmqt;
+
 QApplicationError::QApplicationError(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_errorUri(""),

@@ -35,14 +35,6 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/types.pb.h>
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
-
 class QApplicationConfig : public QQuickItem
 {
     Q_OBJECT
@@ -109,8 +101,8 @@ private:
     QList<QApplicationConfigItem*> m_configs;
     QApplicationConfigFilter *m_filter;
 
-    PollingZMQContext *m_context;
-    ZMQSocket *m_configSocket;
+    nzmqt::PollingZMQContext *m_context;
+    nzmqt::ZMQSocket *m_configSocket;
     // more efficient to reuse a protobuf Message
     pb::Container m_rx;
     pb::Container m_tx;

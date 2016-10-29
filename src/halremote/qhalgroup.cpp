@@ -23,6 +23,14 @@
 #include "qhalgroup.h"
 #include "debughelper.h"
 
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
+
+using namespace nzmqt;
+
 /*! \qmlproperty bool HalGroup::connected
 
     This property hold wheter the HAL group is connected or not. This is the
