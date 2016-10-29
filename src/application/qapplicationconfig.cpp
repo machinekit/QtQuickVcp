@@ -371,8 +371,8 @@ void QApplicationConfig::pollError(int errorNum, const QString &errorMsg)
 bool QApplicationConfig::connectSocket()
 {
     m_context = new PollingZMQContext(this, 1);
-    connect(m_context, SIGNAL(pollError(int,QString)),
-            this, SLOT(pollError(int,QString)));
+    connect(m_context, &PollingZMQContext::pollError,
+            this, &QApplicationConfig::pollError);
     m_context->start();
 
     m_configSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -390,8 +390,8 @@ bool QApplicationConfig::connectSocket()
         return false;
     }
 
-    connect(m_configSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(configMessageReceived(QList<QByteArray>)));
+    connect(m_configSocket, &ZMQSocket::messageReceived,
+            this, &QApplicationConfig::configMessageReceived);
 
     return true;
 }

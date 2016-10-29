@@ -30,14 +30,14 @@ QGLLight::QGLLight(QObject *parent) :
     m_enabled(true),
     m_ambientCoefficient(0.1)
 {
-    connect(this, SIGNAL(positionChanged(QVector3D)),
-            this, SIGNAL(propertyChanged()));
-    connect(this, SIGNAL(intensitiesChanged(QVector3D)),
-            this, SIGNAL(propertyChanged()));
-    connect(this, SIGNAL(attenuationChanged(float)),
-            this, SIGNAL(propertyChanged()));
-    connect(this, SIGNAL(ambientCoefficientChanged(float)),
-            this, SIGNAL(propertyChanged()));
-    connect(this, SIGNAL(enabledChanged(bool)),
-            this, SIGNAL(propertyChanged()));
+    connect(this, &QGLLight::positionChanged,
+            this, &QGLLight::propertyChanged);
+    connect(this, &QGLLight::intensitiesChanged,
+            this, &QGLLight::propertyChanged);
+    connect(this, &QGLLight::attenuationChanged,
+            this, &QGLLight::propertyChanged);
+    connect(this, &QGLLight::ambientCoefficientChanged,
+            this, &QGLLight::propertyChanged);
+    connect(this, &QGLLight::enabledChanged,
+            this, &QGLLight::propertyChanged);
 }

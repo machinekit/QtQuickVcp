@@ -40,22 +40,20 @@ QGLPathItem::QGLPathItem(QQuickItem *parent) :
     m_minimumExtents(QVector3D(0, 0, 0)),
     m_maximumExtents(QVector3D(0, 0, 0))
 {
-    connect(this, SIGNAL(visibleChanged()),
-            this, SLOT(triggerFullUpdate()));
-    connect(this, SIGNAL(positionChanged(QVector3D)),
-            this, SLOT(triggerFullUpdate()));
-    connect(this, SIGNAL(positionChanged(QVector3D)),
-            this, SLOT(triggerFullUpdate()));
-    connect(this, SIGNAL(scaleChanged()),
-            this, SLOT(triggerFullUpdate()));
-    connect(this, SIGNAL(rotationChanged(QQuaternion)),
-            this, SLOT(triggerFullUpdate()));
-    connect(this, SIGNAL(rotationAngleChanged(float)),
-            this, SLOT(triggerFullUpdate()));
-    connect(this, SIGNAL(rotationAxisChanged(QVector3D)),
-            this, SLOT(triggerFullUpdate()));
-    connect(this, SIGNAL(visibleChanged()),
-            this, SLOT(triggerFullUpdate()));
+    connect(this, &QGLPathItem::visibleChanged,
+            this, &QGLPathItem::triggerFullUpdate);
+    connect(this, &QGLPathItem::positionChanged,
+            this, &QGLPathItem::triggerFullUpdate);
+    connect(this, &QGLPathItem::scaleChanged,
+            this, &QGLPathItem::triggerFullUpdate);
+    connect(this, &QGLPathItem::rotationChanged,
+            this, &QGLPathItem::triggerFullUpdate);
+    connect(this, &QGLPathItem::rotationAngleChanged,
+            this, &QGLPathItem::triggerFullUpdate);
+    connect(this, &QGLPathItem::rotationAxisChanged,
+            this, &QGLPathItem::triggerFullUpdate);
+    connect(this, &QGLPathItem::visibleChanged,
+            this, &QGLPathItem::triggerFullUpdate);
 }
 
 QGLPathItem::~QGLPathItem()

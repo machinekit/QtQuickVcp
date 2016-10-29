@@ -46,13 +46,13 @@ QApplicationStatus::QApplicationStatus(QObject *parent) :
     m_statusSocket(nullptr),
     m_statusHeartbeatTimer(new QTimer(this))
 {
-    connect(m_statusHeartbeatTimer, SIGNAL(timeout()),
-            this, SLOT(statusHeartbeatTimerTick()));
+    connect(m_statusHeartbeatTimer, &QTimer::timeout,
+            this, &QApplicationStatus::statusHeartbeatTimerTick);
 
-    connect(this, SIGNAL(taskChanged(QJsonObject)),
-            this, SLOT(updateRunning(QJsonObject)));
-    connect(this, SIGNAL(interpChanged(QJsonObject)),
-            this, SLOT(updateRunning(QJsonObject)));
+    connect(this, &QApplicationStatus::taskChanged,
+            this, &QApplicationStatus::updateRunning);
+    connect(this, &QApplicationStatus::interpChanged,
+            this, &QApplicationStatus::updateRunning);
 
 
     initializeObject(MotionChannel);
@@ -338,8 +338,8 @@ void QApplicationStatus::statusHeartbeatTimerTick()
 bool QApplicationStatus::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
-    connect(m_context, SIGNAL(pollError(int,QString)),
-            this, SLOT(pollError(int,QString)));
+    connect(m_context, &PollingZMQContext::pollError,
+            this, &QApplicationStatus::pollError);
     m_context->start();
 
     m_statusSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
@@ -355,8 +355,8 @@ bool QApplicationStatus::connectSockets()
         return false;
     }
 
-    connect(m_statusSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(statusMessageReceived(QList<QByteArray>)));
+    connect(m_statusSocket, &ZMQSocket::messageReceived,
+            this, &QApplicationStatus::statusMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "status", "socket connected" << m_statusUri)

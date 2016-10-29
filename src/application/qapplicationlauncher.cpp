@@ -30,10 +30,10 @@ QApplicationLauncher::QApplicationLauncher(QObject *parent) :
     m_subscribeHeartbeatTimer(new QTimer(this)),
     m_commandPingOutstanding(false)
 {
-    connect(m_commandHeartbeatTimer, SIGNAL(timeout()),
-            this, SLOT(commandHeartbeatTimerTick()));
-    connect(m_subscribeHeartbeatTimer, SIGNAL(timeout()),
-            this, SLOT(subscribeHeartbeatTimerTick()));
+    connect(m_commandHeartbeatTimer, &QTimer::timeout,
+            this, &QApplicationLauncher::commandHeartbeatTimerTick);
+    connect(m_subscribeHeartbeatTimer, &QTimer::timeout,
+            this, &QApplicationLauncher::subscribeHeartbeatTimerTick);
 
     initializeObject();
 }
@@ -111,8 +111,8 @@ void QApplicationLauncher::shutdown()
 bool QApplicationLauncher::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
-    connect(m_context, SIGNAL(pollError(int,QString)),
-            this, SLOT(pollError(int,QString)));
+    connect(m_context, &PollingZMQContext::pollError,
+            this, &QApplicationLauncher::pollError);
     m_context->start();
 
     m_commandSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -133,10 +133,10 @@ bool QApplicationLauncher::connectSockets()
         return false;
     }
 
-    connect(m_subscribeSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(subscribeMessageReceived(QList<QByteArray>)));
-    connect(m_commandSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(commandMessageReceived(QList<QByteArray>)));
+    connect(m_subscribeSocket, &ZMQSocket::messageReceived,
+            this, &QApplicationLauncher::subscribeMessageReceived);
+    connect(m_commandSocket, &ZMQSocket::messageReceived,
+            this, &QApplicationLauncher::commandMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_commandIdentity, "sockets connected" << m_subscribeUri << m_commandUri)

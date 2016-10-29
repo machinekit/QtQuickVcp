@@ -45,8 +45,8 @@ QApplicationFile::QApplicationFile(QObject *parent) :
     m_model = new QApplicationFileModel(this);
 
     m_networkManager = new QNetworkAccessManager(this);
-    connect(m_networkManager, SIGNAL(networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)),
-            this, SLOT(networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)));
+    connect(m_networkManager, &QNetworkAccessManager::networkAccessibleChanged,
+            this, &QApplicationFile::networkAccessibleChanged);
 
     if (m_networkManager->networkAccessible() == QNetworkAccessManager::Accessible)
     {
@@ -317,12 +317,12 @@ QString QApplicationFile::applicationFilePath(const QString &fileName)
 void QApplicationFile::initializeFtp()
 {
     m_ftp = new QFtp(this);
-    connect(m_ftp, SIGNAL(commandFinished(int,bool)),
-    this, SLOT(ftpCommandFinished(int,bool)));
-    connect(m_ftp, SIGNAL(listInfo(QUrlInfo)),
-    this, SLOT(addToList(QUrlInfo)));
-    connect(m_ftp, SIGNAL(dataTransferProgress(qint64,qint64)),
-    this, SLOT(transferProgress(qint64,qint64)));
+    connect(m_ftp, &QFtp::commandFinished,
+    this, &QApplicationFile::ftpCommandFinished);
+    connect(m_ftp, &QFtp::listInfo,
+    this, &QApplicationFile::addToList);
+    connect(m_ftp, &QFtp::dataTransferProgress,
+    this, &QApplicationFile::transferProgress);
 
     m_networkReady = true;
     emit readyChanged(m_networkReady);

@@ -45,10 +45,13 @@ QGLView::QGLView(QQuickItem *parent)
 {
     //setFlag(QQuickItem::ItemHasContents, true);
 
-    connect(this, SIGNAL(windowChanged(QQuickWindow*)), this, SLOT(handleWindowChanged(QQuickWindow*)));
+    connect(this, &QGLView::windowChanged,
+            this, &QGLView::handleWindowChanged);
     // queue this connection to prevent trigger on destruction
-    connect(this, SIGNAL(childrenChanged()), this, SLOT(updateChildren()), Qt::QueuedConnection);
-    connect(m_propertySignalMapper, SIGNAL(mapped(QObject*)), this, SLOT(updateItem(QObject*)));
+    connect(this, &QGLView::childrenChanged,
+            this, &QGLView::updateChildren, Qt::QueuedConnection);
+    connect(m_propertySignalMapper, static_cast<void (QSignalMapper::*)(QObject *)>(&QSignalMapper::mapped),
+            this, &QGLView::updateItem);
     //connect(this, SIGNAL(initialized()), this, SLOT(updateItems()), Qt::QueuedConnection);
 
     setRenderTarget(QQuickPaintedItem::InvertedYFramebufferObject);
@@ -84,9 +87,12 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
         // Connect the beforeRendering signal to our paint function.
         // Since this call is executed on the rendering thread it must be
         // a Qt::DirectConnection
-        connect(win, SIGNAL(beforeSynchronizing()), this, SLOT(sync()), Qt::DirectConnection);
-        connect(this, SIGNAL(widthChanged()), this, SLOT(updatePerspectiveAspectRatio()));
-        connect(this, SIGNAL(heightChanged()), this, SLOT(updatePerspectiveAspectRatio()));
+        connect(win, &QQuickWindow::beforeSynchronizing,
+                this, &QGLView::sync, Qt::DirectConnection);
+        connect(this, &QGLView::widthChanged,
+                this, &QGLView::updatePerspectiveAspectRatio);
+        connect(this, &QGLView::heightChanged,
+                this, &QGLView::updatePerspectiveAspectRatio);
 
         updatePerspectiveAspectRatio(); // set current aspect ratio since signals will only be handled on change
 
@@ -523,8 +529,8 @@ void QGLView::setupShaders()
 
 void QGLView::setupWindow()
 {
-    connect(window()->openglContext(), SIGNAL(aboutToBeDestroyed()),
-            this, SLOT(cleanup()), Qt::DirectConnection);
+    connect(window()->openglContext(), &QOpenGLContext::aboutToBeDestroyed,
+            this, &QGLView::cleanup, Qt::DirectConnection);
 
     QSurfaceFormat format = window()->format();
     format.setDepthBufferSize(24);
@@ -1032,8 +1038,10 @@ void QGLView::addGlItem(QGLItem *item)
     }
 
     m_propertySignalMapper->setMapping(item, item);
-    connect(item, SIGNAL(needsUpdate()), m_propertySignalMapper, SLOT(map()));
-    connect(this, SIGNAL(drawableSelected(void*)), item, SLOT(selectDrawable(void*)), Qt::QueuedConnection);
+    connect(item, &QGLItem::needsUpdate,
+            m_propertySignalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+    connect(this, &QGLView::drawableSelected,
+            item, &QGLItem::selectDrawable, Qt::QueuedConnection);
     emit glItemsChanged(glItems());
 }
 
@@ -1049,8 +1057,10 @@ void QGLView::removeGlItem(int index)
     delete m_drawableListMap.take(item);
 
     m_propertySignalMapper->removeMappings(item);
-    disconnect(item, SIGNAL(propertyChanged()), m_propertySignalMapper, SLOT(map()));
-    disconnect(this, SIGNAL(drawableSelected(void*)), item, SLOT(selectDrawable(void*)));
+    disconnect(item, &QGLItem::needsUpdate,
+               m_propertySignalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+    disconnect(this, &QGLView::drawableSelected,
+               item, &QGLItem::selectDrawable);
     emit glItemsChanged(glItems());
 }
 

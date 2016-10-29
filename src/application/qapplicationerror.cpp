@@ -44,8 +44,8 @@ QApplicationError::QApplicationError(QObject *parent) :
     m_errorSocket(nullptr),
     m_errorHeartbeatTimer(new QTimer(this))
 {
-   connect(m_errorHeartbeatTimer, SIGNAL(timeout()),
-           this, SLOT(errorHeartbeatTimerTick()));
+   connect(m_errorHeartbeatTimer, &QTimer::timeout,
+           this, &QApplicationError::errorHeartbeatTimerTick);
 }
 
 void QApplicationError::start()
@@ -244,8 +244,8 @@ void QApplicationError::errorHeartbeatTimerTick()
 bool QApplicationError::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
-    connect(m_context, SIGNAL(pollError(int,QString)),
-            this, SLOT(pollError(int,QString)));
+    connect(m_context, &PollingZMQContext::pollError,
+            this, &QApplicationError::pollError);
     m_context->start();
 
     m_errorSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
@@ -261,8 +261,8 @@ bool QApplicationError::connectSockets()
         return false;
     }
 
-    connect(m_errorSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(errorMessageReceived(QList<QByteArray>)));
+    connect(m_errorSocket, &ZMQSocket::messageReceived,
+            this, &QApplicationError::errorMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "error", "socket connected" << m_errorUri)

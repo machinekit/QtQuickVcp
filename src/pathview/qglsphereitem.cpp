@@ -29,10 +29,10 @@ QGLSphereItem::QGLSphereItem(QQuickItem *parent) :
     m_color(QColor(Qt::yellow)),
     m_selected(false)
 {
-    connect(this, SIGNAL(radiusChanged(float)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(colorChanged(QColor)),
-            this, SIGNAL(needsUpdate()));
+    connect(this, &QGLSphereItem::radiusChanged,
+            this, &QGLSphereItem::needsUpdate);
+    connect(this, &QGLSphereItem::colorChanged,
+            this, &QGLSphereItem::needsUpdate);
 }
 
 void QGLSphereItem::paint(QGLView *glView)
