@@ -83,7 +83,7 @@ Canvas3D {
         var zLineWidth
         var zMinLineWidth
 
-        if (plane == "XY")
+        if (plane === "XY")
         {
             xEnabled = root.enableAxis1
             xMinEnabled = root.enableAxis1Min
@@ -107,7 +107,7 @@ Canvas3D {
             yVector.x = size.x
         }
 
-        if (plane == "XZ")
+        if (plane === "XZ")
         {
             xEnabled = root.enableAxis1
             xMinEnabled = root.enableAxis1Min
@@ -131,7 +131,7 @@ Canvas3D {
             zVector.x = size.x
         }
 
-        if (plane == "YZ")
+        if (plane === "YZ")
         {
             yEnabled = root.enableAxis1
             yMinEnabled = root.enableAxis1Min

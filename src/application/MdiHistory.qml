@@ -42,7 +42,7 @@ QtObject {
 
     function _update() {
         model = settings.value("mdi.history")
-        if (model == null) {
+        if (model === null) {
             model = []
         }
     }

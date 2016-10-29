@@ -37,7 +37,7 @@ Canvas {
         var w = (width/3.0) - 1.0
         var m = 1.5
         context.reset()
-        if (style == "Flat")
+        if (style === "Flat")
         {
             if (!multicolor)
             {
@@ -92,7 +92,7 @@ Canvas {
         }
 
         onClicked: {
-            if (mouse.button == Qt.LeftButton) {
+            if (mouse.button === Qt.LeftButton) {
                 calculateValue(mouse.x,mouse.y)
             }
             else

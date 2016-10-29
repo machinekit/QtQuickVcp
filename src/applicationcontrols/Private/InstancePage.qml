@@ -14,7 +14,7 @@ Item {
     signal instanceSelected(string uuid)
 
     function _evaluateAutoSelection() {
-        if (visible && (autoSelectInstance == true) && (instances.length > 0))
+        if (visible && (autoSelectInstance === true) && (instances.length > 0))
         {
             var uuid = instances[0].uuid
             if (uuid !== "")
@@ -94,7 +94,7 @@ Item {
         anchors.fill: parent
 
         onCurrentIndexChanged: {
-            if (currentIndex == 0)
+            if (currentIndex === 0)
                 serviceDiscovery.lookupMode = ServiceDiscovery.MulticastDNS
             else
                 serviceDiscovery.lookupMode = ServiceDiscovery.UnicastDNS

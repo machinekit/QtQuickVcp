@@ -92,7 +92,7 @@ ListView {
                         return ""
                     }
                 }
-                visible: source != ""
+                visible: source !== ""
             }
 
             MouseArea {

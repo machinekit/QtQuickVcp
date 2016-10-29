@@ -44,20 +44,20 @@ RowLayout {
         placeholderText: "MDI"
 
         onAccepted: {
-            if (text != "") {
+            if (text !== "") {
                 mdiCommandAction.trigger()
             }
         }
 
         Keys.onUpPressed: {
             if (mdiHistory.model.length > 0) {
-                if (mdiHistoryPos == -1) {
+                if (mdiHistoryPos === -1) {
                     mdiHistoryPos = mdiHistory.model.length
                 }
 
                 mdiHistoryPos -= 1
 
-                if (mdiHistoryPos == -1) {
+                if (mdiHistoryPos === -1) {
                     mdiHistoryPos = 0
                 }
 

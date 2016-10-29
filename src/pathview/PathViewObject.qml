@@ -29,7 +29,7 @@ QtObject {
     property var gcodeProgramModel: core === null ? null : core.gcodeProgramModel
 
     Component.onCompleted: {
-        if (core == null)
+        if (core === null)
         {
             try {
                 var x = pathViewCore

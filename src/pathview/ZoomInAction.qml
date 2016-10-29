@@ -30,7 +30,7 @@ Action {
 
     id: root
     shortcut: "+"
-    enabled: view != null
+    enabled: view !== null
     text: qsTr("Zoom In")
     tooltip: qsTr("Zoom In")
     iconSource: "qrc:Machinekit/PathView/icons/zoom-in"

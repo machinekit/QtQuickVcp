@@ -85,32 +85,32 @@ Item {
     }
 
     function errorMessageReceived(type, text) {
-        if (notifications != null) {
+        if (notifications !== null) {
             notifications.addNotification(type, text)
         }
     }
 
     function fileError() {
-        if (file.error != ApplicationFile.NoError) {
+        if (file.error !== ApplicationFile.NoError) {
             console.log("file error: " + file.errorString)
             file.clearError()  // ignore errors from FTP
         }
     }
 
     function statusError() {
-        if (status.error != ApplicationStatus.NoError) {
+        if (status.error !== ApplicationStatus.NoError) {
             console.log("status error: " + status.errorString)
         }
     }
 
     function commandError() {
-        if (command.error != ApplicationCommand.NoError) {
+        if (command.error !== ApplicationCommand.NoError) {
             console.log("command error: " + command.errorString)
         }
     }
 
     function errorError() {
-        if (error.error != ApplicationError.NoError) {
+        if (error.error !== ApplicationError.NoError) {
             console.log("error error: " + error.errorString)
         }
     }

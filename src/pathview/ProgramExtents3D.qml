@@ -29,7 +29,7 @@ Canvas3D {
     property vector3d minimum: Qt.vector3d(1.0, 0.8, 0.0)
     readonly property vector3d size: maximum.minus(minimum)
     readonly property vector3d center: minimum.plus(maximum).times(0.5)
-    readonly property bool valid: minimum != maximum
+    readonly property bool valid: minimum !== maximum
     property vector3d limitMaximum: Qt.vector3d(1.5, 3.0, 2.5)
     property vector3d limitMinimum: Qt.vector3d(0.0, 0.0, 0.0)
     property color color: "magenta"

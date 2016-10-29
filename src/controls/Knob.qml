@@ -23,7 +23,7 @@ Item {
     property string prefix: ""
     property string suffix: ""
     property alias font: label.font
-    property real centerScale: needleType == "Groove" ? 0.8 : 0.66
+    property real centerScale: needleType === "Groove" ? 0.8 : 0.66
     property alias text: label.text
 
     id: root

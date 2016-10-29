@@ -274,7 +274,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: parent.width * 0.02
         anchors.top: parent.top
-        text: qsTr("Value: <br><b>%1</b>").arg(chart.prefix + ((valueModel != null) ? valueModel.currentValue.toFixed(chart.decimals) : 0) + chart.suffix)
+        text: qsTr("Value: <br><b>%1</b>").arg(chart.prefix + ((valueModel !== null) ? valueModel.currentValue.toFixed(chart.decimals) : 0) + chart.suffix)
     }
 
     Label {
@@ -284,12 +284,12 @@ Item {
         anchors.rightMargin: leftText.anchors.leftMargin
         anchors.top: parent.top
         height: (leftText.visible || rightText.visible) ? implicitHeight : 0    // hides top bar if no label visible
-        text: qsTr("Target: <br><b>%1</b>").arg(chart.prefix + ((valueModel != null) ? valueModel.targetValue.toFixed(chart.decimals) : 0) + chart.suffix)
+        text: qsTr("Target: <br><b>%1</b>").arg(chart.prefix + ((valueModel !== null) ? valueModel.targetValue.toFixed(chart.decimals) : 0) + chart.suffix)
     }
 
     Label {
         id: messageText
-        color: (rightText.height == 0) ? chart.signalColor : chart.textColor
+        color: (rightText.height === 0) ? chart.signalColor : chart.textColor
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         z: canvas.z + 1
@@ -365,7 +365,7 @@ Item {
             for (var i = 0; i < end; i+=pixelSkip) {
                 var x = points[i].x;
                 var y = points[i].y;
-                if (i == 0) {
+                if (i === 0) {
                     ctx.moveTo(x+w/2, y);
                 } else {
                     ctx.lineTo(x+w/2, y);

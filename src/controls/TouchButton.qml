@@ -26,7 +26,7 @@ import QtQuick.Controls.Styles 1.1
 
 ToolButton {
     style: ButtonStyle {
-        property bool hovered : (Qt.platform.os == "android") ? false : control.hovered
+        property bool hovered : (Qt.platform.os === "android") ? false : control.hovered
             background: Rectangle {
                 border.color: (control.pressed || control.checked || hovered) ? systemPalette.shadow : "#00000000"
                 border.width: hovered ? 2 : 1
