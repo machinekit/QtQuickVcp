@@ -181,8 +181,8 @@ private:
     void updateError(ConnectionError error, QString errorString);
 
 private slots:
-    void statusMessageReceived(QList<QByteArray> messageList);
-    void previewMessageReceived(QList<QByteArray> messageList);
+    void statusMessageReceived(const QList<QByteArray> &messageList);
+    void previewMessageReceived(const QList<QByteArray> &messageList);
     void pollError(int errorNum, const QString& errorMsg);
 
     bool connectSockets();

@@ -413,7 +413,7 @@ void QApplicationConfig::disconnectSocket()
     }
 }
 
-void QApplicationConfig::configMessageReceived(QList<QByteArray> messageList)
+void QApplicationConfig::configMessageReceived(const QList<QByteArray> &messageList)
 {
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 

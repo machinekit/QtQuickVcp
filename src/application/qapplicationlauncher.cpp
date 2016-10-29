@@ -322,7 +322,7 @@ void QApplicationLauncher::pollError(int errorNum, const QString &errorMsg)
 }
 
 /** Processes all message received on the update 0MQ socket */
-void QApplicationLauncher::subscribeMessageReceived(QList<QByteArray> messageList)
+void QApplicationLauncher::subscribeMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -400,7 +400,7 @@ void QApplicationLauncher::subscribeMessageReceived(QList<QByteArray> messageLis
 }
 
 /** Processes all message received on the command 0MQ socket */
-void QApplicationLauncher::commandMessageReceived(QList<QByteArray> messageList)
+void QApplicationLauncher::commandMessageReceived(const QList<QByteArray> &messageList)
 {
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 

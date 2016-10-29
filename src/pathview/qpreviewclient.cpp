@@ -122,7 +122,7 @@ void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString 
 }
 
 /** Processes all message received on the status 0MQ socket */
-void QPreviewClient::statusMessageReceived(QList<QByteArray> messageList)
+void QPreviewClient::statusMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -152,7 +152,7 @@ void QPreviewClient::statusMessageReceived(QList<QByteArray> messageList)
 }
 
 /** Processes all message received on the preview 0MQ socket */
-void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
+void QPreviewClient::previewMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 

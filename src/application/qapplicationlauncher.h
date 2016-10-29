@@ -171,8 +171,8 @@ private:
     void initializeObject();
 
 private slots:
-    void subscribeMessageReceived(QList<QByteArray> messageList);
-    void commandMessageReceived(QList<QByteArray> messageList);
+    void subscribeMessageReceived(const QList<QByteArray> &messageList);
+    void commandMessageReceived(const QList<QByteArray> &messageList);
     void pollError(int errorNum, const QString& errorMsg);
     void commandHeartbeatTimerTick();
     void subscribeHeartbeatTimerTick();

@@ -117,7 +117,7 @@ private:
 private slots:
     bool connectSocket();
     void disconnectSocket();
-    void configMessageReceived(QList<QByteArray> messageList);
+    void configMessageReceived(const QList<QByteArray> &messageList);
     void pollError(int errorNum, const QString &errorMsg);
     void request(pb::ContainerType type);
 

@@ -259,8 +259,8 @@ private:
     static QString splitPinFromHalName(const QString &name);
 
 private slots:
-    void halrcompMessageReceived(QList<QByteArray> messageList);
-    void halrcmdMessageReceived(QList<QByteArray> messageList);
+    void halrcompMessageReceived(const QList<QByteArray> &messageList);
+    void halrcmdMessageReceived(const QList<QByteArray> &messageList);
     void pollError(int errorNum, const QString& errorMsg);
     void halrcmdHeartbeatTimerTick();
     void halrcompHeartbeatTimerTick();

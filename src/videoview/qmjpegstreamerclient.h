@@ -141,7 +141,7 @@ private slots:
     void stop();
     void connectSocket();
     void disconnectSocket();
-    void updateMessageReceived(QList<QByteArray> messageList);
+    void updateMessageReceived(const QList<QByteArray> &messageList);
 
     void updateFramerate();
     void updateStreamBuffer();

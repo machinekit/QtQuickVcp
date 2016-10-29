@@ -673,7 +673,7 @@ QObjectList QHalRemoteComponent::recurseObjects(const QObjectList &list)
 }
 
 /** Processes all message received on the update 0MQ socket */
-void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
+void QHalRemoteComponent::halrcompMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -790,7 +790,7 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
 }
 
 /** Processes all message received on the command 0MQ socket */
-void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
+void QHalRemoteComponent::halrcmdMessageReceived(const QList<QByteArray> &messageList)
 {
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 

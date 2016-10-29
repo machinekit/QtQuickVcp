@@ -231,7 +231,7 @@ void QMjpegStreamerClient::disconnectSocket()
     }
 }
 
-void QMjpegStreamerClient::updateMessageReceived(QList<QByteArray> messageList)
+void QMjpegStreamerClient::updateMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
