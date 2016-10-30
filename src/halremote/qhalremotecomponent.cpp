@@ -22,6 +22,14 @@
 #include "qhalremotecomponent.h"
 #include "debughelper.h"
 
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
+
+using namespace nzmqt;
+
 /*!
     \qmltype HalRemoteComponent
     \instantiates QHalRemoteComponent
@@ -201,10 +209,10 @@ QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
 {
     m_uuid = QUuid::createUuid();
 
-    connect(m_halrcmdHeartbeatTimer, SIGNAL(timeout()),
-            this, SLOT(halrcmdHeartbeatTimerTick()));
-    connect(m_halrcompHeartbeatTimer, SIGNAL(timeout()),
-            this, SLOT(halrcompHeartbeatTimerTick()));
+    connect(m_halrcmdHeartbeatTimer, &QTimer::timeout,
+            this, &QHalRemoteComponent::halrcmdHeartbeatTimerTick);
+    connect(m_halrcompHeartbeatTimer, &QTimer::timeout,
+            this, &QHalRemoteComponent::halrcompHeartbeatTimerTick);
 }
 
 /** Scans all children of the container item for pins and adds them to a map */
@@ -227,8 +235,8 @@ void QHalRemoteComponent::addPins()
         }
         m_pinsByName[pin->name()] = pin;
         m_pins.append(pin);
-        connect(pin, SIGNAL(valueChanged(QVariant)),
-                this, SLOT(pinChange(QVariant)));
+        connect(pin, &QHalPin::valueChanged,
+                this, &QHalRemoteComponent::pinChange);
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_name, "pin added: " << pin->name())
 #endif
@@ -271,8 +279,8 @@ void QHalRemoteComponent::unsyncPins()
 bool QHalRemoteComponent::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
-    connect(m_context, SIGNAL(pollError(int,QString)),
-            this, SLOT(pollError(int,QString)));
+    connect(m_context, &PollingZMQContext::pollError,
+            this, &QHalRemoteComponent::pollError);
     m_context->start();
 
     m_halrcmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -294,10 +302,10 @@ bool QHalRemoteComponent::connectSockets()
         return false;
     }
 
-    connect(m_halrcompSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(halrcompMessageReceived(QList<QByteArray>)));
-    connect(m_halrcmdSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(halrcmdMessageReceived(QList<QByteArray>)));
+    connect(m_halrcompSocket, &ZMQSocket::messageReceived,
+            this, &QHalRemoteComponent::halrcompMessageReceived);
+    connect(m_halrcmdSocket, &ZMQSocket::messageReceived,
+            this, &QHalRemoteComponent::halrcmdMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_name, "sockets connected" << m_halrcompUri << m_halrcmdUri)
@@ -424,8 +432,8 @@ QHalPin *QHalRemoteComponent::addLocalPin(const pb::Pin &remotePin)
     localPin->setDirection(static_cast<QHalPin::HalPinDirection>(remotePin.dir()));
     m_pinsByName[name] = localPin;
     m_pins.append(localPin);
-    connect(localPin, SIGNAL(valueChanged(QVariant)),
-            this, SLOT(pinChange(QVariant)));
+    connect(localPin, &QHalPin::valueChanged,
+            this, &QHalRemoteComponent::pinChange);
 
     return localPin;
 }
@@ -665,7 +673,7 @@ QObjectList QHalRemoteComponent::recurseObjects(const QObjectList &list)
 }
 
 /** Processes all message received on the update 0MQ socket */
-void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
+void QHalRemoteComponent::halrcompMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -782,7 +790,7 @@ void QHalRemoteComponent::halrcompMessageReceived(QList<QByteArray> messageList)
 }
 
 /** Processes all message received on the command 0MQ socket */
-void QHalRemoteComponent::halrcmdMessageReceived(QList<QByteArray> messageList)
+void QHalRemoteComponent::halrcmdMessageReceived(const QList<QByteArray> &messageList)
 {
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 

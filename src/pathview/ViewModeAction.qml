@@ -29,9 +29,9 @@ Action {
 
     id: root
     shortcut: "V"
-    enabled: view != null
+    enabled: view !== null
     checkable: true
-    checked: (view != null) && (view.viewMode === viewMode)
+    checked: (view !== null) && (view.viewMode === viewMode)
     text: {
         switch (viewMode) {
         case "Front":

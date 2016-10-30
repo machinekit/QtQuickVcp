@@ -58,7 +58,7 @@ RadioButton {
 
     id: main
 
-    enabled: pin.direction == HalPin.Out
+    enabled: pin.direction === HalPin.Out
 
     HalPin {
         id: pin

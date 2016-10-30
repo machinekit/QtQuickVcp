@@ -187,10 +187,10 @@ Rectangle {
         visible: false
         z: 100
         sourceComponent: defaultDiscoveryPage
-        active: background == discoveryPage
+        active: background === discoveryPage
 
         Behavior on opacity {
-            enabled: opacity == 1.0
+            enabled: opacity === 1.0
             PropertyAnimation {
                 duration: 500;
                 properties: "opacity";

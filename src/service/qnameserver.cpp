@@ -52,8 +52,8 @@ void QNameServer::updateHostAddress()
             }
 
             m_dnsLookup = new QDnsLookup(this);
-            connect(m_dnsLookup, SIGNAL(finished()),
-                    this, SLOT(handleServers()));
+            connect(m_dnsLookup, &QDnsLookup::finished,
+                    this, &QNameServer::handleServers);
 
             m_dnsLookup->setType(QDnsLookup::A);
             m_dnsLookup->setName(m_hostName);

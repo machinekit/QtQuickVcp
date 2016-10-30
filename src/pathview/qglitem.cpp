@@ -30,20 +30,18 @@ QGLItem::QGLItem(QQuickItem *parent) :
     m_rotationAngle(0),
     m_rotationAxis(QVector3D())
 {
-    connect(this, SIGNAL(positionChanged(QVector3D)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(positionChanged(QVector3D)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(scaleChanged()),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(rotationChanged(QQuaternion)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(rotationAngleChanged(float)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(rotationAxisChanged(QVector3D)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(visibleChanged()),
-            this, SIGNAL(needsUpdate()));
+    connect(this, &QGLItem::positionChanged,
+            this, &QGLItem::needsUpdate);
+    connect(this, &QGLItem::scaleChanged,
+            this, &QGLItem::needsUpdate);
+    connect(this, &QGLItem::rotationChanged,
+            this, &QGLItem::needsUpdate);
+    connect(this, &QGLItem::rotationAngleChanged,
+            this, &QGLItem::needsUpdate);
+    connect(this, &QGLItem::rotationAxisChanged,
+            this, &QGLItem::needsUpdate);
+    connect(this, &QGLItem::visibleChanged,
+            this, &QGLItem::needsUpdate);
 }
 
 void QGLItem::requestPaint()

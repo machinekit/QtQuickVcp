@@ -245,7 +245,7 @@ Rectangle {
     /*! \internal */
     function selectApplication(index)
     {
-        if (mode == "local")
+        if (mode === "local")
             d.applicationSource = applications[index].mainFile
         else
             applicationConfig.selectConfig(applicationConfig.configs[index].name)
@@ -254,13 +254,13 @@ Rectangle {
     /*! \internal */
     function goBack()
     {
-        if (mainWindow.state == "instance")
+        if (mainWindow.state === "instance")
         {
             Qt.quit()
         }
-        else if (mainWindow.state == "launcher")
+        else if (mainWindow.state === "launcher")
         {
-            if (autoSelectInstance == false)
+            if (autoSelectInstance === false)
             {
                 serviceDiscoveryFilter.txtRecords = []
                 serviceDiscovery.updateFilter()
@@ -271,16 +271,16 @@ Rectangle {
                 Qt.quit()
             }
         }
-        else if ((mainWindow.state == "config") || (mainWindow.state == "launcher-selected"))
+        else if ((mainWindow.state === "config") || (mainWindow.state === "launcher-selected"))
         {
             d.holdLauncher = true
         }
-        else if ((mainWindow.state == "app-loaded") || (mainWindow.state == "app-loading"))
+        else if ((mainWindow.state === "app-loaded") || (mainWindow.state === "app-loading"))
         {
             if ((autoSelectApplication) && (autoSelectInstance))
                 Qt.quit()
 
-            if (d.applicationSource == "")    // remote application
+            if (d.applicationSource === "")    // remote application
                 applicationConfig.unselectConfig()
             else
                 d.applicationSource = ""
@@ -295,7 +295,7 @@ Rectangle {
                 d.instanceSelected = false
             }
         }
-        else if (mainWindow.state == "error")
+        else if (mainWindow.state === "error")
         {
             clearError()
             goBack()
@@ -629,12 +629,12 @@ Rectangle {
         {
             return "error"
         }
-        else if (appPage.status == Loader.Ready)
+        else if (appPage.status === Loader.Ready)
         {
             return "app-loaded"
         }
         else if (applicationConfig.selectedConfig.loading
-                 || (appPage.active && (appPage.status == Loader.Loading)))
+                 || (appPage.active && (appPage.status === Loader.Loading)))
         {
             return "app-loading"
         }

@@ -421,7 +421,7 @@ Item
                 context.arc(d.center.x, d.center.y, d.radius - (visualizerWidth * 0.5 + d.lineWidth*2 + d.indicatorWidth), d.endAngle - (((d.range  - (z1BorderValue - minimumValue)) / d.range) * (d.wholeAngle)), d.endAngle);
                 context.stroke();
 
-                if (minimumValue != zeroValue) {
+                if (minimumValue !== zeroValue) {
                     // DRAW Z0 ARC
                     context.beginPath();
                     context.lineWidth = visualizerWidth;

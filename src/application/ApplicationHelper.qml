@@ -27,8 +27,8 @@ Item {
     property var axisNames: getAxisNames()
     property string timeUnits: getTimeUnits()
     property string distanceUnits: getDistanceUnits()
-    property double timeFactor: (timeUnits == "min") ? 60 : 1
-    property double distanceFactor: (distanceUnits == "mm") ? 1.0 : ((distanceUnits == "in") ? 0.03937 : 0.1)
+    property double timeFactor: (timeUnits === "min") ? 60 : 1
+    property double distanceFactor: (distanceUnits === "mm") ? 1.0 : ((distanceUnits === "in") ? 0.03937 : 0.1)
 
     function getTimeUnits() {
         if (status.synced) {

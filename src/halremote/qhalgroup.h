@@ -32,14 +32,6 @@
 #include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/message.pb.h>
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
-
 class QHalGroup : public AbstractServiceImplementation
 {
     Q_OBJECT
@@ -153,8 +145,8 @@ private:
     QObject     *m_containerItem;
     QJsonObject m_values;
 
-    PollingZMQContext *m_context;
-    ZMQSocket   *m_halgroupSocket;
+    nzmqt::PollingZMQContext *m_context;
+    nzmqt::ZMQSocket *m_halgroupSocket;
     QTimer      *m_halgroupHeartbeatTimer;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;

@@ -21,6 +21,14 @@
 ****************************************************************************/
 #include "qmjpegstreamerclient.h"
 
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
+
+using namespace nzmqt;
+
 /*!
     \qmltype MjpegStreamerClient
     \instantiates QMjpegStreamerClient
@@ -114,12 +122,12 @@ QMjpegStreamerClient::QMjpegStreamerClient(QQuickPaintedItem *parent) :
     this->setAntialiasing(false);
     this->setOpaquePainting(true);
 
-    connect(m_framerateTimer, SIGNAL(timeout()),
-            this, SLOT(updateFramerate()));
+    connect(m_framerateTimer, &QTimer::timeout,
+            this, &QMjpegStreamerClient::updateFramerate);
     m_framerateTimer->setInterval(1000);
 
-    connect(m_streamBufferTimer, SIGNAL(timeout()),
-            this, SLOT(updateStreamBuffer()));
+    connect(m_streamBufferTimer, &QTimer::timeout,
+            this, &QMjpegStreamerClient::updateStreamBuffer);
     m_streamBufferTimer->setSingleShot(true);
 }
 
@@ -202,8 +210,8 @@ void QMjpegStreamerClient::connectSocket()
     m_updateSocket->connectTo(m_videoUri);
     m_updateSocket->subscribeTo("frames");
 
-    connect(m_updateSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-         this, SLOT(updateMessageReceived(QList<QByteArray>)));
+    connect(m_updateSocket, &ZMQSocket::messageReceived,
+         this, &QMjpegStreamerClient::updateMessageReceived);
 }
 
 void QMjpegStreamerClient::disconnectSocket()
@@ -223,7 +231,7 @@ void QMjpegStreamerClient::disconnectSocket()
     }
 }
 
-void QMjpegStreamerClient::updateMessageReceived(QList<QByteArray> messageList)
+void QMjpegStreamerClient::updateMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 

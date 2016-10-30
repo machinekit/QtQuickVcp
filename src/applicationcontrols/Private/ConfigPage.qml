@@ -19,7 +19,7 @@ Item {
     signal goBack()
 
     function _evaluateAutoSelection() {
-        if ((autoSelectApplication == true) && (_listModel.length > 0) && configService.ready)
+        if ((autoSelectApplication === true) && (_listModel.length > 0) && configService.ready)
         {
             applicationSelected(0)
         }
@@ -117,7 +117,7 @@ Item {
                 BusyIndicator {
                     anchors.centerIn: parent
                     running: true
-                    visible: (root.mode == "remote") && !applicationConfig.connected
+                    visible: (root.mode === "remote") && !applicationConfig.connected
                     height: Math.min(root.width, root.height) * 0.15
                     width: height
                 }
@@ -130,7 +130,7 @@ Item {
         anchors.fill: parent
 
         onCurrentIndexChanged: {
-            if (currentIndex == 0)
+            if (currentIndex === 0)
                 root.mode = "remote"
             else
                 root.mode = "local"
@@ -138,7 +138,7 @@ Item {
 
         Binding {
             target: appView; property: "currentIndex";
-            value: ((root.mode == "remote") ? 0 : 1)
+            value: ((root.mode === "remote") ? 0 : 1)
         }
 
         SlidePage {

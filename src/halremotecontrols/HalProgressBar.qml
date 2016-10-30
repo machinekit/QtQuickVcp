@@ -164,10 +164,10 @@ ProgressBar {
         id: minimumValueLabel
 
         anchors.fill: parent
-        anchors.leftMargin: (main.orientation == Qt.Horizontal) ?  Screen.pixelDensity*1 : 0
-        anchors.bottomMargin: (main.orientation == Qt.Horizontal) ? 0 : Screen.pixelDensity*1
-        horizontalAlignment: (main.orientation == Qt.Horizontal) ? Text.AlignLeft : Text.AlignHCenter
-        verticalAlignment: (main.orientation == Qt.Horizontal) ? Text.AlignVCenter : Text.AlignBottom
+        anchors.leftMargin: (main.orientation === Qt.Horizontal) ?  Screen.pixelDensity*1 : 0
+        anchors.bottomMargin: (main.orientation === Qt.Horizontal) ? 0 : Screen.pixelDensity*1
+        horizontalAlignment: (main.orientation === Qt.Horizontal) ? Text.AlignLeft : Text.AlignHCenter
+        verticalAlignment: (main.orientation === Qt.Horizontal) ? Text.AlignVCenter : Text.AlignBottom
         text: main.prefix + main.minimumValue.toFixed(decimals) + main.suffix
         visible: true
     }
@@ -176,10 +176,10 @@ ProgressBar {
         id: maximumValueLabel
 
         anchors.fill: parent
-        anchors.rightMargin: (main.orientation == Qt.Horizontal) ? Screen.pixelDensity*1 : 0
-        anchors.topMargin:   (main.orientation == Qt.Horizontal) ? 0 : Screen.pixelDensity*1
-        horizontalAlignment: (main.orientation == Qt.Horizontal) ? Text.AlignRight : Text.AlignHCenter
-        verticalAlignment: (main.orientation == Qt.Horizontal) ? Text.AlignVCenter : Text.AlignTop
+        anchors.rightMargin: (main.orientation === Qt.Horizontal) ? Screen.pixelDensity*1 : 0
+        anchors.topMargin:   (main.orientation === Qt.Horizontal) ? 0 : Screen.pixelDensity*1
+        horizontalAlignment: (main.orientation === Qt.Horizontal) ? Text.AlignRight : Text.AlignHCenter
+        verticalAlignment: (main.orientation === Qt.Horizontal) ? Text.AlignVCenter : Text.AlignTop
         text: main.prefix + main.maximumValue.toFixed(decimals) + main.suffix
         visible: true
     }

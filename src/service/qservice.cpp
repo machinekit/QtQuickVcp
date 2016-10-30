@@ -155,22 +155,22 @@ QService::QService(QObject *parent) :
     m_serviceQuery->setQueryType(QJDns::Ptr);
     m_queries.append(m_serviceQuery);
 
-    connect(m_serviceQuery, SIGNAL(serviceTypeChanged(QString)),
-            this, SIGNAL(queriesChanged()));
-    connect(m_serviceQuery, SIGNAL(filterChanged(QServiceDiscoveryFilter*)),
-            this, SIGNAL(queriesChanged()));
+    connect(m_serviceQuery, &QServiceDiscoveryQuery::queryTypeChanged,
+            this, &QService::queriesChanged);
+    connect(m_serviceQuery, &QServiceDiscoveryQuery::filterChanged,
+            this, &QService::queriesChanged);
 
-    connect(m_serviceQuery, SIGNAL(itemsChanged(QQmlListProperty<QServiceDiscoveryItem>)),
-            this, SLOT(serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem>)));
+    connect(m_serviceQuery, &QServiceDiscoveryQuery::itemsChanged,
+            this, &QService::serviceQueryItemsUpdated);
 
-    connect(this, SIGNAL(typeChanged(QString)),
-            this, SLOT(updateServiceQuery()));
-    connect(this, SIGNAL(baseTypeChanged(QString)),
-            this, SLOT(updateServiceQuery()));
-    connect(this, SIGNAL(protocolChanged(QString)),
-            this, SLOT(updateServiceQuery()));
-    connect(this, SIGNAL(domainChanged(QString)),
-            this, SLOT(updateServiceQuery()));
+    connect(this, &QService::typeChanged,
+            this, &QService::updateServiceQuery);
+    connect(this, &QService::baseTypeChanged,
+            this, &QService::updateServiceQuery);
+    connect(this, &QService::protocolChanged,
+            this, &QService::updateServiceQuery);
+    connect(this, &QService::domainChanged,
+            this, &QService::updateServiceQuery);
 
     updateServiceQuery();
 }

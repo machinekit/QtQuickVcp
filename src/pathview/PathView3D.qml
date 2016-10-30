@@ -325,12 +325,12 @@ GLView3D {
     }
 
     Grid3D {
-        visible: pathView.gridVisible && (pathView.viewMode != "Perspective")
+        visible: pathView.gridVisible && (pathView.viewMode !== "Perspective")
         colorAxis1: pathView.colors["grid"]
         colorAxis1Min: pathView.colors["grid_min"]
         colorAxis2: pathView.colors["grid"]
         colorAxis2Min: pathView.colors["grid_min"]
-        minimum: (plane == "XZ") ? Qt.vector3d(boundingBox.minimum.x,
+        minimum: (plane === "XZ") ? Qt.vector3d(boundingBox.minimum.x,
                                                boundingBox.maximum.y,
                                                boundingBox.minimum.z) :
                                    boundingBox.minimum
@@ -361,7 +361,7 @@ GLView3D {
         visible: pathView.machineLimitsVisible
         axes: pathView.axes
         color: pathView.colors["machine_limits"]
-        lineStippleLength: (pathView.viewMode == "Perspective") ? 0.02 * camera.distance / pathView.cameraZoom : 0.02
+        lineStippleLength: (pathView.viewMode === "Perspective") ? 0.02 * camera.distance / pathView.cameraZoom : 0.02
         minimum.x: _ready ? status.config.axis[0].minPositionLimit : 0
         minimum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].minPositionLimit : 0
         minimum.z: (_ready && status.config.axis.length > 2) ? status.config.axis[2].minPositionLimit : 0
@@ -401,14 +401,14 @@ GLView3D {
         xAxisColor: pathView.colors["axis_x"]
         yAxisColor: pathView.colors["axis_y"]
         zAxisColor: pathView.colors["axis_z"]
-        xAxisRotation: (pathView.viewMode == "Front") ? 90 : 0
-        yAxisRotation: (pathView.viewMode == "Side") ? 90 : 0
-        zAxisRotation: (pathView.viewMode == "Side") ? 90 : 0
+        xAxisRotation: (pathView.viewMode === "Front") ? 90 : 0
+        yAxisRotation: (pathView.viewMode === "Side") ? 90 : 0
+        zAxisRotation: (pathView.viewMode === "Side") ? 90 : 0
 
         function getPosition() {
             var positionVector = Qt.vector3d(0.0, 0.0, 0.0)
 
-            if (positionOffset == ApplicationStatus.RelativePositionOffset)
+            if (positionOffset === ApplicationStatus.RelativePositionOffset)
             {
                 positionVector.x = g5xOffset.x + g92Offset.x
                 if (axes > 1) {
@@ -470,7 +470,7 @@ GLView3D {
         backplotTraverseColor: pathView.colors["backplottraverse"]
         selectedColor: pathView.colors["selected"]
         activeColor: pathView.colors["active"]
-        traverseLineStippleLength: (pathView.viewMode == "Perspective") ? 0.015 * camera.distance / pathView.cameraZoom : 0.015
+        traverseLineStippleLength: (pathView.viewMode === "Perspective") ? 0.015 * camera.distance / pathView.cameraZoom : 0.015
         model: (pathView.model !== undefined) ? pathView.model : tmpModel
     }
 

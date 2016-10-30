@@ -50,7 +50,7 @@ Button {
         }
     }
 
-    text: (direction == 1) ? "+" : "-"
+    text: (direction === 1) ? "+" : "-"
     enabled: jogAction.enabled
 
     onPressedChanged: {

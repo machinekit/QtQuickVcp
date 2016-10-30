@@ -31,14 +31,14 @@ QGLCylinderItem::QGLCylinderItem(QQuickItem *parent) :
     m_cone(false),
     m_selected(false)
 {
-    connect(this, SIGNAL(radiusChanged(float)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(heightChanged()),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(colorChanged(QColor)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(coneChanged(bool)),
-            this, SIGNAL(needsUpdate()));
+    connect(this, &QGLCylinderItem::radiusChanged,
+            this, &QGLCylinderItem::needsUpdate);
+    connect(this, &QGLCylinderItem::heightChanged,
+            this, &QGLCylinderItem::needsUpdate);
+    connect(this, &QGLCylinderItem::colorChanged,
+            this, &QGLCylinderItem::needsUpdate);
+    connect(this, &QGLCylinderItem::coneChanged,
+            this, &QGLCylinderItem::needsUpdate);
 }
 
 void QGLCylinderItem::paint(QGLView *glView)

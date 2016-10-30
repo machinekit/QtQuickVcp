@@ -23,6 +23,14 @@
 #include "qpreviewclient.h"
 #include "debughelper.h"
 
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
+
+using namespace nzmqt;
+
 QPreviewClient::QPreviewClient(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_statusUri(""),
@@ -114,7 +122,7 @@ void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString 
 }
 
 /** Processes all message received on the status 0MQ socket */
-void QPreviewClient::statusMessageReceived(QList<QByteArray> messageList)
+void QPreviewClient::statusMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -144,7 +152,7 @@ void QPreviewClient::statusMessageReceived(QList<QByteArray> messageList)
 }
 
 /** Processes all message received on the preview 0MQ socket */
-void QPreviewClient::previewMessageReceived(QList<QByteArray> messageList)
+void QPreviewClient::previewMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -214,8 +222,8 @@ void QPreviewClient::pollError(int errorNum, const QString &errorMsg)
 bool QPreviewClient::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
-    connect(m_context, SIGNAL(pollError(int,QString)),
-            this, SLOT(pollError(int,QString)));
+    connect(m_context, &PollingZMQContext::pollError,
+            this, &QPreviewClient::pollError);
     m_context->start();
 
     m_statusSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
@@ -235,10 +243,10 @@ bool QPreviewClient::connectSockets()
         return false;
     }
 
-    connect(m_statusSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(statusMessageReceived(QList<QByteArray>)));
-    connect(m_previewSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(previewMessageReceived(QList<QByteArray>)));
+    connect(m_statusSocket, &ZMQSocket::messageReceived,
+            this, &QPreviewClient::statusMessageReceived);
+    connect(m_previewSocket, &ZMQSocket::messageReceived,
+            this, &QPreviewClient::previewMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "preview", "sockets connected" << m_statusUri << m_previewUri)

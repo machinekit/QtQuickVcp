@@ -29,7 +29,7 @@ import Machinekit.Application 1.0
 ApplicationItem {
     property alias textColor: dummyLabel.color
     property alias font: dummyLabel.font
-    property int decimals: (_distanceUnits == "mm") ? 3 : 4
+    property int decimals: (_distanceUnits === "mm") ? 3 : 4
     property string prefix: ""
     property string suffix: ""
     property int axes: axisNames.length
@@ -69,14 +69,14 @@ ApplicationItem {
     function getPosition() {
         var basePosition
         if (_ready) {
-            basePosition = (positionFeedback == ApplicationStatus.ActualPositionFeedback) ? status.motion.actualPosition : status.motion.position
+            basePosition = (positionFeedback === ApplicationStatus.ActualPositionFeedback) ? status.motion.actualPosition : status.motion.position
             basePosition = scalePosition(basePosition);
         }
         else {
             basePosition = {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
         }
 
-        if (positionOffset == ApplicationStatus.RelativePositionOffset) {
+        if (positionOffset === ApplicationStatus.RelativePositionOffset) {
             for (var i = 0; i < axes; ++i) {
                 var axisName = _axisNames[i]
                 basePosition[axisName] -= g5xOffset[axisName] + g92Offset[axisName] + toolOffset[axisName]
@@ -131,7 +131,7 @@ ApplicationItem {
                     onLoaded: {
                         item.color = Qt.binding(function(){return dummyLabel.color})
                     }
-                    active: type == ""
+                    active: type === ""
                     visible: root.homed
                 }
             }

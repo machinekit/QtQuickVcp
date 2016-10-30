@@ -35,14 +35,6 @@
 #include <machinetalk/protobuf/emcclass.pb.h>
 #include "qapplicationstatus.h"
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
-
 class QApplicationCommand : public AbstractServiceImplementation
 {
     Q_OBJECT
@@ -218,8 +210,8 @@ private:
     ConnectionError m_error;
     QString         m_errorString;
 
-    PollingZMQContext *m_context;
-    ZMQSocket   *m_commandSocket;
+    nzmqt::PollingZMQContext *m_context;
+    nzmqt::ZMQSocket *m_commandSocket;
     QTimer      *m_commandHeartbeatTimer;
     int         m_commandPingErrorCount;
     int         m_commandPingErrorThreshold;

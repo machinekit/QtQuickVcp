@@ -29,7 +29,7 @@ Action {
 
     id: root
     shortcut: "*"
-    enabled: view != null
+    enabled: view !== null
     text: qsTr("Reset Zoom")
     tooltip: qsTr("Reset Zoom")
     iconSource: "qrc:Machinekit/PathView/icons/zoom-original"

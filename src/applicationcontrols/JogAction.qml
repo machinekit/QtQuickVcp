@@ -40,7 +40,7 @@ ApplicationAction {
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
         }
         if (velocity !== 0.0) {
-            if (distance == 0.0) {
+            if (distance === 0.0) {
                 command.jog(ApplicationCommand.ContinuousJog, axis, velocity)
             }
             else {

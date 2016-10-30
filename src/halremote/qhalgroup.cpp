@@ -23,6 +23,14 @@
 #include "qhalgroup.h"
 #include "debughelper.h"
 
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
+
+using namespace nzmqt;
+
 /*! \qmlproperty bool HalGroup::connected
 
     This property hold wheter the HAL group is connected or not. This is the
@@ -43,8 +51,8 @@ QHalGroup::QHalGroup(QObject *parent) :
     m_halgroupSocket(nullptr),
     m_halgroupHeartbeatTimer(new QTimer(this))
 {
-    connect(m_halgroupHeartbeatTimer, SIGNAL(timeout()),
-            this, SLOT(halgroupHeartbeatTimerTick()));
+    connect(m_halgroupHeartbeatTimer, &QTimer::timeout,
+            this, &QHalGroup::halgroupHeartbeatTimerTick);
 }
 
 /** Recurses through a list of objects */
@@ -417,8 +425,8 @@ void QHalGroup::unsyncSignals()
 bool QHalGroup::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
-    connect(m_context, SIGNAL(pollError(int,QString)),
-            this, SLOT(pollError(int,QString)));
+    connect(m_context, &PollingZMQContext::pollError,
+            this, &QHalGroup::pollError);
     m_context->start();
 
     m_halgroupSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
@@ -434,8 +442,8 @@ bool QHalGroup::connectSockets()
         return false;
     }
 
-    connect(m_halgroupSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(halgroupMessageReceived(QList<QByteArray>)));
+    connect(m_halgroupSocket, &ZMQSocket::messageReceived,
+            this, &QHalGroup::halgroupMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_name, "socket connected" << m_halgroupUri)

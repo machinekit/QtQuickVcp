@@ -46,7 +46,7 @@ RowLayout {
         RadioButton {
             exclusiveGroup: axisGroup
             text: root.axisNames[index]
-            checked: index == 0
+            checked: index === 0
             onCheckedChanged: {
                 if (checked) {
                     axisGroup.currentIndex = index

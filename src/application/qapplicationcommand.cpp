@@ -23,6 +23,14 @@
 #include "qapplicationcommand.h"
 #include "debughelper.h"
 
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
+
+using namespace nzmqt;
+
 QApplicationCommand::QApplicationCommand(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_commandUri(""),
@@ -40,8 +48,8 @@ QApplicationCommand::QApplicationCommand(QObject *parent) :
 {
     m_uuid = QUuid::createUuid();
 
-    connect(m_commandHeartbeatTimer, SIGNAL(timeout()),
-            this, SLOT(commandHeartbeatTimerTick()));
+    connect(m_commandHeartbeatTimer, &QTimer::timeout,
+            this, &QApplicationCommand::commandHeartbeatTimerTick);
 }
 
 void QApplicationCommand::abort(const QString &interpreter)
@@ -827,8 +835,8 @@ void QApplicationCommand::commandHeartbeatTimerTick()
 bool QApplicationCommand::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
-    connect(m_context, SIGNAL(pollError(int,QString)),
-            this, SLOT(pollError(int,QString)));
+    connect(m_context, &PollingZMQContext::pollError,
+            this, &QApplicationCommand::pollError);
     m_context->start();
 
     m_commandSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -845,8 +853,8 @@ bool QApplicationCommand::connectSockets()
         return false;
     }
 
-    connect(m_commandSocket, SIGNAL(messageReceived(QList<QByteArray>)),
-            this, SLOT(commandMessageReceived(QList<QByteArray>)));
+    connect(m_commandSocket, &ZMQSocket::messageReceived,
+            this, &QApplicationCommand::commandMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "command", "sockets connected" << m_commandUri)

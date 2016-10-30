@@ -33,14 +33,6 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <google/protobuf/text_format.h>
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
-
 class QHalRemoteComponent : public AbstractServiceImplementation
 {
     Q_OBJECT
@@ -224,9 +216,9 @@ private:
     bool        m_create;
     bool        m_bind;
 
-    PollingZMQContext *m_context;
-    ZMQSocket  *m_halrcompSocket;
-    ZMQSocket  *m_halrcmdSocket;
+    nzmqt::PollingZMQContext *m_context;
+    nzmqt::ZMQSocket *m_halrcompSocket;
+    nzmqt::ZMQSocket *m_halrcmdSocket;
     QTimer     *m_halrcmdHeartbeatTimer;
     QTimer     *m_halrcompHeartbeatTimer;
     bool        m_halrcmdPingOutstanding;
@@ -267,8 +259,8 @@ private:
     static QString splitPinFromHalName(const QString &name);
 
 private slots:
-    void halrcompMessageReceived(QList<QByteArray> messageList);
-    void halrcmdMessageReceived(QList<QByteArray> messageList);
+    void halrcompMessageReceived(const QList<QByteArray> &messageList);
+    void halrcmdMessageReceived(const QList<QByteArray> &messageList);
     void pollError(int errorNum, const QString& errorMsg);
     void halrcmdHeartbeatTimerTick();
     void halrcompHeartbeatTimerTick();

@@ -25,7 +25,7 @@ Item {
             if (status.motion.axis[i].homed) {
                 command.unhomeAxis(i)
             }
-            if ((axesList.length == 0) ||
+            if ((axesList.length === 0) ||
                     (status.config.axis[axesList[0]].homeSequence > status.config.axis[i].homeSequence))
             {
                 axesList.push(i)
@@ -89,7 +89,7 @@ Item {
             _homingAxesList = []
             _prepareAxesList = []
 
-            if (_waitingAxesList.length == 0)
+            if (_waitingAxesList.length === 0)
             {
                 running = false
                 return

@@ -69,7 +69,7 @@ Item {
                     text: qsTr("List")
                     checkable: true
                     onClicked: root.viewMode = "list"
-                    Binding { target: listButton; property: "checked"; value: root.viewMode == "list" }
+                    Binding { target: listButton; property: "checked"; value: root.viewMode === "list" }
                 }
                 Button {
                     id: smallButton
@@ -77,14 +77,14 @@ Item {
                     checkable: true
                     visible: !root.hasSmallScreen
                     onClicked: root.viewMode = "small"
-                    Binding { target: smallButton; property: "checked"; value: root.viewMode == "small" }
+                    Binding { target: smallButton; property: "checked"; value: root.viewMode === "small" }
                 }
                 Button {
                     id: bigButton
                     text: qsTr("Big")
                     checkable: true
                     onClicked: root.viewMode = "big"
-                    Binding { target: bigButton; property: "checked"; value: root.viewMode == "big" }
+                    Binding { target: bigButton; property: "checked"; value: root.viewMode === "big" }
                 }
                 Item { Layout.fillWidth: true }
                 Button {

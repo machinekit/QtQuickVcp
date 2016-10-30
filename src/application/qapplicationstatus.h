@@ -34,14 +34,6 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/status.pb.h>
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
-
 class QApplicationStatus : public AbstractServiceImplementation
 {
     Q_OBJECT
@@ -308,8 +300,8 @@ private:
     StatusChannels  m_syncedChannels;
     StatusChannels  m_channels;
 
-    PollingZMQContext *m_context;
-    ZMQSocket   *m_statusSocket;
+    nzmqt::PollingZMQContext *m_context;
+    nzmqt::ZMQSocket *m_statusSocket;
     QStringList  m_subscriptions;
     QTimer      *m_statusHeartbeatTimer;
     // more efficient to reuse a protobuf Message

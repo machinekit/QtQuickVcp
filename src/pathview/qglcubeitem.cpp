@@ -30,12 +30,12 @@ QGLCubeItem::QGLCubeItem(QQuickItem *parent) :
     m_centered(false),
     m_selected(false)
 {
-    connect(this, SIGNAL(sizeChanged(QVector3D)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(colorChanged(QColor)),
-            this, SIGNAL(needsUpdate()));
-    connect(this, SIGNAL(centeredChanged(bool)),
-            this, SIGNAL(needsUpdate()));
+    connect(this, &QGLCubeItem::sizeChanged,
+            this, &QGLCubeItem::needsUpdate);
+    connect(this, &QGLCubeItem::colorChanged,
+            this, &QGLCubeItem::needsUpdate);
+    connect(this, &QGLCubeItem::centeredChanged,
+            this, &QGLCubeItem::needsUpdate);
 }
 
 void QGLCubeItem::paint(QGLView *glView)

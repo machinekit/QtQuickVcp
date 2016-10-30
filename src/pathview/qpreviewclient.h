@@ -29,14 +29,6 @@
 #include "qgcodeprogrammodel.h"
 #include <machinetalk/protobuf/message.pb.h>
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
-
 class QPreviewClient : public AbstractServiceImplementation
 {
     Q_OBJECT
@@ -172,9 +164,9 @@ private:
     InterpreterState    m_interpreterState;
     QString             m_interpreterNote;
 
-    PollingZMQContext *m_context;
-    ZMQSocket  *m_statusSocket;
-    ZMQSocket  *m_previewSocket;
+    nzmqt::PollingZMQContext *m_context;
+    nzmqt::ZMQSocket *m_statusSocket;
+    nzmqt::ZMQSocket *m_previewSocket;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
 
@@ -189,8 +181,8 @@ private:
     void updateError(ConnectionError error, QString errorString);
 
 private slots:
-    void statusMessageReceived(QList<QByteArray> messageList);
-    void previewMessageReceived(QList<QByteArray> messageList);
+    void statusMessageReceived(const QList<QByteArray> &messageList);
+    void previewMessageReceived(const QList<QByteArray> &messageList);
     void pollError(int errorNum, const QString& errorMsg);
 
     bool connectSockets();

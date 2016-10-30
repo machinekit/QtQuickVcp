@@ -239,15 +239,15 @@ QServiceDiscovery::QServiceDiscovery(QObject *parent) :
     m_unicastLookupTimer(new QTimer(this))
 {
     m_networkConfigTimer->setInterval(3000);
-    connect(m_networkConfigTimer, SIGNAL(timeout()),
-            this, SLOT(updateNetConfig()));
+    connect(m_networkConfigTimer, &QTimer::timeout,
+            this, &QServiceDiscovery::updateNetConfig);
 
     m_unicastLookupTimer->setInterval(m_unicastLookupInterval);
-    connect(m_unicastLookupTimer, SIGNAL(timeout()),
-            this, SLOT(unicastLookup()));
+    connect(m_unicastLookupTimer, &QTimer::timeout,
+            this, &QServiceDiscovery::unicastLookup);
 
-    connect(this, SIGNAL(nameServersChanged(QQmlListProperty<QNameServer>)),
-            this, SLOT(updateNameServers()));
+    connect(this, &QServiceDiscovery::nameServersChanged,
+            this, &QServiceDiscovery::updateNameServers);
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
@@ -262,8 +262,8 @@ void QServiceDiscovery::initializeNetworkSession()
 {
     // now begin the process of opening the network link
     m_networkConfigManager = new QNetworkConfigurationManager(this);
-    connect(m_networkConfigManager, SIGNAL(updateCompleted()),
-            this, SLOT(openNetworkSession()));
+    connect(m_networkConfigManager, &QNetworkConfigurationManager::updateCompleted,
+            this, &QServiceDiscovery::openNetworkSession);
     m_networkConfigManager->updateConfigurations();
     m_networkConfigTimer->start(); // update the connections cyclically
 }
@@ -291,10 +291,10 @@ bool QServiceDiscovery::initializeMdns()
 
     m_jdns = new QJDns(this);
 
-    connect(m_jdns, SIGNAL(resultsReady(int,QJDns::Response)),
-            this, SLOT(resultsReady(int,QJDns::Response)));
-    connect(m_jdns, SIGNAL(error(int,QJDns::Error)),
-            this, SLOT(error(int,QJDns::Error)));
+    connect(m_jdns, &QJDns::resultsReady,
+            this, &QServiceDiscovery::resultsReady);
+    connect(m_jdns, &QJDns::error,
+            this, &QServiceDiscovery::error);
 
     if (m_lookupMode == MulticastDNS)
     {
@@ -521,10 +521,10 @@ void QServiceDiscovery::updateServices()
             QService *service;
 
             service = serviceList->service(i);
-            disconnect(service, SIGNAL(queriesChanged()),
-                       this, SLOT(updateServices()));
-            connect(service, SIGNAL(queriesChanged()),
-                    this, SLOT(updateServices()));
+            disconnect(service, &QService::queriesChanged,
+                       this, &QServiceDiscovery::updateServices);
+            connect(service, &QService::queriesChanged,
+                    this, &QServiceDiscovery::updateServices);
             for (int j = 0; j < service->queriesCount(); ++j)
             {
                 QServiceDiscoveryQuery *query;
@@ -1233,12 +1233,12 @@ void QServiceDiscovery::openNetworkSession()
 
             m_networkSession = new QNetworkSession(config, this);
 
-            connect(m_networkSession, SIGNAL(opened()),
-                    this, SLOT(networkSessionOpened()));
-            connect(m_networkSession, SIGNAL(closed()),
-                    this, SLOT(networkSessionClosed()));
-            connect(m_networkSession, SIGNAL(error(QNetworkSession::SessionError)),
-                    this, SLOT(networkSessionError(QNetworkSession::SessionError)));
+            connect(m_networkSession, &QNetworkSession::opened,
+                    this, &QServiceDiscovery::networkSessionOpened);
+            connect(m_networkSession, &QNetworkSession::closed,
+                    this, &QServiceDiscovery::networkSessionClosed);
+            connect(m_networkSession, static_cast<void (QNetworkSession::*)(QNetworkSession::SessionError)>(&QNetworkSession::error),
+                    this, &QServiceDiscovery::networkSessionError);
 
             m_networkSession->open();
 

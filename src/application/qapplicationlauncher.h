@@ -33,14 +33,6 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/config.pb.h>
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
-
 class QApplicationLauncher : public AbstractServiceImplementation
 {
     Q_OBJECT
@@ -152,9 +144,9 @@ private:
     QJsonValue m_launchers;
     bool m_synced;
 
-    PollingZMQContext *m_context;
-    ZMQSocket  *m_subscribeSocket;
-    ZMQSocket  *m_commandSocket;
+    nzmqt::PollingZMQContext *m_context;
+    nzmqt::ZMQSocket  *m_subscribeSocket;
+    nzmqt::ZMQSocket  *m_commandSocket;
     QTimer     *m_commandHeartbeatTimer;
     QTimer     *m_subscribeHeartbeatTimer;
     bool        m_commandPingOutstanding;
@@ -179,8 +171,8 @@ private:
     void initializeObject();
 
 private slots:
-    void subscribeMessageReceived(QList<QByteArray> messageList);
-    void commandMessageReceived(QList<QByteArray> messageList);
+    void subscribeMessageReceived(const QList<QByteArray> &messageList);
+    void commandMessageReceived(const QList<QByteArray> &messageList);
     void pollError(int errorNum, const QString& errorMsg);
     void commandHeartbeatTimerTick();
     void subscribeHeartbeatTimerTick();

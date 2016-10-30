@@ -149,7 +149,7 @@ Item {
        color: systemPalette.base
 
        opacity: viewTranslate.x/width
-       enabled: opacity != 0
+       enabled: opacity !== 0
 
        Rectangle {
            id: shadow1

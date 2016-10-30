@@ -112,7 +112,7 @@ ListModel {
             highestValue = value;
         if (lowestValue > value)
             lowestValue = value;
-        if (model.count == 0)
+        if (model.count === 0)
             startTimestamp = Date.now()
         endTimestamp = Date.now()
         currentValue = value
