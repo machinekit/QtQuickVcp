@@ -32,9 +32,10 @@ ApplicationAction {
     shortcut: ""
     tooltip: qsTr("Enable block delete [%1]").arg(shortcut)
     onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
-        command.setBlockDeleteEnabled(checked)
+        }
+        command.setBlockDeleteEnabled(checked);
     }
 
     checkable: true

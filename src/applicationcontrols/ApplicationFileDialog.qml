@@ -32,8 +32,8 @@ FileDialog {
     id: fileDialog
     title: qsTr("Please choose a file")
     onAccepted: {
-        file.localFilePath = fileUrl
-        file.startUpload()
+        file.localFilePath = fileUrl;
+        file.startUpload();
     }
 
     nameFilters: {
@@ -44,35 +44,35 @@ FileDialog {
         {
             for (var i = 0; i < status.config.programExtension.length; ++i)
             {
-                var extension = status.config.programExtension[i]
+                var extension = status.config.programExtension[i];
                 if (extension === "") {  // skip empty
-                    continue
+                    continue;
                 }
-                var splitted = extension.split(",")
-                var nameSplit = splitted[splitted.length-1].split(" ")
-                splitted[splitted.length-1] = nameSplit[0]
-                nameSplit.splice(0,1)
-                var name = nameSplit.join(" ")
+                var splitted = extension.split(",");
+                var nameSplit = splitted[splitted.length-1].split(" ");
+                splitted[splitted.length-1] = nameSplit[0];
+                nameSplit.splice(0,1);
+                var name = nameSplit.join(" ");
                 for (var j = 0; j < splitted.length; ++j) {
-                    splitted[j] = "*" + splitted[j]
+                    splitted[j] = "*" + splitted[j];
                 }
-                filters.push(name + " (" + splitted.join(" ") + ")")
-                allExtensions = allExtensions.concat(splitted)
+                filters.push(name + " (" + splitted.join(" ") + ")");
+                allExtensions = allExtensions.concat(splitted);
             }
         }
 
-        filters.unshift(qsTr("All machinable files (%1)").arg(allExtensions.join(" ")))
-        filters.push(qsTr("rs274ngc files (*.ngc)"))
-        filters.push(qsTr("All files (*)"))
-        return filters
+        filters.unshift(qsTr("All machinable files (%1)").arg(allExtensions.join(" ")));
+        filters.push(qsTr("rs274ngc files (*.ngc)"));
+        filters.push(qsTr("All files (*)"));
+        return filters;
     }
 
     Component.onCompleted: {
         if (core === null)
         {
             try {
-                var x = applicationCore
-                core = Qt.binding(function() {return x})
+                var x = applicationCore;
+                core = Qt.binding(function() { return x; });
             }
             catch (err) {
             }

@@ -36,6 +36,6 @@ Action {
     iconSource: "qrc:Machinekit/PathView/icons/zoom-in"
 
     onTriggered: {
-        view.cameraZoom = view.cameraZoom * factor + addend
+        view.cameraZoom = view.cameraZoom * factor + addend;
     }
 }

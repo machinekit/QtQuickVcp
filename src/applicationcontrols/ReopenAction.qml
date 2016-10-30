@@ -35,10 +35,10 @@ ApplicationAction {
     tooltip: qsTr("Reopen current file [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
-            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
         }
-        command.resetProgram('execute')
-        command.openProgram('execute', file.remoteFilePath)
+        command.resetProgram('execute');
+        command.openProgram('execute', file.remoteFilePath);
     }
     enabled: _ready
              && (status.task.file !== "")

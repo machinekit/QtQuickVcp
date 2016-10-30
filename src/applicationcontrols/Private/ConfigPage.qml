@@ -21,7 +21,7 @@ Item {
     function _evaluateAutoSelection() {
         if ((autoSelectApplication === true) && (_listModel.length > 0) && configService.ready)
         {
-            applicationSelected(0)
+            applicationSelected(0);
         }
     }
 
@@ -131,9 +131,9 @@ Item {
 
         onCurrentIndexChanged: {
             if (currentIndex === 0)
-                root.mode = "remote"
+                root.mode = "remote";
             else
-                root.mode = "local"
+                root.mode = "local";
         }
 
         Binding {

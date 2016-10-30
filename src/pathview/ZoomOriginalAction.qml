@@ -35,6 +35,6 @@ Action {
     iconSource: "qrc:Machinekit/PathView/icons/zoom-original"
 
     onTriggered: {
-        view.cameraZoom = zoom
+        view.cameraZoom = zoom;
     }
 }

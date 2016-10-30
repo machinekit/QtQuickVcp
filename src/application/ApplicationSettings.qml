@@ -33,35 +33,35 @@ LocalSettings {
     name: "settings"
 
     Component.onCompleted: {
-        load()
+        load();
     }
     Component.onDestruction: {
-        save()
+        save();
     }
 
     on_ReadyChanged: {
         if (_ready && !initialized) {
             for (var i = 0; i < status.config.axes; ++i) {
-                setValue("axis" + i + ".jogVelocity", status.config.defaultVelocity, false)
+                setValue("axis" + i + ".jogVelocity", status.config.defaultVelocity, false);
             }
-            setValue("dro.showOffsets", false, false)
-            setValue("dro.showVelocity", true, false)
-            setValue("dro.showDistanceToGo", true, false)
-            setValue("preview.enable", false, false)
-            setValue("preview.showMachineLimits", true, false)
-            setValue("preview.showProgram", true, false)
-            setValue("preview.showProgramRapids", true, false)
-            setValue("preview.showLivePlot", true, false)
-            setValue("preview.showTool", true, false)
-            setValue("preview.showProgramExtents", true, false)
-            setValue("preview.showMachineLimits", true, false)
-            setValue("preview.alphaBlendProgram", false, false)
-            setValue("preview.showCoordinate", true, false)
-            setValue("preview.showGrid", true, false)
-            setValue("preview.zoomToProgram", true, false)
-            setValue("preview.gridInterval", 100.0, false)
-            setValue("mdi.history", [], false)
-            initialized = true
+            setValue("dro.showOffsets", false, false);
+            setValue("dro.showVelocity", true, false);
+            setValue("dro.showDistanceToGo", true, false);
+            setValue("preview.enable", false, false);
+            setValue("preview.showMachineLimits", true, false);
+            setValue("preview.showProgram", true, false);
+            setValue("preview.showProgramRapids", true, false);
+            setValue("preview.showLivePlot", true, false);
+            setValue("preview.showTool", true, false);
+            setValue("preview.showProgramExtents", true, false);
+            setValue("preview.showMachineLimits", true, false);
+            setValue("preview.alphaBlendProgram", false, false);
+            setValue("preview.showCoordinate", true, false);
+            setValue("preview.showGrid", true, false);
+            setValue("preview.zoomToProgram", true, false);
+            setValue("preview.gridInterval", 100.0, false);
+            setValue("mdi.history", [], false);
+            initialized = true;
         }
     }
 }

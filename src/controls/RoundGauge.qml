@@ -366,10 +366,12 @@ Item
             fillGradiant.addColorStop(1, backgroundColor);
 
             context.beginPath();
-            if (fullCircle)
+            if (fullCircle) {
                 context.arc(d.center.x, d.center.y, d.radius - 0.001, 0 , 2 * Math.PI);
-            else
+            }
+            else {
                 context.arc(d.center.x, d.center.y, d.radius - 0.001, Math.PI * 0.6666 , 2.3333 * Math.PI);
+            }
             context.fillStyle = fillGradiant;
             context.shadowBlur = d.blurWidth;
             context.shadowColor = outerCirclingColor;

@@ -32,37 +32,37 @@ QtObject {
 
     on_ReadyChanged: {
         if (_ready) {
-            _update()
-            settings.onValuesChanged.connect(_update)
+            _update();
+            settings.onValuesChanged.connect(_update);
         }
         else {
-            settings.onValuesChanged.disconnect(_update)
+            settings.onValuesChanged.disconnect(_update);
         }
     }
 
     function _update() {
-        model = settings.value("mdi.history")
+        model = settings.value("mdi.history");
         if (model === null) {
-            model = []
+            model = [];
         }
     }
 
     function add(command) {
-        var tmpModel = model
-        tmpModel.push({"command": command})
-        settings.setValue("mdi.history", tmpModel)
+        var tmpModel = model.splice(0);
+        tmpModel.push({ "command": command });
+        settings.setValue("mdi.history", tmpModel);
     }
 
     function remove(index) {
-        var tmpModel = model
-        model.splice(index, 1)
-        settings.setValue("mdi.history", tmpModel)
+        var tmpModel = model.splice(0);
+        tmpModel.splice(index, 1);
+        settings.setValue("mdi.history", tmpModel);
     }
 
     function insert(index, command) {
-        var tmpModel = model
-        tmpModel.splice(index, 0, command)
-        settings.setValue("mdi.history", tmpModel)
+        var tmpModel = model.splice(0);
+        tmpModel.splice(index, 0, command);
+        settings.setValue("mdi.history", tmpModel);
     }
 
     function clear() {

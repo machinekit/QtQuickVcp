@@ -34,7 +34,7 @@ ApplicationAction {
     tooltip: qsTr("Optional stop [%1]").arg(shortcut)
     checkable: true
     onTriggered: {
-        command.setOptionalStopEnabled(checked)
+        command.setOptionalStopEnabled(checked);
     }
     enabled: _ready
     checked: _ready && status.task.optionalStop

@@ -111,7 +111,7 @@ Rectangle {
     border.width: 2
     radius: width/2
     border.color: "black"
-    color: ((value ^ invert) && (helpItem.blinkHelper || !blink))?onColor:offColor
+    color: ((value ^ invert) && (helpItem.blinkHelper || !blink)) ? onColor : offColor
     opacity: enabled ? 1.0 : 0.3
 
     Rectangle {

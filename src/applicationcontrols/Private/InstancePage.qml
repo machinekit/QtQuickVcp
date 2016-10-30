@@ -16,9 +16,10 @@ Item {
     function _evaluateAutoSelection() {
         if (visible && (autoSelectInstance === true) && (instances.length > 0))
         {
-            var uuid = instances[0].uuid
-            if (uuid !== "")
-                instanceSelected(uuid)
+            var uuid = instances[0].uuid;
+            if (uuid !== "") {
+                instanceSelected(uuid);
+            }
         }
     }
 
@@ -95,9 +96,9 @@ Item {
 
         onCurrentIndexChanged: {
             if (currentIndex === 0)
-                serviceDiscovery.lookupMode = ServiceDiscovery.MulticastDNS
+                serviceDiscovery.lookupMode = ServiceDiscovery.MulticastDNS;
             else
-                serviceDiscovery.lookupMode = ServiceDiscovery.UnicastDNS
+                serviceDiscovery.lookupMode = ServiceDiscovery.UnicastDNS;
         }
 
         Binding {
@@ -197,11 +198,11 @@ Item {
                                     font.pointSize: dummyText.font.pointSize * 1.2
                                     placeholderText: qsTr("IP address or hostname")
                                     onEditingFinished: {
-                                        dnsServerView.model[index].hostName = text
-                                        serviceDiscovery.updateNameServers()
-                                        root.nameServersChanged()
+                                        dnsServerView.model[index].hostName = text;
+                                        serviceDiscovery.updateNameServers();
+                                        root.nameServersChanged();
 
-                                        root.forceActiveFocus()   // remove the focus
+                                        root.forceActiveFocus();   // remove the focus
                                     }
 
                                     Binding {
@@ -216,12 +217,12 @@ Item {
                                     text: (dnsServerTextField.text !== "") ? "+" : "-"
                                     visible: (index === (dnsServerView.model.length - 1)) && (index < 2)   // last item, limited to 3 items due to bug => TODO
                                     onClicked: {
-                                        root.forceActiveFocus()   // accept changes on text edit
+                                        root.forceActiveFocus();   // accept changes on text edit
 
                                         if (dnsServerTextField.text && dnsServerView.model[index].hostName)
                                         {
-                                            var nameServerObject = nameServerComponent.createObject(root, {})
-                                            serviceDiscovery.addNameServer(nameServerObject)
+                                            var nameServerObject = nameServerComponent.createObject(root, {});
+                                            serviceDiscovery.addNameServer(nameServerObject);
                                         }
                                     }
 

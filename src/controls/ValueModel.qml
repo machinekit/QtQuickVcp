@@ -93,29 +93,35 @@ ListModel {
     function indexOf(timestamp) {
         var start = model.get(0).timestamp;
         var end = model.get(model.count - 1).timestamp;
-        if (end <= timestamp)
+        if (end <= timestamp) {
             return model.count -1;
+        }
 
-        if (start >= timestamp)
+        if (start >= timestamp) {
             return 0;
+        }
 
         for (var i = 0; i < model.count; i++) {
-            if (model.get(i).timestamp > timestamp)
+            if (model.get(i).timestamp > timestamp) {
                 return i-1;
+            }
         }
         return -1;
     }
 
     /*! \internal */
     function createValue(value) {
-        if (highestValue < value)
+        if (highestValue < value) {
             highestValue = value;
-        if (lowestValue > value)
+        }
+        if (lowestValue > value) {
             lowestValue = value;
-        if (model.count === 0)
-            startTimestamp = Date.now()
-        endTimestamp = Date.now()
-        currentValue = value
+        }
+        if (model.count === 0) {
+            startTimestamp = Date.now();
+        }
+        endTimestamp = Date.now();
+        currentValue = value;
         return {
                 "timestamp": endTimestamp,
                 "value":value
@@ -125,18 +131,19 @@ ListModel {
     /*! Clears all the data in the value model.
     */
     function clearData() {
-        model.clear()
-        model.ready = false
+        model.clear();
+        model.ready = false;
     }
 
     /*! Adds one entry to the data model.
     */
     function addData(value)
     {
-        model.append(createValue(value))
-        if (model.count > maximumSize)
-            model.remove(0)
-        model.ready = true
+        model.append(createValue(value));
+        if (model.count > maximumSize) {
+            model.remove(0);
+        }
+        model.ready = true;
         model.dataReady(); //emit signal
     }
 }

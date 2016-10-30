@@ -36,22 +36,22 @@ ApplicationItem {
 
     on_ReadyChanged: {
         if (_ready) {
-            file.onUploadFinished.connect(fileUploadFinished)
-            file.onDownloadFinished.connect(fileDownloadFinished)
+            file.onUploadFinished.connect(fileUploadFinished);
+            file.onDownloadFinished.connect(fileDownloadFinished);
         }
     }
 
     function fileUploadFinished() {
-        gcodeProgramModel.clear()
-        gcodeProgramLoader.load()
+        gcodeProgramModel.clear();
+        gcodeProgramLoader.load();
         if (_previewEnabled) {
             _executePreview();
         }
     }
 
     function fileDownloadFinished() {
-        gcodeProgramModel.clear()
-        gcodeProgramLoader.load()
+        gcodeProgramModel.clear();
+        gcodeProgramLoader.load();
         if (_previewEnabled) {
             _executePreview();
         }

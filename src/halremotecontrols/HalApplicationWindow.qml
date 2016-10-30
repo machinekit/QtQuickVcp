@@ -126,19 +126,19 @@ Rectangle {
 
     /*! \internal */
     property var _requiredServices: {
-        var required = []
-        var newReady = true
+        var required = [];
+        var newReady = true;
         for (var i = 0; i < services.length; ++i) {
             if (services[i].required) {
-                required.push(services[i])
-                newReady = newReady && services[i].ready
-                services[i].onReadyChanged.connect(_evaluateReady)
+                required.push(services[i]);
+                newReady = newReady && services[i].ready;
+                services[i].onReadyChanged.connect(_evaluateReady);
             }
         }
 
-        _ready = newReady  // if no required service we are ready
+        _ready = newReady;  // if no required service we are ready
 
-        return required
+        return required;
     }
 
     /*! \internal */
@@ -148,29 +148,28 @@ Rectangle {
     function _evaluateReady() {
         for (var i = 0; i < _requiredServices.length; ++i) {
             if (!_requiredServices[i].ready) {
-                _ready = false
-                return
+                _ready = false;
+                return;
             }
         }
 
-        _ready = true
-        return
+        _ready = true;
+        return;
     }
 
     /*! \internal */
     function _recurseObjects(objects, name)
     {
-        var list = []
+        var list = [];
 
         if (objects !== undefined) {
-            for (var i = 0; i < objects.length; ++i)
-            {
+            for (var i = 0; i < objects.length; ++i) {
                 if (objects[i].objectName === name) {
-                    list.push(objects[i])
+                    list.push(objects[i]);
                 }
-                var nestedList = _recurseObjects(objects[i].data, name)
+                var nestedList = _recurseObjects(objects[i].data, name);
                 if (nestedList.length > 0) {
-                    list = list.concat(nestedList)
+                    list = list.concat(nestedList);
                 }
             }
         }
@@ -185,12 +184,12 @@ Rectangle {
     signal disconnect()
 
     Component.onCompleted: {
-        var list = main.services
-        var nestedList = _recurseObjects(main.data, "Service")
+        var list = main.services;
+        var nestedList = _recurseObjects(main.data, "Service");
         if (nestedList.length > 0) {
-            list = list.concat(nestedList)
+            list = list.concat(nestedList);
         }
-        main.services = list
+        main.services = list;
     }
 
     id: main
@@ -266,7 +265,7 @@ Rectangle {
             wrapMode: Text.WordWrap
             font.pointSize: dummyText.font.pointSize * 1.1
             text: {
-                var headerText
+                var headerText;
 
                 switch (remoteComponent.error)
                 {
@@ -274,10 +273,10 @@ Rectangle {
                 case HalRemoteComponent.PinChange: headerText = qsTr("Pin change rejected error:"); break;
                 case HalRemoteComponent.CommandError: headerText = qsTr("Command error:"); break;
                 case HalRemoteComponent.SocketError: headerText = qsTr("Socket error:"); break;
-                default: headerText = qsTr("No error")
+                default: headerText = qsTr("No error"); break;
                 }
 
-                return headerText + "\n" + remoteComponent.errorString
+                return headerText + "\n" + remoteComponent.errorString;
             }
         }
     }
@@ -319,15 +318,15 @@ Rectangle {
         switch (remoteComponent.connectionState) {
         case HalRemoteComponent.Connected:
             if (_ready)
-                return "connected"
+                return "connected";
             else
-                return "disconnected"
+                return "disconnected";
         case HalRemoteComponent.Error:
-                return "error"
+                return "error";
         case HalRemoteComponent.Timeout:
-            return "timeout"
+            return "timeout";
         default:
-            return "disconnected"
+            return "disconnected";
         }
     }
 

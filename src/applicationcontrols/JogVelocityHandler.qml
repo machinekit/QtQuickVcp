@@ -44,70 +44,71 @@ ApplicationObject {
 
     onValueChanged: {
         if (_ready && !_remoteUpdate) {
-            var velocity = value
+            var velocity = value;
             if (proportional) {
-                velocity /= 100.0
-                velocity *= maximumValue
+                velocity /= 100.0;
+                velocity *= maximumValue;
             }
-            settings.setValue("axis" + axis + ".jogVelocity", velocity)
-            synced = false
+            settings.setValue("axis" + axis + ".jogVelocity", velocity);
+            synced = false;
         }
     }
 
     on_ReadyChanged: {
         if (_ready) {
-            _update()
-            settings.onValuesChanged.connect(_update)
-            status.onConfigChanged.connect(_update)
-            status.onMotionChanged.connect(_update)
+            _update();
+            settings.onValuesChanged.connect(_update);
+            status.onConfigChanged.connect(_update);
+            status.onMotionChanged.connect(_update);
         }
         else {
-            settings.onValuesChanged.disconnect(_update)
-            status.onConfigChanged.disconnect(_update)
-            status.onMotionChanged.disconnect(_update)
-            synced = false
+            settings.onValuesChanged.disconnect(_update);
+            status.onConfigChanged.disconnect(_update);
+            status.onMotionChanged.disconnect(_update);
+            synced = false;
         }
     }
 
     onAxisChanged: {
         if (_ready) {
-            _update()
+            _update();
         }
     }
 
     Component.onDestruction: {
-        if (!settings.onValuesChanged) // for qmlplugindump
-            return
-        settings.onValuesChanged.disconnect(_update)
-        status.onConfigChanged.disconnect(_update)
-        status.onMotionChanged.disconnect(_update)
+        if (!settings.onValuesChanged) { // for qmlplugindump
+            return;
+        }
+        settings.onValuesChanged.disconnect(_update);
+        status.onConfigChanged.disconnect(_update);
+        status.onMotionChanged.disconnect(_update);
     }
 
     function _update() {
-        _remoteUpdate = true
-        minimumValue = status.config.minVelocity
-        var axisMaxVel = status.config.axis[axis].maxVelocity
-        var configMaxVel = status.config.maxVelocity
+        _remoteUpdate = true;
+        minimumValue = status.config.minVelocity;
+        var axisMaxVel = status.config.axis[axis].maxVelocity;
+        var configMaxVel = status.config.maxVelocity;
         if ((axisMaxVel === undefined) || (axisMaxVel === 0) || (axisMaxVel > configMaxVel)) {
-            maximumValue = configMaxVel
+            maximumValue = configMaxVel;
         } else {
-            maximumValue = axisMaxVel
+            maximumValue = axisMaxVel;
         }
-        minimumProportion = (minimumValue / maximumValue) * 100.0
+        minimumProportion = (minimumValue / maximumValue) * 100.0;
 
-        var tmpValue = settings.value("axis" + axis + ".jogVelocity")
-        tmpValue = Math.max(Math.min(tmpValue, maximumValue), minimumValue) // clamp value
+        var tmpValue = settings.value("axis" + axis + ".jogVelocity");
+        tmpValue = Math.max(Math.min(tmpValue, maximumValue), minimumValue); // clamp value
         if (proportional) {
-            tmpValue /= maximumValue
-            tmpValue *= 100.0
+            tmpValue /= maximumValue;
+            tmpValue *= 100.0;
         }
 
         if (value !== tmpValue) {
-            value = tmpValue
+            value = tmpValue;
         }
         else {
-            synced = true
+            synced = true;
         }
-        _remoteUpdate = false
+        _remoteUpdate = false;
     }
 }

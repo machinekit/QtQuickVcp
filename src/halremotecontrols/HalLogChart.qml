@@ -68,8 +68,9 @@ LogChart {
         direction: HalPin.In
 
         onValueChanged: {
-            if (!autoSampling)
-                main.addData(value)
+            if (!autoSampling) {
+                main.addData(value);
+            }
         }
     }
 

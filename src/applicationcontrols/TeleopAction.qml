@@ -34,9 +34,10 @@ ApplicationAction {
     tooltip: qsTr("Enable teleop mode [%1]").arg(shortcut)
     checked: _enabled
     onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
-        command.setTeleopEnabled(checked)
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
+        }
+        command.setTeleopEnabled(checked);
     }
 
     checkable: true

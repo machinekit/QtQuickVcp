@@ -37,16 +37,15 @@ ApplicationAction {
     onTriggered: {
         if (!checked) {
             if (status.task.taskState === ApplicationStatus.TaskStateEstop) {
-                command.setTaskState('execute', ApplicationCommand.TaskStateEstopReset)
+                command.setTaskState('execute', ApplicationCommand.TaskStateEstopReset);
             }
-            command.setTaskState('execute', ApplicationCommand.TaskStateOn)
+            command.setTaskState('execute', ApplicationCommand.TaskStateOn);
         }
         else {
-            command.setTaskState('execute', ApplicationCommand.TaskStateEstop)
-            if (reset)
-            {
-                command.setTaskState('execute', ApplicationCommand.TaskStateEstopReset)
-                command.setTaskState('execute', ApplicationCommand.TaskStateOn)
+            command.setTaskState('execute', ApplicationCommand.TaskStateEstop);
+            if (reset) {
+                command.setTaskState('execute', ApplicationCommand.TaskStateEstopReset);
+                command.setTaskState('execute', ApplicationCommand.TaskStateOn);
             }
         }
     }

@@ -33,9 +33,9 @@ ApplicationAction {
     tooltip: qsTr("Turn spindle slower [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
         }
-        command.setSpindle(ApplicationCommand.SpindleDecrease)
+        command.setSpindle(ApplicationCommand.SpindleDecrease);
     }
 
     enabled: _ready

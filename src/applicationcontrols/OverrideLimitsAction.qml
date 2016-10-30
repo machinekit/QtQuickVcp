@@ -38,9 +38,9 @@ ApplicationAction {
     tooltip: qsTr("Override the machine limits [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
         }
-        ApplicationCommand.overrideLimits()
+        command.overrideLimits();
     }
 
     checkable: true

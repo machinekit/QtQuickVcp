@@ -33,28 +33,29 @@ ApplicationAction {
     function _allHomed() {
         for (var i = 0; i < status.config.axes; ++i) {
             if (!status.motion.axis[i].homed) {
-                return false
+                return false;
             }
         }
-        return true
+        return true;
     }
 
     id: root
     text: (axis > -1) ? qsTr("Home") : qsTr("Home All")
     shortcut: "Ctrl+Home"
-    tooltip: ((axis > -1) ? (qsTr("Home axis %1 [%2]") + axis) : qsTr("Home all axes [%1]")).arg(shortcut)
+    tooltip: ((axis > -1) ? (qsTr("Home axis %1 [%2]").arg(axis)) : qsTr("Home all axes [%1]")).arg(shortcut)
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && !status.running
     onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
+        }
 
         if (axis > -1) {
-            command.homeAxis(axis)
+            command.homeAxis(axis);
         }
         else {
-            homeAllAxesHelper.trigger()
+            homeAllAxesHelper.trigger();
         }
     }
 }

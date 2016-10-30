@@ -98,14 +98,14 @@ ValueChart {
     */
     function addData(value)
     {
-        valueModel.addData(value)
+        valueModel.addData(value);
     }
 
     /*! Clears all data in the chart.
     */
     function clearData()
     {
-        valueModel.clearData()
+        valueModel.clearData();
     }
 
     id: chart
@@ -125,7 +125,7 @@ ValueChart {
         running: chart.enabled
         repeat: true
         onTriggered: {
-            valueModel.addData(value)
+            valueModel.addData(value);
         }
     }
 
@@ -136,7 +136,7 @@ ValueChart {
         running: chart.enabled && chart.visible
         repeat: true
         onTriggered: {
-            chart.update()
+            chart.update();
         }
     }
 }

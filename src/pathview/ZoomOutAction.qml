@@ -36,6 +36,6 @@ Action {
     iconSource: "qrc:Machinekit/PathView/icons/zoom-out"
 
     onTriggered: {
-        view.cameraZoom = view.cameraZoom * factor - subtrahend
+        view.cameraZoom = view.cameraZoom * factor - subtrahend;
     }
 }

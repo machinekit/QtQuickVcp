@@ -33,7 +33,7 @@ ApplicationAction {
     shortcut: "Esc"
     tooltip: qsTr("Stop program execution [%1]").arg(shortcut)
     onTriggered: {
-        command.abort('execute')
+        command.abort('execute');
     }
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)

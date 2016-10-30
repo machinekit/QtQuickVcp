@@ -43,181 +43,181 @@ Canvas3D {
 
     id: root
     onPaint: {
-        var lineEnding = root.textSize/2.0
-        var lineOffset = root.textSize
-        var textOffset = root.textSize/4.0
+        var lineEnding = root.textSize/2.0;
+        var lineOffset = root.textSize;
+        var textOffset = root.textSize/4.0;
 
-        var xAxisVisible = true
-        var yAxisVisible = true
-        var zAxisVisible = true
-        var xAxisRotation = 0.0
-        var yAxisRotation = 0.0
-        var zAxisRotation = 0.0
-        var xAxisOffset = Qt.vector3d(0,0,0)
-        var yAxisOffset = Qt.vector3d(0,0,0)
-        var zAxisOffset = Qt.vector3d(0,0,0)
+        var xAxisVisible = true;
+        var yAxisVisible = true;
+        var zAxisVisible = true;
+        var xAxisRotation = 0.0;
+        var yAxisRotation = 0.0;
+        var zAxisRotation = 0.0;
+        var xAxisOffset = Qt.vector3d(0,0,0);
+        var yAxisOffset = Qt.vector3d(0,0,0);
+        var zAxisOffset = Qt.vector3d(0,0,0);
 
         switch (root.viewMode) {
         case "Top":
-            zAxisVisible = false
-            xAxisOffset = Qt.vector3d(root.minimum.x, root.minimum.y - lineOffset, root.minimum.z)
-            yAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y, root.minimum.z)
-            break
+            zAxisVisible = false;
+            xAxisOffset = Qt.vector3d(root.minimum.x, root.minimum.y - lineOffset, root.minimum.z);
+            yAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y, root.minimum.z);
+            break;
         case "RotatedTop":
-            zAxisVisible = false
-            yAxisRotation = 180
-            xAxisOffset = Qt.vector3d(root.minimum.x, root.minimum.y - lineOffset, root.minimum.z)
-            yAxisOffset = Qt.vector3d(root.maximum.x + lineOffset, root.minimum.y, root.minimum.z)
-            break
+            zAxisVisible = false;
+            yAxisRotation = 180;
+            xAxisOffset = Qt.vector3d(root.minimum.x, root.minimum.y - lineOffset, root.minimum.z);
+            yAxisOffset = Qt.vector3d(root.maximum.x + lineOffset, root.minimum.y, root.minimum.z);
+            break;
         case "Front":
-            yAxisVisible = false
-            xAxisRotation = 90
-            xAxisOffset = Qt.vector3d(root.minimum.x, 0.0, root.minimum.z - lineOffset)
-            zAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y - lineOffset, root.minimum.z)
-            break
+            yAxisVisible = false;
+            xAxisRotation = 90;
+            xAxisOffset = Qt.vector3d(root.minimum.x, 0.0, root.minimum.z - lineOffset);
+            zAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y - lineOffset, root.minimum.z);
+            break;
         case "Side":
-            xAxisRotation = false
-            yAxisRotation = -90
-            zAxisRotation = 90
-            yAxisOffset = Qt.vector3d(0.0, root.minimum.y, root.minimum.z - lineOffset)
-            zAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y - lineOffset, root.minimum.z)
-            break
+            xAxisRotation = false;
+            yAxisRotation = -90;
+            zAxisRotation = 90;
+            yAxisOffset = Qt.vector3d(0.0, root.minimum.y, root.minimum.z - lineOffset);
+            zAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y - lineOffset, root.minimum.z);
+            break;
         case "Perspective":
-            xAxisOffset = Qt.vector3d(root.minimum.x, root.minimum.y - lineOffset, root.minimum.z)
-            yAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y, root.minimum.z)
-            zAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y - lineOffset, root.minimum.z)
+            xAxisOffset = Qt.vector3d(root.minimum.x, root.minimum.y - lineOffset, root.minimum.z);
+            yAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y, root.minimum.z);
+            zAxisOffset = Qt.vector3d(root.minimum.x - lineOffset, root.minimum.y - lineOffset, root.minimum.z);
+            break;
         }
 
-        context.prepare(this)
-        context.reset()
+        context.prepare(this);
+        context.reset();
 
         if (!valid) {
-            context.update()
-            return
+            context.update();
+            return;
         }
 
-        context.color(root.color)
-        context.beginUnion()
+        context.color(root.color);
+        context.beginUnion();
 
             if (xAxisVisible)
             {
-                context.translate(xAxisOffset)
-                context.rotate(xAxisRotation, 1.0, 0.0, 0.0)
-                context.beginUnion()
-                    context.translate(0.0, lineEnding/2.0, 0.0)
-                    context.line(0.0, -lineEnding, 0.0)
-                    context.line(root.size.x, 0.0, 0.0)
-                    context.translate(root.size.x, lineEnding/2.0, 0.0)
-                    context.line(0.0, -lineEnding, 0.0)
+                context.translate(xAxisOffset);
+                context.rotate(xAxisRotation, 1.0, 0.0, 0.0);
+                context.beginUnion();
+                    context.translate(0.0, lineEnding/2.0, 0.0);
+                    context.line(0.0, -lineEnding, 0.0);
+                    context.line(root.size.x, 0.0, 0.0);
+                    context.translate(root.size.x, lineEnding/2.0, 0.0);
+                    context.line(0.0, -lineEnding, 0.0);
 
-                    context.translate(root.size.x/2.0, -textOffset - root.textSize, 0.0)
-                    context.scale(root.textSize, root.textSize, root.textSize)
-                    context.text(_format(root.size.x), GLView3D.AlignCenter)
+                    context.translate(root.size.x/2.0, -textOffset - root.textSize, 0.0);
+                    context.scale(root.textSize, root.textSize, root.textSize);
+                    context.text(_format(root.size.x), GLView3D.AlignCenter);
 
                     if (root.limitMaximum.x < root.maximum.x) {
-                        context.color(root.limitColor)
+                        context.color(root.limitColor);
                     }
-                    context.translate(root.size.x + root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0)
-                    context.scale(root.textSize, root.textSize, root.textSize)
-                    context.rotate(90, 0.0, 0.0, 1.0)
-                    context.text(_format(root.minimum.x + root.size.x), GLView3D.AlignRight)
+                    context.translate(root.size.x + root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0);
+                    context.scale(root.textSize, root.textSize, root.textSize);
+                    context.rotate(90, 0.0, 0.0, 1.0);
+                    context.text(_format(root.minimum.x + root.size.x), GLView3D.AlignRight);
 
                     if (root.limitMinimum.x > root.minimum.x) {
-                        context.color(root.limitColor)
+                        context.color(root.limitColor);
                     }
-                    context.translate(root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0)
-                    context.scale(root.textSize, root.textSize, root.textSize)
-                    context.rotate(90, 0.0, 0.0, 1.0)
-                    context.text(_format(root.minimum.x), GLView3D.AlignRight)
-                context.endUnion()
+                    context.translate(root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0);
+                    context.scale(root.textSize, root.textSize, root.textSize);
+                    context.rotate(90, 0.0, 0.0, 1.0);
+                    context.text(_format(root.minimum.x), GLView3D.AlignRight);
+                context.endUnion();
             }
 
             if ((axes > 1) && (yAxisVisible))
             {
-                context.translate(yAxisOffset)
-                context.rotate(yAxisRotation, 0.0, 1.0, 0.0)
-                context.rotate(90, 0.0, 0.0, 1.0)
-                context.beginUnion()
-                    context.translate(0.0, lineEnding/2.0, 0.0)
-                    context.line(0.0, -lineEnding, 0.0)
-                    context.line(root.size.y, 0.0, 0.0)
-                    context.translate(root.size.y, lineEnding/2.0, 0.0)
-                    context.line(0.0, -lineEnding, 0.0)
+                context.translate(yAxisOffset);
+                context.rotate(yAxisRotation, 0.0, 1.0, 0.0);
+                context.rotate(90, 0.0, 0.0, 1.0);
+                context.beginUnion();
+                    context.translate(0.0, lineEnding/2.0, 0.0);
+                    context.line(0.0, -lineEnding, 0.0);
+                    context.line(root.size.y, 0.0, 0.0);
+                    context.translate(root.size.y, lineEnding/2.0, 0.0);
+                    context.line(0.0, -lineEnding, 0.0);
 
-                    context.translate(root.size.y/2.0, textOffset, 0.0)
-                    context.rotate(0, 0.0, 0.0, 1.0)
-                    context.scale(root.textSize, root.textSize, root.textSize)
-                    context.text(_format(root.size.y), GLView3D.AlignCenter)
+                    context.translate(root.size.y/2.0, textOffset, 0.0);
+                    context.rotate(0, 0.0, 0.0, 1.0);
+                    context.scale(root.textSize, root.textSize, root.textSize);
+                    context.text(_format(root.size.y), GLView3D.AlignCenter);
 
                     if (root.limitMaximum.y < root.maximum.y) {
-                        context.color(root.limitColor)
+                        context.color(root.limitColor);
                     }
-                    context.translate(root.size.y - root.textSize/2.0, textOffset + lineEnding/2.0, 0.0)
-                    context.scale(root.textSize, root.textSize, root.textSize)
-                    context.rotate(-90, 0.0, 0.0, 1.0)
-                    context.text(_format(root.minimum.y + root.size.y), GLView3D.AlignRight)
+                    context.translate(root.size.y - root.textSize/2.0, textOffset + lineEnding/2.0, 0.0);
+                    context.scale(root.textSize, root.textSize, root.textSize);
+                    context.rotate(-90, 0.0, 0.0, 1.0);
+                    context.text(_format(root.minimum.y + root.size.y), GLView3D.AlignRight);
 
                     if (root.limitMinimum.y > root.minimum.y) {
-                        context.color(root.limitColor)
+                        context.color(root.limitColor);
                     }
-                    context.translate(-root.textSize/2.0, textOffset + lineEnding/2.0, 0.0)
-                    context.scale(root.textSize, root.textSize, root.textSize)
-                    context.rotate(-90, 0.0, 0.0, 1.0)
-                    context.text(_format(root.minimum.y), GLView3D.AlignRight)
-                context.endUnion()
+                    context.translate(-root.textSize/2.0, textOffset + lineEnding/2.0, 0.0);
+                    context.scale(root.textSize, root.textSize, root.textSize);
+                    context.rotate(-90, 0.0, 0.0, 1.0);
+                    context.text(_format(root.minimum.y), GLView3D.AlignRight);
+                context.endUnion();
             }
 
             if ((axes > 2) && zAxisVisible)
             {
+                context.translate(zAxisOffset);
+                context.rotate(zAxisRotation, 0.0, 0.0, 1.0);
+                context.rotate(-90, 0.0, 1.0, 0.0);
+                context.rotate(-90, 1.0, 0.0, 0.0);
+                context.beginUnion();
+                    context.translate(0.0, lineEnding/2.0, 0.0);
+                    context.line(0.0, -lineEnding, 0.0);
+                    context.line(root.size.z, 0.0, 0.0);
+                    context.translate(root.size.z, lineEnding/2.0, 0.0);
+                    context.line(0.0, -lineEnding, 0.0);
 
-                context.translate(zAxisOffset)
-                context.rotate(zAxisRotation, 0.0, 0.0, 1.0)
-                context.rotate(-90, 0.0, 1.0, 0.0)
-                context.rotate(-90, 1.0, 0.0, 0.0)
-                context.beginUnion()
-                    context.translate(0.0, lineEnding/2.0, 0.0)
-                    context.line(0.0, -lineEnding, 0.0)
-                    context.line(root.size.z, 0.0, 0.0)
-                    context.translate(root.size.z, lineEnding/2.0, 0.0)
-                    context.line(0.0, -lineEnding, 0.0)
-
-                    context.translate(root.size.z/2.0, -textOffset - root.textSize, 0.0)
-                    context.scale(root.textSize, root.textSize, root.textSize)
-                    context.text(_format(root.size.z), GLView3D.AlignCenter)
+                    context.translate(root.size.z/2.0, -textOffset - root.textSize, 0.0);
+                    context.scale(root.textSize, root.textSize, root.textSize);
+                    context.text(_format(root.size.z), GLView3D.AlignCenter);
 
                     if (root.limitMaximum.z < root.maximum.z) {
-                        context.color(root.limitColor)
+                        context.color(root.limitColor);
                     }
-                    context.translate(root.size.z - root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0)
-                    context.scale(root.textSize, root.textSize, root.textSize)
-                    context.rotate(-90, 0.0, 0.0, 1.0)
-                    context.text(_format(root.minimum.z + root.size.z), GLView3D.AlignLeft)
+                    context.translate(root.size.z - root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0);
+                    context.scale(root.textSize, root.textSize, root.textSize);
+                    context.rotate(-90, 0.0, 0.0, 1.0);
+                    context.text(_format(root.minimum.z + root.size.z), GLView3D.AlignLeft);
 
                     if (root.limitMinimum.z > root.minimum.z) {
-                        context.color(root.limitColor)
+                        context.color(root.limitColor);
                     }
-                    context.translate(-root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0)
-                    context.scale(root.textSize, root.textSize, root.textSize)
-                    context.rotate(-90, 0.0, 0.0, 1.0)
-                    context.text(_format(root.minimum.z), GLView3D.AlignLeft)
-                context.endUnion()
+                    context.translate(-root.textSize/2.0, -textOffset - lineEnding/2.0, 0.0);
+                    context.scale(root.textSize, root.textSize, root.textSize);
+                    context.rotate(-90, 0.0, 0.0, 1.0);
+                    context.text(_format(root.minimum.z), GLView3D.AlignLeft);
+                context.endUnion();
             }
 
-        context.endUnion()
-        context.update()
+        context.endUnion();
+        context.update();
     }
 
     Component.onCompleted: {
-        onAxesChanged.connect(needsUpdate)
-        onMaximumChanged.connect(needsUpdate)
-        onMinimumChanged.connect(needsUpdate)
-        onColorChanged.connect(needsUpdate)
-        onTextSizeChanged.connect(needsUpdate)
-        onPrefixChanged.connect(needsUpdate)
-        onSuffixChanged.connect(needsUpdate)
-        onDecimalsChanged.connect(needsUpdate)
-        onViewModeChanged.connect(needsUpdate)
-        onScaleFactorChanged.connect(needsUpdate)
+        onAxesChanged.connect(needsUpdate);
+        onMaximumChanged.connect(needsUpdate);
+        onMinimumChanged.connect(needsUpdate);
+        onColorChanged.connect(needsUpdate);
+        onTextSizeChanged.connect(needsUpdate);
+        onPrefixChanged.connect(needsUpdate);
+        onSuffixChanged.connect(needsUpdate);
+        onDecimalsChanged.connect(needsUpdate);
+        onViewModeChanged.connect(needsUpdate);
+        onScaleFactorChanged.connect(needsUpdate);
     }
 
     function _format(number)

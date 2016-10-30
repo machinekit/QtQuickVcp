@@ -10,13 +10,13 @@ Item {
     property string launcherName: (launcher !== undefined) ? launcher.name : ""
     property string titleText: {
         if (isRunning) {
-            return qsTr("Starting %1...").arg(launcherName)
+            return qsTr("Starting %1...").arg(launcherName);
         }
         else if (hasError) {
-            return qsTr("Error starting %1").arg(launcherName)
+            return qsTr("Error starting %1").arg(launcherName);
         }
         else {
-            return qsTr("%1 exited").arg(launcherName)
+            return qsTr("%1 exited").arg(launcherName);
         }
     }
     property var image: (launcher !== undefined) && (launcher.image !== undefined) ? launcher.image : undefined
