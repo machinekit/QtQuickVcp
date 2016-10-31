@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2014 Alexander Rössler
+** Copyright (C) 2016 Alexander Rössler
 ** License: LGPL version 2.1
 **
 ** This file is part of QtQuickVcp.
@@ -14,9 +14,6 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 ** Lesser General Public License for more details.
-**
-** Contributors:
-** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
 
@@ -35,34 +32,34 @@ ApplicationObject {
 
     onValueChanged: {
         if (_ready && !_remoteUpdate) {
-            command.setFeedOverride(value)
-            synced = false
+            command.setRapidOverride(value);
+            synced = false;
         }
     }
 
     on_ReadyChanged: {
         if (_ready) {
-            _update()
-            status.onMotionChanged.connect(_update)
-            status.onConfigChanged.connect(_update)
+            _update();
+            status.onMotionChanged.connect(_update);
+            status.onConfigChanged.connect(_update);
         }
         else {
-            status.onMotionChanged.disconnect(_update)
-            status.onConfigChanged.disconnect(_update)
-            synced = false
+            status.onMotionChanged.disconnect(_update);
+            status.onConfigChanged.disconnect(_update);
+            synced = false;
         }
     }
 
     function _update() {
         _remoteUpdate = true
-        minimumValue = status.config.minFeedOverride
-        maximumValue = status.config.maxFeedOverride
-        if (value !== status.motion.feedrate) {
-            value = status.motion.feedrate
+        minimumValue = status.config.minFeedOverride;
+        maximumValue = status.config.maxFeedOverride;
+        if (value !== status.motion.rapidrate) {
+            value = status.motion.rapidrate;
         }
         else {
-            synced = true
+            synced = true;
         }
-        _remoteUpdate = false
+        _remoteUpdate = false;
     }
 }

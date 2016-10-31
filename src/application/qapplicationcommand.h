@@ -171,6 +171,7 @@ public slots:
     void setSpindleBrake(SpindleBrake brake);
     void setDebugLevel(int debugLevel);
     void setFeedOverride(double scale);
+    void setRapidOverride(double scale);
     void setFloodEnabled(bool enable);
     void homeAxis(int index);
     void jog(JogType type, int axisIndex);
