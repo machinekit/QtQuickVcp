@@ -19,7 +19,7 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qmjpegstreamerclient.h"
+#include "mjpegstreamerclient.h"
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;
@@ -28,6 +28,8 @@ namespace gpb = google::protobuf;
 #endif
 
 using namespace nzmqt;
+
+namespace qtquickvcp {
 
 /*!
     \qmltype MjpegStreamerClient
@@ -102,7 +104,7 @@ using namespace nzmqt;
  *  The default value is \c{Qt::KeepAspectRatio}
  */
 
-QMjpegStreamerClient::QMjpegStreamerClient(QQuickPaintedItem *parent) :
+MjpegStreamerClient::MjpegStreamerClient(QQuickPaintedItem *parent) :
     QQuickPaintedItem(parent),
     m_componentCompleted(false),
     m_framerateTimer(new QTimer(this)),
@@ -123,21 +125,21 @@ QMjpegStreamerClient::QMjpegStreamerClient(QQuickPaintedItem *parent) :
     this->setOpaquePainting(true);
 
     connect(m_framerateTimer, &QTimer::timeout,
-            this, &QMjpegStreamerClient::updateFramerate);
+            this, &MjpegStreamerClient::updateFramerate);
     m_framerateTimer->setInterval(1000);
 
     connect(m_streamBufferTimer, &QTimer::timeout,
-            this, &QMjpegStreamerClient::updateStreamBuffer);
+            this, &MjpegStreamerClient::updateStreamBuffer);
     m_streamBufferTimer->setSingleShot(true);
 }
 
-QMjpegStreamerClient::~QMjpegStreamerClient()
+MjpegStreamerClient::~MjpegStreamerClient()
 {
     disconnectSocket();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
-void QMjpegStreamerClient::componentComplete()
+void MjpegStreamerClient::componentComplete()
 {
     m_componentCompleted = true;
 
@@ -149,7 +151,7 @@ void QMjpegStreamerClient::componentComplete()
     QQuickPaintedItem::componentComplete();
 }
 
-void QMjpegStreamerClient::paint(QPainter *painter)
+void MjpegStreamerClient::paint(QPainter *painter)
 {
     QRect boundingRect = this->boundingRect().toRect();
 
@@ -166,7 +168,7 @@ void QMjpegStreamerClient::paint(QPainter *painter)
 /** If the running property has a rising edge we try to connect
  *  if it is has a falling edge we disconnect and cleanup
  */
-void QMjpegStreamerClient::setReady(bool arg)
+void MjpegStreamerClient::setReady(bool arg)
 {
     if (m_running != arg) {
         m_running = arg;
@@ -188,19 +190,19 @@ void QMjpegStreamerClient::setReady(bool arg)
     }
 }
 
-void QMjpegStreamerClient::start()
+void MjpegStreamerClient::start()
 {
     m_framerateTimer->start();
     connectSocket();
 }
 
-void QMjpegStreamerClient::stop()
+void MjpegStreamerClient::stop()
 {
     m_framerateTimer->stop();
     disconnectSocket();
 }
 
-void QMjpegStreamerClient::connectSocket()
+void MjpegStreamerClient::connectSocket()
 {
     m_context = createDefaultContext(this, 1);
     m_context->start();
@@ -211,10 +213,10 @@ void QMjpegStreamerClient::connectSocket()
     m_updateSocket->subscribeTo("frames");
 
     connect(m_updateSocket, &ZMQSocket::messageReceived,
-         this, &QMjpegStreamerClient::updateMessageReceived);
+         this, &MjpegStreamerClient::updateMessageReceived);
 }
 
-void QMjpegStreamerClient::disconnectSocket()
+void MjpegStreamerClient::disconnectSocket()
 {
     if (m_updateSocket != nullptr)
     {
@@ -231,7 +233,7 @@ void QMjpegStreamerClient::disconnectSocket()
     }
 }
 
-void QMjpegStreamerClient::updateMessageReceived(const QList<QByteArray> &messageList)
+void MjpegStreamerClient::updateMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -275,7 +277,7 @@ void QMjpegStreamerClient::updateMessageReceived(const QList<QByteArray> &messag
     updateStreamBuffer();
 }
 
-void QMjpegStreamerClient::updateFramerate()
+void MjpegStreamerClient::updateFramerate()
 {
     m_fps = m_frameCount;
     m_frameCount = 0;
@@ -286,7 +288,7 @@ void QMjpegStreamerClient::updateFramerate()
 #endif
 }
 
-void QMjpegStreamerClient::updateStreamBuffer()
+void MjpegStreamerClient::updateStreamBuffer()
 {
     updateStreamBufferItem();
 
@@ -304,7 +306,7 @@ void QMjpegStreamerClient::updateStreamBuffer()
 
 }
 
-void QMjpegStreamerClient::updateStreamBufferItem()
+void MjpegStreamerClient::updateStreamBufferItem()
 {
     m_frameCount++;
     m_frameImg = m_currentStreamBufferItem.image;
@@ -315,3 +317,4 @@ void QMjpegStreamerClient::updateStreamBufferItem()
     emit timestampChanged(m_timestamp);
     emit timeChanged(m_time);
 }
+}; // namespace qtquickvcp

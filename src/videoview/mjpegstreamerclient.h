@@ -34,7 +34,9 @@
 #include "package.pb.h"
 #include <google/protobuf/text_format.h>
 
-class QMjpegStreamerClient : public QQuickPaintedItem
+namespace qtquickvcp {
+
+class MjpegStreamerClient : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QString videoUri READ videoUri WRITE setVideoUri NOTIFY videoUriChanged)
@@ -51,8 +53,8 @@ public:
         QTime  time;
     } StreamBufferItem;
 
-    explicit QMjpegStreamerClient(QQuickPaintedItem *parent = 0);
-    ~QMjpegStreamerClient();
+    explicit MjpegStreamerClient(QQuickPaintedItem *parent = 0);
+    ~MjpegStreamerClient();
     virtual void componentComplete();
     void paint(QPainter* painter);
 
@@ -146,6 +148,7 @@ private slots:
     void updateFramerate();
     void updateStreamBuffer();
     void updateStreamBufferItem();
-};
+}; // class MjpegStreamerClient
+}; // namespace qtquickvcp
 
 #endif // MJPEGSTREAMER2_H
