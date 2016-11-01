@@ -1,5 +1,7 @@
 #include "fileio.h"
 
+namespace qtquickvcp {
+
 FileIO::FileIO(QObject *parent) :
     QObject(parent),
     m_fileUrl(""),
@@ -62,3 +64,4 @@ void FileIO::read()
     emit textChanged(m_text);
     emit readingCompleted();
 }
+}; // namespace qtquickvcp

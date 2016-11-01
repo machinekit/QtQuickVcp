@@ -90,60 +90,60 @@ Rectangle {
 
     /*! \internal */
     property var _requiredServices: {
-        var required = []
-        var newReady = true
+        var required = [];
+        var newReady = true;
         for (var i = 0; i < services.length; ++i) {
             if (services[i].required) {
-                required.push(services[i])
-                newReady = newReady && services[i].ready
-                services[i].onReadyChanged.connect(_evaluateReady)
+                required.push(services[i]);
+                newReady = newReady && services[i].ready;
+                services[i].onReadyChanged.connect(_evaluateReady);
             }
         }
 
-        ready = newReady  // if no required service we are ready
+        ready = newReady;  // if no required service we are ready
 
-        return required
+        return required;
     }
 
     /*!
         Updates the services of this window.
     */
     function updateServices() {
-        var list = [] //main.services
-        var nestedList = _recurseObjects(main.data, "Service")
+        var list = []; //main.services
+        var nestedList = _recurseObjects(main.data, "Service");
         if (nestedList.length > 0) {
-            list = list.concat(nestedList)
+            list = list.concat(nestedList);
         }
-        main.services = list
+        main.services = list;
     }
 
     /*! \internal */
     function _evaluateReady() {
         for (var i = 0; i < _requiredServices.length; ++i) {
             if (!_requiredServices[i].ready) {
-                ready = false
-                return
+                ready = false;
+                return;
             }
         }
 
-        ready = true
-        return
+        ready = true;
+        return;
     }
 
     /*! \internal */
     function _recurseObjects(objects, name)
     {
-        var list = []
+        var list = [];
 
         if (objects !== undefined) {
             for (var i = 0; i < objects.length; ++i)
             {
                 if (objects[i].objectName === name) {
-                    list.push(objects[i])
+                    list.push(objects[i]);
                 }
-                var nestedList = _recurseObjects(objects[i].data, name)
+                var nestedList = _recurseObjects(objects[i].data, name);
                 if (nestedList.length > 0) {
-                    list = list.concat(nestedList)
+                    list = list.concat(nestedList);
                 }
             }
         }
@@ -158,7 +158,7 @@ Rectangle {
     signal disconnect()
 
     Component.onCompleted: {
-       updateServices()
+       updateServices();
     }
 
     id: main

@@ -49,7 +49,7 @@ RowLayout {
             checked: index === 0
             onCheckedChanged: {
                 if (checked) {
-                    axisGroup.currentIndex = index
+                    axisGroup.currentIndex = index;
                 }
             }
         }

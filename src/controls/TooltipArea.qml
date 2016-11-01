@@ -42,8 +42,8 @@ MouseArea {
         interval: _root.interval
         running: _root.enabled && _root.containsMouse && _root.text.length
         onTriggered: {
-            Tooltip.hideText()
-            Tooltip.showText(_root, Qt.point(_root.mouseX, _root.mouseY), _root.text)
+            Tooltip.hideText();
+            Tooltip.showText(_root, Qt.point(_root.mouseX, _root.mouseY), _root.text);
         }
     }
 }

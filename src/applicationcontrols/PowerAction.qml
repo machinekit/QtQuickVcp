@@ -36,10 +36,10 @@ ApplicationAction {
     checkable: true
     onTriggered: {
         if (checked) {
-            command.setTaskState('execute', ApplicationCommand.TaskStateOn)
+            command.setTaskState('execute', ApplicationCommand.TaskStateOn);
         }
         else {
-            command.setTaskState('execute', ApplicationCommand.TaskStateOff)
+            command.setTaskState('execute', ApplicationCommand.TaskStateOff);
         }
     }
 

@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "qmjpegstreamerclient.h"
+#include "mjpegstreamerclient.h"
 
 void MachinekitVideoViewPlugin::registerTypes(const char *uri)
 {
@@ -30,5 +30,5 @@ void MachinekitVideoViewPlugin::registerTypes(const char *uri)
 
     // @uri Machinekit.VideoView
     Q_ASSERT(uri == QLatin1String("Machinekit.VideoView"));
-    qmlRegisterType<QMjpegStreamerClient>(uri, 1, 0, "MjpegStreamerClient");
+    qmlRegisterType<qtquickvcp::MjpegStreamerClient>(uri, 1, 0, "MjpegStreamerClient");
 }

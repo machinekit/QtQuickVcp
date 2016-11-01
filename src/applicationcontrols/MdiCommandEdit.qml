@@ -45,35 +45,35 @@ RowLayout {
 
         onAccepted: {
             if (text !== "") {
-                mdiCommandAction.trigger()
+                mdiCommandAction.trigger();
             }
         }
 
         Keys.onUpPressed: {
             if (mdiHistory.model.length > 0) {
                 if (mdiHistoryPos === -1) {
-                    mdiHistoryPos = mdiHistory.model.length
+                    mdiHistoryPos = mdiHistory.model.length;
                 }
 
-                mdiHistoryPos -= 1
+                mdiHistoryPos -= 1;
 
                 if (mdiHistoryPos === -1) {
-                    mdiHistoryPos = 0
+                    mdiHistoryPos = 0;
                 }
 
-                mdiTextField.text = mdiHistory.model[mdiHistoryPos].command
+                mdiTextField.text = mdiHistory.model[mdiHistoryPos].command;
             }
         }
 
         Keys.onDownPressed: {
             if (mdiHistory.model.length > 0) {
-                mdiHistoryPos += 1
+                mdiHistoryPos += 1;
 
                 if (mdiHistoryPos === mdiHistory.model.length) {
-                    mdiHistoryPos -= 1
+                    mdiHistoryPos -= 1;
                 }
 
-                mdiTextField.text = mdiHistory.model[mdiHistoryPos].command
+                mdiTextField.text = mdiHistory.model[mdiHistoryPos].command;
             }
         }
     }
@@ -88,8 +88,8 @@ RowLayout {
         id: mdiCommandAction
         mdiCommand: mdiTextField.text
         onTriggered: {
-            mdiTextField.text = ''
-            mdiHistoryPos = -1
+            mdiTextField.text = '';
+            mdiHistoryPos = -1;
         }
     }
 }

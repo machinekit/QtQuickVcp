@@ -35,49 +35,49 @@ Action {
     text: {
         switch (viewMode) {
         case "Front":
-            return qsTr("Front")
+            return qsTr("Front");
         case "Top":
-            return qsTr("Top")
+            return qsTr("Top");
         case "RotatedTop":
-            return qsTr("Rotated Top")
+            return qsTr("Rotated Top");
         case "Side":
-            return qsTr("Side")
+            return qsTr("Side");
         case "Perspective":
-            return qsTr("Perspective")
+            return qsTr("Perspective");
         default:
-            return qsTr("Error")
+            return qsTr("Error");
         }
     }
 
     tooltip: {
         switch (viewMode) {
         case "Front":
-            return qsTr("Front view")
+            return qsTr("Front view");
         case "Top":
-            return qsTr("Top view")
+            return qsTr("Top view");
         case "RotatedTop":
-            return qsTr("Rotated top view")
+            return qsTr("Rotated top view");
         case "Side":
-            return qsTr("Side view")
+            return qsTr("Side view");
         case "Perspective":
-            return qsTr("Perspective")
+            return qsTr("Perspective");
         default:
-            return "Error"
+            return qsTr("Error");
         }
     }
 
     iconSource: {
         switch (viewMode) {
         case "Front":
-            return "qrc:Machinekit/PathView/icons/view-mode-front"
+            return "qrc:Machinekit/PathView/icons/view-mode-front";
         case "Top":
-            return "qrc:Machinekit/PathView/icons/view-mode-top"
+            return "qrc:Machinekit/PathView/icons/view-mode-top";
         case "RotatedTop":
-            return "qrc:Machinekit/PathView/icons/view-mode-rotated-top"
+            return "qrc:Machinekit/PathView/icons/view-mode-rotated-top";
         case "Side":
-            return "qrc:Machinekit/PathView/icons/view-mode-side"
+            return "qrc:Machinekit/PathView/icons/view-mode-side";
         case "Perspective":
-            return "qrc:Machinekit/PathView/icons/view-mode-perspective"
+            return "qrc:Machinekit/PathView/icons/view-mode-perspective";
         default:
             return ""
         }
@@ -85,7 +85,7 @@ Action {
 
     onTriggered: {
         if (view.viewMode !== viewMode) {
-            view.viewMode = viewMode
+            view.viewMode = viewMode;
         }
     }
 }

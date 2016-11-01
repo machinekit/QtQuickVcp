@@ -36,17 +36,17 @@ Button {
     function _toggle(onOff) {
         if (onOff) {
             if (jogAction.distance === 0) {
-                jogAction.velocity = velocity * direction
-                jogAction.trigger()
+                jogAction.velocity = velocity * direction;
+                jogAction.trigger();
             }
         }
         else if (jogAction.distance === 0) {
-            jogAction.velocity = 0
-            jogAction.trigger()
+            jogAction.velocity = 0;
+            jogAction.trigger();
         }
         else {
-            jogAction.velocity = velocity * direction
-            jogAction.trigger()
+            jogAction.velocity = velocity * direction;
+            jogAction.trigger();
         }
     }
 
@@ -54,12 +54,14 @@ Button {
     enabled: jogAction.enabled
 
     onPressedChanged: {
-        if (!checkable)
-            _toggle(pressed)
+        if (!checkable) {
+            _toggle(pressed);
+        }
     }
     onCheckedChanged: {
-        if (checkable)
-         _toggle(checked)
+        if (checkable) {
+         _toggle(checked);
+        }
     }
 
     JogAction {

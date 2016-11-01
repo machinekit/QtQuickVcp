@@ -36,22 +36,22 @@ Label {
     property var _gcodes: _ready ? status.interp.gcodes : []
 
     text: {
-        var mcodes = []
-        var gcodes = []
-        var desired = []
+        var mcodes = [];
+        var gcodes = [];
+        var desired = [];
         for (var i = 0; i < desiredMCodes.length; ++i) {
-            desired = desiredMCodes[i]
+            desired = desiredMCodes[i];
             if (_mcodes[desired] > -1) {
-                mcodes.push("M" + _mcodes[desired].toString())
+                mcodes.push("M" + _mcodes[desired].toString());
             }
         }
         for (i = 0; i < desiredGCodes.length; ++i) {
-            desired = desiredGCodes[i]
+            desired = desiredGCodes[i];
             if (_gcodes[desired] > -1) {
-                gcodes.push("G" + (_gcodes[desired]/10).toString())
+                gcodes.push("G" + (_gcodes[desired]/10).toString());
             }
         }
-        return gcodes.join(" ") + " " + mcodes.join(" ")
+        return gcodes.join(" ") + " " + mcodes.join(" ");
     }
 
     ApplicationObject {

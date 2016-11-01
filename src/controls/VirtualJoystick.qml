@@ -120,42 +120,36 @@ Rectangle {
     /*! \internal */
     function calculateNewX()
     {
-        if (xEnabled)
-        {
-            var newControlX = 0
+        if (xEnabled) {
+            var newControlX = 0;
 
-            newControlX = controlArea.mouseX - control.width/2
-            if (newControlX > _maxX)
-            {
-                newControlX = _maxX
+            newControlX = controlArea.mouseX - control.width/2;
+            if (newControlX > _maxX) {
+                newControlX = _maxX;
             }
-            else if (newControlX < 0)
-            {
-                newControlX = 0
+            else if (newControlX < 0) {
+                newControlX = 0;
             }
 
-            control.x = newControlX
+            control.x = newControlX;
         }
     }
 
     /*! \internal */
     function calculateNewY()
     {
-        if (yEnabled)
-        {
-            var newControlY = 0
+        if (yEnabled) {
+            var newControlY = 0;
 
-            newControlY = controlArea.mouseY - control.height/2
-            if (newControlY > _maxY)
-            {
-                newControlY = _maxY
+            newControlY = controlArea.mouseY - control.height/2;
+            if (newControlY > _maxY) {
+                newControlY = _maxY;
             }
-            else if (newControlY < 0)
-            {
-                newControlY = 0
+            else if (newControlY < 0) {
+                newControlY = 0;
             }
 
-            control.y = newControlY
+            control.y = newControlY;
         }
     }
 
@@ -239,10 +233,12 @@ Rectangle {
         radius: width / 2
         clip: true
         color: {
-            if (!movable)
-                systemPalette.dark
-            else
-                systemPalette.midlight
+            if (!movable) {
+                systemPalette.dark;
+            }
+            else {
+                systemPalette.midlight;
+            }
         }
     }
 
@@ -262,34 +258,21 @@ Rectangle {
 
         onPressed: control.movable = true
         onReleased: {
-            control.movable = false
-            if (main.autoCenter)
-            {
-                control.x = _centeredX
-                control.y = _centeredY
+            control.movable = false;
+            if (main.autoCenter) {
+                control.x = _centeredX;
+                control.y = _centeredY;
             }
         }
         onMouseXChanged: {
-            if (control.movable)
-            {
-                calculateNewX()
+            if (control.movable) {
+                calculateNewX();
             }
         }
         onMouseYChanged: {
-            if (control.movable)
-            {
-                calculateNewY()
+            if (control.movable) {
+                calculateNewY();
             }
         }
     }
-
-    /*onYVelocityChanged: {
-        console.log("Y:")
-        console.log(yVelocity)
-    }
-
-    onXVelocityChanged: {
-        console.log("X:")
-        console.log(xVelocity)
-    }*/
 }

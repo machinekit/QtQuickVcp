@@ -20,24 +20,24 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "qservice.h"
-#include "qservicelist.h"
-#include "qservicediscovery.h"
-#include "qservicediscoveryitem.h"
-#include "qservicediscoveryfilter.h"
-#include "qnameserver.h"
+#include "service.h"
+#include "servicelist.h"
+#include "servicediscovery.h"
+#include "servicediscoveryitem.h"
+#include "servicediscoveryfilter.h"
+#include "nameserver.h"
 
 void MachinekitServicePlugin::registerTypes(const char *uri)
 {
 
     // @uri Machinekit.Service
     Q_ASSERT(uri == QLatin1String("Machinekit.Service"));
-    qmlRegisterType<QService>(uri, 1, 0, "Service");
-    qmlRegisterType<QServiceList>(uri, 1, 0, "ServiceList");
-    qmlRegisterType<QNameServer>(uri, 1, 0, "NameServer");
-    qmlRegisterType<QServiceDiscovery>(uri, 1, 0, "ServiceDiscovery");
-    qmlRegisterType<QServiceDiscoveryItem>(uri, 1, 0, "ServiceDiscoveryItem");
-    qmlRegisterType<QServiceDiscoveryFilter>(uri, 1, 0, "ServiceDiscoveryFilter");
+    qmlRegisterType<qtquickvcp::Service>(uri, 1, 0, "Service");
+    qmlRegisterType<qtquickvcp::ServiceList>(uri, 1, 0, "ServiceList");
+    qmlRegisterType<qtquickvcp::NameServer>(uri, 1, 0, "NameServer");
+    qmlRegisterType<qtquickvcp::ServiceDiscovery>(uri, 1, 0, "ServiceDiscovery");
+    qmlRegisterType<qtquickvcp::ServiceDiscoveryItem>(uri, 1, 0, "ServiceDiscoveryItem");
+    qmlRegisterType<qtquickvcp::ServiceDiscoveryFilter>(uri, 1, 0, "ServiceDiscoveryFilter");
 }
 
 

@@ -20,18 +20,18 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "qpreviewclient.h"
-#include "qglitem.h"
-#include "qglview.h"
-#include "qglcubeitem.h"
-#include "qglcylinderitem.h"
-#include "qglsphereitem.h"
+#include "previewclient.h"
+#include "glitem.h"
+#include "glview.h"
+#include "glcubeitem.h"
+#include "glcylinderitem.h"
+#include "glsphereitem.h"
 #include "qglcamera.h"
-#include "qglpathitem.h"
-#include "qgllight.h"
-#include "qglcanvas.h"
-#include "qgcodeprogrammodel.h"
-#include "qgcodeprogramloader.h"
+#include "glpathitem.h"
+#include "gllight.h"
+#include "glcanvas.h"
+#include "gcodeprogrammodel.h"
+#include "gcodeprogramloader.h"
 
 static void initResources()
 {
@@ -65,16 +65,16 @@ void MachinekitPathViewPlugin::registerTypes(const char *uri)
     // @uri Machinekit.PathView
     Q_ASSERT(uri == QLatin1String("Machinekit.PathView"));
     qmlRegisterType<QGLCamera>(uri, 1, 0, "Camera3D");
-    qmlRegisterType<QGLLight>(uri, 1, 0, "Light3D");
-    qmlRegisterType<QGLView>(uri, 1, 0, "GLView3D");
-    qmlRegisterType<QGLCubeItem>(uri, 1, 0, "Cube3D");
-    qmlRegisterType<QGLCylinderItem>(uri, 1, 0, "Cylinder3D");
-    qmlRegisterType<QGLSphereItem>(uri, 1, 0, "Sphere3D");
-    qmlRegisterType<QGLPathItem>(uri, 1, 0, "Path3D");
-    qmlRegisterType<QGLCanvas>(uri, 1, 0, "Canvas3D");
-    qmlRegisterType<QPreviewClient>(uri, 1, 0, "PreviewClient");
-    qmlRegisterType<QGCodeProgramModel>(uri, 1, 0, "GCodeProgramModel");
-    qmlRegisterType<QGCodeProgramLoader>(uri, 1, 0, "GCodeProgramLoader");
+    qmlRegisterType<qtquickvcp::GLLight>(uri, 1, 0, "Light3D");
+    qmlRegisterType<qtquickvcp::GLView>(uri, 1, 0, "GLView3D");
+    qmlRegisterType<qtquickvcp::GLCubeItem>(uri, 1, 0, "Cube3D");
+    qmlRegisterType<qtquickvcp::GLCylinderItem>(uri, 1, 0, "Cylinder3D");
+    qmlRegisterType<qtquickvcp::GLSphereItem>(uri, 1, 0, "Sphere3D");
+    qmlRegisterType<qtquickvcp::GLPathItem>(uri, 1, 0, "Path3D");
+    qmlRegisterType<qtquickvcp::GLCanvas>(uri, 1, 0, "Canvas3D");
+    qmlRegisterType<qtquickvcp::PreviewClient>(uri, 1, 0, "PreviewClient");
+    qmlRegisterType<qtquickvcp::GCodeProgramModel>(uri, 1, 0, "GCodeProgramModel");
+    qmlRegisterType<qtquickvcp::GCodeProgramLoader>(uri, 1, 0, "GCodeProgramLoader");
 
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {

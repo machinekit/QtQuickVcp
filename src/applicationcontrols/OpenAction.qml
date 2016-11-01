@@ -38,7 +38,7 @@ ApplicationAction {
     onTriggered: {
         if (_ready)
         {
-            fileDialog.visible = true
+            fileDialog.visible = true;
         }
     }
     enabled: _ready

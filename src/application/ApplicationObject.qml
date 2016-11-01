@@ -37,8 +37,8 @@ QtObject {
         if (core === null)
         {
             try {
-                var x = applicationCore
-                core = Qt.binding(function() {return x})
+                var x = applicationCore;
+                core = Qt.binding(function() { return x; });
             }
             catch (err) {
             }

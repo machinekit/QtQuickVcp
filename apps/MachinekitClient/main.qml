@@ -68,28 +68,28 @@ Item {
     }
 
     Component.onCompleted: {
-        parseArguments(Qt.application.arguments)
+        parseArguments(Qt.application.arguments);
     }
 
     function parseArguments(arguments)
     {
-        var toggle = false
-        var option
-        var argument
-        var args = arguments.slice()
-        args.shift()
+        var toggle = false;
+        var option;
+        var argument;
+        var args = arguments.slice();
+        args.shift();
 
         while (args.length > 0)
         {
             if (!toggle) {
-                option = args[0]
+                option = args[0];
             }
             else {
-                argument = args[0]
-                processOption(option, argument)
+                argument = args[0];
+                processOption(option, argument);
             }
-            toggle = !toggle
-            args.shift()
+            toggle = !toggle;
+            args.shift();
         }
     }
 
@@ -97,7 +97,7 @@ Item {
     {
         if (option === '--config')
         {
-            connectionWindow.configurationFilePath = argument
+            connectionWindow.configurationFilePath = argument;
         }
     }
 }

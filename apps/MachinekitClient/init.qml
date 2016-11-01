@@ -55,7 +55,7 @@ ApplicationWindow {
 
         anchors.fill: parent
         onLoaded: {
-            focus = true
+            focus = true;
             console.debug("Main application loaded.");
         }
     }

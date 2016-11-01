@@ -24,13 +24,13 @@ Loader {
     source: ((applicationSource !== "") || (applicationConfig === undefined)) ? applicationSource : applicationConfig.selectedConfig.mainFile
 
     onSourceChanged: {
-        console.log("Source changed: " + source + " " + active)
+        console.log("Source changed: " + source + " " + active);
     }
 
     onStatusChanged: {
         if (status === Loader.Error)
         {
-            setError(qsTr("QML Error:"), qsTr("Loading QML file failed"))
+            setError(qsTr("QML Error:"), qsTr("Loading QML file failed"));
         }
     }
 

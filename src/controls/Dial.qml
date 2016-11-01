@@ -217,17 +217,21 @@ Item {
 
         onPositionChanged: {
             if (pressed) {
-                value = valueFromPoint(mouseX, mouseY)
-                inDrag = true
+                value = valueFromPoint(mouseX, mouseY);
+                inDrag = true;
             }
         }
         onPressed: {
-            value = valueFromPoint(mouseX, mouseY)
-             if (activeFocusOnPress) dial.focus = true
+            value = valueFromPoint(mouseX, mouseY);
+             if (activeFocusOnPress) {
+                 dial.focus = true;
+             }
         }
 
         onReleased:inDrag = false;
-        function bound(val) { return Math.max(minimumValue, Math.min(maximumValue, val)); }
+        function bound(val) {
+            return Math.max(minimumValue, Math.min(maximumValue, val));
+        }
 
         function valueFromPoint(x, y)
         {
@@ -309,22 +313,4 @@ Item {
         text: dial.prefix + dial.minimumValue.toFixed(dial.decimals) + dial.suffix
         visible: false
     }
-
-//    WheelArea { // move this to MouseArea::onWheel
-//        id: wheelarea
-//        anchors.fill: parent
-//        horizontalMinimumValue: dial.minimumValue
-//        horizontalMaximumValue: dial.maximumValue
-//        verticalMinimumValue: dial.minimumValue
-//        verticalMaximumValue: dial.maximumValue
-//        property real step: (dial.maximumValue - dial.minimumValue)/100
-
-//        onVerticalWheelMoved: {
-//            value += verticalDelta/4*step
-//        }
-
-//        onHorizontalWheelMoved: {
-//            value += horizontalDelta/4*step
-//        }
-//    }
 }

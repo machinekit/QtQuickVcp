@@ -36,15 +36,17 @@ VirtualJoystick {
     id: root
 
     function _jog(axis, value) {
-        if (axis === -1)
-            return
+        if (axis === -1) {
+            return;
+        }
 
-        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
+        }
         if (value !== 0.0) {
-            command.jog(ApplicationCommand.ContinuousJog, axis, value)
+            command.jog(ApplicationCommand.ContinuousJog, axis, value);
         } else {
-            command.jog(ApplicationCommand.StopJog, axis)
+            command.jog(ApplicationCommand.StopJog, axis);
         }
     }
 

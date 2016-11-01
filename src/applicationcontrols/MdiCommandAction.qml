@@ -35,11 +35,12 @@ ApplicationAction {
     shortcut: ""
     tooltip: qsTr("Execute MDI command [%1]").arg(shortcut)
     onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeMdi)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeMdi)
-        command.executeMdi('execute', mdiCommand)
+        if (status.task.taskMode !== ApplicationStatus.TaskModeMdi) {
+            command.setTaskMode('execute', ApplicationCommand.TaskModeMdi);
+        }
+        command.executeMdi('execute', mdiCommand);
         if (enableHistory) {
-            mdiHistory.add(mdiCommand)
+            mdiHistory.add(mdiCommand);
         }
     }
 

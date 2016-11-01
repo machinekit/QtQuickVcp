@@ -35,34 +35,34 @@ ApplicationObject {
 
     onValueChanged: {
         if (_ready && !_remoteUpdate) {
-            command.setSpindleOverride(value)
-            synced = false
+            command.setSpindleOverride(value);
+            synced = false;
         }
     }
 
     on_ReadyChanged: {
         if (_ready) {
-            _update()
-            status.onMotionChanged.connect(_update)
-            status.onConfigChanged.connect(_update)
+            _update();
+            status.onMotionChanged.connect(_update);
+            status.onConfigChanged.connect(_update);
         }
         else {
-            status.onMotionChanged.disconnect(_update)
-            status.onConfigChanged.disconnect(_update)
-            synced = false
+            status.onMotionChanged.disconnect(_update);
+            status.onConfigChanged.disconnect(_update);
+            synced = false;
         }
     }
 
     function _update() {
-        _remoteUpdate = true
-        minimumValue = status.config.minSpindleOverride
-        maximumValue = status.config.maxSpindleOverride
+        _remoteUpdate = true;
+        minimumValue = status.config.minSpindleOverride;
+        maximumValue = status.config.maxSpindleOverride;
         if (value !== status.motion.spindlerate) {
-            value = status.motion.spindlerate
+            value = status.motion.spindlerate;
         }
         else {
-            synced = true
+            synced = true;
         }
-        _remoteUpdate = false
+        _remoteUpdate = false;
     }
 }

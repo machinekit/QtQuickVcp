@@ -20,7 +20,7 @@ import QtQuick 2.0
 import Machinekit.Application 1.0
 
 Item {
-    property var status: {"synced": false}
+    property var status: { "synced": false }
     property bool ready: true
 
     property var axisNamesUpper: getUpperAxisNames(axisNames)

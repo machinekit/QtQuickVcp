@@ -138,7 +138,7 @@ Item {
                 anchors.fill: parent
                 function handleMouse(mouse) {
                     if (mouse.buttons & Qt.LeftButton) {
-                        pickerCursor.y = Math.max(0, Math.min(height, mouse.y))
+                        pickerCursor.y = Math.max(0, Math.min(height, mouse.y));
                     }
                 }
                 onPositionChanged: handleMouse(mouse)

@@ -237,35 +237,33 @@ Item {
         onMouseXChanged: {
             endTimestamp = Math.min(startEndTimestamp + (pressStart-mouseX)/chart.width*timeSpan, valueModel.endTimestamp)
 
-            if (endTimestamp === valueModel.endTimestamp)    // enable autoscrolling if someone moves to the end
-            {
-                autoScroll = true
-                showMessage(qsTr("Autoscroll enabled"))
+            if (endTimestamp === valueModel.endTimestamp) {   // enable autoscrolling if someone moves to the end
+                autoScroll = true;
+                showMessage(qsTr("Autoscroll enabled"));
             }
-            else
-            {
-                autoScroll = false
-                showMessage(qsTr("Autoscroll disabled"))
+            else {
+                autoScroll = false;
+                showMessage(qsTr("Autoscroll disabled"));
             }
         }
 
         onWheel: {
-            var sign = (wheel.angleDelta.y < 0) ? -1 : 1
-            var tempTimeSpan = timeSpan * (1-sign*scrollZoomFactor)
-            var displayUnit
-            var displaySpan
+            var sign = (wheel.angleDelta.y < 0) ? -1 : 1;
+            var tempTimeSpan = timeSpan * (1-sign*scrollZoomFactor);
+            var displayUnit;
+            var displaySpan;
             if (tempTimeSpan > 1000) {
-                tempTimeSpan = Math.round(tempTimeSpan / 1000) * 1000
-                displaySpan = tempTimeSpan / 1000
-                displayUnit = "s"
+                tempTimeSpan = Math.round(tempTimeSpan / 1000) * 1000;
+                displaySpan = tempTimeSpan / 1000;
+                displayUnit = "s";
             }
             else {
-                displaySpan = tempTimeSpan
-                displayUnit = "ms"
+                displaySpan = tempTimeSpan;
+                displayUnit = "ms";
             }
-            showMessage(qsTr("Timespan: %1%2").arg(displaySpan).arg(displayUnit))
+            showMessage(qsTr("Timespan: %1%2").arg(displaySpan).arg(displayUnit));
 
-            timeSpan = tempTimeSpan
+            timeSpan = tempTimeSpan;
         }
     }
     Label {
@@ -333,20 +331,20 @@ Item {
             ctx.fillStyle = chart.backgroundColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = chart.gridColor;
-            ctx.lineWidth = gridLineWidth
+            ctx.lineWidth = gridLineWidth;
             ctx.beginPath();
 
             for (var i = minimumValue/yGrid; i < maximumValue/yGrid; i += 1) {
-                            var y = canvas.height-(i*yGrid-minimumValue)/(maximumValue-minimumValue)*canvas.height;
-                            ctx.moveTo(0, y);
-                            ctx.lineTo(canvas.width, y);
-                        }
+                var y = canvas.height-(i*yGrid-minimumValue)/(maximumValue-minimumValue)*canvas.height;
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
 
             for (i = 0; i < timeSpan/xGrid; i += 1) {
-                            var x = (i*xGrid)/(timeSpan)*canvas.width;
-                            ctx.moveTo(x, 0);
-                            ctx.lineTo(x, canvas.height);
-                        }
+                var x = (i*xGrid)/(timeSpan)*canvas.width;
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+            }
 
             ctx.stroke();
             ctx.restore();
@@ -384,7 +382,7 @@ Item {
             ctx.beginPath();
 
             ctx.moveTo(0, y);
-            ctx.lineTo(canvas.width, y)
+            ctx.lineTo(canvas.width, y);
 
             ctx.stroke();
             ctx.restore();
@@ -438,7 +436,7 @@ Item {
 
             var end = points.length;
             for (var i = 1; i < end; i+=pixelSkip) {
-                var change = points[i].value - points[i-1].value
+                var change = points[i].value - points[i-1].value;
 
                 if (change >= 0)
                 {
@@ -449,7 +447,7 @@ Item {
                     ctx.fillStyle = color2;
                 }
 
-                change = Math.abs(change)
+                change = Math.abs(change);
 
                 var x = points[i].x;
                 var y = change*(canvas.height/(maximumValue-minimumValue))*changeGraphScale;
@@ -471,8 +469,8 @@ Item {
                 return;
             }
 
-            last = valueModel.indexOf(chart.endTimestamp)
-            first = valueModel.indexOf(chart.startTimestamp)
+            last = valueModel.indexOf(chart.endTimestamp);
+            first = valueModel.indexOf(chart.startTimestamp);
             first = Math.max(first, 0);
 
             var highestValue = valueModel.highestValue;
@@ -480,18 +478,20 @@ Item {
             var points = [];
             for (var i = 0; i <= last - first; i+=pixelSkip) {
                 var item = valueModel.get(i+first);
-                if (item === undefined)
-                    continue
+                if (item === undefined) {
+                    continue;
+                }
                 points.push({
                                 x: (item.timestamp-startTimestamp)*canvas.width/(endTimestamp-startTimestamp+1),
                                 y: canvas.height-(item.value-minimumValue)/(maximumValue-minimumValue)*canvas.height,
                                 value: item.value
                             });
             }
-            if (changeGraphEnabled)
-                drawChange(ctx, first, last, positiveChangeColor, negativeChangeColor, points)
-            drawHLine(ctx, canvas.height-(valueModel.targetValue-minimumValue)/(maximumValue-minimumValue)*canvas.height, hLineColor)
-            drawValue(ctx, first, last, signalColor, points)
+            if (changeGraphEnabled) {
+                drawChange(ctx, first, last, positiveChangeColor, negativeChangeColor, points);
+            }
+            drawHLine(ctx, canvas.height-(valueModel.targetValue-minimumValue)/(maximumValue-minimumValue)*canvas.height, hLineColor);
+            drawValue(ctx, first, last, signalColor, points);
         }
     }
 }

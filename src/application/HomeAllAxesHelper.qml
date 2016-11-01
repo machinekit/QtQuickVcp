@@ -16,99 +16,98 @@ Item {
 
     function trigger() {
         if (!_ready || running) {
-            return
-        }
+            return        }
 
         var axesList = []
 
         for (var i = 0; i < status.config.axes; ++i) {
             if (status.motion.axis[i].homed) {
-                command.unhomeAxis(i)
+                command.unhomeAxis(i);
             }
             if ((axesList.length === 0) ||
                     (status.config.axis[axesList[0]].homeSequence > status.config.axis[i].homeSequence))
             {
-                axesList.push(i)
+                axesList.push(i);
             }
             else {
-                axesList.unshift(i)
+                axesList.unshift(i);
             }
         }
 
-        axesList.reverse()
-        _waitingAxesList = axesList
-        _homingAxesList = []
-        _prepareAxesList = []
-        _currentSequence = 0
-        running = true
-        _check()
+        axesList.reverse();
+        _waitingAxesList = axesList;
+        _homingAxesList = [];
+        _prepareAxesList = [];
+        _currentSequence = 0;
+        running = true;
+        _check();
     }
 
     function _check() {
-        var homing = false
-        var prepare = false
-        var i
-        var axis
-        var list
+        var homing = false;
+        var prepare = false;
+        var i;
+        var axis;
+        var list;
 
         if (status.task.taskState !== ApplicationStatus.TaskStateOn) {
-            running = false
-            return
+            running = false;
+            return;
         }
 
         for (i = (_prepareAxesList.length-1); i >= 0 ; --i) {
-            axis = _prepareAxesList[i]
+            axis = _prepareAxesList[i];
             if (!status.motion.axis[axis].homing
                     && !status.motion.axis[axis].homed) {
-                prepare = true
+                prepare = true;
             }
             else {
-                list = _homingAxesList
-                list.push(axis)
-                _homingAxesList = list
+                list = _homingAxesList;
+                list.push(axis);
+                _homingAxesList = list;
 
-                list = _prepareAxesList
-                list.splice(i, 1)
-                _prepareAxesList = list
+                list = _prepareAxesList;
+                list.splice(i, 1);
+                _prepareAxesList = list;
             }
         }
 
         if (prepare) {
-            return
+            return;
         }
 
         for (i = 0; i < _homingAxesList.length; ++i) {
-            axis = _homingAxesList[i]
+            axis = _homingAxesList[i];
             if (status.motion.axis[axis].homing) {
-                homing = true
-                break
+                homing = true;
+                break;
             }
         }
 
         if (!homing) {
-            _homingAxesList = []
-            _prepareAxesList = []
+            _homingAxesList = [];
+            _prepareAxesList = [];
 
             if (_waitingAxesList.length === 0)
             {
-                running = false
-                return
+                running = false;
+                return;
             }
 
-            var currentSequence = status.config.axis[_waitingAxesList[0]].homeSequence
+            var currentSequence = status.config.axis[_waitingAxesList[0]].homeSequence;
             for (i = (_waitingAxesList.length-1); i >= 0 ; --i) {
-                axis = _waitingAxesList[i]
+                axis = _waitingAxesList[i];
                 if (status.config.axis[axis].homeSequence === currentSequence)
                 {
-                    command.homeAxis(axis)
+                    command.homeAxis(axis);
 
-                    list = _prepareAxesList
-                    list.push(axis)
-                    _prepareAxesList = list
+                    list = _prepareAxesList;
+                    list.push(axis);
+                    _prepareAxesList = list;
 
-                    list = _waitingAxesList
-                    list.splice(i, 1)
-                    _waitingAxesList = list
+                    list = _waitingAxesList;
+                    list.splice(i, 1);
+                    _waitingAxesList = list;
                 }
             }
         }

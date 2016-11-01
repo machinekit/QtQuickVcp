@@ -32,8 +32,8 @@ QtObject {
         if (core === null)
         {
             try {
-                var x = pathViewCore
-                core = Qt.binding(function() {return x})
+                var x = pathViewCore;
+                core = Qt.binding(function() { return x; });
             }
             catch (err) {
             }

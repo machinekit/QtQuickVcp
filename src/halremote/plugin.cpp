@@ -20,10 +20,10 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "qhalpin.h"
-#include "qhalsignal.h"
-#include "qhalgroup.h"
-#include "qhalremotecomponent.h"
+#include "halpin.h"
+#include "halsignal.h"
+#include "halgroup.h"
+#include "halremotecomponent.h"
 
 void MachinekitHalRemotePlugin::registerTypes(const char *uri)
 {
@@ -33,10 +33,10 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
 
     // @uri Machinekit.HalRemote
     Q_ASSERT(uri == QLatin1String("Machinekit.HalRemote"));
-    qmlRegisterType<QHalRemoteComponent>(uri, 1, 0, "HalRemoteComponent");
-    qmlRegisterType<QHalPin>(uri, 1, 0, "HalPin");
-    qmlRegisterType<QHalGroup>(uri, 1, 0, "HalGroup");
-    qmlRegisterType<QHalSignal>(uri, 1, 0, "HalSignal");
+    qmlRegisterType<qtquickvcp::HalRemoteComponent>(uri, 1, 0, "HalRemoteComponent");
+    qmlRegisterType<qtquickvcp::HalPin>(uri, 1, 0, "HalPin");
+    qmlRegisterType<qtquickvcp::HalGroup>(uri, 1, 0, "HalGroup");
+    qmlRegisterType<qtquickvcp::HalSignal>(uri, 1, 0, "HalSignal");
 }
 
 void MachinekitHalRemotePlugin::initializeEngine(QQmlEngine *engine, const char *uri)
