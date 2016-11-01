@@ -20,12 +20,14 @@
 **
 ****************************************************************************/
 
-#ifndef QGLCUBEITEM_H
-#define QGLCUBEITEM_H
+#ifndef GLCUBEITEM_H
+#define GLCUBEITEM_H
 
-#include "qglitem.h"
+#include "glitem.h"
 
-class QGLCubeItem : public QGLItem
+namespace qtquickvcp {
+
+class GLCubeItem : public GLItem
 {
     Q_OBJECT
     Q_PROPERTY(QVector3D size READ size WRITE setSize NOTIFY sizeChanged)
@@ -34,9 +36,9 @@ class QGLCubeItem : public QGLItem
     Q_PROPERTY(bool selected READ isSelected NOTIFY selectedChanged)
 
 public:
-    explicit QGLCubeItem(QQuickItem *parent = 0);
+    explicit GLCubeItem(QQuickItem *parent = 0);
 
-    virtual void paint(QGLView *glView);
+    virtual void paint(GLView *glView);
 
     QVector3D size() const
     {
@@ -104,6 +106,7 @@ private:
     QColor m_color;
     bool m_centered;
     bool m_selected;
-};
+}; // GLCubeItem
+}; // namespace qtquickvcp
 
-#endif // QGLCUBEITEM_H
+#endif // GLCUBEITEM_H

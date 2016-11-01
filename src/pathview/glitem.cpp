@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
-#include "qglitem.h"
+#include "glitem.h"
 
-QGLItem::QGLItem(QQuickItem *parent) :
+namespace qtquickvcp {
+
+GLItem::GLItem(QQuickItem *parent) :
     QQuickItem(parent),
     m_position(QVector3D(0,0,0)),
     m_scale(QVector3D(1,1,1)),
@@ -30,21 +32,22 @@ QGLItem::QGLItem(QQuickItem *parent) :
     m_rotationAngle(0),
     m_rotationAxis(QVector3D())
 {
-    connect(this, &QGLItem::positionChanged,
-            this, &QGLItem::needsUpdate);
-    connect(this, &QGLItem::scaleChanged,
-            this, &QGLItem::needsUpdate);
-    connect(this, &QGLItem::rotationChanged,
-            this, &QGLItem::needsUpdate);
-    connect(this, &QGLItem::rotationAngleChanged,
-            this, &QGLItem::needsUpdate);
-    connect(this, &QGLItem::rotationAxisChanged,
-            this, &QGLItem::needsUpdate);
-    connect(this, &QGLItem::visibleChanged,
-            this, &QGLItem::needsUpdate);
+    connect(this, &GLItem::positionChanged,
+            this, &GLItem::needsUpdate);
+    connect(this, &GLItem::scaleChanged,
+            this, &GLItem::needsUpdate);
+    connect(this, &GLItem::rotationChanged,
+            this, &GLItem::needsUpdate);
+    connect(this, &GLItem::rotationAngleChanged,
+            this, &GLItem::needsUpdate);
+    connect(this, &GLItem::rotationAxisChanged,
+            this, &GLItem::needsUpdate);
+    connect(this, &GLItem::visibleChanged,
+            this, &GLItem::needsUpdate);
 }
 
-void QGLItem::requestPaint()
+void GLItem::requestPaint()
 {
     emit needsUpdate();
 }
+}; // namespace qtquickvcp

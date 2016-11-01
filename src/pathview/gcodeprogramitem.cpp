@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
-#include "qgcodeprogramitem.h"
+#include "gcodeprogramitem.h"
 
-QGCodeProgramItem::QGCodeProgramItem(const QString &fileName, int lineNumber):
+namespace qtquickvcp {
+
+GCodeProgramItem::GCodeProgramItem(const QString &fileName, int lineNumber):
     m_fileName(fileName),
     m_lineNumber(lineNumber),
     m_gcode(QString("")),
@@ -32,68 +34,63 @@ QGCodeProgramItem::QGCodeProgramItem(const QString &fileName, int lineNumber):
 {
 }
 
-QGCodeProgramItem::~QGCodeProgramItem()
+GCodeProgramItem::~GCodeProgramItem()
 {
 }
 
-QString QGCodeProgramItem::fileName() const
+QString GCodeProgramItem::fileName() const
 {
     return m_fileName;
 }
 
-void QGCodeProgramItem::setFileName(const QString &fileName)
+void GCodeProgramItem::setFileName(const QString &fileName)
 {
     m_fileName = fileName;
 }
-int QGCodeProgramItem::lineNumber() const
+int GCodeProgramItem::lineNumber() const
 {
     return m_lineNumber;
 }
 
-void QGCodeProgramItem::setLineNumber(int lineNumber)
+void GCodeProgramItem::setLineNumber(int lineNumber)
 {
     m_lineNumber = lineNumber;
 }
-QString QGCodeProgramItem::gcode() const
+QString GCodeProgramItem::gcode() const
 {
     return m_gcode;
 }
 
-void QGCodeProgramItem::setGcode(const QString &gcode)
+void GCodeProgramItem::setGcode(const QString &gcode)
 {
     m_gcode = gcode;
 }
 
-bool QGCodeProgramItem::selected() const
+bool GCodeProgramItem::selected() const
 {
     return m_selected;
 }
 
-void QGCodeProgramItem::setSelected(bool selected)
+void GCodeProgramItem::setSelected(bool selected)
 {
     m_selected = selected;
 }
-bool QGCodeProgramItem::active() const
+bool GCodeProgramItem::active() const
 {
     return m_active;
 }
 
-void QGCodeProgramItem::setActive(bool active)
+void GCodeProgramItem::setActive(bool active)
 {
     m_active = active;
 }
-bool QGCodeProgramItem::executed() const
+bool GCodeProgramItem::executed() const
 {
     return m_executed;
 }
 
-void QGCodeProgramItem::setExecuted(bool executed)
+void GCodeProgramItem::setExecuted(bool executed)
 {
     m_executed = executed;
 }
-
-
-
-
-
-
+}; // namespace qtquickvcp

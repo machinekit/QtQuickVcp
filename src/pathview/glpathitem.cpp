@@ -20,12 +20,14 @@
 **
 ****************************************************************************/
 
-#include "qglpathitem.h"
+#include "glpathitem.h"
 #include <QtCore/qmath.h>
 #include "debughelper.h"
 
-QGLPathItem::QGLPathItem(QQuickItem *parent) :
-    QGLItem(parent),
+namespace qtquickvcp {
+
+GLPathItem::GLPathItem(QQuickItem *parent) :
+    GLItem(parent),
     m_model(nullptr),
     m_arcFeedColor(QColor(Qt::white)),
     m_straightFeedColor(QColor(Qt::white)),
@@ -40,28 +42,28 @@ QGLPathItem::QGLPathItem(QQuickItem *parent) :
     m_minimumExtents(QVector3D(0, 0, 0)),
     m_maximumExtents(QVector3D(0, 0, 0))
 {
-    connect(this, &QGLPathItem::visibleChanged,
-            this, &QGLPathItem::triggerFullUpdate);
-    connect(this, &QGLPathItem::positionChanged,
-            this, &QGLPathItem::triggerFullUpdate);
-    connect(this, &QGLPathItem::scaleChanged,
-            this, &QGLPathItem::triggerFullUpdate);
-    connect(this, &QGLPathItem::rotationChanged,
-            this, &QGLPathItem::triggerFullUpdate);
-    connect(this, &QGLPathItem::rotationAngleChanged,
-            this, &QGLPathItem::triggerFullUpdate);
-    connect(this, &QGLPathItem::rotationAxisChanged,
-            this, &QGLPathItem::triggerFullUpdate);
-    connect(this, &QGLPathItem::visibleChanged,
-            this, &QGLPathItem::triggerFullUpdate);
+    connect(this, &GLPathItem::visibleChanged,
+            this, &GLPathItem::triggerFullUpdate);
+    connect(this, &GLPathItem::positionChanged,
+            this, &GLPathItem::triggerFullUpdate);
+    connect(this, &GLPathItem::scaleChanged,
+            this, &GLPathItem::triggerFullUpdate);
+    connect(this, &GLPathItem::rotationChanged,
+            this, &GLPathItem::triggerFullUpdate);
+    connect(this, &GLPathItem::rotationAngleChanged,
+            this, &GLPathItem::triggerFullUpdate);
+    connect(this, &GLPathItem::rotationAxisChanged,
+            this, &GLPathItem::triggerFullUpdate);
+    connect(this, &GLPathItem::visibleChanged,
+            this, &GLPathItem::triggerFullUpdate);
 }
 
-QGLPathItem::~QGLPathItem()
+GLPathItem::~GLPathItem()
 {
     qDeleteAll(m_previewPathItems);
 }
 
-void QGLPathItem::paint(QGLView *glView)
+void GLPathItem::paint(GLView *glView)
 {
     if (m_needsFullUpdate)
     {
@@ -129,14 +131,14 @@ void QGLPathItem::paint(QGLView *glView)
             if (pathItem != nullptr)
             {
                 QColor color;
-                if (m_model->data(pathItem->modelIndex, QGCodeProgramModel::SelectedRole).toBool()) {
+                if (m_model->data(pathItem->modelIndex, GCodeProgramModel::SelectedRole).toBool()) {
                     color = m_selectedColor;
                 }
-                else if (m_model->data(pathItem->modelIndex, QGCodeProgramModel::ActiveRole).toBool())
+                else if (m_model->data(pathItem->modelIndex, GCodeProgramModel::ActiveRole).toBool())
                 {
                     color = m_activeColor;
                 }
-                else if (m_model->data(pathItem->modelIndex, QGCodeProgramModel::ExecutedRole).toBool())
+                else if (m_model->data(pathItem->modelIndex, GCodeProgramModel::ExecutedRole).toBool())
                 {
                     if (pathItem->movementType == FeedMove) {
                         if (pathItem->pathType == Arc) {
@@ -171,67 +173,67 @@ void QGLPathItem::paint(QGLView *glView)
     }
 }
 
-QGCodeProgramModel *QGLPathItem::model() const
+GCodeProgramModel *GLPathItem::model() const
 {
     return m_model;
 }
 
-QColor QGLPathItem::arcFeedColor() const
+QColor GLPathItem::arcFeedColor() const
 {
     return m_arcFeedColor;
 }
 
-QColor QGLPathItem::traverseColor() const
+QColor GLPathItem::traverseColor() const
 {
     return m_traverseColor;
 }
 
-QColor QGLPathItem::selectedColor() const
+QColor GLPathItem::selectedColor() const
 {
     return m_selectedColor;
 }
 
-QVector3D QGLPathItem::minimumExtents() const
+QVector3D GLPathItem::minimumExtents() const
 {
     return m_minimumExtents;
 }
 
-QVector3D QGLPathItem::maximumExtents() const
+QVector3D GLPathItem::maximumExtents() const
 {
     return m_maximumExtents;
 }
 
-float QGLPathItem::traverseLineStippleLength() const
+float GLPathItem::traverseLineStippleLength() const
 {
     return m_traverseLineStippleLength;
 }
 
-QColor QGLPathItem::straightFeedColor() const
+QColor GLPathItem::straightFeedColor() const
 {
     return m_straightFeedColor;
 }
 
-QColor QGLPathItem::activeColor() const
+QColor GLPathItem::activeColor() const
 {
     return m_activeColor;
 }
 
-QColor QGLPathItem::backplotArcFeedColor() const
+QColor GLPathItem::backplotArcFeedColor() const
 {
     return m_backplotArcFeedColor;
 }
 
-QColor QGLPathItem::backplotStraightFeedColor() const
+QColor GLPathItem::backplotStraightFeedColor() const
 {
     return m_backplotStraightFeedColor;
 }
 
-QColor QGLPathItem::backplotTraverseColor() const
+QColor GLPathItem::backplotTraverseColor() const
 {
     return m_backplotTraverseColor;
 }
 
-void QGLPathItem::selectDrawable(void *pointer)
+void GLPathItem::selectDrawable(void *pointer)
 {
     PathItem *mappedPathItem;
     QModelIndex mappedModelIndex;
@@ -245,7 +247,7 @@ void QGLPathItem::selectDrawable(void *pointer)
     if (mappedPathItem != nullptr)
     {
         mappedModelIndex = mappedPathItem->modelIndex;
-        m_model->setData(mappedModelIndex, true, QGCodeProgramModel::SelectedRole);
+        m_model->setData(mappedModelIndex, true, GCodeProgramModel::SelectedRole);
     }
 
     if (m_previousSelectedDrawable != pointer)
@@ -254,14 +256,14 @@ void QGLPathItem::selectDrawable(void *pointer)
         if (mappedPathItem != nullptr)
         {
             mappedModelIndex = mappedPathItem->modelIndex;
-            m_model->setData(mappedModelIndex, false, QGCodeProgramModel::SelectedRole);
+            m_model->setData(mappedModelIndex, false, GCodeProgramModel::SelectedRole);
         }
 
         m_previousSelectedDrawable = pointer;
     }
 }
 
-void QGLPathItem::setModel(QGCodeProgramModel *arg)
+void GLPathItem::setModel(GCodeProgramModel *arg)
 {
     if (m_model != arg) {
         m_model = arg;
@@ -282,7 +284,7 @@ void QGLPathItem::setModel(QGCodeProgramModel *arg)
     }
 }
 
-void QGLPathItem::setArcFeedColor(QColor arg)
+void GLPathItem::setArcFeedColor(QColor arg)
 {
     if (m_arcFeedColor != arg) {
         m_arcFeedColor = arg;
@@ -290,7 +292,7 @@ void QGLPathItem::setArcFeedColor(QColor arg)
     }
 }
 
-void QGLPathItem::setTraverseColor(QColor arg)
+void GLPathItem::setTraverseColor(QColor arg)
 {
     if (m_traverseColor != arg) {
         m_traverseColor = arg;
@@ -298,7 +300,7 @@ void QGLPathItem::setTraverseColor(QColor arg)
     }
 }
 
-void QGLPathItem::setSelectedColor(QColor arg)
+void GLPathItem::setSelectedColor(QColor arg)
 {
     if (m_selectedColor != arg) {
         m_selectedColor = arg;
@@ -306,7 +308,7 @@ void QGLPathItem::setSelectedColor(QColor arg)
     }
 }
 
-void QGLPathItem::setStraightFeedColor(QColor arg)
+void GLPathItem::setStraightFeedColor(QColor arg)
 {
     if (m_straightFeedColor != arg) {
         m_straightFeedColor = arg;
@@ -314,7 +316,7 @@ void QGLPathItem::setStraightFeedColor(QColor arg)
     }
 }
 
-void QGLPathItem::setActiveColor(QColor arg)
+void GLPathItem::setActiveColor(QColor arg)
 {
     if (m_activeColor != arg) {
         m_activeColor = arg;
@@ -322,7 +324,7 @@ void QGLPathItem::setActiveColor(QColor arg)
     }
 }
 
-void QGLPathItem::setTraverseLineStippleLength(float arg)
+void GLPathItem::setTraverseLineStippleLength(float arg)
 {
     if (m_traverseLineStippleLength != arg) {
         m_traverseLineStippleLength = arg;
@@ -330,7 +332,7 @@ void QGLPathItem::setTraverseLineStippleLength(float arg)
     }
 }
 
-void QGLPathItem::setBackplotArcFeedColor(QColor arg)
+void GLPathItem::setBackplotArcFeedColor(QColor arg)
 {
     if (m_backplotArcFeedColor != arg) {
         m_backplotArcFeedColor = arg;
@@ -338,7 +340,7 @@ void QGLPathItem::setBackplotArcFeedColor(QColor arg)
     }
 }
 
-void QGLPathItem::setBackplotStraightFeedColor(QColor arg)
+void GLPathItem::setBackplotStraightFeedColor(QColor arg)
 {
     if (m_backplotStraightFeedColor != arg) {
         m_backplotStraightFeedColor = arg;
@@ -346,7 +348,7 @@ void QGLPathItem::setBackplotStraightFeedColor(QColor arg)
     }
 }
 
-void QGLPathItem::setBackplotTraverseColor(QColor arg)
+void GLPathItem::setBackplotTraverseColor(QColor arg)
 {
     if (m_backplotTraverseColor != arg) {
         m_backplotTraverseColor = arg;
@@ -354,7 +356,7 @@ void QGLPathItem::setBackplotTraverseColor(QColor arg)
     }
 }
 
-void QGLPathItem::resetActiveOffsets()
+void GLPathItem::resetActiveOffsets()
 {
     Position clearOffset;
     clearOffset.x = 0.0;
@@ -377,7 +379,7 @@ void QGLPathItem::resetActiveOffsets()
     m_activeOffsets.g5xOffsetIndex = 1;
 }
 
-void QGLPathItem::resetCurrentPosition()
+void GLPathItem::resetCurrentPosition()
 {
     m_currentPosition.x = 0.0;
     m_currentPosition.y = 0.0;
@@ -390,7 +392,7 @@ void QGLPathItem::resetCurrentPosition()
     m_currentPosition.w = 0.0;
 }
 
-void QGLPathItem::resetRelativePosition()
+void GLPathItem::resetRelativePosition()
 {
     m_relativePosition.set_x(0.0);
     m_relativePosition.set_y(0.0);
@@ -403,19 +405,19 @@ void QGLPathItem::resetRelativePosition()
     m_relativePosition.set_w(0.0);
 }
 
-void QGLPathItem::resetActivePlane()
+void GLPathItem::resetActivePlane()
 {
     m_activePlane = XYPlane;
 }
 
-void QGLPathItem::resetExtents()
+void GLPathItem::resetExtents()
 {
     m_maximumExtents = QVector3D();
     m_minimumExtents = QVector3D();
     m_extentsUpdated = false;
 }
 
-void QGLPathItem::updateExtents(const QVector3D &vector)
+void GLPathItem::updateExtents(const QVector3D &vector)
 {
     if ((vector.x() < m_minimumExtents.x()) || !m_extentsUpdated) {
         m_minimumExtents.setX(vector.x());
@@ -438,13 +440,13 @@ void QGLPathItem::updateExtents(const QVector3D &vector)
     m_extentsUpdated = true;
 }
 
-void QGLPathItem::releaseExtents()
+void GLPathItem::releaseExtents()
 {
     emit minimumExtentsChanged(m_minimumExtents);
     emit maximumExtentsChanged(m_maximumExtents);
 }
 
-void QGLPathItem::processPreview(const pb::Preview &preview)
+void GLPathItem::processPreview(const pb::Preview &preview)
 {
     switch (preview.type())
     {
@@ -473,7 +475,7 @@ void QGLPathItem::processPreview(const pb::Preview &preview)
     }
 }
 
-void QGLPathItem::processStraightMove(const pb::Preview &preview, MovementType movementType)
+void GLPathItem::processStraightMove(const pb::Preview &preview, MovementType movementType)
 {
 #ifdef QT_DEBUG
     if (movementType == FeedMove)
@@ -509,7 +511,7 @@ void QGLPathItem::processStraightMove(const pb::Preview &preview, MovementType m
     updateExtents(newVector);
 }
 
-void QGLPathItem::processArcFeed(const pb::Preview &preview)
+void GLPathItem::processArcFeed(const pb::Preview &preview)
 {
 #ifdef QT_DEBUG
     qDebug() << "arc feed";
@@ -725,7 +727,7 @@ void QGLPathItem::processArcFeed(const pb::Preview &preview)
     m_relativePosition = preview.pos();
 }
 
-void QGLPathItem::processSetG5xOffset(const pb::Preview &preview)
+void GLPathItem::processSetG5xOffset(const pb::Preview &preview)
 {
     if (preview.has_pos() && preview.has_g5_index()) {
         m_activeOffsets.g5xOffsetIndex = preview.g5_index();
@@ -734,7 +736,7 @@ void QGLPathItem::processSetG5xOffset(const pb::Preview &preview)
     }
 }
 
-void QGLPathItem::processSetG92Offset(const pb::Preview &preview)
+void GLPathItem::processSetG92Offset(const pb::Preview &preview)
 {
     if (preview.has_pos()) {
         m_activeOffsets.g92Offset = previewPositionToPosition(preview.pos());
@@ -742,7 +744,7 @@ void QGLPathItem::processSetG92Offset(const pb::Preview &preview)
     }
 }
 
-void QGLPathItem::processUseToolOffset(const pb::Preview &preview)
+void GLPathItem::processUseToolOffset(const pb::Preview &preview)
 {
     if (preview.has_pos()) {
         m_activeOffsets.toolOffset = previewPositionToPosition(preview.pos());
@@ -750,7 +752,7 @@ void QGLPathItem::processUseToolOffset(const pb::Preview &preview)
     }
 }
 
-void QGLPathItem::processSelectPlane(const pb::Preview &preview)
+void GLPathItem::processSelectPlane(const pb::Preview &preview)
 {
     if (preview.has_plane())
     {
@@ -767,7 +769,7 @@ void QGLPathItem::processSelectPlane(const pb::Preview &preview)
     }
 }
 
-QGLPathItem::Position QGLPathItem::previewPositionToPosition(const pb::Position &position) const
+GLPathItem::Position GLPathItem::previewPositionToPosition(const pb::Position &position) const
 {
     Position newPosition;
     newPosition.x = 0.0;
@@ -811,7 +813,7 @@ QGLPathItem::Position QGLPathItem::previewPositionToPosition(const pb::Position 
     return newPosition;
 }
 
-QGLPathItem::Position QGLPathItem::calculateNewPosition(const pb::Position &newPosition) const
+GLPathItem::Position GLPathItem::calculateNewPosition(const pb::Position &newPosition) const
 {
     Position position = m_currentPosition;
 
@@ -876,12 +878,12 @@ QGLPathItem::Position QGLPathItem::calculateNewPosition(const pb::Position &newP
     return position;
 }
 
-QVector3D QGLPathItem::positionToVector3D(const QGLPathItem::Position &position) const
+QVector3D GLPathItem::positionToVector3D(const GLPathItem::Position &position) const
 {
     return QVector3D(position.x, position.y, position.z);
 }
 
-void QGLPathItem::drawPath()
+void GLPathItem::drawPath()
 {
 
     if (m_model == nullptr)
@@ -901,11 +903,11 @@ void QGLPathItem::drawPath()
     m_drawablePathMap.clear();
     m_previousSelectedDrawable = nullptr;
 
-    QLinkedList<QGCodeProgramModel::PreviewItem> previewItems = m_model->previewItems();
-    QLinkedListIterator<QGCodeProgramModel::PreviewItem> i(previewItems);
+    QLinkedList<GCodeProgramModel::PreviewItem> previewItems = m_model->previewItems();
+    QLinkedListIterator<GCodeProgramModel::PreviewItem> i(previewItems);
     while (i.hasNext())
     {
-        QGCodeProgramModel::PreviewItem item = i.next();
+        GCodeProgramModel::PreviewItem item = i.next();
         m_currentModelIndex = item.modelIndex;
         processPreview(item.previewItem);
     }
@@ -916,12 +918,12 @@ void QGLPathItem::drawPath()
     releaseExtents();
 }
 
-void QGLPathItem::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+void GLPathItem::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
     Q_UNUSED(bottomRight) // we only change one item at a time
-    if (roles.contains(QGCodeProgramModel::SelectedRole)
-        || roles.contains(QGCodeProgramModel::ActiveRole)
-        || roles.contains(QGCodeProgramModel::ExecutedRole))
+    if (roles.contains(GCodeProgramModel::SelectedRole)
+        || roles.contains(GCodeProgramModel::ActiveRole)
+        || roles.contains(GCodeProgramModel::ExecutedRole))
     {
         QList<PathItem*> pathItemList;
 
@@ -934,7 +936,8 @@ void QGLPathItem::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
     }
 }
 
-void QGLPathItem::triggerFullUpdate()
+void GLPathItem::triggerFullUpdate()
 {
     m_needsFullUpdate = true;
 }
+}; // namespace qtquickvcp

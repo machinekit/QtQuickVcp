@@ -20,17 +20,19 @@
 **
 ****************************************************************************/
 
-#ifndef QGCODEPROGRAMITEM_H
-#define QGCODEPROGRAMITEM_H
+#ifndef GCODEPROGRAMITEM_H
+#define GCODEPROGRAMITEM_H
 #include <QVariant>
 #include <QList>
 #include <machinetalk/protobuf/preview.pb.h>
 
-class QGCodeProgramItem
+namespace qtquickvcp {
+
+class GCodeProgramItem
 {
 public:
-    explicit QGCodeProgramItem(const QString &fileName, int lineNumber);
-    ~QGCodeProgramItem();
+    explicit GCodeProgramItem(const QString &fileName, int lineNumber);
+    ~GCodeProgramItem();
 
     QString fileName() const;
     void setFileName(const QString &fileName);
@@ -57,6 +59,7 @@ private:
     bool m_selected;
     bool m_active;
     bool m_executed;
-};
+}; // class GCodeProgramItem
+}; // namespace qtquickvcp
 
-#endif // QGCODEPROGRAMITEM_H
+#endif // GCODEPROGRAMITEM_H

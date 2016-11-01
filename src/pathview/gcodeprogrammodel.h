@@ -20,14 +20,16 @@
 **
 ****************************************************************************/
 
-#ifndef QGCODEPROGRAMMODEL_H
-#define QGCODEPROGRAMMODEL_H
+#ifndef GCODEPROGRAMMODEL_H
+#define GCODEPROGRAMMODEL_H
 
 #include <QAbstractListModel>
 #include <QLinkedList>
-#include "qgcodeprogramitem.h"
+#include "gcodeprogramitem.h"
 
-class QGCodeProgramModel : public QAbstractListModel
+namespace qtquickvcp {
+
+class GCodeProgramModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_ENUMS(GCodeProgramRoles)
@@ -48,8 +50,8 @@ public:
             ExecutedRole
         };
 
-    explicit QGCodeProgramModel(QObject *parent = 0);
-    ~QGCodeProgramModel();
+    explicit GCodeProgramModel(QObject *parent = 0);
+    ~GCodeProgramModel();
 
     QVariant data(const QModelIndex &index, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
@@ -79,12 +81,13 @@ private:
         int count;
     } FileIndex;
 
-    QList<QGCodeProgramItem*> m_items;
+    QList<GCodeProgramItem*> m_items;
     QHash<QString, FileIndex> m_fileIndices;
     QLinkedList<PreviewItem> m_previewItems;
 
     QVariant internalData(const QModelIndex &index, int role) const;
     bool internalSetData(const QModelIndex &index, const QVariant &value, int role);
-};
+}; // class GCodeProgramModel
+}; // namespace qtquickvcp
 
-#endif // QGCODEPROGRAMMODEL_H
+#endif // GCODEPROGRAMMODEL_H

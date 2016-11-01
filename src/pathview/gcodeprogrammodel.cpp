@@ -20,35 +20,37 @@
 **
 ****************************************************************************/
 
-#include "qgcodeprogrammodel.h"
+#include "gcodeprogrammodel.h"
 #include <QDebug>
 
-QGCodeProgramModel::QGCodeProgramModel(QObject *parent) :
+namespace qtquickvcp {
+
+GCodeProgramModel::GCodeProgramModel(QObject *parent) :
     QAbstractListModel(parent)
 {
 }
 
-QGCodeProgramModel::~QGCodeProgramModel()
+GCodeProgramModel::~GCodeProgramModel()
 {
     qDeleteAll(m_items);
 }
 
-QVariant QGCodeProgramModel::data(const QModelIndex &index, int role) const
+QVariant GCodeProgramModel::data(const QModelIndex &index, int role) const
 {
     return internalData(index, role);
 }
 
-bool QGCodeProgramModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool GCodeProgramModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     return internalSetData(index, value, role);
 }
 
-QVariant QGCodeProgramModel::getData(const QModelIndex &index, int role) const
+QVariant GCodeProgramModel::getData(const QModelIndex &index, int role) const
 {
     return data(index, role);
 }
 
-QModelIndex QGCodeProgramModel::index(const QString &fileName, int lineNumber) const
+QModelIndex GCodeProgramModel::index(const QString &fileName, int lineNumber) const
 {
     FileIndex fileIndex;
 
@@ -67,14 +69,14 @@ QModelIndex QGCodeProgramModel::index(const QString &fileName, int lineNumber) c
     return createIndex(fileIndex.index + (lineNumber-1), 0);
 }
 
-QModelIndex QGCodeProgramModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex GCodeProgramModel::index(int row, int column, const QModelIndex &parent) const
 {
     Q_UNUSED(column)
     Q_UNUSED(parent)
     return createIndex(row, 0);
 }
 
-Qt::ItemFlags QGCodeProgramModel::flags(const QModelIndex &index) const
+Qt::ItemFlags GCodeProgramModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -86,13 +88,13 @@ Qt::ItemFlags QGCodeProgramModel::flags(const QModelIndex &index) const
     }
 }
 
-int QGCodeProgramModel::rowCount(const QModelIndex &parent) const
+int GCodeProgramModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return m_items.count();
 }
 
-QHash<int, QByteArray> QGCodeProgramModel::roleNames() const
+QHash<int, QByteArray> GCodeProgramModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[FileNameRole] = "fileName";
@@ -104,12 +106,12 @@ QHash<int, QByteArray> QGCodeProgramModel::roleNames() const
     return roles;
 }
 
-QLinkedList<QGCodeProgramModel::PreviewItem> QGCodeProgramModel::previewItems() const
+QLinkedList<GCodeProgramModel::PreviewItem> GCodeProgramModel::previewItems() const
 {
     return m_previewItems;
 }
 
-void QGCodeProgramModel::prepareFile(const QString &fileName, int lineCount)
+void GCodeProgramModel::prepareFile(const QString &fileName, int lineCount)
 {
     FileIndex fileIndex;
 
@@ -130,7 +132,7 @@ void QGCodeProgramModel::prepareFile(const QString &fileName, int lineCount)
     beginInsertRows(QModelIndex(), firstRow, lastRow);
     for (int i = firstRow; i <= lastRow; ++i)
     {
-        m_items.insert(i, new QGCodeProgramItem(fileName, (i - fileIndex.index + 1)));
+        m_items.insert(i, new GCodeProgramItem(fileName, (i - fileIndex.index + 1)));
     }
     endInsertRows();
 
@@ -149,7 +151,7 @@ void QGCodeProgramModel::prepareFile(const QString &fileName, int lineCount)
     m_fileIndices.insert(fileName, fileIndex);
 }
 
-void QGCodeProgramModel::removeFile(const QString &fileName)
+void GCodeProgramModel::removeFile(const QString &fileName)
 {
     FileIndex fileIndex;
 
@@ -185,7 +187,7 @@ void QGCodeProgramModel::removeFile(const QString &fileName)
     m_fileIndices.remove(fileName);
 }
 
-void QGCodeProgramModel::addLine(const QString &fileName)
+void GCodeProgramModel::addLine(const QString &fileName)
 {
     FileIndex fileIndex;
 
@@ -201,7 +203,7 @@ void QGCodeProgramModel::addLine(const QString &fileName)
     int row = fileIndex.index + fileIndex.count - 1;
 
     beginInsertRows(QModelIndex(), row, row);
-    m_items.insert(row, new QGCodeProgramItem(fileName, fileIndex.count));
+    m_items.insert(row, new GCodeProgramItem(fileName, fileIndex.count));
     endInsertRows();
 
     QHashIterator<QString, FileIndex> i(m_fileIndices);
@@ -218,7 +220,7 @@ void QGCodeProgramModel::addLine(const QString &fileName)
     m_fileIndices.insert(fileName, fileIndex);
 }
 
-void QGCodeProgramModel::addPreviewItem(const QModelIndex &index, const pb::Preview &previewItem)
+void GCodeProgramModel::addPreviewItem(const QModelIndex &index, const pb::Preview &previewItem)
 {
     PreviewItem item;
     item.modelIndex = index;
@@ -226,7 +228,7 @@ void QGCodeProgramModel::addPreviewItem(const QModelIndex &index, const pb::Prev
     m_previewItems.append(item);
 }
 
-QVariant QGCodeProgramModel::data(const QString &fileName, int lineNumber, int role) const
+QVariant GCodeProgramModel::data(const QString &fileName, int lineNumber, int role) const
 {
     QModelIndex modelIndex;
     modelIndex = index(fileName, lineNumber);
@@ -234,7 +236,7 @@ QVariant QGCodeProgramModel::data(const QString &fileName, int lineNumber, int r
     return internalData(modelIndex, role);
 }
 
-bool QGCodeProgramModel::setData(const QString &fileName, int lineNumber, const QVariant &value, int role)
+bool GCodeProgramModel::setData(const QString &fileName, int lineNumber, const QVariant &value, int role)
 {
     QModelIndex modelIndex;
     modelIndex = index(fileName, lineNumber);
@@ -242,7 +244,7 @@ bool QGCodeProgramModel::setData(const QString &fileName, int lineNumber, const 
     return internalSetData(modelIndex, value, role);
 }
 
-void QGCodeProgramModel::clear()
+void GCodeProgramModel::clear()
 {
     if (m_items.count() == 0)
     {
@@ -258,7 +260,7 @@ void QGCodeProgramModel::clear()
     m_fileIndices.clear();
 }
 
-void QGCodeProgramModel::clearPreview(bool update)
+void GCodeProgramModel::clearPreview(bool update)
 {
     if (update)
     {
@@ -271,24 +273,24 @@ void QGCodeProgramModel::clearPreview(bool update)
     }
 }
 
-void QGCodeProgramModel::beginUpdate()
+void GCodeProgramModel::beginUpdate()
 {
     beginResetModel();
 }
 
-void QGCodeProgramModel::endUpdate()
+void GCodeProgramModel::endUpdate()
 {
     endResetModel();
 }
 
-QVariant QGCodeProgramModel::internalData(const QModelIndex &index, int role) const
+QVariant GCodeProgramModel::internalData(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || (index.row() > (m_items.count() - 1)))
     {
         return QVariant();
     }
 
-    QGCodeProgramItem *item = m_items.at(index.row());
+    GCodeProgramItem *item = m_items.at(index.row());
 
     switch (role)
     {
@@ -311,14 +313,14 @@ QVariant QGCodeProgramModel::internalData(const QModelIndex &index, int role) co
     return QVariant();
 }
 
-bool QGCodeProgramModel::internalSetData(const QModelIndex &index, const QVariant &value, int role)
+bool GCodeProgramModel::internalSetData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (!index.isValid())
     {
         return false;
     }
 
-    QGCodeProgramItem *item = m_items.at(index.row());
+    GCodeProgramItem *item = m_items.at(index.row());
 
 
     switch (role)
@@ -351,3 +353,4 @@ bool QGCodeProgramModel::internalSetData(const QModelIndex &index, const QVarian
 
     return true;
 }
+}; // namespace qtquickvcp

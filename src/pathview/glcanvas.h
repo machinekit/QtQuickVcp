@@ -20,28 +20,30 @@
 **
 ****************************************************************************/
 
-#ifndef QGLCANVAS_H
-#define QGLCANVAS_H
+#ifndef GLCANVAS_H
+#define GLCANVAS_H
 
-#include "qglitem.h"
+#include "glitem.h"
 
-class QGLCanvas : public QGLItem
+namespace qtquickvcp {
+
+class GLCanvas : public GLItem
 {
     Q_OBJECT
-    Q_PROPERTY(QGLView *context READ contex NOTIFY contextChanged)
+    Q_PROPERTY(GLView *context READ contex NOTIFY contextChanged)
 
 public:
-    explicit QGLCanvas(QQuickItem *parent = 0);
+    explicit GLCanvas(QQuickItem *parent = 0);
 
-    virtual void paint(QGLView *glView);
+    virtual void paint(GLView *glView);
 
-    QGLView * contex() const
+    GLView * contex() const
     {
         return m_context;
     }
 
 signals:
-    void contextChanged(QGLView * arg);
+    void contextChanged(GLView * arg);
     void paint();
     void drawableSelected(void *pointer);
 
@@ -49,7 +51,8 @@ public slots:
     virtual void selectDrawable(void *pointer);
 
 private:
-    QGLView * m_context;
-};
+    GLView * m_context;
+}; // class GLCanvas
+}; // namespace qtquickvcp
 
-#endif // QGLCANVAS_H
+#endif // GLCANVAS_H

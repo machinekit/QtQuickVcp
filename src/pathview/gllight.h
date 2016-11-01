@@ -20,13 +20,15 @@
 **
 ****************************************************************************/
 
-#ifndef QGLLIGHT_H
-#define QGLLIGHT_H
+#ifndef GLLIGHT_H
+#define GLLIGHT_H
 
 #include <QObject>
 #include <QVector3D>
 
-class QGLLight : public QObject
+namespace qtquickvcp {
+
+class GLLight : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVector3D position READ position WRITE setPosition NOTIFY positionChanged)
@@ -36,7 +38,7 @@ class QGLLight : public QObject
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
-    explicit QGLLight(QObject *parent = 0);
+    explicit GLLight(QObject *parent = 0);
 
     QVector3D position() const
     {
@@ -118,6 +120,7 @@ private:
     float m_attenuation;
     bool m_enabled;
     float m_ambientCoefficient;
-};
+}; // class GLLight
+}; // namespace qtquickvcp
 
-#endif // QGLLIGHT_H
+#endif // GLLIGHT_H

@@ -11,36 +11,36 @@ include(../common/common.pri)
 # Input
 SOURCES += \
     plugin.cpp \
-    qglview.cpp \
-    qglitem.cpp \
-    qglcubeitem.cpp \
-    qglsphereitem.cpp \
-    qglcylinderitem.cpp \
     qglcamera.cpp \
-    qgllight.cpp \
-    qglpathitem.cpp \
-    qglcanvas.cpp \
-    qpreviewclient.cpp \
-    qgcodeprogramitem.cpp \
-    qgcodeprogrammodel.cpp \
-    qgcodeprogramloader.cpp
+    gcodeprogramitem.cpp \
+    gcodeprogramloader.cpp \
+    gcodeprogrammodel.cpp \
+    glcanvas.cpp \
+    glcubeitem.cpp \
+    glcylinderitem.cpp \
+    glitem.cpp \
+    glpathitem.cpp \
+    gllight.cpp \
+    glsphereitem.cpp \
+    glview.cpp \
+    previewclient.cpp
 
 HEADERS += \
     plugin.h \
-    qglview.h \
-    qglitem.h \
-    qglcubeitem.h \
-    qglsphereitem.h \
-    qglcylinderitem.h \
-    qglcamera.h \
-    qgllight.h \
-    qglpathitem.h \
-    qglcanvas.h \
-    qpreviewclient.h \
     debughelper.h \
-    qgcodeprogramitem.h \
-    qgcodeprogrammodel.h \
-    qgcodeprogramloader.h
+    gcodeprogramitem.h \
+    gcodeprogramloader.h \
+    gcodeprogrammodel.h \
+    glcanvas.h \
+    glcubeitem.h \
+    glcylinderitem.h \
+    qglcamera.h \
+    glitem.h \
+    gllight.h \
+    glpathitem.h \
+    glsphereitem.h \
+    glview.h \
+    previewclient.h
 
 RESOURCES += \
     shaders.qrc \

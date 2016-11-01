@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-#include "qpreviewclient.h"
+#include "previewclient.h"
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
@@ -31,7 +31,9 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-QPreviewClient::QPreviewClient(QObject *parent) :
+namespace qtquickvcp {
+
+PreviewClient::PreviewClient(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_statusUri(""),
     m_previewUri(""),
@@ -51,7 +53,7 @@ QPreviewClient::QPreviewClient(QObject *parent) :
     m_previewStatus.lineNumber = 0;
 }
 
-void QPreviewClient::start()
+void PreviewClient::start()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "preview", "start")
@@ -66,7 +68,7 @@ void QPreviewClient::start()
     }
 }
 
-void QPreviewClient::stop()
+void PreviewClient::stop()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "preview", "stop")
@@ -76,17 +78,17 @@ void QPreviewClient::stop()
     updateState(Disconnected);  // clears the error
 }
 
-void QPreviewClient::cleanup()
+void PreviewClient::cleanup()
 {
     disconnectSockets();
 }
 
-void QPreviewClient::updateState(QPreviewClient::State state)
+void PreviewClient::updateState(PreviewClient::State state)
 {
     updateState(state, NoError, "");
 }
 
-void QPreviewClient::updateState(QPreviewClient::State state, QPreviewClient::ConnectionError error, QString errorString)
+void PreviewClient::updateState(PreviewClient::State state, PreviewClient::ConnectionError error, QString errorString)
 {
     if (state != m_connectionState)
     {
@@ -102,7 +104,7 @@ void QPreviewClient::updateState(QPreviewClient::State state, QPreviewClient::Co
     updateError(error, errorString);
 }
 
-void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString errorString)
+void PreviewClient::updateError(PreviewClient::ConnectionError error, QString errorString)
 {
     if (m_errorString != errorString)
     {
@@ -122,7 +124,7 @@ void QPreviewClient::updateError(QPreviewClient::ConnectionError error, QString 
 }
 
 /** Processes all message received on the status 0MQ socket */
-void QPreviewClient::statusMessageReceived(const QList<QByteArray> &messageList)
+void PreviewClient::statusMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -152,7 +154,7 @@ void QPreviewClient::statusMessageReceived(const QList<QByteArray> &messageList)
 }
 
 /** Processes all message received on the preview 0MQ socket */
-void QPreviewClient::previewMessageReceived(const QList<QByteArray> &messageList)
+void PreviewClient::previewMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -211,7 +213,7 @@ void QPreviewClient::previewMessageReceived(const QList<QByteArray> &messageList
     }
 }
 
-void QPreviewClient::pollError(int errorNum, const QString &errorMsg)
+void PreviewClient::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
@@ -219,11 +221,11 @@ void QPreviewClient::pollError(int errorNum, const QString &errorMsg)
 }
 
 /** Connects the 0MQ sockets */
-bool QPreviewClient::connectSockets()
+bool PreviewClient::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
-            this, &QPreviewClient::pollError);
+            this, &PreviewClient::pollError);
     m_context->start();
 
     m_statusSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
@@ -244,9 +246,9 @@ bool QPreviewClient::connectSockets()
     }
 
     connect(m_statusSocket, &ZMQSocket::messageReceived,
-            this, &QPreviewClient::statusMessageReceived);
+            this, &PreviewClient::statusMessageReceived);
     connect(m_previewSocket, &ZMQSocket::messageReceived,
-            this, &QPreviewClient::previewMessageReceived);
+            this, &PreviewClient::previewMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "preview", "sockets connected" << m_statusUri << m_previewUri)
@@ -256,7 +258,7 @@ bool QPreviewClient::connectSockets()
 }
 
 /** Disconnects the 0MQ sockets */
-void QPreviewClient::disconnectSockets()
+void PreviewClient::disconnectSockets()
 {
     if (m_statusSocket != nullptr)
     {
@@ -279,3 +281,4 @@ void QPreviewClient::disconnectSockets()
         m_context = nullptr;
     }
 }
+}; // namespace qtquickvcp

@@ -20,25 +20,27 @@
 **
 ****************************************************************************/
 
-#include "qglcubeitem.h"
+#include "glcubeitem.h"
 
-QGLCubeItem::QGLCubeItem(QQuickItem *parent) :
-    QGLItem(parent),
+namespace qtquickvcp {
+
+GLCubeItem::GLCubeItem(QQuickItem *parent) :
+    GLItem(parent),
     m_cubePointer(nullptr),
     m_size(QVector3D(1,1,1)),
     m_color(QColor(Qt::yellow)),
     m_centered(false),
     m_selected(false)
 {
-    connect(this, &QGLCubeItem::sizeChanged,
-            this, &QGLCubeItem::needsUpdate);
-    connect(this, &QGLCubeItem::colorChanged,
-            this, &QGLCubeItem::needsUpdate);
-    connect(this, &QGLCubeItem::centeredChanged,
-            this, &QGLCubeItem::needsUpdate);
+    connect(this, &GLCubeItem::sizeChanged,
+            this, &GLCubeItem::needsUpdate);
+    connect(this, &GLCubeItem::colorChanged,
+            this, &GLCubeItem::needsUpdate);
+    connect(this, &GLCubeItem::centeredChanged,
+            this, &GLCubeItem::needsUpdate);
 }
 
-void QGLCubeItem::paint(QGLView *glView)
+void GLCubeItem::paint(GLView *glView)
 {
     glView->prepare(this);
 
@@ -49,7 +51,7 @@ void QGLCubeItem::paint(QGLView *glView)
     glView->endUnion();
 }
 
-void QGLCubeItem::selectDrawable(void *pointer)
+void GLCubeItem::selectDrawable(void *pointer)
 {
     bool selected;
 
@@ -66,3 +68,4 @@ void QGLCubeItem::selectDrawable(void *pointer)
         emit selectedChanged(m_selected);
     }
 }
+}; // namespace qtquickvcp

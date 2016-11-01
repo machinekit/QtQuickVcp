@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
-#include "qgcodeprogramloader.h"
+#include "gcodeprogramloader.h"
 
-QGCodeProgramLoader::QGCodeProgramLoader(QObject *parent) :
+namespace qtquickvcp {
+
+GCodeProgramLoader::GCodeProgramLoader(QObject *parent) :
     QObject(parent),
     m_localFilePath(""),
     m_localPath(""),
@@ -31,7 +33,7 @@ QGCodeProgramLoader::QGCodeProgramLoader(QObject *parent) :
 {
 }
 
-void QGCodeProgramLoader::load()
+void GCodeProgramLoader::load()
 {
     if (m_model == nullptr)
     {
@@ -76,7 +78,7 @@ void QGCodeProgramLoader::load()
     while (!file.atEnd()) {
         QByteArray line = file.readLine();
         lineNumber++;
-        m_model->setData(remoteFilePath, lineNumber, QString(line), QGCodeProgramModel::GCodeRole);
+        m_model->setData(remoteFilePath, lineNumber, QString(line), GCodeProgramModel::GCodeRole);
     }
 
     m_model->endUpdate();
@@ -84,3 +86,4 @@ void QGCodeProgramLoader::load()
     file.close();
     emit loadingFinished();
 }
+}; // namespace qtquickvcp

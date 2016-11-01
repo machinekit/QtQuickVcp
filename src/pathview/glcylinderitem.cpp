@@ -20,42 +20,57 @@
 **
 ****************************************************************************/
 
-#include "qglsphereitem.h"
+#include "glcylinderitem.h"
 
-QGLSphereItem::QGLSphereItem(QQuickItem *parent) :
-    QGLItem(parent),
-    m_spherePointer(nullptr),
+namespace qtquickvcp {
+
+GLCylinderItem::GLCylinderItem(QQuickItem *parent) :
+    GLItem(parent),
+    m_cylinderPointer(nullptr),
     m_radius(1.0),
+    m_height(1.0),
     m_color(QColor(Qt::yellow)),
+    m_cone(false),
     m_selected(false)
 {
-    connect(this, &QGLSphereItem::radiusChanged,
-            this, &QGLSphereItem::needsUpdate);
-    connect(this, &QGLSphereItem::colorChanged,
-            this, &QGLSphereItem::needsUpdate);
+    connect(this, &GLCylinderItem::radiusChanged,
+            this, &GLCylinderItem::needsUpdate);
+    connect(this, &GLCylinderItem::heightChanged,
+            this, &GLCylinderItem::needsUpdate);
+    connect(this, &GLCylinderItem::colorChanged,
+            this, &GLCylinderItem::needsUpdate);
+    connect(this, &GLCylinderItem::coneChanged,
+            this, &GLCylinderItem::needsUpdate);
 }
 
-void QGLSphereItem::paint(QGLView *glView)
+void GLCylinderItem::paint(GLView *glView)
 {
-    glView->prepare(this);
+    glView->prepare(this);\
 
     glView->reset();
     glView->beginUnion();
     glView->color(m_color);
-    m_spherePointer = glView->sphere(m_radius);
+    if (!m_cone)
+    {
+        m_cylinderPointer = glView->cylinder(m_radius, m_height);
+    }
+    else
+    {
+        m_cylinderPointer = glView->cone(m_radius, m_height);
+    }
     glView->endUnion();
 }
 
-void QGLSphereItem::selectDrawable(void *pointer)
+void GLCylinderItem::selectDrawable(void *pointer)
 {
     bool selected;
 
-    if (m_spherePointer == nullptr)
+    if (m_cylinderPointer == nullptr)
     {
         return;
     }
 
-    selected = (pointer == m_spherePointer);
+    selected = (pointer == m_cylinderPointer);
 
     if (selected != m_selected)
     {
@@ -63,3 +78,4 @@ void QGLSphereItem::selectDrawable(void *pointer)
         emit selectedChanged(m_selected);
     }
 }
+}; // namespace qtquickvcp

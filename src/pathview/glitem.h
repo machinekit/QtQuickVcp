@@ -20,15 +20,17 @@
 **
 ****************************************************************************/
 
-#ifndef QGLITEM_H
-#define QGLITEM_H
+#ifndef GLITEM_H
+#define GLITEM_H
 
 #include <QObject>
-#include "qglview.h"
+#include "glview.h"
 
-class QGLView;
+namespace qtquickvcp {
 
-class QGLItem : public QQuickItem
+class GLView;
+
+class GLItem : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(QVector3D position READ position WRITE setPosition NOTIFY positionChanged)
@@ -38,9 +40,9 @@ class QGLItem : public QQuickItem
     Q_PROPERTY(QVector3D rotationAxis READ rotationAxis WRITE setRotationAxis NOTIFY rotationAxisChanged)
 
 public:
-    explicit QGLItem(QQuickItem *parent = 0);
+    explicit GLItem(QQuickItem *parent = 0);
 
-    virtual void paint(QGLView *glView) = 0; // must be implemented
+    virtual void paint(GLView *glView) = 0; // must be implemented
 
     QVector3D position() const
     {
@@ -148,6 +150,7 @@ private:
     QQuaternion m_rotation;
     float m_rotationAngle;
     QVector3D m_rotationAxis;
-};
+}; // class GLItem
+}; // namespace qtquickvcp
 
-#endif // QGLITEM_H
+#endif // GLITEM_H

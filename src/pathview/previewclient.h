@@ -20,16 +20,18 @@
 **
 ****************************************************************************/
 
-#ifndef QPREVIEWCLIENT_H
-#define QPREVIEWCLIENT_H
+#ifndef PREVIEWCLIENT_H
+#define PREVIEWCLIENT_H
 
 #include <google/protobuf/text_format.h>
 #include <abstractserviceimplementation.h>
 #include <nzmqt/nzmqt.hpp>
-#include "qgcodeprogrammodel.h"
+#include "gcodeprogrammodel.h"
 #include <machinetalk/protobuf/message.pb.h>
 
-class QPreviewClient : public AbstractServiceImplementation
+namespace qtquickvcp {
+
+class PreviewClient : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -39,13 +41,13 @@ class QPreviewClient : public AbstractServiceImplementation
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(GCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(InterpreterState interpreterState READ interpreterState NOTIFY interpreterStateChanged)
     Q_PROPERTY(QString interpreterNote READ interpreterNote NOTIFY interpreterNoteChanged)
     Q_ENUMS(State ConnectionError InterpreterState CanonUnits)
 
 public:
-    explicit QPreviewClient(QObject *parent = 0);
+    explicit PreviewClient(QObject *parent = 0);
 
     enum State {
         Disconnected = 0,
@@ -102,7 +104,7 @@ public:
         return m_errorString;
     }
 
-    QGCodeProgramModel * model() const
+    GCodeProgramModel * model() const
     {
         return m_model;
     }
@@ -140,7 +142,7 @@ public slots:
         }
     }
 
-    void setModel(QGCodeProgramModel * arg)
+    void setModel(GCodeProgramModel * arg)
     {
         if (m_model != arg) {
             m_model = arg;
@@ -160,7 +162,7 @@ private:
     bool    m_connected;
     ConnectionError     m_error;
     QString             m_errorString;
-    QGCodeProgramModel *m_model;
+    GCodeProgramModel *m_model;
     InterpreterState    m_interpreterState;
     QString             m_interpreterNote;
 
@@ -194,10 +196,11 @@ signals:
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
-    void modelChanged(QGCodeProgramModel * arg);
+    void modelChanged(GCodeProgramModel * arg);
     void interpreterStateChanged(InterpreterState arg);
     void interpreterNoteChanged(QString arg);
     void connectedChanged(bool arg);
-};
+}; // class PreviewClient
+}; // namespace qtquickvcp
 
-#endif // QPREVIEWCLIENT_H
+#endif // PREVIEWCLIENT_H

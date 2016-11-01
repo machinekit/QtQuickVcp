@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
-#include "qgllight.h"
+#include "gllight.h"
 
-QGLLight::QGLLight(QObject *parent) :
+namespace qtquickvcp {
+
+GLLight::GLLight(QObject *parent) :
     QObject(parent),
     m_position(QVector3D(1.0, 1.0, 5.0)),
     m_intensities(QVector3D(1.0, 1.0, 1.0)),
@@ -30,14 +32,15 @@ QGLLight::QGLLight(QObject *parent) :
     m_enabled(true),
     m_ambientCoefficient(0.1)
 {
-    connect(this, &QGLLight::positionChanged,
-            this, &QGLLight::propertyChanged);
-    connect(this, &QGLLight::intensitiesChanged,
-            this, &QGLLight::propertyChanged);
-    connect(this, &QGLLight::attenuationChanged,
-            this, &QGLLight::propertyChanged);
-    connect(this, &QGLLight::ambientCoefficientChanged,
-            this, &QGLLight::propertyChanged);
-    connect(this, &QGLLight::enabledChanged,
-            this, &QGLLight::propertyChanged);
+    connect(this, &GLLight::positionChanged,
+            this, &GLLight::propertyChanged);
+    connect(this, &GLLight::intensitiesChanged,
+            this, &GLLight::propertyChanged);
+    connect(this, &GLLight::attenuationChanged,
+            this, &GLLight::propertyChanged);
+    connect(this, &GLLight::ambientCoefficientChanged,
+            this, &GLLight::propertyChanged);
+    connect(this, &GLLight::enabledChanged,
+            this, &GLLight::propertyChanged);
 }
+}; // namespace qtquickvcp

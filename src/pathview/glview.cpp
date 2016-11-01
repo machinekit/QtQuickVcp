@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-#include "qglview.h"
+#include "glview.h"
 
 #include <QtQuick/qquickwindow.h>
 #include <QtGui/QOpenGLShaderProgram>
@@ -28,7 +28,9 @@
 #include <QtCore/qmath.h>
 #include <QDateTime>
 
-QGLView::QGLView(QQuickItem *parent)
+namespace qtquickvcp {
+
+GLView::GLView(QQuickItem *parent)
     : QQuickPaintedItem(parent)
     , m_initialized(false)
     , m_modelProgram(0)
@@ -41,17 +43,17 @@ QGLView::QGLView(QQuickItem *parent)
     , m_currentGlItem(nullptr)
     , m_propertySignalMapper(new QSignalMapper(this))
     , m_camera(new QGLCamera(this))
-    , m_light(new QGLLight(this))
+    , m_light(new GLLight(this))
 {
     //setFlag(QQuickItem::ItemHasContents, true);
 
-    connect(this, &QGLView::windowChanged,
-            this, &QGLView::handleWindowChanged);
+    connect(this, &GLView::windowChanged,
+            this, &GLView::handleWindowChanged);
     // queue this connection to prevent trigger on destruction
-    connect(this, &QGLView::childrenChanged,
-            this, &QGLView::updateChildren, Qt::QueuedConnection);
+    connect(this, &GLView::childrenChanged,
+            this, &GLView::updateChildren, Qt::QueuedConnection);
     connect(m_propertySignalMapper, static_cast<void (QSignalMapper::*)(QObject *)>(&QSignalMapper::mapped),
-            this, &QGLView::updateItem);
+            this, &GLView::updateItem);
     //connect(this, SIGNAL(initialized()), this, SLOT(updateItems()), Qt::QueuedConnection);
 
     setRenderTarget(QQuickPaintedItem::InvertedYFramebufferObject);
@@ -59,13 +61,13 @@ QGLView::QGLView(QQuickItem *parent)
     //setAntialiasing(true);
 }
 
-QGLView::~QGLView()
+GLView::~GLView()
 {
     clearDrawables();
     qDeleteAll(m_drawableMap);
 }
 
-void QGLView::setBackgroundColor(const QColor &t)
+void GLView::setBackgroundColor(const QColor &t)
 {
     if (t == m_backgroundColor)
         return;
@@ -74,25 +76,25 @@ void QGLView::setBackgroundColor(const QColor &t)
     update();
 }
 
-void QGLView::readPixel(int x, int y)
+void GLView::readPixel(int x, int y)
 {
     m_selectionPoint = QPoint(x, window()->height() - y);
     m_selectionModeActive = true;
     update();
 }
 
-void QGLView::handleWindowChanged(QQuickWindow *win)
+void GLView::handleWindowChanged(QQuickWindow *win)
 {
     if (win) {
         // Connect the beforeRendering signal to our paint function.
         // Since this call is executed on the rendering thread it must be
         // a Qt::DirectConnection
         connect(win, &QQuickWindow::beforeSynchronizing,
-                this, &QGLView::sync, Qt::DirectConnection);
-        connect(this, &QGLView::widthChanged,
-                this, &QGLView::updatePerspectiveAspectRatio);
-        connect(this, &QGLView::heightChanged,
-                this, &QGLView::updatePerspectiveAspectRatio);
+                this, &GLView::sync, Qt::DirectConnection);
+        connect(this, &GLView::widthChanged,
+                this, &GLView::updatePerspectiveAspectRatio);
+        connect(this, &GLView::heightChanged,
+                this, &GLView::updatePerspectiveAspectRatio);
 
         updatePerspectiveAspectRatio(); // set current aspect ratio since signals will only be handled on change
 
@@ -102,7 +104,7 @@ void QGLView::handleWindowChanged(QQuickWindow *win)
     }
 }
 
-void QGLView::updatePerspectiveAspectRatio()
+void GLView::updatePerspectiveAspectRatio()
 {
     qreal ratio;
     int w;
@@ -129,7 +131,7 @@ void QGLView::updatePerspectiveAspectRatio()
     updateProjectionMatrix();
 }
 
-void QGLView::updateViewMatrix()
+void GLView::updateViewMatrix()
 {
     m_viewMatrix = m_camera->modelViewMatrix();
 
@@ -138,7 +140,7 @@ void QGLView::updateViewMatrix()
     }
 }
 
-void QGLView::updateProjectionMatrix()
+void GLView::updateProjectionMatrix()
 {
     m_projectionMatrix = m_camera->projectionMatrix(m_projectionAspectRatio);
 
@@ -147,7 +149,7 @@ void QGLView::updateProjectionMatrix()
     }
 }
 
-void QGLView::updateItems()
+void GLView::updateItems()
 {
     if (!m_initialized) {
         return;
@@ -157,27 +159,27 @@ void QGLView::updateItems()
     update();
 }
 
-void QGLView::updateItem(QObject *item)
+void GLView::updateItem(QObject *item)
 {
     if (!m_initialized)
     {
         return;
     }
 
-    updateGLItem(static_cast<QGLItem*>(item));
+    updateGLItem(static_cast<GLItem*>(item));
     update();
 }
 
-void QGLView::updateChildren()
+void GLView::updateChildren()
 {
-    QList<QGLItem*> newItems;
+    QList<GLItem*> newItems;
     QList<QQuickItem*> objectChildren = childItems();
 
     // get all GL items
     for (int i = 0; i < objectChildren.size(); ++i)
     {
-        QGLItem* glItem;
-        glItem = qobject_cast<QGLItem*>(objectChildren.at(i));
+        GLItem* glItem;
+        glItem = qobject_cast<GLItem*>(objectChildren.at(i));
         if (glItem != nullptr)
         {
             newItems.append(glItem);
@@ -203,18 +205,18 @@ void QGLView::updateChildren()
     }
 }
 
-void QGLView::addDrawableList(QGLView::ModelType type)
+void GLView::addDrawableList(GLView::ModelType type)
 {
     QList<Parameters*> *parametersList = new QList<Parameters*>();
     m_drawableMap.insert(type, parametersList);
 }
 
-QList<QGLView::Parameters *> *QGLView::getDrawableList(QGLView::ModelType type)
+QList<GLView::Parameters *> *GLView::getDrawableList(GLView::ModelType type)
 {
     return m_drawableMap.value(type);
 }
 
-QGLView::Parameters* QGLView::addDrawableData(const QGLView::LineParameters &parameters)
+GLView::Parameters* GLView::addDrawableData(const GLView::LineParameters &parameters)
 {
     // add parameter
     QList<Parameters*> *parametersList = m_drawableMap.value(Line);
@@ -231,7 +233,7 @@ QGLView::Parameters* QGLView::addDrawableData(const QGLView::LineParameters &par
     return lineParameters;
 }
 
-QGLView::Parameters* QGLView::addDrawableData(const QGLView::TextParameters &parameters)
+GLView::Parameters* GLView::addDrawableData(const GLView::TextParameters &parameters)
 {
     QList<Parameters*> *parametersList = m_drawableMap.value(Text);
     TextParameters *textParameters = new TextParameters(parameters);
@@ -246,7 +248,7 @@ QGLView::Parameters* QGLView::addDrawableData(const QGLView::TextParameters &par
     return textParameters;
 }
 
-QGLView::Parameters* QGLView::addDrawableData(QGLView::ModelType type, const QGLView::Parameters &parameters)
+GLView::Parameters* GLView::addDrawableData(GLView::ModelType type, const GLView::Parameters &parameters)
 {
     QList<Parameters*> *parametersList = m_drawableMap.value(type);
     Parameters *modelParameters = new Parameters(parameters);
@@ -261,7 +263,7 @@ QGLView::Parameters* QGLView::addDrawableData(QGLView::ModelType type, const QGL
     return modelParameters;
 }
 
-void QGLView::drawDrawables(QGLView::ModelType type)
+void GLView::drawDrawables(GLView::ModelType type)
 {
     if (type == NoType)
     {
@@ -293,7 +295,7 @@ void QGLView::drawDrawables(QGLView::ModelType type)
     }
 }
 
-void QGLView::clearDrawables()
+void GLView::clearDrawables()
 {
     QMapIterator<ModelType, QList<Parameters*>* > i(m_drawableMap);
     while (i.hasNext()) {
@@ -307,7 +309,7 @@ void QGLView::clearDrawables()
     }
 }
 
-void QGLView::cleanupDrawables(ModelType type)
+void GLView::cleanupDrawables(ModelType type)
 {
     QList<Parameters*> * parametersList = m_drawableMap.value(type);
 
@@ -321,7 +323,7 @@ void QGLView::cleanupDrawables(ModelType type)
     }
 }
 
-void QGLView::removeDrawables(QList<QGLView::Drawable> *drawableList)
+void GLView::removeDrawables(QList<GLView::Drawable> *drawableList)
 {
     QList<ModelType> types;
 
@@ -341,12 +343,12 @@ void QGLView::removeDrawables(QList<QGLView::Drawable> *drawableList)
     drawableList->clear();
 }
 
-void QGLView::initializeVertexBuffer(ModelType type, const QVector<ModelVertex> &vertices)
+void GLView::initializeVertexBuffer(ModelType type, const QVector<ModelVertex> &vertices)
 {
     initializeVertexBuffer(type, vertices.data(), vertices.length() * sizeof(ModelVertex));
 }
 
-void QGLView::initializeVertexBuffer(ModelType type, const void *bufferData, int bufferLength)
+void GLView::initializeVertexBuffer(ModelType type, const void *bufferData, int bufferLength)
 {
     QOpenGLBuffer *glBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     glBuffer->create();
@@ -358,7 +360,7 @@ void QGLView::initializeVertexBuffer(ModelType type, const void *bufferData, int
     m_vertexBufferMap.insert(type, glBuffer);
 }
 
-void QGLView::setupVBOs()
+void GLView::setupVBOs()
 {
     setupCube();
     setupCylinder(1.0, QVector3D(0,0,0),
@@ -372,7 +374,7 @@ void QGLView::setupVBOs()
     setupTextVertexBuffer();
 }
 
-void QGLView::setupLineVertexBuffer()
+void GLView::setupLineVertexBuffer()
 {
     const int MaxLinesPerPath = 100;
 
@@ -386,7 +388,7 @@ void QGLView::setupLineVertexBuffer()
     addDrawableList(Line);
 }
 
-void QGLView::setupTextVertexBuffer()
+void GLView::setupTextVertexBuffer()
 {
     static const TextVertex vertices[] = {
         {{0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
@@ -413,7 +415,7 @@ void QGLView::setupTextVertexBuffer()
     addDrawableList(Text);
 }
 
-void QGLView::setupCube()
+void GLView::setupCube()
 {
     static const ModelVertex vertices[] = {
         // Front face
@@ -470,7 +472,7 @@ void QGLView::setupCube()
     addDrawableList(Cube);
 }
 
-void QGLView::setupShaders()
+void GLView::setupShaders()
 {
     // model shader
     m_modelProgram = new QOpenGLShaderProgram();
@@ -527,10 +529,10 @@ void QGLView::setupShaders()
     m_textSelectionModeLocation = m_textProgram->uniformLocation("selectionMode");
 }
 
-void QGLView::setupWindow()
+void GLView::setupWindow()
 {
     connect(window()->openglContext(), &QOpenGLContext::aboutToBeDestroyed,
-            this, &QGLView::cleanup, Qt::DirectConnection);
+            this, &GLView::cleanup, Qt::DirectConnection);
 
     QSurfaceFormat format = window()->format();
     format.setDepthBufferSize(24);
@@ -538,7 +540,7 @@ void QGLView::setupWindow()
     window()->setFormat(format);
 }
 
-void QGLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, int detail, ModelType type)
+void GLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, int detail, ModelType type)
 {
     QVector<ModelVertex> vertices;
     QVector3D normal;
@@ -662,7 +664,7 @@ void QGLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, 
     addDrawableList(type);
 }
 
-void QGLView::setupSphere(int detail)
+void GLView::setupSphere(int detail)
 {
     QVector<ModelVertex> rawVertices;
     QVector<ModelVertex> vertices;
@@ -717,7 +719,7 @@ void QGLView::setupSphere(int detail)
     addDrawableList(Sphere);
 }
 
-void QGLView::setupStack()
+void GLView::setupStack()
 {
     m_modelParametersStack.push(new Parameters());
     m_modelParameters = new Parameters();
@@ -729,7 +731,7 @@ void QGLView::setupStack()
     m_textParameters = new TextParameters();
 }
 
-void QGLView::drawModelVertices(ModelType type)
+void GLView::drawModelVertices(ModelType type)
 {
     QOpenGLBuffer *vertexBuffer = m_vertexBufferMap[type];
     QList<Parameters*> *modelParametersList = getDrawableList(type);
@@ -766,7 +768,7 @@ void QGLView::drawModelVertices(ModelType type)
     vertexBuffer->release();
 }
 
-void QGLView::drawLines()
+void GLView::drawLines()
 {
     QList<Parameters*>* parametersList = getDrawableList(Line);
 
@@ -803,7 +805,7 @@ void QGLView::drawLines()
     m_lineVertexBuffer->release();
 }
 
-void QGLView::drawTexts()
+void GLView::drawTexts()
 {
     QList<Parameters*>* parametersList = getDrawableList(Text);
 
@@ -858,7 +860,7 @@ void QGLView::drawTexts()
     m_textVertexBuffer->release();
 }
 
-void QGLView::prepareTextTexture(const QStaticText &staticText, QFont font)
+void GLView::prepareTextTexture(const QStaticText &staticText, QFont font)
 {
     if (m_textTextList.contains(staticText))
     {
@@ -887,7 +889,7 @@ void QGLView::prepareTextTexture(const QStaticText &staticText, QFont font)
     m_textImageList.append(pixmap.toImage());
 }
 
-void QGLView::createTextTexture(TextParameters *textParameters)
+void GLView::createTextTexture(TextParameters *textParameters)
 {
     int textureIndex = m_textTextList.indexOf(textParameters->staticText);
     QOpenGLTexture *texture = m_textTextureList.at(textureIndex);
@@ -899,7 +901,7 @@ void QGLView::createTextTexture(TextParameters *textParameters)
     texture->setData(m_textImageList.at(textureIndex));
 }
 
-void QGLView::clearTextTextures()
+void GLView::clearTextTextures()
 {
     QList<int> usedIndexes;
     QList<Parameters*>* parametersList = getDrawableList(Text);
@@ -931,7 +933,7 @@ void QGLView::clearTextTextures()
     }
 }
 
-void QGLView::updateGLItems()
+void GLView::updateGLItems()
 {
     for (int i = 0; i < m_glItems.size(); ++i)
     {
@@ -939,17 +941,17 @@ void QGLView::updateGLItems()
     }
 }
 
-void QGLView::clearGLItem(QGLItem *item)
+void GLView::clearGLItem(GLItem *item)
 {
     removeDrawables(m_drawableListMap.value(item));
 }
 
-void QGLView::updateGLItem(QGLItem *item)
+void GLView::updateGLItem(GLItem *item)
 {
     m_modifiedGlItems.append(item);
 }
 
-void QGLView::paintGLItems()
+void GLView::paintGLItems()
 {
     for (int i = 0; i < m_modifiedGlItems.size(); ++i)
     {
@@ -958,7 +960,7 @@ void QGLView::paintGLItems()
     m_modifiedGlItems.clear();
 }
 
-void QGLView::paintGLItem(QGLItem *item)
+void GLView::paintGLItem(GLItem *item)
 {
     if (item->isVisible())
     {
@@ -970,7 +972,7 @@ void QGLView::paintGLItem(QGLItem *item)
     }
 }
 
-quint32 QGLView::getSelection()
+quint32 GLView::getSelection()
 {
     QList<quint32> ids;
     QList<quint32> sortedIds;
@@ -1025,7 +1027,7 @@ quint32 QGLView::getSelection()
     }
 }
 
-void QGLView::addGlItem(QGLItem *item)
+void GLView::addGlItem(GLItem *item)
 {
     m_glItems.append(item);
 
@@ -1038,16 +1040,16 @@ void QGLView::addGlItem(QGLItem *item)
     }
 
     m_propertySignalMapper->setMapping(item, item);
-    connect(item, &QGLItem::needsUpdate,
+    connect(item, &GLItem::needsUpdate,
             m_propertySignalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-    connect(this, &QGLView::drawableSelected,
-            item, &QGLItem::selectDrawable, Qt::QueuedConnection);
+    connect(this, &GLView::drawableSelected,
+            item, &GLItem::selectDrawable, Qt::QueuedConnection);
     emit glItemsChanged(glItems());
 }
 
-void QGLView::removeGlItem(int index)
+void GLView::removeGlItem(int index)
 {
-    QGLItem *item = m_glItems.takeAt(index);
+    GLItem *item = m_glItems.takeAt(index);
 
     if (m_initialized) {
         clearGLItem(item);
@@ -1057,14 +1059,14 @@ void QGLView::removeGlItem(int index)
     delete m_drawableListMap.take(item);
 
     m_propertySignalMapper->removeMappings(item);
-    disconnect(item, &QGLItem::needsUpdate,
+    disconnect(item, &GLItem::needsUpdate,
                m_propertySignalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-    disconnect(this, &QGLView::drawableSelected,
-               item, &QGLItem::selectDrawable);
+    disconnect(this, &GLView::drawableSelected,
+               item, &GLItem::selectDrawable);
     emit glItemsChanged(glItems());
 }
 
-void QGLView::removeGlItem(QGLItem *item)
+void GLView::removeGlItem(GLItem *item)
 {
     for (int i = 0; i < m_glItems.size(); ++i)
     {
@@ -1076,7 +1078,7 @@ void QGLView::removeGlItem(QGLItem *item)
     }
 }
 
-void QGLView::clearGlItems()
+void GLView::clearGlItems()
 {
     for (int i = (m_glItems.size()-1); i >= 0; i--)
     {
@@ -1084,7 +1086,7 @@ void QGLView::clearGlItems()
     }
 }
 
-void QGLView::prepare(QGLItem *glItem)
+void GLView::prepare(GLItem *glItem)
 {
     m_currentDrawableList = m_drawableListMap.value(glItem);
     m_currentGlItem = glItem;
@@ -1094,89 +1096,89 @@ void QGLView::prepare(QGLItem *glItem)
     scale(glItem->scale());
 }
 
-QQmlListProperty<QGLItem> QGLView::glItems()
+QQmlListProperty<GLItem> GLView::glItems()
 {
-    return QQmlListProperty<QGLItem>(this, m_glItems);
+    return QQmlListProperty<GLItem>(this, m_glItems);
 }
 
-int QGLView::glItemCount() const
+int GLView::glItemCount() const
 {
     return m_glItems.count();
 }
 
-QGLItem *QGLView::glItem(int index) const
+GLItem *GLView::glItem(int index) const
 {
     return m_glItems.at(index);
 }
 
-void QGLView::paint(QPainter *painter)
+void GLView::paint(QPainter *painter)
 {
     painter->beginNativePainting();
     paint();
     painter->endNativePainting();
 }
 
-void QGLView::color(float r, float g, float b, float a)
+void GLView::color(float r, float g, float b, float a)
 {
     color(QColor((int)(255.0*r), (int)(255.0*g), (int)(255.0*b), (int)(255.0*a)));
 }
 
-void QGLView::color(const QColor &color)
+void GLView::color(const QColor &color)
 {
     m_modelParameters->color = color;
     m_lineParameters->color = color;
     m_textParameters->color = color;
 }
 
-void QGLView::translate(float x, float y, float z)
+void GLView::translate(float x, float y, float z)
 {
     translate(QVector3D(x, y, z));
 }
 
-void QGLView::translate(const QVector3D &vector)
+void GLView::translate(const QVector3D &vector)
 {
     m_modelParameters->modelMatrix.translate(vector);
     m_lineParameters->modelMatrix.translate(vector);
     m_textParameters->modelMatrix.translate(vector);
 }
 
-void QGLView::rotate(float angle, float x, float y, float z)
+void GLView::rotate(float angle, float x, float y, float z)
 {
     rotate(angle, QVector3D(x, y, z));
 }
 
-void QGLView::rotate(float angle, const QVector3D &axis)
+void GLView::rotate(float angle, const QVector3D &axis)
 {
     m_modelParameters->modelMatrix.rotate(angle, axis);
     m_lineParameters->modelMatrix.rotate(angle, axis);
     m_textParameters->modelMatrix.rotate(angle, axis);
 }
 
-void QGLView::rotate(const QQuaternion &quaternion)
+void GLView::rotate(const QQuaternion &quaternion)
 {
     m_modelParameters->modelMatrix.rotate(quaternion);
     m_lineParameters->modelMatrix.rotate(quaternion);
     m_textParameters->modelMatrix.rotate(quaternion);
 }
 
-void QGLView::scale(float x, float y, float z)
+void GLView::scale(float x, float y, float z)
 {
     scale(QVector3D(x, y, z));
 }
 
-void QGLView::scale(const QVector3D &vector)
+void GLView::scale(const QVector3D &vector)
 {
     m_modelParameters->modelMatrix.scale(vector);
     m_lineParameters->modelMatrix.scale(vector);
     m_textParameters->modelMatrix.scale(vector);
 }
 
-void QGLView::mirror(float x, float y, float z)
+void GLView::mirror(float x, float y, float z)
 {
     mirror(QVector3D(x, y, z));
 }
 
-void QGLView::mirror(const QVector3D &vector)
+void GLView::mirror(const QVector3D &vector)
 {
     int x = (int)vector.x();
     int y = (int)vector.y();
@@ -1193,7 +1195,7 @@ void QGLView::mirror(const QVector3D &vector)
                                    (z == 1) ? -1.0 : 1.0);
 }
 
-void QGLView::resetTransformations(bool hard)
+void GLView::resetTransformations(bool hard)
 {
     if (hard)
     {
@@ -1235,12 +1237,12 @@ void QGLView::resetTransformations(bool hard)
     }
 }
 
-void *QGLView::cube(float w, float l, float h, bool center)
+void *GLView::cube(float w, float l, float h, bool center)
 {
     return cube(QVector3D(w, l, h), center);
 }
 
-void *QGLView::cube(const QVector3D &size, bool center)
+void *GLView::cube(const QVector3D &size, bool center)
 {
     if (center)
     {
@@ -1253,7 +1255,7 @@ void *QGLView::cube(const QVector3D &size, bool center)
     return parameters;
 }
 
-void *QGLView::cylinder(float r, float h)
+void *GLView::cylinder(float r, float h)
 {
     m_modelParameters->modelMatrix.scale(r, r, h);
     Parameters *parameters = addDrawableData(Cylinder, m_modelParameters);
@@ -1261,7 +1263,7 @@ void *QGLView::cylinder(float r, float h)
     return parameters;
 }
 
-void *QGLView::cone(float r, float h)
+void *GLView::cone(float r, float h)
 {
     m_modelParameters->modelMatrix.scale(r, r, h);
     Parameters *parameters = addDrawableData(Cone, m_modelParameters);
@@ -1269,7 +1271,7 @@ void *QGLView::cone(float r, float h)
     return parameters;
 }
 
-void *QGLView::sphere(float r)
+void *GLView::sphere(float r)
 {
     m_modelParameters->modelMatrix.scale(r,r,r);
     Parameters *parameters = addDrawableData(Sphere, m_modelParameters);
@@ -1277,18 +1279,18 @@ void *QGLView::sphere(float r)
     return parameters;
 }
 
-void QGLView::lineWidth(float width)
+void GLView::lineWidth(float width)
 {
     m_lineParameters->width = width;
 }
 
-void QGLView::lineStipple(float enable, float length)
+void GLView::lineStipple(float enable, float length)
 {
     m_lineParameters->stipple = enable;
     m_lineParameters->stippleLength = length;
 }
 
-void *QGLView::line(float x, float y, float z)
+void *GLView::line(float x, float y, float z)
 {
     GLvector3D vector;
     vector.x = x;
@@ -1302,12 +1304,12 @@ void *QGLView::line(float x, float y, float z)
     return parameters;
 }
 
-void *QGLView::line(const QVector3D &vector)
+void *GLView::line(const QVector3D &vector)
 {
     return line(vector.x(), vector.y(), vector.z());
 }
 
-void *QGLView::lineTo(float x, float y, float z)
+void *GLView::lineTo(float x, float y, float z)
 {
     if (!m_pathEnabled)
     {
@@ -1352,17 +1354,17 @@ void *QGLView::lineTo(float x, float y, float z)
     return nullptr;
 }
 
-void *QGLView::lineTo(const QVector3D &vector)
+void *GLView::lineTo(const QVector3D &vector)
 {
     return lineTo(vector.x(), vector.y(), vector.z());
 }
 
-void *QGLView::lineFromTo(float x1, float y1, float z1, float x2, float y2, float z2)
+void *GLView::lineFromTo(float x1, float y1, float z1, float x2, float y2, float z2)
 {
     return lineFromTo(QVector3D(x1, y1, z1), QVector3D(x2, y2, z2));
 }
 
-void *QGLView::lineFromTo(const QVector3D &startPosition, const QVector3D &endPosition)
+void *GLView::lineFromTo(const QVector3D &startPosition, const QVector3D &endPosition)
 {
     QVector3D diffVector = endPosition - startPosition;
     GLvector3D vector;
@@ -1377,12 +1379,12 @@ void *QGLView::lineFromTo(const QVector3D &startPosition, const QVector3D &endPo
     return parameters;
 }
 
-void QGLView::beginPath()
+void GLView::beginPath()
 {
     m_pathEnabled = true;
 }
 
-void *QGLView::endPath()
+void *GLView::endPath()
 {
     m_pathEnabled = false;
     Parameters *parameters = addDrawableData(m_lineParameters);
@@ -1390,7 +1392,7 @@ void *QGLView::endPath()
     return parameters;
 }
 
-void *QGLView::arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset)
+void *GLView::arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset)
 {
     qreal currentX;
     qreal currentY;
@@ -1440,7 +1442,7 @@ void *QGLView::arc(float x, float y, float radius, float startAngle, float endAn
     }
 }
 
-void QGLView::text(QString text, TextAlignment alignment , QFont font)
+void GLView::text(QString text, TextAlignment alignment , QFont font)
 {
     QStaticText staticText(text);
     font.setPixelSize(100);
@@ -1454,14 +1456,14 @@ void QGLView::text(QString text, TextAlignment alignment , QFont font)
     resetTransformations();
 }
 
-void QGLView::beginUnion()
+void GLView::beginUnion()
 {
     m_modelParametersStack.push(new Parameters(m_modelParameters));
     m_lineParametersStack.push(new LineParameters(m_lineParameters));
     m_textParametersStack.push(new TextParameters(m_textParameters));
 }
 
-void QGLView::endUnion()
+void GLView::endUnion()
 {
     delete m_modelParametersStack.pop();
     m_modelParameters = new Parameters(m_modelParametersStack.top());
@@ -1473,7 +1475,7 @@ void QGLView::endUnion()
     m_textParameters = new TextParameters(m_textParametersStack.top());
 }
 
-void QGLView::updateColor(void *drawablePointer, const QColor &color)
+void GLView::updateColor(void *drawablePointer, const QColor &color)
 {
     Parameters *parameters;
 
@@ -1481,7 +1483,7 @@ void QGLView::updateColor(void *drawablePointer, const QColor &color)
     parameters->color = color;
 }
 
-void QGLView::paint()
+void GLView::paint()
 {
     //Lboolean scissorEnabled;
     //GLboolean depthTestEnabled;
@@ -1587,7 +1589,7 @@ void QGLView::paint()
     }*/
 }
 
-void QGLView::cleanup()
+void GLView::cleanup()
 {
     if (m_modelProgram) {
         delete m_modelProgram;
@@ -1605,7 +1607,7 @@ void QGLView::cleanup()
     }
 }
 
-void QGLView::sync()
+void GLView::sync()
 {
     if (!m_initialized)
     {
@@ -1624,7 +1626,8 @@ void QGLView::sync()
     paintGLItems();
 }
 
-void QGLView::reset()
+void GLView::reset()
 {
     removeDrawables(m_currentDrawableList);
 }
+}; // namespace qtquickvcp

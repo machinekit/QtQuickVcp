@@ -20,8 +20,8 @@
 **
 ****************************************************************************/
 
-#ifndef QGLVIEW_H
-#define QGLVIEW_H
+#ifndef GLVIEW_H
+#define GLVIEW_H
 
 #include <QtQuick/QQuickPaintedItem>
 #include <QtGui/QOpenGLShaderProgram>
@@ -34,26 +34,28 @@
 #include <QPainter>
 #include <QQmlListProperty>
 #include <QSignalMapper>
-#include "qglitem.h"
+#include "glitem.h"
 #include "qglcamera.h"
-#include "qgllight.h"
+#include "gllight.h"
 
-class QGLItem;
+namespace qtquickvcp {
 
-class QGLView : public QQuickPaintedItem, protected QOpenGLFunctions
+class GLItem;
+
+class GLView : public QQuickPaintedItem, protected QOpenGLFunctions
 {
     Q_OBJECT
 
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QGLCamera *camera READ camera WRITE setCamera NOTIFY cameraChanged)
-    Q_PROPERTY(QGLLight *light READ light WRITE setLight NOTIFY lightChanged)
-    Q_PROPERTY(QQmlListProperty<QGLItem> glItems READ glItems NOTIFY glItemsChanged)
+    Q_PROPERTY(GLLight *light READ light WRITE setLight NOTIFY lightChanged)
+    Q_PROPERTY(QQmlListProperty<qtquickvcp::GLItem> glItems READ glItems NOTIFY glItemsChanged)
     Q_ENUMS(TextAlignment)
 
 public:
-    QGLView(QQuickItem *parent = 0);
-    ~QGLView();
+    GLView(QQuickItem *parent = 0);
+    ~GLView();
 
     enum TextAlignment {
         AlignLeft = 0,
@@ -71,22 +73,22 @@ public:
         return m_camera;
     }
 
-    QGLLight * light() const
+    GLLight * light() const
     {
         return m_light;
     }
 
-    QQmlListProperty<QGLItem> glItems();
+    QQmlListProperty<GLItem> glItems();
     int glItemCount() const;
-    QGLItem *glItem(int index) const;
+    GLItem *glItem(int index) const;
 
     void paint(QPainter * painter);
 
 signals:
     void backgroundColorChanged();
     void cameraChanged(QGLCamera *arg);
-    void glItemsChanged(QQmlListProperty<QGLItem> arg);
-    void lightChanged(QGLLight * arg);
+    void glItemsChanged(QQmlListProperty<GLItem> arg);
+    void lightChanged(GLLight * arg);
     void initialized();
     void drawableSelected(void *pointer);
 
@@ -96,13 +98,13 @@ public slots:
     void sync();
 
     // item handling
-    void addGlItem(QGLItem *glItem);
+    void addGlItem(GLItem *glItem);
     void removeGlItem(int index);
-    void removeGlItem(QGLItem *glItem);
+    void removeGlItem(GLItem *glItem);
     void clearGlItems();
 
     // loading the correct current drawables list
-    void prepare(QGLItem *glItem);
+    void prepare(GLItem *glItem);
 
     // removing drawables
     void reset();
@@ -163,7 +165,7 @@ public slots:
         }
     }
 
-    void setLight(QGLLight * arg)
+    void setLight(GLLight * arg)
     {
         if (m_light != arg) {
             m_light = arg;
@@ -237,7 +239,7 @@ private:
             deleteFlag = parameters->deleteFlag;
         }
 
-        QGLItem *creator;
+        GLItem *creator;
         QMatrix4x4 modelMatrix;
         QColor color;
         bool deleteFlag;    // marks the parameter to delete
@@ -387,18 +389,18 @@ private:
     bool m_selectionModeActive;
 
     //GL items
-    QGLItem *m_currentGlItem;
-    QList<QGLItem*> m_glItems;
-    QMap<QGLItem*, QList<Drawable>* > m_drawableListMap;
+    GLItem *m_currentGlItem;
+    QList<GLItem*> m_glItems;
+    QMap<GLItem*, QList<Drawable>* > m_drawableListMap;
     QList<Drawable> *m_currentDrawableList;
     QSignalMapper *m_propertySignalMapper;
-    QList<QGLItem*> m_modifiedGlItems;  // list of gl items that have been modified
+    QList<GLItem*> m_modifiedGlItems;  // list of gl items that have been modified
 
     // camera
     QGLCamera *m_camera;
 
     // light
-    QGLLight *m_light;
+    GLLight *m_light;
 
     void addDrawableList(ModelType type);
     QList<Parameters*>* getDrawableList(ModelType type);
@@ -421,10 +423,10 @@ private:
     void clearTextTextures();
 
     void updateGLItems();
-    void clearGLItem(QGLItem *item);
-    void updateGLItem(QGLItem *item);
+    void clearGLItem(GLItem *item);
+    void updateGLItem(GLItem *item);
     void paintGLItems();
-    void paintGLItem(QGLItem *item);
+    void paintGLItem(GLItem *item);
 
     quint32 getSelection();
 
@@ -440,6 +442,7 @@ private:
     void setupCylinder(GLfloat originRadius, QVector3D originPoint, GLfloat endRadius, QVector3D endPoint, int detail, ModelType type);
     void setupSphere(int detail);
     void setupStack();
-};
+}; // class GLView
+}; // namespace qtquickvcp
 
-#endif // QGLVIEW_H
+#endif // GLVIEW_H

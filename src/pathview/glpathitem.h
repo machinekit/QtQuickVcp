@@ -20,14 +20,16 @@
 **
 ****************************************************************************/
 
-#ifndef QGLPATHITEM_H
-#define QGLPATHITEM_H
+#ifndef GLPATHITEM_H
+#define GLPATHITEM_H
 
-#include "qglitem.h"
-#include "qgcodeprogrammodel.h"
+#include "glitem.h"
+#include "gcodeprogrammodel.h"
 #include <machinetalk/protobuf/preview.pb.h>
 
-class QGLPathItem : public QGLItem
+namespace qtquickvcp {
+
+class GLPathItem : public GLItem
 {
     Q_OBJECT
     Q_PROPERTY(QColor arcFeedColor READ arcFeedColor WRITE setArcFeedColor NOTIFY arcFeedColorChanged)
@@ -38,18 +40,18 @@ class QGLPathItem : public QGLItem
     Q_PROPERTY(QColor backplotTraverseColor READ backplotTraverseColor WRITE setBackplotTraverseColor NOTIFY backplotTraverseColorChanged)
     Q_PROPERTY(QColor selectedColor READ selectedColor WRITE setSelectedColor NOTIFY selectedColorChanged)
     Q_PROPERTY(QColor activeColor READ activeColor WRITE setActiveColor NOTIFY activeColorChanged)
-    Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(GCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(QVector3D minimumExtents READ minimumExtents NOTIFY minimumExtentsChanged)
     Q_PROPERTY(QVector3D maximumExtents READ maximumExtents NOTIFY maximumExtentsChanged)
     Q_PROPERTY(float traverseLineStippleLength READ traverseLineStippleLength WRITE setTraverseLineStippleLength NOTIFY traverseLineStippleLengthChanged)
 
 public:
-    explicit QGLPathItem(QQuickItem *parent = 0);
-    ~QGLPathItem();
+    explicit GLPathItem(QQuickItem *parent = 0);
+    ~GLPathItem();
 
-    virtual void paint(QGLView *glView);
+    virtual void paint(GLView *glView);
 
-    QGCodeProgramModel * model() const;
+    GCodeProgramModel * model() const;
     QColor arcFeedColor() const;
     QColor straightFeedColor() const;
     QColor traverseColor() const;
@@ -65,7 +67,7 @@ public:
 public slots:
     virtual void selectDrawable(void *pointer);
 
-    void setModel(QGCodeProgramModel * arg);
+    void setModel(GCodeProgramModel * arg);
     void setArcFeedColor(QColor arg);
     void setTraverseColor(QColor arg);
     void setSelectedColor(QColor arg);
@@ -161,7 +163,7 @@ private:
         Plane rotationPlane;
     };
 
-    QGCodeProgramModel * m_model;
+    GCodeProgramModel * m_model;
     QColor m_arcFeedColor;
     QColor m_straightFeedColor;
     QColor m_traverseColor;
@@ -213,7 +215,7 @@ private slots:
     void triggerFullUpdate();
 
 signals:
-    void modelChanged(QGCodeProgramModel * arg);
+    void modelChanged(GCodeProgramModel * arg);
     void arcFeedColorChanged(QColor arg);
     void traverseColorChanged(QColor arg);
     void selectedColorChanged(QColor arg);
@@ -226,6 +228,7 @@ signals:
     void backplotStraightFeedColorChanged(QColor arg);
     void backplotTraverseColorChanged(QColor arg);
     void traverseLineStippleLengthChanged(float traverseLineStippleLength);
-};
+}; // class GLPathItem
+}; // namespace qtquickvcp
 
-#endif // QGLPATHITEM_H
+#endif // GLPATHITEM_H

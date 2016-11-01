@@ -20,15 +20,17 @@
 **
 ****************************************************************************/
 
-#include "qglcanvas.h"
+#include "glcanvas.h"
 
-QGLCanvas::QGLCanvas(QQuickItem *parent) :
-    QGLItem(parent),
+namespace qtquickvcp {
+
+GLCanvas::GLCanvas(QQuickItem *parent) :
+    GLItem(parent),
     m_context(nullptr)
 {
 }
 
-void QGLCanvas::paint(QGLView *glView)
+void GLCanvas::paint(GLView *glView)
 {
     if (m_context != glView) {
         m_context = glView;
@@ -38,7 +40,8 @@ void QGLCanvas::paint(QGLView *glView)
     paint();
 }
 
-void QGLCanvas::selectDrawable(void *pointer)
+void GLCanvas::selectDrawable(void *pointer)
 {
     emit drawableSelected(pointer);
 }
+}; // namespace qtquickvcp

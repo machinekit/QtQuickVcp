@@ -20,26 +20,28 @@
 **
 ****************************************************************************/
 
-#ifndef QGCODEPROGRAMLOADER_H
-#define QGCODEPROGRAMLOADER_H
+#ifndef GCODEPROGRAMLOADER_H
+#define GCODEPROGRAMLOADER_H
 
 #include <QObject>
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
 #include <QUrl>
-#include "qgcodeprogrammodel.h"
+#include "gcodeprogrammodel.h"
 
-class QGCodeProgramLoader : public QObject
+namespace qtquickvcp {
+
+class GCodeProgramLoader : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString localFilePath READ localFilePath WRITE setLocalFilePath NOTIFY localFilePathChanged)
     Q_PROPERTY(QString localPath READ localPath WRITE setLocalPath NOTIFY localPathChanged)
     Q_PROPERTY(QString remotePath READ remotePath WRITE setRemotePath NOTIFY remotePathChanged)
-    Q_PROPERTY(QGCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(GCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
 
 public:
-    explicit QGCodeProgramLoader(QObject *parent = 0);
+    explicit GCodeProgramLoader(QObject *parent = 0);
 
     QString localFilePath() const
     {
@@ -56,7 +58,7 @@ public:
         return m_remotePath;
     }
 
-    QGCodeProgramModel * model() const
+    GCodeProgramModel * model() const
     {
         return m_model;
     }
@@ -65,7 +67,7 @@ signals:
     void localFilePathChanged(QString arg);
     void localPathChanged(QString arg);
     void remotePathChanged(QString arg);
-    void modelChanged(QGCodeProgramModel * arg);
+    void modelChanged(GCodeProgramModel * arg);
     void loadingFinished();
     void loadingFailed();
 
@@ -98,7 +100,7 @@ public slots:
         emit remotePathChanged(arg);
     }
 
-    void setModel(QGCodeProgramModel * arg)
+    void setModel(GCodeProgramModel * arg)
     {
         if (m_model != arg) {
             m_model = arg;
@@ -110,7 +112,8 @@ private:
     QString m_localFilePath;
     QString m_localPath;
     QString m_remotePath;
-    QGCodeProgramModel * m_model;
-};
+    GCodeProgramModel * m_model;
+}; // class GCodeProgramLoader
+}; // namespace qtquickvcp
 
-#endif // QGCODEPROGRAMLOADER_H
+#endif // GCODEPROGRAMLOADER_H
