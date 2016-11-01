@@ -19,20 +19,22 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#ifndef QSERVICEDISCOVERYFILTER_H
-#define QSERVICEDISCOVERYFILTER_H
+#ifndef SERVICEDISCOVERYFILTER_H
+#define SERVICEDISCOVERYFILTER_H
 
 #include <QObject>
 #include <QQmlListProperty>
 
-class QServiceDiscoveryFilter : public QObject
+namespace qtquickvcp {
+
+class ServiceDiscoveryFilter : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QStringList txtRecords READ txtRecords WRITE setTxtRecords NOTIFY txtRecordsChanged)
 
 public:
-    explicit QServiceDiscoveryFilter(QObject *parent = 0);
+    explicit ServiceDiscoveryFilter(QObject *parent = 0);
 
     QString name() const
     {
@@ -68,6 +70,7 @@ private:
 signals:
     void nameChanged(QString arg);
     void txtRecordsChanged(QStringList arg);
-};
+}; // class ServiceDiscoveryFilter
+}; // namespace qtquickvcp
 
-#endif // QSERVICEDISCOVERYFILTER_H
+#endif // SERVICEDISCOVERYFILTER_H

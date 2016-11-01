@@ -19,15 +19,17 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#ifndef QAPPDISCOVERYITEM_H
-#define QAPPDISCOVERYITEM_H
+#ifndef SERVICEDISCOVERYITEM_H
+#define SERVICEDISCOVERYITEM_H
 
 #include <QObject>
 #include <QHostAddress>
 #include <QDateTime>
 #include <QSet>
 
-class QServiceDiscoveryItem : public QObject
+namespace qtquickvcp {
+
+class ServiceDiscoveryItem : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString type READ type NOTIFY typeChanged)
@@ -42,7 +44,7 @@ class QServiceDiscoveryItem : public QObject
     Q_PROPERTY(bool updated READ updated WRITE setUpdated NOTIFY updatedChanged)
 
 public:
-    explicit QServiceDiscoveryItem(QObject *parent = 0);
+    explicit ServiceDiscoveryItem(QObject *parent = 0);
 
 
     QString uri() const
@@ -243,6 +245,7 @@ signals:
     void uuidChanged(QString arg);
     void versionChanged(int arg);
     void updatedChanged(bool arg);
-};
+}; // class ServiceDiscoveryItem
+}; // namespace qtquickvcp
 
-#endif // QAPPDISCOVERYITEM_H
+#endif // SERVICEDISCOVERYITEM_H

@@ -19,7 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qservicediscoveryfilter.h"
+#include "servicediscoveryfilter.h"
+
+namespace qtquickvcp {
 
 /*!
     \qmltype ServiceDiscoveryFilter
@@ -59,8 +61,9 @@
     This property holds the TXT records to filter the results for.
 */
 
-QServiceDiscoveryFilter::QServiceDiscoveryFilter(QObject *parent) :
+ServiceDiscoveryFilter::ServiceDiscoveryFilter(QObject *parent) :
     QObject(parent),
     m_name("")
 {
 }
+}; // namespace qtquickvcp

@@ -19,16 +19,18 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#ifndef QSERVICE_H
-#define QSERVICE_H
+#ifndef SERVICE_H
+#define SERVICE_H
 
 #include <QObject>
 #include <QQmlListProperty>
-#include "qservicediscoveryitem.h"
-#include "qservicediscoveryfilter.h"
-#include "qservicediscoveryquery.h"
+#include "servicediscoveryitem.h"
+#include "servicediscoveryfilter.h"
+#include "servicediscoveryquery.h"
 
-class QService : public QObject
+namespace qtquickvcp {
+
+class Service : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
@@ -40,21 +42,21 @@ class QService : public QObject
     Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged)
     Q_PROPERTY(int version READ version NOTIFY versionChanged)
     Q_PROPERTY(bool ready READ isReady NOTIFY readyChanged)
-    Q_PROPERTY(QServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
-    Q_PROPERTY(QQmlListProperty<QServiceDiscoveryItem> items READ items NOTIFY itemsChanged)
+    Q_PROPERTY(ServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
+    Q_PROPERTY(QQmlListProperty<qtquickvcp::ServiceDiscoveryItem> items READ items NOTIFY itemsChanged)
     Q_PROPERTY(bool required READ required WRITE setRequired NOTIFY requiredChanged)
-    Q_PROPERTY(QQmlListProperty<QServiceDiscoveryQuery> queries READ queries)
+    Q_PROPERTY(QQmlListProperty<qtquickvcp::ServiceDiscoveryQuery> queries READ queries)
 
 public:
-    explicit QService(QObject *parent = 0);
+    explicit Service(QObject *parent = 0);
 
-    QQmlListProperty<QServiceDiscoveryItem> items();
+    QQmlListProperty<ServiceDiscoveryItem> items();
     int itemCount() const;
-    QServiceDiscoveryItem *item(int index) const;
+    ServiceDiscoveryItem *item(int index) const;
 
-    QQmlListProperty<QServiceDiscoveryQuery> queries();
+    QQmlListProperty<ServiceDiscoveryQuery> queries();
     int queriesCount() const;
-    QServiceDiscoveryQuery *query(int index) const;
+    ServiceDiscoveryQuery *query(int index) const;
 
     QString uri() const
     {
@@ -96,7 +98,7 @@ public:
         return m_name;
     }
 
-    QServiceDiscoveryFilter *filter() const
+    ServiceDiscoveryFilter *filter() const
     {
         return m_filter;
     }
@@ -147,7 +149,7 @@ public slots:
         emit protocolChanged(protocol);
     }
 
-    void setFilter(QServiceDiscoveryFilter *arg)
+    void setFilter(ServiceDiscoveryFilter *arg)
     {
         if (m_filter != arg) {
             m_filter = arg;
@@ -176,11 +178,11 @@ private:
     QString m_uuid;
     int m_version;
     bool m_ready;
-    QServiceDiscoveryFilter *m_filter;
-    QList<QServiceDiscoveryItem *> m_items;
+    ServiceDiscoveryFilter *m_filter;
+    QList<ServiceDiscoveryItem *> m_items;
     bool m_required;
-    QServiceDiscoveryQuery *m_serviceQuery;
-    QList<QServiceDiscoveryQuery *> m_queries;
+    ServiceDiscoveryQuery *m_serviceQuery;
+    QList<ServiceDiscoveryQuery *> m_queries;
 
     bool m_itemsReady;        // true when we have items
     QString m_rawUri;         // the raw uri from the items
@@ -193,7 +195,7 @@ private:
 private slots:
     void updateUri();
     void updateServiceQuery();
-    void serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> newItems);
+    void serviceQueryItemsUpdated(QQmlListProperty<ServiceDiscoveryItem> newItems);
 
 signals:
     void uriChanged(QString arg);
@@ -204,11 +206,12 @@ signals:
     void baseTypeChanged(QString baseType);
     void protocolChanged(QString protocol);
     void nameChanged(QString arg);
-    void itemsChanged(QQmlListProperty<QServiceDiscoveryItem> arg);
-    void filterChanged(QServiceDiscoveryFilter *arg);
+    void itemsChanged(QQmlListProperty<ServiceDiscoveryItem> arg);
+    void filterChanged(ServiceDiscoveryFilter *arg);
     void uuidChanged(QString arg);
     void requiredChanged(bool arg);
     void queriesChanged();
-};
+}; // class Service
+}; // namespace qtquickvcp
 
-#endif // QSERVICE_H
+#endif // SERVICE_H

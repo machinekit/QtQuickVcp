@@ -13,24 +13,24 @@ include(../../3rdparty/jdns/jdns.pri)
 # Input
 SOURCES += \
     plugin.cpp \
-    qservice.cpp \
-    qservicelist.cpp \
-    qservicediscoveryfilter.cpp \
-    qservicediscovery.cpp \
-    qservicediscoveryitem.cpp \
-    qnameserver.cpp \
-    qservicediscoveryquery.cpp
+    nameserver.cpp \
+    service.cpp \
+    servicediscovery.cpp \
+    servicediscoveryfilter.cpp \
+    servicediscoveryitem.cpp \
+    servicediscoveryquery.cpp \
+    servicelist.cpp
 
 HEADERS += \
     plugin.h \
-    qservice.h \
-    qservicelist.h \
-    qservicediscoveryfilter.h \
-    qservicediscovery.h \
-    qservicediscoveryitem.h \
-    qnameserver.h \
     debughelper.h \
-    qservicediscoveryquery.h
+    nameserver.h \
+    service.h \
+    servicediscovery.h \
+    servicediscoveryfilter.h \
+    servicediscoveryitem.h \
+    servicediscoveryquery.h \
+    servicelist.h
 
 QML_INFRA_FILES = \
     qmldir

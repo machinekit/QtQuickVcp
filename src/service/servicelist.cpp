@@ -19,7 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qservicelist.h"
+#include "servicelist.h"
+
+namespace qtquickvcp {
 
 /*!
     \qmltype ServiceList
@@ -60,22 +62,23 @@
     \sa Service, ServiceDiscovery
 */
 
-QServiceList::QServiceList(QObject *parent) :
+ServiceList::ServiceList(QObject *parent) :
     QObject(parent)
 {
 }
 
-QQmlListProperty<QService> QServiceList::services()
+QQmlListProperty<Service> ServiceList::services()
 {
-    return QQmlListProperty<QService>(this, m_services);
+    return QQmlListProperty<Service>(this, m_services);
 }
 
-int QServiceList::serviceCount() const
+int ServiceList::serviceCount() const
 {
     return m_services.count();
 }
 
-QService *QServiceList::service(int index) const
+Service *ServiceList::service(int index) const
 {
     return m_services.at(index);
 }
+}; // namespace qtquickvcp

@@ -27,7 +27,9 @@
 #include <QHostAddress>
 #include <QDnsLookup>
 
-class QNameServer : public QObject
+namespace qtquickvcp {
+
+class NameServer : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString hostName READ hostName WRITE setHostName NOTIFY hostNameChanged)
@@ -35,7 +37,7 @@ class QNameServer : public QObject
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
 
 public:
-    explicit QNameServer(QObject *parent = 0);
+    explicit NameServer(QObject *parent = 0);
 
     QString hostName() const
     {
@@ -85,6 +87,7 @@ signals:
     void hostNameChanged(QString arg);
     void hostAddressChanged(QHostAddress arg);
     void portChanged(int arg);
-};
+}; // class NameServer
+}; // namespace qtquickvcp
 
 #endif // QNAMESERVER_H

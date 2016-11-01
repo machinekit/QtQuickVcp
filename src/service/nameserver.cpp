@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
-#include "qnameserver.h"
+#include "nameserver.h"
 
-QNameServer::QNameServer(QObject *parent) :
+namespace qtquickvcp {
+
+NameServer::NameServer(QObject *parent) :
     QObject(parent),
     m_hostName(QString()),
     m_hostAddress(QHostAddress()),
@@ -31,7 +33,7 @@ QNameServer::QNameServer(QObject *parent) :
 {
 }
 
-void QNameServer::updateHostAddress()
+void NameServer::updateHostAddress()
 {
     QHostAddress newHostAddress(m_hostName);
 
@@ -53,7 +55,7 @@ void QNameServer::updateHostAddress()
 
             m_dnsLookup = new QDnsLookup(this);
             connect(m_dnsLookup, &QDnsLookup::finished,
-                    this, &QNameServer::handleServers);
+                    this, &NameServer::handleServers);
 
             m_dnsLookup->setType(QDnsLookup::A);
             m_dnsLookup->setName(m_hostName);
@@ -64,7 +66,7 @@ void QNameServer::updateHostAddress()
     emit hostAddressChanged(m_hostAddress);
 }
 
-void QNameServer::handleServers()
+void NameServer::handleServers()
 {
    if (m_dnsLookup->error() != QDnsLookup::NoError) // TODO: better error handling
    {
@@ -86,3 +88,4 @@ void QNameServer::handleServers()
    m_dnsLookup->deleteLater();
    m_dnsLookup = nullptr;
 }
+}; // namespace qtquickvcp

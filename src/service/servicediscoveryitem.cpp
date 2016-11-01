@@ -19,7 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qservicediscoveryitem.h"
+#include "servicediscoveryitem.h"
+
+namespace qtquickvcp {
 
 /*!
     \qmltype ServiceDiscoveryItem
@@ -83,7 +85,7 @@
     This property holds the TXT records of the service.
 */
 
-QServiceDiscoveryItem::QServiceDiscoveryItem(QObject *parent) :
+ServiceDiscoveryItem::ServiceDiscoveryItem(QObject *parent) :
     QObject(parent),
     m_name(""),
     m_type(""),
@@ -100,7 +102,7 @@ QServiceDiscoveryItem::QServiceDiscoveryItem(QObject *parent) :
 {
 }
 
-void QServiceDiscoveryItem::setTxtRecords(QStringList arg)
+void ServiceDiscoveryItem::setTxtRecords(QStringList arg)
 {
     if (m_txtRecords != arg) {
         m_txtRecords = arg;
@@ -134,3 +136,4 @@ void QServiceDiscoveryItem::setTxtRecords(QStringList arg)
         emit txtRecordsChanged(arg);
     }
 }
+}; // namespace qtquickvcp

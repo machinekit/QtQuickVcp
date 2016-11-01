@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2014 Alexander Rössler
+** Copyright (C) 2015 Alexander Rössler
 ** License: LGPL version 2.1
 **
 ** This file is part of QtQuickVcp.
@@ -19,29 +19,37 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#ifndef QSERVICELIST_H
-#define QSERVICELIST_H
+#include "servicediscoveryquery.h"
 
-#include <QObject>
-#include <QQmlListProperty>
-#include "qservice.h"
+namespace qtquickvcp {
 
-class QServiceList : public QObject
+ServiceDiscoveryQuery::ServiceDiscoveryQuery(QObject *parent) : QObject(parent),
+    m_queryType(QJDns::Ptr),
+    m_serviceType(""),
+    m_filter(new ServiceDiscoveryFilter(this))
 {
-    Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<QService> services READ services)
-    Q_CLASSINFO("DefaultProperty", "services")
 
-public:
-    explicit QServiceList(QObject *parent = 0);
+}
 
-    QQmlListProperty<QService> services();
-    int serviceCount() const;
-    QService *service(int index) const;
+QQmlListProperty<ServiceDiscoveryItem> ServiceDiscoveryQuery::items()
+{
+    return QQmlListProperty<ServiceDiscoveryItem>(this, m_items);
+}
 
-private:
-    QList<QService*> m_services;
+int ServiceDiscoveryQuery::itemCount() const
+{
+    return m_items.count();
+}
 
-};
+ServiceDiscoveryItem *ServiceDiscoveryQuery::item(int index) const
+{
+    return m_items.at(index);
+}
 
-#endif // QSERVICELIST_H
+void ServiceDiscoveryQuery::setItems(QList<ServiceDiscoveryItem *> newServiceDiscoveryItems)
+{
+    m_items = newServiceDiscoveryItems;
+
+    emit itemsChanged(items());
+}
+}; // namepsace qtquickvcp

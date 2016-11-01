@@ -19,7 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qservice.h"
+#include "service.h"
+
+namespace qtquickvcp {
 
 /*!
     \qmltype Service
@@ -133,7 +135,7 @@
     The default value is \c{false}.
 */
 
-QService::QService(QObject *parent) :
+Service::Service(QObject *parent) :
     QObject(parent),
     m_type(""),
     m_domain("local"),
@@ -144,9 +146,9 @@ QService::QService(QObject *parent) :
     m_uuid(""),
     m_version(0),
     m_ready(false),
-    m_filter(new QServiceDiscoveryFilter(this)),
+    m_filter(new ServiceDiscoveryFilter(this)),
     m_required(false),
-    m_serviceQuery(new QServiceDiscoveryQuery(this)),
+    m_serviceQuery(new ServiceDiscoveryQuery(this)),
     m_hostname(""),
     m_hostaddress("")
 {
@@ -155,42 +157,42 @@ QService::QService(QObject *parent) :
     m_serviceQuery->setQueryType(QJDns::Ptr);
     m_queries.append(m_serviceQuery);
 
-    connect(m_serviceQuery, &QServiceDiscoveryQuery::queryTypeChanged,
-            this, &QService::queriesChanged);
-    connect(m_serviceQuery, &QServiceDiscoveryQuery::filterChanged,
-            this, &QService::queriesChanged);
+    connect(m_serviceQuery, &ServiceDiscoveryQuery::queryTypeChanged,
+            this, &Service::queriesChanged);
+    connect(m_serviceQuery, &ServiceDiscoveryQuery::filterChanged,
+            this, &Service::queriesChanged);
 
-    connect(m_serviceQuery, &QServiceDiscoveryQuery::itemsChanged,
-            this, &QService::serviceQueryItemsUpdated);
+    connect(m_serviceQuery, &ServiceDiscoveryQuery::itemsChanged,
+            this, &Service::serviceQueryItemsUpdated);
 
-    connect(this, &QService::typeChanged,
-            this, &QService::updateServiceQuery);
-    connect(this, &QService::baseTypeChanged,
-            this, &QService::updateServiceQuery);
-    connect(this, &QService::protocolChanged,
-            this, &QService::updateServiceQuery);
-    connect(this, &QService::domainChanged,
-            this, &QService::updateServiceQuery);
+    connect(this, &Service::typeChanged,
+            this, &Service::updateServiceQuery);
+    connect(this, &Service::baseTypeChanged,
+            this, &Service::updateServiceQuery);
+    connect(this, &Service::protocolChanged,
+            this, &Service::updateServiceQuery);
+    connect(this, &Service::domainChanged,
+            this, &Service::updateServiceQuery);
 
     updateServiceQuery();
 }
 
-QQmlListProperty<QServiceDiscoveryItem> QService::items()
+QQmlListProperty<ServiceDiscoveryItem> Service::items()
 {
-    return QQmlListProperty<QServiceDiscoveryItem>(this, m_items);
+    return QQmlListProperty<ServiceDiscoveryItem>(this, m_items);
 }
 
-int QService::itemCount() const
+int Service::itemCount() const
 {
     return m_items.count();
 }
 
-QServiceDiscoveryItem *QService::item(int index) const
+ServiceDiscoveryItem *Service::item(int index) const
 {
     return m_items.at(index);
 }
 
-void QService::serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> newItems)
+void Service::serviceQueryItemsUpdated(QQmlListProperty<ServiceDiscoveryItem> newItems)
 {
     m_items.clear();
     for (int i = 0; i < newItems.count(&newItems); ++i)
@@ -228,22 +230,22 @@ void QService::serviceQueryItemsUpdated(QQmlListProperty<QServiceDiscoveryItem> 
     updateUri();
 }
 
-QQmlListProperty<QServiceDiscoveryQuery> QService::queries()
+QQmlListProperty<ServiceDiscoveryQuery> Service::queries()
 {
-    return QQmlListProperty<QServiceDiscoveryQuery>(this, m_queries);
+    return QQmlListProperty<ServiceDiscoveryQuery>(this, m_queries);
 }
 
-int QService::queriesCount() const
+int Service::queriesCount() const
 {
     return m_queries.count();
 }
 
-QServiceDiscoveryQuery *QService::query(int index) const
+ServiceDiscoveryQuery *Service::query(int index) const
 {
     return m_queries.at(index);
 }
 
-void QService::updateServiceQuery()
+void Service::updateServiceQuery()
 {
     m_serviceQuery->setServiceType(
                 composeSdString(m_type,
@@ -252,7 +254,7 @@ void QService::updateServiceQuery()
                                 m_protocol));
 }
 
-const QString QService::composeSdString(QString type, QString domain, QString protocol)
+const QString Service::composeSdString(QString type, QString domain, QString protocol)
 {
     QString sdString;
 
@@ -266,7 +268,7 @@ const QString QService::composeSdString(QString type, QString domain, QString pr
     return sdString;
 }
 
-const QString QService::composeSdString(QString subType, QString type, QString domain, QString protocol)
+const QString Service::composeSdString(QString subType, QString type, QString domain, QString protocol)
 {
     if (subType.isEmpty())
     {
@@ -279,7 +281,7 @@ const QString QService::composeSdString(QString subType, QString type, QString d
 }
 
 /** Updates the uri and creates additional requests if necessary */
-void QService::updateUri()
+void Service::updateUri()
 {
     if (!m_itemsReady)
     {
@@ -306,3 +308,4 @@ void QService::updateUri()
     emit uriChanged(m_uri);
     emit readyChanged(m_ready);
 }
+}; // namespace qtquickvcp
