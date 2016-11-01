@@ -1,4 +1,4 @@
-#include "qapplicationlauncher.h"
+#include "applicationlauncher.h"
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
@@ -9,7 +9,9 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-QApplicationLauncher::QApplicationLauncher(QObject *parent) :
+namespace qtquickvcp {
+
+ApplicationLauncher::ApplicationLauncher(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_subscribeUri(""),
     m_commandUri(""),
@@ -31,19 +33,19 @@ QApplicationLauncher::QApplicationLauncher(QObject *parent) :
     m_commandPingOutstanding(false)
 {
     connect(m_commandHeartbeatTimer, &QTimer::timeout,
-            this, &QApplicationLauncher::commandHeartbeatTimerTick);
+            this, &ApplicationLauncher::commandHeartbeatTimerTick);
     connect(m_subscribeHeartbeatTimer, &QTimer::timeout,
-            this, &QApplicationLauncher::subscribeHeartbeatTimerTick);
+            this, &ApplicationLauncher::subscribeHeartbeatTimerTick);
 
     initializeObject();
 }
 
-QApplicationLauncher::~QApplicationLauncher()
+ApplicationLauncher::~ApplicationLauncher()
 {
     Service::removeTempPath("launcher"); // clean up dir created by json
 }
 
-void QApplicationLauncher::start(int index)
+void ApplicationLauncher::start(int index)
 {
     if (!m_connected) {
         return;
@@ -57,7 +59,7 @@ void QApplicationLauncher::start(int index)
     sendCommandMessage(pb::MT_LAUNCHER_START);
 }
 
-void QApplicationLauncher::kill(int index)
+void ApplicationLauncher::kill(int index)
 {
     if (!m_connected) {
         return;
@@ -67,7 +69,7 @@ void QApplicationLauncher::kill(int index)
     sendCommandMessage(pb::MT_LAUNCHER_KILL);
 }
 
-void QApplicationLauncher::terminate(int index)
+void ApplicationLauncher::terminate(int index)
 {
     if (!m_connected) {
         return;
@@ -77,7 +79,7 @@ void QApplicationLauncher::terminate(int index)
     sendCommandMessage(pb::MT_LAUNCHER_TERMINATE);
 }
 
-void QApplicationLauncher::writeToStdin(int index, const QString &data)
+void ApplicationLauncher::writeToStdin(int index, const QString &data)
 {
     if (!m_connected) {
         return;
@@ -88,7 +90,7 @@ void QApplicationLauncher::writeToStdin(int index, const QString &data)
     sendCommandMessage(pb::MT_LAUNCHER_WRITE_STDIN);
 }
 
-void QApplicationLauncher::call(const QString &command)
+void ApplicationLauncher::call(const QString &command)
 {
     if (!m_connected) {
         return;
@@ -98,7 +100,7 @@ void QApplicationLauncher::call(const QString &command)
     sendCommandMessage(pb::MT_LAUNCHER_CALL);
 }
 
-void QApplicationLauncher::shutdown()
+void ApplicationLauncher::shutdown()
 {
     if (!m_connected) {
         return;
@@ -108,11 +110,11 @@ void QApplicationLauncher::shutdown()
 }
 
 /** Connects the 0MQ sockets */
-bool QApplicationLauncher::connectSockets()
+bool ApplicationLauncher::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
-            this, &QApplicationLauncher::pollError);
+            this, &ApplicationLauncher::pollError);
     m_context->start();
 
     m_commandSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -134,9 +136,9 @@ bool QApplicationLauncher::connectSockets()
     }
 
     connect(m_subscribeSocket, &ZMQSocket::messageReceived,
-            this, &QApplicationLauncher::subscribeMessageReceived);
+            this, &ApplicationLauncher::subscribeMessageReceived);
     connect(m_commandSocket, &ZMQSocket::messageReceived,
-            this, &QApplicationLauncher::commandMessageReceived);
+            this, &ApplicationLauncher::commandMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_commandIdentity, "sockets connected" << m_subscribeUri << m_commandUri)
@@ -146,7 +148,7 @@ bool QApplicationLauncher::connectSockets()
 }
 
 /** Disconnects the 0MQ sockets */
-void QApplicationLauncher::disconnectSockets()
+void ApplicationLauncher::disconnectSockets()
 {
     m_commandSocketState = Service::Down;
     m_subscribeSocketState = Service::Down;
@@ -173,19 +175,19 @@ void QApplicationLauncher::disconnectSockets()
     }
 }
 
-void QApplicationLauncher::subscribe(const QString &topic)
+void ApplicationLauncher::subscribe(const QString &topic)
 {
     m_subscribeSocketState = Service::Trying;
     m_subscribeSocket->subscribeTo(topic.toLocal8Bit());
 }
 
-void QApplicationLauncher::unsubscribe(const QString &topic)
+void ApplicationLauncher::unsubscribe(const QString &topic)
 {
     m_subscribeSocketState = Service::Down;
     m_subscribeSocket->unsubscribeFrom(topic.toLocal8Bit());
 }
 
-void QApplicationLauncher::start()
+void ApplicationLauncher::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, m_commandIdentity, "start")
@@ -201,7 +203,7 @@ void QApplicationLauncher::start()
     }
 }
 
-void QApplicationLauncher::stop()
+void ApplicationLauncher::stop()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_commandIdentity, "stop")
@@ -212,7 +214,7 @@ void QApplicationLauncher::stop()
     updateState(Service::Disconnected);  // clears also the error
 }
 
-void QApplicationLauncher::cleanup()
+void ApplicationLauncher::cleanup()
 {
     if (m_connected)
     {
@@ -222,7 +224,7 @@ void QApplicationLauncher::cleanup()
     disconnectSockets();
 }
 
-void QApplicationLauncher::startCommandHeartbeat()
+void ApplicationLauncher::startCommandHeartbeat()
 {
     m_commandPingOutstanding = false;
 
@@ -233,12 +235,12 @@ void QApplicationLauncher::startCommandHeartbeat()
     }
 }
 
-void QApplicationLauncher::stopCommandHeartbeat()
+void ApplicationLauncher::stopCommandHeartbeat()
 {
     m_commandHeartbeatTimer->stop();
 }
 
-void QApplicationLauncher::startSubscribeHeartbeat(int interval)
+void ApplicationLauncher::startSubscribeHeartbeat(int interval)
 {
     m_subscribeHeartbeatTimer->stop();
 
@@ -249,12 +251,12 @@ void QApplicationLauncher::startSubscribeHeartbeat(int interval)
     }
 }
 
-void QApplicationLauncher::stopSubscribeHeartbeat()
+void ApplicationLauncher::stopSubscribeHeartbeat()
 {
     m_subscribeHeartbeatTimer->stop();
 }
 
-void QApplicationLauncher::refreshSubscribeHeartbeat()
+void ApplicationLauncher::refreshSubscribeHeartbeat()
 {
     if (m_subscribeHeartbeatTimer->isActive())
     {
@@ -263,12 +265,12 @@ void QApplicationLauncher::refreshSubscribeHeartbeat()
     }
 }
 
-void QApplicationLauncher::updateState(Service::State state)
+void ApplicationLauncher::updateState(Service::State state)
 {
     updateState(state, Service::NoError, "");
 }
 
-void QApplicationLauncher::updateState(Service::State state, Service::ConnectionError error, QString errorString)
+void ApplicationLauncher::updateState(Service::State state, Service::ConnectionError error, QString errorString)
 {
     if (state != m_connectionState)
     {
@@ -295,7 +297,7 @@ void QApplicationLauncher::updateState(Service::State state, Service::Connection
     updateError(error, errorString);
 }
 
-void QApplicationLauncher::updateError(Service::ConnectionError error, QString errorString)
+void ApplicationLauncher::updateError(Service::ConnectionError error, QString errorString)
 {
     if (m_errorString != errorString)
     {
@@ -314,7 +316,7 @@ void QApplicationLauncher::updateError(Service::ConnectionError error, QString e
     }
 }
 
-void QApplicationLauncher::pollError(int errorNum, const QString &errorMsg)
+void ApplicationLauncher::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
@@ -322,7 +324,7 @@ void QApplicationLauncher::pollError(int errorNum, const QString &errorMsg)
 }
 
 /** Processes all message received on the update 0MQ socket */
-void QApplicationLauncher::subscribeMessageReceived(const QList<QByteArray> &messageList)
+void ApplicationLauncher::subscribeMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -400,7 +402,7 @@ void QApplicationLauncher::subscribeMessageReceived(const QList<QByteArray> &mes
 }
 
 /** Processes all message received on the command 0MQ socket */
-void QApplicationLauncher::commandMessageReceived(const QList<QByteArray> &messageList)
+void ApplicationLauncher::commandMessageReceived(const QList<QByteArray> &messageList)
 {
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
@@ -452,7 +454,7 @@ void QApplicationLauncher::commandMessageReceived(const QList<QByteArray> &messa
     }
 }
 
-void QApplicationLauncher::sendCommandMessage(pb::ContainerType type)
+void ApplicationLauncher::sendCommandMessage(pb::ContainerType type)
 {
     if (m_commandSocket == nullptr) {  // disallow sending messages when not connected
         return;
@@ -470,26 +472,26 @@ void QApplicationLauncher::sendCommandMessage(pb::ContainerType type)
     }
 }
 
-void QApplicationLauncher::updateSync()
+void ApplicationLauncher::updateSync()
 {
     m_synced = true;
     emit syncedChanged(m_synced);
 }
 
-void QApplicationLauncher::clearSync()
+void ApplicationLauncher::clearSync()
 {
     m_synced = false;
     emit syncedChanged(m_synced);
     initializeObject();
 }
 
-void QApplicationLauncher::initializeObject()
+void ApplicationLauncher::initializeObject()
 {
     m_launchers = QJsonValue(QJsonArray());
     emit launchersChanged(m_launchers);
 }
 
-void QApplicationLauncher::commandHeartbeatTimerTick()
+void ApplicationLauncher::commandHeartbeatTimerTick()
 {
     if (m_commandPingOutstanding)
     {
@@ -510,7 +512,7 @@ void QApplicationLauncher::commandHeartbeatTimerTick()
 #endif
 }
 
-void QApplicationLauncher::subscribeHeartbeatTimerTick()
+void ApplicationLauncher::subscribeHeartbeatTimerTick()
 {
     m_subscribeSocketState = Service::Down;
     updateState(Service::Timeout);
@@ -519,3 +521,4 @@ void QApplicationLauncher::subscribeHeartbeatTimerTick()
     DEBUG_TAG(1, m_commandIdentity, "launchercmd timeout")
 #endif
 }
+}; // namespace qtquickvcp

@@ -19,13 +19,15 @@
 ** Alexander Rössler <mail AT rossler DOT systems>
 **
 ****************************************************************************/
-#ifndef QAPPLICATIONPLUGINITEM_H
-#define QAPPLICATIONPLUGINITEM_H
+#ifndef APPLICATIONPLUGINITEM_H
+#define APPLICATIONPLUGINITEM_H
 
 #include <QObject>
 #include <QUrl>
 
-class QApplicationPluginItem : public QObject
+namespace qtquickvcp {
+
+class ApplicationPluginItem : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
@@ -34,7 +36,7 @@ class QApplicationPluginItem : public QObject
     Q_PROPERTY(QUrl mainFile READ mainFile WRITE setMainFile NOTIFY mainFileChanged)
 
 public:
-    explicit QApplicationPluginItem(QObject *parent = 0);
+    explicit ApplicationPluginItem(QObject *parent = 0);
 
     enum PluginType {
         Qt5QmlPlugin = 0,
@@ -106,6 +108,7 @@ signals:
     void descriptionChanged(QString description);
     void typeChanged(PluginType type);
     void mainFileChanged(QUrl mainFile);
-};
+}; // class ApplicationPluginItem
+}; // namespace qtquickvcp
 
-#endif // QAPPLICATIONPLUGINITEM_H
+#endif // APPLICATIONPLUGINITEM_H

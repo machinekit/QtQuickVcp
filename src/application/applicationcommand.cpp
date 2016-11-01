@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-#include "qapplicationcommand.h"
+#include "applicationcommand.h"
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
@@ -31,7 +31,9 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-QApplicationCommand::QApplicationCommand(QObject *parent) :
+namespace qtquickvcp {
+
+ApplicationCommand::ApplicationCommand(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_commandUri(""),
     m_heartbeatPeriod(3000),
@@ -49,10 +51,10 @@ QApplicationCommand::QApplicationCommand(QObject *parent) :
     m_uuid = QUuid::createUuid();
 
     connect(m_commandHeartbeatTimer, &QTimer::timeout,
-            this, &QApplicationCommand::commandHeartbeatTimerTick);
+            this, &ApplicationCommand::commandHeartbeatTimerTick);
 }
 
-void QApplicationCommand::abort(const QString &interpreter)
+void ApplicationCommand::abort(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
@@ -63,7 +65,7 @@ void QApplicationCommand::abort(const QString &interpreter)
     sendCommandMessage(pb::MT_EMC_TASK_ABORT);
 }
 
-void QApplicationCommand::runProgram(const QString &interpreter, int lineNumber = 0)
+void ApplicationCommand::runProgram(const QString &interpreter, int lineNumber = 0)
 {
     if (m_connectionState != Connected) {
         return;
@@ -76,7 +78,7 @@ void QApplicationCommand::runProgram(const QString &interpreter, int lineNumber 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_RUN);
 }
 
-void QApplicationCommand::pauseProgram(const QString &interpreter)
+void ApplicationCommand::pauseProgram(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
@@ -87,7 +89,7 @@ void QApplicationCommand::pauseProgram(const QString &interpreter)
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_PAUSE);
 }
 
-void QApplicationCommand::stepProgram(const QString &interpreter)
+void ApplicationCommand::stepProgram(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
@@ -98,7 +100,7 @@ void QApplicationCommand::stepProgram(const QString &interpreter)
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_STEP);
 }
 
-void QApplicationCommand::resumeProgram(const QString &interpreter)
+void ApplicationCommand::resumeProgram(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
@@ -109,7 +111,7 @@ void QApplicationCommand::resumeProgram(const QString &interpreter)
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_RESUME);
 }
 
-void QApplicationCommand::setSpindleBrake(QApplicationCommand::SpindleBrake brake)
+void ApplicationCommand::setSpindleBrake(ApplicationCommand::SpindleBrake brake)
 {
     if (m_connectionState != Connected) {
         return;
@@ -125,7 +127,7 @@ void QApplicationCommand::setSpindleBrake(QApplicationCommand::SpindleBrake brak
     }
 }
 
-void QApplicationCommand::setDebugLevel(int debugLevel)
+void ApplicationCommand::setDebugLevel(int debugLevel)
 {
     if (m_connectionState != Connected) {
         return;
@@ -137,7 +139,7 @@ void QApplicationCommand::setDebugLevel(int debugLevel)
     sendCommandMessage(pb::MT_EMC_SET_DEBUG);
 }
 
-void QApplicationCommand::setFeedOverride(double scale)
+void ApplicationCommand::setFeedOverride(double scale)
 {
     if (m_connectionState != Connected) {
         return;
@@ -149,7 +151,7 @@ void QApplicationCommand::setFeedOverride(double scale)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_SCALE);
 }
 
-void QApplicationCommand::setRapidOverride(double scale)
+void ApplicationCommand::setRapidOverride(double scale)
 {
     if (m_connectionState != Connected) {
         return;
@@ -161,7 +163,7 @@ void QApplicationCommand::setRapidOverride(double scale)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_RAPID_SCALE);
 }
 
-void QApplicationCommand::setFloodEnabled(bool enable)
+void ApplicationCommand::setFloodEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -177,7 +179,7 @@ void QApplicationCommand::setFloodEnabled(bool enable)
     }
 }
 
-void QApplicationCommand::homeAxis(int index)
+void ApplicationCommand::homeAxis(int index)
 {
     if (m_connectionState != Connected) {
         return;
@@ -189,17 +191,17 @@ void QApplicationCommand::homeAxis(int index)
     sendCommandMessage(pb::MT_EMC_AXIS_HOME);
 }
 
-void QApplicationCommand::jog(QApplicationCommand::JogType type, int axisIndex)
+void ApplicationCommand::jog(ApplicationCommand::JogType type, int axisIndex)
 {
     jog(type, axisIndex, 0.0, 0.0);
 }
 
-void QApplicationCommand::jog(QApplicationCommand::JogType type, int axisIndex, double velocity)
+void ApplicationCommand::jog(ApplicationCommand::JogType type, int axisIndex, double velocity)
 {
     jog(type, axisIndex, velocity, 0.0);
 }
 
-void QApplicationCommand::jog(QApplicationCommand::JogType type, int axisIndex, double velocity, double distance)
+void ApplicationCommand::jog(ApplicationCommand::JogType type, int axisIndex, double velocity, double distance)
 {
     if (m_connectionState != Connected) {
         return;
@@ -232,7 +234,7 @@ void QApplicationCommand::jog(QApplicationCommand::JogType type, int axisIndex, 
     sendCommandMessage(containerType);
 }
 
-void QApplicationCommand::loadToolTable()
+void ApplicationCommand::loadToolTable()
 {
     if (m_connectionState != Connected) {
         return;
@@ -241,7 +243,7 @@ void QApplicationCommand::loadToolTable()
     sendCommandMessage(pb::MT_EMC_TOOL_LOAD_TOOL_TABLE);
 }
 
-void QApplicationCommand::updateToolTable(const QJsonArray &toolTable)
+void ApplicationCommand::updateToolTable(const QJsonArray &toolTable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -278,7 +280,7 @@ void QApplicationCommand::updateToolTable(const QJsonArray &toolTable)
     sendCommandMessage(pb::MT_EMC_TOOL_UPDATE_TOOL_TABLE);
 }
 
-void QApplicationCommand::setMaximumVelocity(double velocity)
+void ApplicationCommand::setMaximumVelocity(double velocity)
 {
     if (m_connectionState != Connected) {
         return;
@@ -290,7 +292,7 @@ void QApplicationCommand::setMaximumVelocity(double velocity)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_MAX_VELOCITY);
 }
 
-void QApplicationCommand::executeMdi(const QString &interpreter, const QString &command)
+void ApplicationCommand::executeMdi(const QString &interpreter, const QString &command)
 {
     if (m_connectionState != Connected) {
         return;
@@ -303,7 +305,7 @@ void QApplicationCommand::executeMdi(const QString &interpreter, const QString &
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_EXECUTE);
 }
 
-void QApplicationCommand::setMistEnabled(bool enable)
+void ApplicationCommand::setMistEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -319,7 +321,7 @@ void QApplicationCommand::setMistEnabled(bool enable)
     }
 }
 
-void QApplicationCommand::setTaskMode(const QString &interpreter, TaskMode mode)
+void ApplicationCommand::setTaskMode(const QString &interpreter, TaskMode mode)
 {
     if (m_connectionState != Connected) {
         return;
@@ -332,7 +334,7 @@ void QApplicationCommand::setTaskMode(const QString &interpreter, TaskMode mode)
     sendCommandMessage(pb::MT_EMC_TASK_SET_MODE);
 }
 
-void QApplicationCommand::overrideLimits()
+void ApplicationCommand::overrideLimits()
 {
     if (m_connectionState != Connected) {
         return;
@@ -341,7 +343,7 @@ void QApplicationCommand::overrideLimits()
     sendCommandMessage(pb::MT_EMC_AXIS_OVERRIDE_LIMITS);
 }
 
-void QApplicationCommand::openProgram(const QString &interpreter, const QString &filePath)
+void ApplicationCommand::openProgram(const QString &interpreter, const QString &filePath)
 {
     if (m_connectionState != Connected) {
         return;
@@ -354,7 +356,7 @@ void QApplicationCommand::openProgram(const QString &interpreter, const QString 
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_OPEN);
 }
 
-void QApplicationCommand::resetProgram(const QString &interpreter)
+void ApplicationCommand::resetProgram(const QString &interpreter)
 {
     if (m_connectionState != Connected) {
         return;
@@ -365,7 +367,7 @@ void QApplicationCommand::resetProgram(const QString &interpreter)
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_INIT);
 }
 
-void QApplicationCommand::setAdaptiveFeedEnabled(bool enable)
+void ApplicationCommand::setAdaptiveFeedEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -377,7 +379,7 @@ void QApplicationCommand::setAdaptiveFeedEnabled(bool enable)
     sendCommandMessage(pb::MT_EMC_MOTION_ADAPTIVE);
 }
 
-void QApplicationCommand::setAnalogOutput(int index, double value)
+void ApplicationCommand::setAnalogOutput(int index, double value)
 {
     if (m_connectionState != Connected) {
         return;
@@ -390,7 +392,7 @@ void QApplicationCommand::setAnalogOutput(int index, double value)
     sendCommandMessage(pb::MT_EMC_MOTION_SET_AOUT);
 }
 
-void QApplicationCommand::setBlockDeleteEnabled(bool enable)
+void ApplicationCommand::setBlockDeleteEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -402,7 +404,7 @@ void QApplicationCommand::setBlockDeleteEnabled(bool enable)
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_SET_BLOCK_DELETE);
 }
 
-void QApplicationCommand::setDigitalOutput(int index, bool enable)
+void ApplicationCommand::setDigitalOutput(int index, bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -415,7 +417,7 @@ void QApplicationCommand::setDigitalOutput(int index, bool enable)
     sendCommandMessage(pb::MT_EMC_MOTION_SET_DOUT);
 }
 
-void QApplicationCommand::setFeedHoldEnabled(bool enable)
+void ApplicationCommand::setFeedHoldEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -427,7 +429,7 @@ void QApplicationCommand::setFeedHoldEnabled(bool enable)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_FH_ENABLE);
 }
 
-void QApplicationCommand::setFeedOverrideEnabled(bool enable)
+void ApplicationCommand::setFeedOverrideEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -439,7 +441,7 @@ void QApplicationCommand::setFeedOverrideEnabled(bool enable)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_FO_ENABLE);
 }
 
-void QApplicationCommand::setAxisMaxPositionLimit(int axisIndex, double value)
+void ApplicationCommand::setAxisMaxPositionLimit(int axisIndex, double value)
 {
     if (m_connectionState != Connected) {
         return;
@@ -452,7 +454,7 @@ void QApplicationCommand::setAxisMaxPositionLimit(int axisIndex, double value)
     sendCommandMessage(pb::MT_EMC_AXIS_SET_MAX_POSITION_LIMIT);
 }
 
-void QApplicationCommand::setAxisMinPositionLimit(int axisIndex, double value)
+void ApplicationCommand::setAxisMinPositionLimit(int axisIndex, double value)
 {
     if (m_connectionState != Connected) {
         return;
@@ -465,7 +467,7 @@ void QApplicationCommand::setAxisMinPositionLimit(int axisIndex, double value)
     sendCommandMessage(pb::MT_EMC_AXIS_SET_MIN_POSITION_LIMIT);
 }
 
-void QApplicationCommand::setOptionalStopEnabled(bool enable)
+void ApplicationCommand::setOptionalStopEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -477,7 +479,7 @@ void QApplicationCommand::setOptionalStopEnabled(bool enable)
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_SET_OPTIONAL_STOP);
 }
 
-void QApplicationCommand::setSpindleOverrideEnabled(bool enable)
+void ApplicationCommand::setSpindleOverrideEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -489,12 +491,12 @@ void QApplicationCommand::setSpindleOverrideEnabled(bool enable)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_SO_ENABLE);
 }
 
-void QApplicationCommand::setSpindle(QApplicationCommand::SpindleMode mode)
+void ApplicationCommand::setSpindle(ApplicationCommand::SpindleMode mode)
 {
     setSpindle(mode, 0.0);
 }
 
-void QApplicationCommand::setSpindle(QApplicationCommand::SpindleMode mode, double velocity = 0.0)
+void ApplicationCommand::setSpindle(ApplicationCommand::SpindleMode mode, double velocity = 0.0)
 {
     if (m_connectionState != Connected) {
         return;
@@ -532,7 +534,7 @@ void QApplicationCommand::setSpindle(QApplicationCommand::SpindleMode mode, doub
     sendCommandMessage(containerType);
 }
 
-void QApplicationCommand::setSpindleOverride(double scale)
+void ApplicationCommand::setSpindleOverride(double scale)
 {
     if (m_connectionState != Connected) {
         return;
@@ -544,7 +546,7 @@ void QApplicationCommand::setSpindleOverride(double scale)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_SPINDLE_SCALE);
 }
 
-void QApplicationCommand::setTaskState(const QString &interpreter, TaskState state)
+void ApplicationCommand::setTaskState(const QString &interpreter, TaskState state)
 {
     if (m_connectionState != Connected) {
         return;
@@ -557,7 +559,7 @@ void QApplicationCommand::setTaskState(const QString &interpreter, TaskState sta
     sendCommandMessage(pb::MT_EMC_TASK_SET_STATE);
 }
 
-void QApplicationCommand::setTeleopEnabled(bool enable)
+void ApplicationCommand::setTeleopEnabled(bool enable)
 {
     if (m_connectionState != Connected) {
         return;
@@ -569,7 +571,7 @@ void QApplicationCommand::setTeleopEnabled(bool enable)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_TELEOP_ENABLE);
 }
 
-void QApplicationCommand::setTeleopVector(double a, double b, double c, double u = 0.0, double v = 0.0, double w = 0.0)
+void ApplicationCommand::setTeleopVector(double a, double b, double c, double u = 0.0, double v = 0.0, double w = 0.0)
 {
     if (m_connectionState != Connected) {
         return;
@@ -587,7 +589,7 @@ void QApplicationCommand::setTeleopVector(double a, double b, double c, double u
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_TELEOP_VECTOR);
 }
 
-void QApplicationCommand::setToolOffset(int index, double zOffset, double xOffset, double diameter, double frontangle, double backangle, int orientation)
+void ApplicationCommand::setToolOffset(int index, double zOffset, double xOffset, double diameter, double frontangle, double backangle, int orientation)
 {
     if (m_connectionState != Connected) {
         return;
@@ -607,7 +609,7 @@ void QApplicationCommand::setToolOffset(int index, double zOffset, double xOffse
     sendCommandMessage(pb::MT_EMC_TOOL_SET_OFFSET);
 }
 
-void QApplicationCommand::setTrajectoryMode(TrajectoryMode mode)
+void ApplicationCommand::setTrajectoryMode(TrajectoryMode mode)
 {
     if (m_connectionState != Connected) {
         return;
@@ -619,7 +621,7 @@ void QApplicationCommand::setTrajectoryMode(TrajectoryMode mode)
     sendCommandMessage(pb::MT_EMC_TRAJ_SET_MODE);
 }
 
-void QApplicationCommand::unhomeAxis(int index)
+void ApplicationCommand::unhomeAxis(int index)
 {
     if (m_connectionState != Connected) {
         return;
@@ -631,7 +633,7 @@ void QApplicationCommand::unhomeAxis(int index)
     sendCommandMessage(pb::MT_EMC_AXIS_UNHOME);
 }
 
-void QApplicationCommand::shutdown()
+void ApplicationCommand::shutdown()
 {
     if (m_connectionState != Connected) {
         return;
@@ -640,7 +642,7 @@ void QApplicationCommand::shutdown()
     sendCommandMessage(pb::MT_SHUTDOWN);
 }
 
-void QApplicationCommand::start()
+void ApplicationCommand::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, "command", "start")
@@ -656,7 +658,7 @@ void QApplicationCommand::start()
     }
 }
 
-void QApplicationCommand::stop()
+void ApplicationCommand::stop()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "command", "stop")
@@ -668,13 +670,13 @@ void QApplicationCommand::stop()
     updateError(NoError, "");   // clear the error here
 }
 
-void QApplicationCommand::cleanup()
+void ApplicationCommand::cleanup()
 {
     stopCommandHeartbeat();
     disconnectSockets();
 }
 
-void QApplicationCommand::startCommandHeartbeat()
+void ApplicationCommand::startCommandHeartbeat()
 {
     m_commandPingErrorCount = 0;
 
@@ -685,17 +687,17 @@ void QApplicationCommand::startCommandHeartbeat()
     }
 }
 
-void QApplicationCommand::stopCommandHeartbeat()
+void ApplicationCommand::stopCommandHeartbeat()
 {
     m_commandHeartbeatTimer->stop();
 }
 
-void QApplicationCommand::updateState(QApplicationCommand::State state)
+void ApplicationCommand::updateState(ApplicationCommand::State state)
 {
     updateState(state, NoError, "");
 }
 
-void QApplicationCommand::updateState(QApplicationCommand::State state, QApplicationCommand::ConnectionError error, const QString &errorString)
+void ApplicationCommand::updateState(ApplicationCommand::State state, ApplicationCommand::ConnectionError error, const QString &errorString)
 {
     if (state != m_connectionState)
     {
@@ -721,7 +723,7 @@ void QApplicationCommand::updateState(QApplicationCommand::State state, QApplica
     updateError(error, errorString);
 }
 
-void QApplicationCommand::updateError(QApplicationCommand::ConnectionError error, const QString &errorString)
+void ApplicationCommand::updateError(ApplicationCommand::ConnectionError error, const QString &errorString)
 {
     if (m_errorString != errorString)
     {
@@ -740,7 +742,7 @@ void QApplicationCommand::updateError(QApplicationCommand::ConnectionError error
     }
 }
 
-void QApplicationCommand::sendCommandMessage(pb::ContainerType type)
+void ApplicationCommand::sendCommandMessage(pb::ContainerType type)
 {
     if (m_commandSocket == nullptr) {  // disallow sending messages when not connected
         return;
@@ -764,7 +766,7 @@ void QApplicationCommand::sendCommandMessage(pb::ContainerType type)
 }
 
 /** Processes all message received on the command 0MQ socket */
-void QApplicationCommand::commandMessageReceived(const QList<QByteArray> &messageList)
+void ApplicationCommand::commandMessageReceived(const QList<QByteArray> &messageList)
 {
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
@@ -815,14 +817,14 @@ void QApplicationCommand::commandMessageReceived(const QList<QByteArray> &messag
     }
 }
 
-void QApplicationCommand::pollError(int errorNum, const QString &errorMsg)
+void ApplicationCommand::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
     updateState(Error, SocketError, errorString);
 }
 
-void QApplicationCommand::commandHeartbeatTimerTick()
+void ApplicationCommand::commandHeartbeatTimerTick()
 {
     m_commandPingErrorCount++;  // increase error count by one, threshold 2 means two timer ticks
 
@@ -844,11 +846,11 @@ void QApplicationCommand::commandHeartbeatTimerTick()
 }
 
 /** Connects the 0MQ sockets */
-bool QApplicationCommand::connectSockets()
+bool ApplicationCommand::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
-            this, &QApplicationCommand::pollError);
+            this, &ApplicationCommand::pollError);
     m_context->start();
 
     m_commandSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -866,7 +868,7 @@ bool QApplicationCommand::connectSockets()
     }
 
     connect(m_commandSocket, &ZMQSocket::messageReceived,
-            this, &QApplicationCommand::commandMessageReceived);
+            this, &ApplicationCommand::commandMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "command", "sockets connected" << m_commandUri)
@@ -876,7 +878,7 @@ bool QApplicationCommand::connectSockets()
 }
 
 /** Disconnects the 0MQ sockets */
-void QApplicationCommand::disconnectSockets()
+void ApplicationCommand::disconnectSockets()
 {
     m_commandSocketState = Down;
 
@@ -894,3 +896,4 @@ void QApplicationCommand::disconnectSockets()
         m_context = nullptr;
     }
 }
+}; // namespace qtquickvcp

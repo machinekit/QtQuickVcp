@@ -19,9 +19,8 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
-#ifndef QLOCALSETTINGS_H
-#define QLOCALSETTINGS_H
+#ifndef LOCALSETTINGS_H
+#define LOCALSETTINGS_H
 
 #include <QObject>
 #include <QJsonObject>
@@ -32,7 +31,9 @@
 #include <QDir>
 #include <QStandardPaths>
 
-class QLocalSettings : public QObject
+namespace qtquickvcp {
+
+class LocalSettings : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QJsonObject values READ values WRITE setValues NOTIFY valuesChanged)
@@ -41,8 +42,8 @@ class QLocalSettings : public QObject
     Q_PROPERTY(QString filePath READ filePath WRITE setFilePath NOTIFY filePathChanged)
 
 public:
-    explicit QLocalSettings(QObject *parent = 0);
-    ~QLocalSettings();
+    explicit LocalSettings(QObject *parent = 0);
+    ~LocalSettings();
 
     QJsonObject values() const
     {
@@ -90,5 +91,7 @@ private:
     void loadSettings();
     void saveSettings();
     void updateFilePath();
-};
-#endif // QLOCALSETTINGS_H
+}; // class LocalSettings
+}; // namespace qtquickvcp
+
+#endif // LOCALSETTINGS_H

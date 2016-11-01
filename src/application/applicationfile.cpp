@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
-#include "qapplicationfile.h"
+#include "applicationfile.h"
 
-QApplicationFile::QApplicationFile(QObject *parent) :
+namespace qtquickvcp {
+
+ApplicationFile::ApplicationFile(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_uri(""),
     m_localFilePath(""),
@@ -42,11 +44,11 @@ QApplicationFile::QApplicationFile(QObject *parent) :
 {
     m_localPath = generateTempPath();
 
-    m_model = new QApplicationFileModel(this);
+    m_model = new ApplicationFileModel(this);
 
     m_networkManager = new QNetworkAccessManager(this);
     connect(m_networkManager, &QNetworkAccessManager::networkAccessibleChanged,
-            this, &QApplicationFile::networkAccessibleChanged);
+            this, &ApplicationFile::networkAccessibleChanged);
 
     if (m_networkManager->networkAccessible() == QNetworkAccessManager::Accessible)
     {
@@ -54,7 +56,7 @@ QApplicationFile::QApplicationFile(QObject *parent) :
     }
 }
 
-QApplicationFile::~QApplicationFile()
+ApplicationFile::~ApplicationFile()
 {
     cleanupTempPath();
     cleanupFtp();
@@ -63,7 +65,7 @@ QApplicationFile::~QApplicationFile()
     m_model->deleteLater();
 }
 
-void QApplicationFile::startUpload()
+void ApplicationFile::startUpload()
 {
     QUrl url;
     QFileInfo fileInfo(QUrl(m_localFilePath).toLocalFile());
@@ -109,7 +111,7 @@ void QApplicationFile::startUpload()
     }
 }
 
-void QApplicationFile::startDownload()
+void ApplicationFile::startDownload()
 {
     QUrl url;
     QDir dir;
@@ -174,7 +176,7 @@ void QApplicationFile::startDownload()
     }
 }
 
-void QApplicationFile::refreshFiles()
+void ApplicationFile::refreshFiles()
 {
     QUrl url(m_uri);
 
@@ -195,7 +197,7 @@ void QApplicationFile::refreshFiles()
     updateState(RefreshRunning);
 }
 
-void QApplicationFile::removeFile(const QString &name)
+void ApplicationFile::removeFile(const QString &name)
 {
     QUrl url(m_uri);
 
@@ -215,7 +217,7 @@ void QApplicationFile::removeFile(const QString &name)
     updateState(RemoveRunning);
 }
 
-void QApplicationFile::removeDirectory(const QString &name)
+void ApplicationFile::removeDirectory(const QString &name)
 {
     QUrl url(m_uri);
 
@@ -235,7 +237,7 @@ void QApplicationFile::removeDirectory(const QString &name)
     updateState(RemoveDirectoryRunning);
 }
 
-void QApplicationFile::createDirectory(const QString &name)
+void ApplicationFile::createDirectory(const QString &name)
 {
     QUrl url(m_uri);
 
@@ -255,7 +257,7 @@ void QApplicationFile::createDirectory(const QString &name)
     updateState(CreateDirectoryRunning);
 }
 
-void QApplicationFile::abort()
+void ApplicationFile::abort()
 {
     if (!m_ftp)
     {
@@ -266,13 +268,13 @@ void QApplicationFile::abort()
     m_ftp->close();
 }
 
-void QApplicationFile::clearError()
+void ApplicationFile::clearError()
 {
     updateState(NoTransfer);
     updateError(NoError, "");
 }
 
-void QApplicationFile::updateState(QApplicationFile::TransferState state)
+void ApplicationFile::updateState(ApplicationFile::TransferState state)
 {
     if (state != m_transferState)
     {
@@ -281,7 +283,7 @@ void QApplicationFile::updateState(QApplicationFile::TransferState state)
     }
 }
 
-void QApplicationFile::updateError(QApplicationFile::TransferError error, const QString &errorString)
+void ApplicationFile::updateError(ApplicationFile::TransferError error, const QString &errorString)
 {
     if (m_errorString != errorString)
     {
@@ -296,39 +298,39 @@ void QApplicationFile::updateError(QApplicationFile::TransferError error, const 
     }
 }
 
-QString QApplicationFile::generateTempPath()
+QString ApplicationFile::generateTempPath()
 {
     return QUrl::fromLocalFile(QString("%1/machinekit-%2").arg(QDir::tempPath())
             .arg(QCoreApplication::applicationPid())).toString();
 }
 
-void QApplicationFile::cleanupTempPath()
+void ApplicationFile::cleanupTempPath()
 {
     QDir dir(m_localPath);
 
     dir.removeRecursively();
 }
 
-QString QApplicationFile::applicationFilePath(const QString &fileName)
+QString ApplicationFile::applicationFilePath(const QString &fileName)
 {
     return QDir(QUrl(m_localPath).toLocalFile()).filePath(fileName);
 }
 
-void QApplicationFile::initializeFtp()
+void ApplicationFile::initializeFtp()
 {
     m_ftp = new QFtp(this);
     connect(m_ftp, &QFtp::commandFinished,
-    this, &QApplicationFile::ftpCommandFinished);
+    this, &ApplicationFile::ftpCommandFinished);
     connect(m_ftp, &QFtp::listInfo,
-    this, &QApplicationFile::addToList);
+    this, &ApplicationFile::addToList);
     connect(m_ftp, &QFtp::dataTransferProgress,
-    this, &QApplicationFile::transferProgress);
+    this, &ApplicationFile::transferProgress);
 
     m_networkReady = true;
     emit readyChanged(m_networkReady);
 }
 
-void QApplicationFile::cleanupFtp()
+void ApplicationFile::cleanupFtp()
 {
     if (m_ftp == nullptr)
     {
@@ -343,7 +345,7 @@ void QApplicationFile::cleanupFtp()
     emit readyChanged(m_networkReady);
 }
 
-void QApplicationFile::cleanupFile()
+void ApplicationFile::cleanupFile()
 {
     if (m_file == nullptr)
     {
@@ -355,13 +357,13 @@ void QApplicationFile::cleanupFile()
     m_file = nullptr;
 }
 
-void QApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)
+void ApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)
 {
     m_progress = static_cast<double>(bytesSent) / static_cast<double>(bytesTotal);
     emit progressChanged(m_progress);
 }
 
-void QApplicationFile::networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accesible)
+void ApplicationFile::networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accesible)
 {
     if (accesible == QNetworkAccessManager::Accessible)
     {
@@ -373,11 +375,11 @@ void QApplicationFile::networkAccessibleChanged(QNetworkAccessManager::NetworkAc
     }
 }
 
-void QApplicationFile::addToList(const QUrlInfo &urlInfo)
+void ApplicationFile::addToList(const QUrlInfo &urlInfo)
 {
-    QApplicationFileItem *item;
+    ApplicationFileItem *item;
 
-    item = new QApplicationFileItem();
+    item = new ApplicationFileItem();
     item->setName(urlInfo.name());
     item->setSize(urlInfo.size());
     item->setOwner(urlInfo.owner());
@@ -388,7 +390,7 @@ void QApplicationFile::addToList(const QUrlInfo &urlInfo)
     m_model->addItem(item);
 }
 
-void QApplicationFile::ftpCommandFinished(int, bool error)
+void ApplicationFile::ftpCommandFinished(int, bool error)
 {
     if (error)
     {
@@ -435,3 +437,4 @@ void QApplicationFile::ftpCommandFinished(int, bool error)
     updateState(NoTransfer);
     refreshFiles();
 }
+}; // namespace qtquickvcp

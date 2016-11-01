@@ -19,12 +19,14 @@
 ** Alexander Rössler <mail AT rossler DOT systems>
 **
 ****************************************************************************/
-#include "qapplicationpluginitem.h"
+#include "applicationpluginitem.h"
 
-QApplicationPluginItem::QApplicationPluginItem(QObject *parent) :
+namespace qtquickvcp {
+
+ApplicationPluginItem::ApplicationPluginItem(QObject *parent) :
     QObject(parent),
     m_type(Qt5QmlPlugin)
 {
 
 }
-
+}; // namespace qtquickvcp

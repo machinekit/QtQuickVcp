@@ -19,9 +19,8 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
-#ifndef QAPPLICATIONLAUNCHER_H
-#define QAPPLICATIONLAUNCHER_H
+#ifndef APPLICATIONLAUNCHER_H
+#define APPLICATIONLAUNCHER_H
 
 #include <abstractserviceimplementation.h>
 #include <service.h>
@@ -33,7 +32,9 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/config.pb.h>
 
-class QApplicationLauncher : public AbstractServiceImplementation
+namespace qtquickvcp {
+
+class ApplicationLauncher : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_PROPERTY(QString launchercmdUri READ launchercmdUri WRITE setLaunchercmdUri NOTIFY launchercmdUriChanged)
@@ -47,8 +48,8 @@ class QApplicationLauncher : public AbstractServiceImplementation
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
 
 public:
-    explicit QApplicationLauncher(QObject *parent = 0);
-    ~QApplicationLauncher();
+    explicit ApplicationLauncher(QObject *parent = 0);
+    ~ApplicationLauncher();
 
     QString launchercmdUri() const
     {
@@ -192,6 +193,7 @@ signals:
     void errorStringChanged(QString arg);
     void launchersChanged(QJsonValue arg);
     void syncedChanged(bool arg);
-};
+}; // class ApplicationLauncher
+}; // namespace qtquickvcp
 
-#endif // QAPPLICATIONLAUNCHER_H
+#endif // APPLICATIONLAUNCHER_H

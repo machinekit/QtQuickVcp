@@ -6,6 +6,8 @@
 #include <QTextStream>
 #include <QUrl>
 
+namespace qtquickvcp {
+
 class FileIO : public QObject
 {
     Q_OBJECT
@@ -74,6 +76,7 @@ private:
         m_working = working;
         emit workingChanged(working);
     }
-};
+}; // class FileIO
+}; // namespace qtquickvcp
 
-#endif // FILEIO_H
+#endif  // FILEIO_H

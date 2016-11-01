@@ -19,8 +19,8 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#ifndef QAPPCONFIGITEM_H
-#define QAPPCONFIGITEM_H
+#ifndef APPLICATIONCONFIGITEM_H
+#define APPLICATIONCONFIGITEM_H
 
 #include <QObject>
 #include <QUrl>
@@ -29,7 +29,9 @@
 #include <machinetalk/protobuf/types.pb.h>
 #include <machinetalk/protobuf/config.pb.h>
 
-class QApplicationConfigItem : public QObject
+namespace qtquickvcp {
+
+class ApplicationConfigItem : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
@@ -43,7 +45,7 @@ class QApplicationConfigItem : public QObject
     Q_ENUMS(ApplicationType)
 
 public:
-    explicit QApplicationConfigItem(QObject *parent = 0);
+    explicit ApplicationConfigItem(QObject *parent = 0);
 
     enum ApplicationType {
         Qt5QmlApplication = pb::QT5_QML,
@@ -180,6 +182,7 @@ signals:
 
 
     void loadingChanged(bool arg);
-};
+}; // class ApplicationConfigItem
+}; // namespace qtquickvcp
 
-#endif // QAPPCONFIGITEM_H
+#endif // APPLICATIONCONFIGITEM_H

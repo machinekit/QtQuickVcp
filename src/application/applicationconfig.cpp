@@ -19,7 +19,7 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qapplicationconfig.h"
+#include "applicationconfig.h"
 #include "service.h"
 
 #if defined(Q_OS_IOS)
@@ -29,6 +29,8 @@ namespace gpb = google::protobuf;
 #endif
 
 using namespace nzmqt;
+
+namespace qtquickvcp {
 
 /*!
     \qmltype ApplicationConfig
@@ -166,8 +168,7 @@ using namespace nzmqt;
 
     Unselects the configuration with the given name and updates \l{selectedConfig}.
 */
-
-QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
+ApplicationConfig::ApplicationConfig(QQuickItem *parent) :
     QQuickItem(parent),
      m_componentCompleted(false),
      m_configUri(""),
@@ -176,21 +177,21 @@ QApplicationConfig::QApplicationConfig(QQuickItem *parent) :
      m_connectionState(Disconnected),
      m_error(NoError),
      m_errorString(""),
-     m_selectedConfig(new QApplicationConfigItem(this)),
-     m_filter(new QApplicationConfigFilter(this)),
+     m_selectedConfig(new ApplicationConfigItem(this)),
+     m_filter(new ApplicationConfigFilter(this)),
      m_context(nullptr),
      m_configSocket(nullptr)
 {
 }
 
-QApplicationConfig::~QApplicationConfig()
+ApplicationConfig::~ApplicationConfig()
 {
     disconnectSocket();
     cleanupFiles();
 }
 
 /** componentComplete is executed when the QML component is fully loaded */
-void QApplicationConfig::componentComplete()
+void ApplicationConfig::componentComplete()
 {
     m_componentCompleted = true;
 
@@ -201,57 +202,57 @@ void QApplicationConfig::componentComplete()
     QQuickItem::componentComplete();
 }
 
-QString QApplicationConfig::configUri() const
+QString ApplicationConfig::configUri() const
 {
     return m_configUri;
 }
 
-bool QApplicationConfig::isReady() const
+bool ApplicationConfig::isReady() const
 {
     return m_ready;
 }
 
-bool QApplicationConfig::isConnected() const
+bool ApplicationConfig::isConnected() const
 {
     return m_connected;
 }
 
-QApplicationConfigItem *QApplicationConfig::selectedConfig() const
+ApplicationConfigItem *ApplicationConfig::selectedConfig() const
 {
     return m_selectedConfig;
 }
 
-QApplicationConfigFilter *QApplicationConfig::filter() const
+ApplicationConfigFilter *ApplicationConfig::filter() const
 {
     return m_filter;
 }
 
-QApplicationConfig::State QApplicationConfig::connectionState() const
+ApplicationConfig::State ApplicationConfig::connectionState() const
 {
     return m_connectionState;
 }
 
-QApplicationConfig::ConnectionError QApplicationConfig::error() const
+ApplicationConfig::ConnectionError ApplicationConfig::error() const
 {
     return m_error;
 }
 
-QString QApplicationConfig::errorString() const
+QString ApplicationConfig::errorString() const
 {
     return m_errorString;
 }
 
-QQmlListProperty<QApplicationConfigItem> QApplicationConfig::configs()
+QQmlListProperty<ApplicationConfigItem> ApplicationConfig::configs()
 {
-    return QQmlListProperty<QApplicationConfigItem>(this, m_configs);
+    return QQmlListProperty<ApplicationConfigItem>(this, m_configs);
 }
 
-int QApplicationConfig::appConfigCount() const
+int ApplicationConfig::appConfigCount() const
 {
     return m_configs.count();
 }
 
-QApplicationConfigItem *QApplicationConfig::appConfig(int index) const
+ApplicationConfigItem *ApplicationConfig::appConfig(int index) const
 {
     return m_configs.at(index);
 }
@@ -259,7 +260,7 @@ QApplicationConfigItem *QApplicationConfig::appConfig(int index) const
 /** If the ready property has a rising edge we try to connect
  *  if it is has a falling edge we disconnect and cleanup
  */
-void QApplicationConfig::setReady(bool arg)
+void ApplicationConfig::setReady(bool arg)
 {
     if (m_ready != arg) {
         m_ready = arg;
@@ -281,7 +282,7 @@ void QApplicationConfig::setReady(bool arg)
     }
 }
 
-void QApplicationConfig::setSelectedConfig(QApplicationConfigItem *arg)
+void ApplicationConfig::setSelectedConfig(ApplicationConfigItem *arg)
 {
     if (m_selectedConfig != arg) {
         m_selectedConfig = arg;
@@ -289,7 +290,7 @@ void QApplicationConfig::setSelectedConfig(QApplicationConfigItem *arg)
     }
 }
 
-void QApplicationConfig::setFilter(QApplicationConfigFilter *arg)
+void ApplicationConfig::setFilter(ApplicationConfigFilter *arg)
 {
     if (m_filter == arg)
         return;
@@ -298,7 +299,7 @@ void QApplicationConfig::setFilter(QApplicationConfigFilter *arg)
     emit filterChanged(arg);
 }
 
-void QApplicationConfig::start()
+void ApplicationConfig::start()
 {
 #ifdef QT_DEBUG
     qDebug() << "app config uri:" << m_configUri;
@@ -306,7 +307,7 @@ void QApplicationConfig::start()
 #endif
 
     m_configs.clear();
-    emit configsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_configs));
+    emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
 
     if (connectSocket())
     {
@@ -314,7 +315,7 @@ void QApplicationConfig::start()
     }
 }
 
-void QApplicationConfig::stop()
+void ApplicationConfig::stop()
 {
     // cleanup here
     disconnectSocket();
@@ -323,7 +324,7 @@ void QApplicationConfig::stop()
     updateError(NoError, "");   // clear the error here
 }
 
-void QApplicationConfig::updateState(QApplicationConfig::State state)
+void ApplicationConfig::updateState(ApplicationConfig::State state)
 {
     if (state != m_connectionState)
     {
@@ -345,7 +346,7 @@ void QApplicationConfig::updateState(QApplicationConfig::State state)
     }
 }
 
-void QApplicationConfig::updateError(QApplicationConfig::ConnectionError error, QString errorString)
+void ApplicationConfig::updateError(ApplicationConfig::ConnectionError error, QString errorString)
 {
     if (m_errorString != errorString)
     {
@@ -360,7 +361,7 @@ void QApplicationConfig::updateError(QApplicationConfig::ConnectionError error, 
     }
 }
 
-void QApplicationConfig::pollError(int errorNum, const QString &errorMsg)
+void ApplicationConfig::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
@@ -368,11 +369,11 @@ void QApplicationConfig::pollError(int errorNum, const QString &errorMsg)
     updateState(Error);
 }
 
-bool QApplicationConfig::connectSocket()
+bool ApplicationConfig::connectSocket()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
-            this, &QApplicationConfig::pollError);
+            this, &ApplicationConfig::pollError);
     m_context->start();
 
     m_configSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -391,12 +392,12 @@ bool QApplicationConfig::connectSocket()
     }
 
     connect(m_configSocket, &ZMQSocket::messageReceived,
-            this, &QApplicationConfig::configMessageReceived);
+            this, &ApplicationConfig::configMessageReceived);
 
     return true;
 }
 
-void QApplicationConfig::disconnectSocket()
+void ApplicationConfig::disconnectSocket()
 {
     if (m_configSocket != nullptr)
     {
@@ -413,7 +414,7 @@ void QApplicationConfig::disconnectSocket()
     }
 }
 
-void QApplicationConfig::configMessageReceived(const QList<QByteArray> &messageList)
+void ApplicationConfig::configMessageReceived(const QList<QByteArray> &messageList)
 {
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
@@ -431,11 +432,11 @@ void QApplicationConfig::configMessageReceived(const QList<QByteArray> &messageL
 
             app = m_rx.app(i);
 
-            QApplicationConfigItem::ApplicationType type;
+            ApplicationConfigItem::ApplicationType type;
             QString name;
             QString description;
 
-            type = (QApplicationConfigItem::ApplicationType)app.type();
+            type = (ApplicationConfigItem::ApplicationType)app.type();
             name = QString::fromStdString(app.name());
             description = QString::fromStdString(app.description());
 
@@ -443,14 +444,14 @@ void QApplicationConfig::configMessageReceived(const QList<QByteArray> &messageL
                  && (m_filter->name().isEmpty() || (name == m_filter->name()))
                  && (m_filter->description().isEmpty() || description.contains(m_filter->description())))
             {
-                QApplicationConfigItem *appConfigItem;
+                ApplicationConfigItem *appConfigItem;
 
-                appConfigItem = new QApplicationConfigItem(this);
+                appConfigItem = new ApplicationConfigItem(this);
                 appConfigItem->setName(name);
                 appConfigItem->setDescription(description);
                 appConfigItem->setType(type);
                 m_configs.append(appConfigItem);
-                emit configsChanged(QQmlListProperty<QApplicationConfigItem>(this, m_configs));
+                emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
             }
         }
 
@@ -464,9 +465,9 @@ void QApplicationConfig::configMessageReceived(const QList<QByteArray> &messageL
 
             app = m_rx.app(i);
 
-            QApplicationConfigItem::ApplicationType type;
+            ApplicationConfigItem::ApplicationType type;
 
-            type = (QApplicationConfigItem::ApplicationType)app.type();
+            type = (ApplicationConfigItem::ApplicationType)app.type();
 
             if (m_filter->type() == type)     // detail comes when application was already filtered, so we only check the type to make sure it is compatible
             {
@@ -540,7 +541,7 @@ void QApplicationConfig::configMessageReceived(const QList<QByteArray> &messageL
 #endif
                 }
 
-                QApplicationDescription applicationDescription;
+                ApplicationDescription applicationDescription;
 
                 applicationDescription.setSourceDir(QUrl("file:///" + baseFilePath));
                 // TODO check validity
@@ -554,7 +555,7 @@ void QApplicationConfig::configMessageReceived(const QList<QByteArray> &messageL
     }
 }
 
-void QApplicationConfig::sendConfigMessage(const QByteArray &data)
+void ApplicationConfig::sendConfigMessage(const QByteArray &data)
 {
     if (m_configSocket == nullptr) {  // disallow sending messages when not connected
         return;
@@ -571,7 +572,7 @@ void QApplicationConfig::sendConfigMessage(const QByteArray &data)
     }
 }
 
-void QApplicationConfig::cleanupFiles()
+void ApplicationConfig::cleanupFiles()
 {
     if (!m_selectedConfig->name().isEmpty())
     {
@@ -581,7 +582,7 @@ void QApplicationConfig::cleanupFiles()
     }
 }
 
-void QApplicationConfig::request(pb::ContainerType type)
+void ApplicationConfig::request(pb::ContainerType type)
 {
     m_tx.set_type(type);
 
@@ -595,7 +596,7 @@ void QApplicationConfig::request(pb::ContainerType type)
     m_tx.Clear();
 }
 
-void QApplicationConfig::selectConfig(QString name)
+void ApplicationConfig::selectConfig(QString name)
 {
     m_selectedConfig->setLoaded(false);
     m_selectedConfig->setLoading(true);
@@ -607,7 +608,7 @@ void QApplicationConfig::selectConfig(QString name)
     request(pb::MT_RETRIEVE_APPLICATION);
 }
 
-void QApplicationConfig::unselectConfig()
+void ApplicationConfig::unselectConfig()
 {
     cleanupFiles();
 
@@ -619,10 +620,12 @@ void QApplicationConfig::unselectConfig()
     m_selectedConfig->setLoading(false);
 }
 
-void QApplicationConfig::setConfigUri(QString arg)
+void ApplicationConfig::setConfigUri(QString arg)
 {
     if (m_configUri != arg) {
         m_configUri = arg;
         emit configUriChanged(arg);
     }
 }
+
+}; // namespace qtquickvcp

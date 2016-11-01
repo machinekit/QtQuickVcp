@@ -19,9 +19,8 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
-#ifndef QEMCERROR_H
-#define QEMCERROR_H
+#ifndef APPLICATIONERROR_H
+#define APPLICATIONERROR_H
 
 #include <abstractserviceimplementation.h>
 #include <QStringList>
@@ -30,7 +29,9 @@
 #include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/message.pb.h>
 
-class QApplicationError : public AbstractServiceImplementation
+namespace qtquickvcp {
+
+class ApplicationError : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_PROPERTY(QString errorUri READ errorUri WRITE setErrorUri NOTIFY errorUriChanged)
@@ -43,7 +44,7 @@ class QApplicationError : public AbstractServiceImplementation
     Q_FLAGS(ErrorChannels)
 
 public:
-    explicit QApplicationError(QObject *parent = 0);
+    explicit ApplicationError(QObject *parent = 0);
 
     enum SocketState {
         Down = 1,
@@ -175,6 +176,7 @@ signals:
     void channelsChanged(ErrorChannels arg);
     void messageReceived(ErrorType type, const QString &text);
     void connectedChanged(bool arg);
-};
+}; // class ApplicationError
+}; // namespace qtquickvcp
 
-#endif // QEMCERROR_H
+#endif // APPLICATIONERROR_H

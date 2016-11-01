@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
-#include "qlocalsettings.h"
+#include "localsettings.h"
 
-QLocalSettings::QLocalSettings(QObject *parent) :
+namespace qtquickvcp {
+
+LocalSettings::LocalSettings(QObject *parent) :
     QObject(parent),
     m_application("machinekit"),
     m_name("settings")
@@ -30,11 +32,11 @@ QLocalSettings::QLocalSettings(QObject *parent) :
     updateFilePath();
 }
 
-QLocalSettings::~QLocalSettings()
+LocalSettings::~LocalSettings()
 {
 }
 
-void QLocalSettings::loadSettings()
+void LocalSettings::loadSettings()
 {
     QFile file(m_filePath);
 
@@ -51,7 +53,7 @@ void QLocalSettings::loadSettings()
     emit valuesChanged(m_values);
 }
 
-void QLocalSettings::saveSettings()
+void LocalSettings::saveSettings()
 {
     QDir dir;
     QFileInfo fileInfo(m_filePath);
@@ -70,7 +72,7 @@ void QLocalSettings::saveSettings()
     }
 }
 
-void QLocalSettings::updateFilePath()
+void LocalSettings::updateFilePath()
 {
     QString basePath;
 #ifndef PORTABLE
@@ -82,17 +84,17 @@ void QLocalSettings::updateFilePath()
     emit filePathChanged(m_filePath);
 }
 
-void QLocalSettings::save()
+void LocalSettings::save()
 {
     saveSettings();
 }
 
-void QLocalSettings::load()
+void LocalSettings::load()
 {
     loadSettings();
 }
 
-QJsonValue QLocalSettings::value(const QString &key)
+QJsonValue LocalSettings::value(const QString &key)
 {
     QStringList heritanceList;
     QJsonObject *parentObject;
@@ -130,7 +132,7 @@ QJsonValue QLocalSettings::value(const QString &key)
     return QJsonValue();
 }
 
-void QLocalSettings::setFilePath(QString arg)
+void LocalSettings::setFilePath(QString arg)
 {
     if (m_filePath == arg)
         return;
@@ -139,12 +141,12 @@ void QLocalSettings::setFilePath(QString arg)
     emit filePathChanged(arg);
 }
 
-void QLocalSettings::setValue(const QString &key, const QJsonValue &value)
+void LocalSettings::setValue(const QString &key, const QJsonValue &value)
 {
     setValue(key, value, true);
 }
 
-void QLocalSettings::setValue(const QString &key, const QJsonValue &value, bool overwrite = true)
+void LocalSettings::setValue(const QString &key, const QJsonValue &value, bool overwrite = true)
 {
     QStringList heritanceList;
     QJsonObject *parentObject;
@@ -193,7 +195,7 @@ void QLocalSettings::setValue(const QString &key, const QJsonValue &value, bool 
     emit valuesChanged(m_values);
 }
 
-void QLocalSettings::setValues(QJsonObject arg)
+void LocalSettings::setValues(QJsonObject arg)
 {
     if (m_values == arg)
         return;
@@ -202,7 +204,7 @@ void QLocalSettings::setValues(QJsonObject arg)
     emit valuesChanged(arg);
 }
 
-void QLocalSettings::setApplication(QString arg)
+void LocalSettings::setApplication(QString arg)
 {
     if (m_application == arg)
         return;
@@ -212,7 +214,7 @@ void QLocalSettings::setApplication(QString arg)
     updateFilePath();
 }
 
-void QLocalSettings::setName(QString arg)
+void LocalSettings::setName(QString arg)
 {
     if (m_name == arg)
         return;
@@ -221,3 +223,4 @@ void QLocalSettings::setName(QString arg)
     emit nameChanged(arg);
     updateFilePath();
 }
+}; // namespace qtquickvcp

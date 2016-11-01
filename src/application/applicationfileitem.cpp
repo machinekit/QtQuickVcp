@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
-#include "qapplicationfileitem.h"
+#include "applicationfileitem.h"
 
-QApplicationFileItem::QApplicationFileItem():
+namespace qtquickvcp {
+
+ApplicationFileItem::ApplicationFileItem():
     m_name(""),
     m_size(0),
     m_owner(""),
@@ -33,62 +35,63 @@ QApplicationFileItem::QApplicationFileItem():
 
 }
 
-QString QApplicationFileItem::name() const
+QString ApplicationFileItem::name() const
 {
     return m_name;
 }
 
-void QApplicationFileItem::setName(const QString &name)
+void ApplicationFileItem::setName(const QString &name)
 {
     m_name = name;
 }
 
-qint64 QApplicationFileItem::size() const
+qint64 ApplicationFileItem::size() const
 {
     return m_size;
 }
 
-void QApplicationFileItem::setSize(qint64 size)
+void ApplicationFileItem::setSize(qint64 size)
 {
     m_size = size;
 }
 
-QString QApplicationFileItem::owner() const
+QString ApplicationFileItem::owner() const
 {
     return m_owner;
 }
 
-void QApplicationFileItem::setOwner(const QString &owner)
+void ApplicationFileItem::setOwner(const QString &owner)
 {
     m_owner = owner;
 }
 
-QString QApplicationFileItem::group() const
+QString ApplicationFileItem::group() const
 {
     return m_group;
 }
 
-void QApplicationFileItem::setGroup(const QString &group)
+void ApplicationFileItem::setGroup(const QString &group)
 {
     m_group = group;
 }
 
-QDateTime QApplicationFileItem::lastModified() const
+QDateTime ApplicationFileItem::lastModified() const
 {
     return m_lastModified;
 }
 
-void QApplicationFileItem::setLastModified(const QDateTime &dateTime)
+void ApplicationFileItem::setLastModified(const QDateTime &dateTime)
 {
     m_lastModified = dateTime;
 }
 
-bool QApplicationFileItem::isDir() const
+bool ApplicationFileItem::isDir() const
 {
     return m_dir;
 }
 
-void QApplicationFileItem::setDir(bool dir)
+void ApplicationFileItem::setDir(bool dir)
 {
     m_dir = dir;
 }
+}; // namespace qtquickvcp

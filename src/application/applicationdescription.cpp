@@ -20,7 +20,9 @@
 **
 ****************************************************************************/
 
-#include "qapplicationdescription.h"
+#include "applicationdescription.h"
+
+namespace qtquickvcp {
 
 /*!
     \qmltype ApplicationDescription
@@ -64,7 +66,7 @@
     This property holds wheter the application configuration is valid or not.
 */
 
-QApplicationDescription::QApplicationDescription(QObject *parent) :
+ApplicationDescription::ApplicationDescription(QObject *parent) :
     QObject(parent),
     m_componentCompleted(false),
     m_sourceDir(""),
@@ -75,7 +77,7 @@ QApplicationDescription::QApplicationDescription(QObject *parent) :
 {
 }
 
-bool QApplicationDescription::refresh()
+bool ApplicationDescription::refresh()
 {
     const QString iniName = "description.ini";
     QString sourcePath;
@@ -159,7 +161,7 @@ bool QApplicationDescription::refresh()
     return true;
 }
 
-QString QApplicationDescription::getMainFile(QStringList fileList, QString baseFilePath, QString applicationName)
+QString ApplicationDescription::getMainFile(QStringList fileList, QString baseFilePath, QString applicationName)
 {
     QString mainFileName;
     QString preferredName;
@@ -197,3 +199,4 @@ QString QApplicationDescription::getMainFile(QStringList fileList, QString baseF
 
     return mainFileName;
 }
+}; // namespace qtquickvcp

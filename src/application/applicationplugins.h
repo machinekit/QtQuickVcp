@@ -19,28 +19,30 @@
 ** Alexander Rössler <mail AT rossler DOT systems>
 **
 ****************************************************************************/
-#ifndef QAPPLICATIONPLUGINS_H
-#define QAPPLICATIONPLUGINS_H
+#ifndef APPLICATIONPLUGINS_H
+#define APPLICATIONPLUGINS_H
 
 #include <QQuickItem>
 #include <QQmlListProperty>
 #include <QDir>
 #include <QDirIterator>
 #include <QSettings>
-#include "qapplicationpluginitem.h"
+#include "applicationpluginitem.h"
 
-class QApplicationPlugins : public QQuickItem
+namespace qtquickvcp {
+
+class ApplicationPlugins : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<QApplicationPluginItem> plugins READ plugins NOTIFY pluginsChanged)
+    Q_PROPERTY(QQmlListProperty<qtquickvcp::ApplicationPluginItem> plugins READ plugins NOTIFY pluginsChanged)
     Q_PROPERTY(QStringList searchPaths READ searchPaths WRITE setSearchPaths NOTIFY searchPathsChanged)
 
 public:
-    QApplicationPlugins(QQuickItem *parent = 0);
+    ApplicationPlugins(QQuickItem *parent = 0);
 
-    QQmlListProperty<QApplicationPluginItem> plugins();
+    QQmlListProperty<ApplicationPluginItem> plugins();
     int pluginCount() const;
-    QApplicationPluginItem *plugin(int index) const;
+    ApplicationPluginItem *plugin(int index) const;
 
     QStringList searchPaths() const
     {
@@ -61,14 +63,15 @@ public slots:
     }
 
 private:
-    QList<QApplicationPluginItem*> m_plugins;
+    QList<ApplicationPluginItem*> m_plugins;
     QStringList m_searchPaths;
 
     void readPluginFile(QString filePath);
 
 signals:
     void searchPathsChanged(QStringList searchPaths);
-    void pluginsChanged(QQmlListProperty<QApplicationPluginItem> arg);
-};
+    void pluginsChanged(QQmlListProperty<ApplicationPluginItem> arg);
+}; // class ApplicationPlugin
+}; // namespace qtquickvcp
 
-#endif // QAPPLICATIONPLUGINS_H
+#endif // APPLICATIONPLUGINS_H

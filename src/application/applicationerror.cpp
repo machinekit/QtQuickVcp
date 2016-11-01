@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-#include "qapplicationerror.h"
+#include "applicationerror.h"
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
@@ -31,7 +31,9 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-QApplicationError::QApplicationError(QObject *parent) :
+namespace qtquickvcp {
+
+ApplicationError::ApplicationError(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_errorUri(""),
     m_connected(false),
@@ -45,10 +47,10 @@ QApplicationError::QApplicationError(QObject *parent) :
     m_errorHeartbeatTimer(new QTimer(this))
 {
    connect(m_errorHeartbeatTimer, &QTimer::timeout,
-           this, &QApplicationError::errorHeartbeatTimerTick);
+           this, &ApplicationError::errorHeartbeatTimerTick);
 }
 
-void QApplicationError::start()
+void ApplicationError::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, "error", "start")
@@ -61,7 +63,7 @@ void QApplicationError::start()
     }
 }
 
-void QApplicationError::stop()
+void ApplicationError::stop()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "error", "stop")
@@ -71,7 +73,7 @@ void QApplicationError::stop()
     updateState(Disconnected);  // clears also the error
 }
 
-void QApplicationError::cleanup()
+void ApplicationError::cleanup()
 {
     if (m_connected)
     {
@@ -81,7 +83,7 @@ void QApplicationError::cleanup()
     m_subscriptions.clear();
 }
 
-void QApplicationError::startErrorHeartbeat(int interval)
+void ApplicationError::startErrorHeartbeat(int interval)
 {
     m_errorHeartbeatTimer->stop();
 
@@ -92,12 +94,12 @@ void QApplicationError::startErrorHeartbeat(int interval)
     }
 }
 
-void QApplicationError::stopErrorHeartbeat()
+void ApplicationError::stopErrorHeartbeat()
 {
     m_errorHeartbeatTimer->stop();
 }
 
-void QApplicationError::refreshErrorHeartbeat()
+void ApplicationError::refreshErrorHeartbeat()
 {
     if (m_errorHeartbeatTimer->isActive())
     {
@@ -106,12 +108,12 @@ void QApplicationError::refreshErrorHeartbeat()
     }
 }
 
-void QApplicationError::updateState(QApplicationError::State state)
+void ApplicationError::updateState(ApplicationError::State state)
 {
     updateState(state, NoError, "");
 }
 
-void QApplicationError::updateState(QApplicationError::State state, QApplicationError::ConnectionError error, const QString &errorString)
+void ApplicationError::updateState(ApplicationError::State state, ApplicationError::ConnectionError error, const QString &errorString)
 {
     if (state != m_connectionState)
     {
@@ -139,7 +141,7 @@ void QApplicationError::updateState(QApplicationError::State state, QApplication
     updateError(error, errorString);
 }
 
-void QApplicationError::updateError(QApplicationError::ConnectionError error, const QString &errorString)
+void ApplicationError::updateError(ApplicationError::ConnectionError error, const QString &errorString)
 {
     if (m_errorString != errorString)
     {
@@ -158,7 +160,7 @@ void QApplicationError::updateError(QApplicationError::ConnectionError error, co
     }
 }
 
-void QApplicationError::errorMessageReceived(const QList<QByteArray> &messageList)
+void ApplicationError::errorMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -223,14 +225,14 @@ void QApplicationError::errorMessageReceived(const QList<QByteArray> &messageLis
 #endif
 }
 
-void QApplicationError::pollError(int errorNum, const QString &errorMsg)
+void ApplicationError::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
     updateState(Error, SocketError, errorString);
 }
 
-void QApplicationError::errorHeartbeatTimerTick()
+void ApplicationError::errorHeartbeatTimerTick()
 {
     m_errorSocketState = Down;
     updateState(Timeout);
@@ -241,11 +243,11 @@ void QApplicationError::errorHeartbeatTimerTick()
 }
 
 /** Connects the 0MQ sockets */
-bool QApplicationError::connectSockets()
+bool ApplicationError::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
-            this, &QApplicationError::pollError);
+            this, &ApplicationError::pollError);
     m_context->start();
 
     m_errorSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
@@ -262,7 +264,7 @@ bool QApplicationError::connectSockets()
     }
 
     connect(m_errorSocket, &ZMQSocket::messageReceived,
-            this, &QApplicationError::errorMessageReceived);
+            this, &ApplicationError::errorMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "error", "socket connected" << m_errorUri)
@@ -272,7 +274,7 @@ bool QApplicationError::connectSockets()
 }
 
 /** Disconnects the 0MQ sockets */
-void QApplicationError::disconnectSockets()
+void ApplicationError::disconnectSockets()
 {
     m_errorSocketState = Down;
 
@@ -291,7 +293,7 @@ void QApplicationError::disconnectSockets()
     }
 }
 
-void QApplicationError::subscribe()
+void ApplicationError::subscribe()
 {
     m_errorSocketState = Trying;
 
@@ -309,7 +311,7 @@ void QApplicationError::subscribe()
     }
 }
 
-void QApplicationError::unsubscribe()
+void ApplicationError::unsubscribe()
 {
     m_errorSocketState = Down;
     foreach (QString subscription, m_subscriptions)
@@ -318,3 +320,4 @@ void QApplicationError::unsubscribe()
     }
     m_subscriptions.clear();
 }
+}; // namespace qtquickvcp

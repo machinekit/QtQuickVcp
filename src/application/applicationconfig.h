@@ -19,8 +19,8 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#ifndef QAPPCONFIG_H
-#define QAPPCONFIG_H
+#ifndef APPLICATIONCONFIG_H
+#define APPLICATIONCONFIG_H
 
 #include <QQuickItem>
 #include <QQmlListProperty>
@@ -29,13 +29,15 @@
 #include <QDir>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
-#include "qapplicationconfigitem.h"
-#include "qapplicationconfigfilter.h"
-#include "qapplicationdescription.h"
+#include "applicationconfigitem.h"
+#include "applicationconfigfilter.h"
+#include "applicationdescription.h"
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/types.pb.h>
 
-class QApplicationConfig : public QQuickItem
+namespace qtquickvcp {
+
+class ApplicationConfig : public QQuickItem
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -45,14 +47,14 @@ class QApplicationConfig : public QQuickItem
     Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_PROPERTY(QApplicationConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
-    Q_PROPERTY(QQmlListProperty<QApplicationConfigItem> configs READ configs NOTIFY configsChanged)
-    Q_PROPERTY(QApplicationConfigFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
+    Q_PROPERTY(ApplicationConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
+    Q_PROPERTY(QQmlListProperty<qtquickvcp::ApplicationConfigItem> configs READ configs NOTIFY configsChanged)
+    Q_PROPERTY(ApplicationConfigFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
     Q_ENUMS(State)
     Q_ENUMS(ConnectionError)
 public:
-    explicit QApplicationConfig(QQuickItem *parent = 0);
-    ~QApplicationConfig();
+    explicit ApplicationConfig(QQuickItem *parent = 0);
+    ~ApplicationConfig();
 
     enum State {
         Disconnected = 0,
@@ -70,14 +72,14 @@ public:
     QString configUri() const;
     bool isReady() const;
     bool isConnected() const;
-    QApplicationConfigItem *selectedConfig() const;
-    QApplicationConfigFilter *filter() const;
+    ApplicationConfigItem *selectedConfig() const;
+    ApplicationConfigFilter *filter() const;
     State connectionState() const;
     ConnectionError error() const;
     QString errorString() const;
-    QQmlListProperty<QApplicationConfigItem> configs();
+    QQmlListProperty<ApplicationConfigItem> configs();
     int appConfigCount() const;
-    QApplicationConfigItem *appConfig(int index) const;
+    ApplicationConfigItem *appConfig(int index) const;
 
 public slots:
 
@@ -85,8 +87,8 @@ public slots:
     void unselectConfig();
     void setConfigUri(QString arg);
     void setReady(bool arg);
-    void setSelectedConfig(QApplicationConfigItem * arg);
-    void setFilter(QApplicationConfigFilter * arg);
+    void setSelectedConfig(ApplicationConfigItem * arg);
+    void setFilter(ApplicationConfigFilter * arg);
 
 private:
     bool    m_componentCompleted;
@@ -97,9 +99,9 @@ private:
     ConnectionError m_error;
     QString m_errorString;
 
-    QApplicationConfigItem *m_selectedConfig;
-    QList<QApplicationConfigItem*> m_configs;
-    QApplicationConfigFilter *m_filter;
+    ApplicationConfigItem *m_selectedConfig;
+    QList<ApplicationConfigItem*> m_configs;
+    ApplicationConfigFilter *m_filter;
 
     nzmqt::PollingZMQContext *m_context;
     nzmqt::ZMQSocket *m_configSocket;
@@ -124,13 +126,15 @@ private slots:
 signals:
     void configUriChanged(QString arg);
     void readyChanged(bool arg);
-    void selectedConfigChanged(QApplicationConfigItem * arg);
-    void configsChanged(QQmlListProperty<QApplicationConfigItem> arg);
-    void filterChanged(QApplicationConfigFilter * arg);
+    void selectedConfigChanged(ApplicationConfigItem * arg);
+    void configsChanged(QQmlListProperty<ApplicationConfigItem> arg);
+    void filterChanged(ApplicationConfigFilter * arg);
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
     void errorStringChanged(QString arg);
     void connectedChanged(bool arg);
-};
 
-#endif // QAPPCONFIG_H
+}; // class ApplicationConfig
+}; // namespace qtquickvcp
+
+#endif // APPLICATIONCONFIG_H

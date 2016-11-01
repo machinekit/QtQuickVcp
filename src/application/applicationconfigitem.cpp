@@ -19,7 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qapplicationconfigitem.h"
+#include "applicationconfigitem.h"
+
+namespace qtquickvcp {
 
 /*!
     \qmltype ApplicationConfigItem
@@ -101,7 +103,7 @@
     \sa files
 */
 
-QApplicationConfigItem::QApplicationConfigItem(QObject *parent) :
+ApplicationConfigItem::ApplicationConfigItem(QObject *parent) :
     QObject(parent),
     m_name(""),
     m_description(""),
@@ -114,3 +116,4 @@ QApplicationConfigItem::QApplicationConfigItem(QObject *parent) :
 {
 
 }
+}; // namespace qtquickvcp

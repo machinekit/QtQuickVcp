@@ -19,16 +19,17 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
-#ifndef QAPPLICATIONDESCRIPTION_H
-#define QAPPLICATIONDESCRIPTION_H
+#ifndef APPLICATIONDESCRIPTION_H
+#define APPLICATIONDESCRIPTION_H
 
 #include <QObject>
 #include <QUrl>
 #include <QDir>
 #include <QSettings>
 
-class QApplicationDescription : public QObject
+namespace qtquickvcp {
+
+class ApplicationDescription : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QUrl sourceDir READ sourceDir WRITE setSourceDir NOTIFY sourceDirChanged)
@@ -38,7 +39,7 @@ class QApplicationDescription : public QObject
     Q_PROPERTY(bool valid READ isValid NOTIFY validChanged)
 
 public:
-    explicit QApplicationDescription(QObject *parent = 0);
+    explicit ApplicationDescription(QObject *parent = 0);
 
     QUrl sourceDir() const
     {
@@ -92,6 +93,8 @@ signals:
     void nameChanged(QString arg);
     void descriptionChanged(QString arg);
     void validChanged(bool arg);
-};
 
-#endif // QAPPLICATIONDESCRIPTION_H
+}; // class ApplicationDescription
+}; // namespace qtquickvcp
+
+#endif // APPLICATIONDESCRIPTION_H

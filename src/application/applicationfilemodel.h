@@ -1,6 +1,3 @@
-#ifndef QAPPLICATIONFILEMODEL_H
-#define QAPPLICATIONFILEMODEL_H
-
 /****************************************************************************
 **
 ** Copyright (C) 2015 Alexander Rössler
@@ -22,11 +19,15 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
+#ifndef APPLICATIONFILEMODEL_H
+#define APPLICATIONFILEMODEL_H
 
 #include <QAbstractListModel>
-#include "qapplicationfileitem.h"
+#include "applicationfileitem.h"
 
-class QApplicationFileModel : public QAbstractListModel
+namespace qtquickvcp {
+
+class ApplicationFileModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_ENUMS(ApplicationFileRoles)
@@ -41,8 +42,8 @@ public:
             DirRole
         };
 
-    explicit QApplicationFileModel(QObject *parent = 0);
-    ~QApplicationFileModel();
+    explicit ApplicationFileModel(QObject *parent = 0);
+    ~ApplicationFileModel();
 
     QVariant data(const QModelIndex &index, int role) const;
     QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
@@ -51,17 +52,18 @@ public:
     QHash<int, QByteArray> roleNames() const;
 
 public slots:
-    void addItem(QApplicationFileItem *item);
+    void addItem(ApplicationFileItem *item);
     QString getName(int row);
     void clear();
     void beginUpdate();
     void endUpdate();
 
 private:
-    QList<QApplicationFileItem*> m_items;
+    QList<ApplicationFileItem*> m_items;
 
     QVariant internalData(const QModelIndex &index, int role) const;
     QString formatByteSize(qint64 bytes) const;
-};
+}; // class ApplicationFileModel
+}; // namespace qtquickvcp
 
-#endif // QAPPLICATIONFILEMODEL_H
+#endif // APPLICATIONFILEMODEL_H

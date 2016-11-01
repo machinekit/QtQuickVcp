@@ -19,9 +19,8 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
-#ifndef QAPPLICATIONFILE_H
-#define QAPPLICATIONFILE_H
+#ifndef APPLICATIONFILE_H
+#define APPLICATIONFILE_H
 
 #include <abstractserviceimplementation.h>
 #include <QCoreApplication>
@@ -31,9 +30,11 @@
 #include <QFileInfo>
 #include <QDir>
 #include "qftp.h"
-#include "qapplicationfilemodel.h"
+#include "applicationfilemodel.h"
 
-class QApplicationFile : public AbstractServiceImplementation
+namespace qtquickvcp {
+
+class ApplicationFile : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
@@ -47,12 +48,12 @@ class QApplicationFile : public AbstractServiceImplementation
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(bool networkReady READ networkReady NOTIFY networkReadyChanged)
-    Q_PROPERTY(QApplicationFileModel *model READ model NOTIFY modelChanged)
+    Q_PROPERTY(ApplicationFileModel *model READ model NOTIFY modelChanged)
     Q_ENUMS(TransferState TransferError)
 
 public:
-    explicit QApplicationFile(QObject *parent = 0);
-    ~QApplicationFile();
+    explicit ApplicationFile(QObject *parent = 0);
+    ~ApplicationFile();
 
     enum TransferState {
         NoTransfer = 0,
@@ -121,7 +122,7 @@ public:
         return m_networkReady;
     }
 
-    QApplicationFileModel * model() const
+    ApplicationFileModel * model() const
     {
         return m_model;
     }
@@ -207,7 +208,7 @@ private:
     QString         m_errorString;
     double          m_progress;
     bool            m_networkReady;
-    QApplicationFileModel * m_model;
+    ApplicationFileModel * m_model;
 
     QNetworkAccessManager   *m_networkManager;
     QFile                   *m_file;
@@ -248,7 +249,8 @@ signals:
     void removeDirectoryFinished();
     void createDirectoryFinished();
     void networkReadyChanged(bool networkReady);
-    void modelChanged(QApplicationFileModel * model);
-};
+    void modelChanged(ApplicationFileModel * model);
+}; // class ApplicationFile
+}; // namespace qtquickvcp
 
-#endif // QAPPLICATIONFILE_H
+#endif // APPLICATIONFILE_H

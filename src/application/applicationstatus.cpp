@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-#include "qapplicationstatus.h"
+#include "applicationstatus.h"
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
@@ -31,7 +31,9 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-QApplicationStatus::QApplicationStatus(QObject *parent) :
+namespace qtquickvcp {
+
+ApplicationStatus::ApplicationStatus(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_statusUri(""),
     m_statusSocketState(Down),
@@ -47,12 +49,12 @@ QApplicationStatus::QApplicationStatus(QObject *parent) :
     m_statusHeartbeatTimer(new QTimer(this))
 {
     connect(m_statusHeartbeatTimer, &QTimer::timeout,
-            this, &QApplicationStatus::statusHeartbeatTimerTick);
+            this, &ApplicationStatus::statusHeartbeatTimerTick);
 
-    connect(this, &QApplicationStatus::taskChanged,
-            this, &QApplicationStatus::updateRunning);
-    connect(this, &QApplicationStatus::interpChanged,
-            this, &QApplicationStatus::updateRunning);
+    connect(this, &ApplicationStatus::taskChanged,
+            this, &ApplicationStatus::updateRunning);
+    connect(this, &ApplicationStatus::interpChanged,
+            this, &ApplicationStatus::updateRunning);
 
 
     initializeObject(MotionChannel);
@@ -62,7 +64,7 @@ QApplicationStatus::QApplicationStatus(QObject *parent) :
     initializeObject(InterpChannel);
 }
 
-void QApplicationStatus::start()
+void ApplicationStatus::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, "status", "start")
@@ -75,7 +77,7 @@ void QApplicationStatus::start()
     }
 }
 
-void QApplicationStatus::stop()
+void ApplicationStatus::stop()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "status", "stop")
@@ -85,7 +87,7 @@ void QApplicationStatus::stop()
     updateState(Disconnected);  // clears also the error
 }
 
-void QApplicationStatus::cleanup()
+void ApplicationStatus::cleanup()
 {
     if (m_connected)
     {
@@ -95,7 +97,7 @@ void QApplicationStatus::cleanup()
     m_subscriptions.clear();
 }
 
-void QApplicationStatus::startStatusHeartbeat(int interval)
+void ApplicationStatus::startStatusHeartbeat(int interval)
 {
     m_statusHeartbeatTimer->stop();
 
@@ -106,12 +108,12 @@ void QApplicationStatus::startStatusHeartbeat(int interval)
     }
 }
 
-void QApplicationStatus::stopStatusHeartbeat()
+void ApplicationStatus::stopStatusHeartbeat()
 {
     m_statusHeartbeatTimer->stop();
 }
 
-void QApplicationStatus::refreshStatusHeartbeat()
+void ApplicationStatus::refreshStatusHeartbeat()
 {
     if (m_statusHeartbeatTimer->isActive())
     {
@@ -120,12 +122,12 @@ void QApplicationStatus::refreshStatusHeartbeat()
     }
 }
 
-void QApplicationStatus::updateState(QApplicationStatus::State state)
+void ApplicationStatus::updateState(ApplicationStatus::State state)
 {
     updateState(state, NoError, "");
 }
 
-void QApplicationStatus::updateState(QApplicationStatus::State state, QApplicationStatus::ConnectionError error, const QString &errorString)
+void ApplicationStatus::updateState(ApplicationStatus::State state, ApplicationStatus::ConnectionError error, const QString &errorString)
 {
     if (state != m_connectionState)
     {
@@ -156,7 +158,7 @@ void QApplicationStatus::updateState(QApplicationStatus::State state, QApplicati
     updateError(error, errorString);
 }
 
-void QApplicationStatus::updateError(QApplicationStatus::ConnectionError error, const QString &errorString)
+void ApplicationStatus::updateError(ApplicationStatus::ConnectionError error, const QString &errorString)
 {
     if (m_errorString != errorString)
     {
@@ -176,7 +178,7 @@ void QApplicationStatus::updateError(QApplicationStatus::ConnectionError error, 
     }
 }
 
-void QApplicationStatus::updateSync(QApplicationStatus::StatusChannel channel)
+void ApplicationStatus::updateSync(ApplicationStatus::StatusChannel channel)
 {
     m_syncedChannels |= channel;
 
@@ -186,44 +188,44 @@ void QApplicationStatus::updateSync(QApplicationStatus::StatusChannel channel)
     }
 }
 
-void QApplicationStatus::clearSync()
+void ApplicationStatus::clearSync()
 {
     m_synced = false;
     m_syncedChannels = 0;
     emit syncedChanged(m_synced);
 }
 
-void QApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
+void ApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
 {
     Service::recurseMessage(motion, &m_motion);
     emit motionChanged(m_motion);
 }
 
-void QApplicationStatus::updateConfig(const pb::EmcStatusConfig &config)
+void ApplicationStatus::updateConfig(const pb::EmcStatusConfig &config)
 {
     Service::recurseMessage(config, &m_config);
     emit configChanged(m_config);
 }
 
-void QApplicationStatus::updateIo(const pb::EmcStatusIo &io)
+void ApplicationStatus::updateIo(const pb::EmcStatusIo &io)
 {
     Service::recurseMessage(io, &m_io);
     emit ioChanged(m_io);
 }
 
-void QApplicationStatus::updateTask(const pb::EmcStatusTask &task)
+void ApplicationStatus::updateTask(const pb::EmcStatusTask &task)
 {
     Service::recurseMessage(task, &m_task);
     emit taskChanged(m_task);
 }
 
-void QApplicationStatus::updateInterp(const pb::EmcStatusInterp &interp)
+void ApplicationStatus::updateInterp(const pb::EmcStatusInterp &interp)
 {
     Service::recurseMessage(interp, &m_interp);
     emit interpChanged(m_interp);
 }
 
-void QApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageList)
+void ApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -317,14 +319,14 @@ void QApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageL
 #endif
 }
 
-void QApplicationStatus::pollError(int errorNum, const QString &errorMsg)
+void ApplicationStatus::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
     updateState(Error, SocketError, errorString);
 }
 
-void QApplicationStatus::statusHeartbeatTimerTick()
+void ApplicationStatus::statusHeartbeatTimerTick()
 {
     m_statusSocketState = Down;
     updateState(Timeout);
@@ -335,11 +337,11 @@ void QApplicationStatus::statusHeartbeatTimerTick()
 }
 
 /** Connects the 0MQ sockets */
-bool QApplicationStatus::connectSockets()
+bool ApplicationStatus::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
-            this, &QApplicationStatus::pollError);
+            this, &ApplicationStatus::pollError);
     m_context->start();
 
     m_statusSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
@@ -356,7 +358,7 @@ bool QApplicationStatus::connectSockets()
     }
 
     connect(m_statusSocket, &ZMQSocket::messageReceived,
-            this, &QApplicationStatus::statusMessageReceived);
+            this, &ApplicationStatus::statusMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, "status", "socket connected" << m_statusUri)
@@ -366,7 +368,7 @@ bool QApplicationStatus::connectSockets()
 }
 
 /** Disconnects the 0MQ sockets */
-void QApplicationStatus::disconnectSockets()
+void ApplicationStatus::disconnectSockets()
 {
     m_statusSocketState = Down;
 
@@ -385,7 +387,7 @@ void QApplicationStatus::disconnectSockets()
     }
 }
 
-void QApplicationStatus::subscribe()
+void ApplicationStatus::subscribe()
 {
     m_statusSocketState = Trying;
 
@@ -411,7 +413,7 @@ void QApplicationStatus::subscribe()
     }
 }
 
-void QApplicationStatus::unsubscribe()
+void ApplicationStatus::unsubscribe()
 {
     m_statusSocketState = Down;
 
@@ -438,7 +440,7 @@ void QApplicationStatus::unsubscribe()
     m_subscriptions.clear();
 }
 
-void QApplicationStatus::updateRunning(const QJsonObject &object)
+void ApplicationStatus::updateRunning(const QJsonObject &object)
 {
     Q_UNUSED(object)
 
@@ -456,7 +458,7 @@ void QApplicationStatus::updateRunning(const QJsonObject &object)
     }
 }
 
-void QApplicationStatus::initializeObject(QApplicationStatus::StatusChannel channel)
+void ApplicationStatus::initializeObject(ApplicationStatus::StatusChannel channel)
 {
     switch (channel)
     {
@@ -487,3 +489,4 @@ void QApplicationStatus::initializeObject(QApplicationStatus::StatusChannel chan
         return;
     }
 }
+}; // namespace qtquickvcp

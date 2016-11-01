@@ -19,23 +19,25 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#ifndef QAPPCONFIGFILTER_H
-#define QAPPCONFIGFILTER_H
+#ifndef APPLICATIONCONFIGFILTER_H
+#define APPLICATIONCONFIGFILTER_H
 
 #include <QObject>
-#include "qapplicationconfigitem.h"
+#include "applicationconfigitem.h"
 
-class QApplicationConfigFilter : public QObject
+namespace qtquickvcp {
+
+class ApplicationConfigFilter : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QApplicationConfigItem::ApplicationType type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(ApplicationConfigItem::ApplicationType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
 
 public:
-    explicit QApplicationConfigFilter(QObject *parent = 0);
+    explicit ApplicationConfigFilter(QObject *parent = 0);
 
-    QApplicationConfigItem::ApplicationType type() const
+    ApplicationConfigItem::ApplicationType type() const
     {
         return m_type;
     }
@@ -52,7 +54,7 @@ public:
 
 public slots:
 
-    void setType(QApplicationConfigItem::ApplicationType arg)
+    void setType(ApplicationConfigItem::ApplicationType arg)
     {
         if (m_type != arg) {
             m_type = arg;
@@ -79,14 +81,16 @@ public slots:
     }
 
 private:
-    QApplicationConfigItem::ApplicationType m_type;
+    ApplicationConfigItem::ApplicationType m_type;
     QString m_name;
     QString m_description;
 
 signals:
-    void typeChanged(QApplicationConfigItem::ApplicationType arg);
+    void typeChanged(ApplicationConfigItem::ApplicationType arg);
     void nameChanged(QString arg);
     void descriptionChanged(QString arg);
-};
 
-#endif // QAPPCONFIGFILTER_H
+}; // class ApplicationConfigItem
+}; // namespace qtquickvcp
+
+#endif // APPLICATIONCONFIGFILTER_H

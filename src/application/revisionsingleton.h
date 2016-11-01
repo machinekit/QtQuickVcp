@@ -6,6 +6,8 @@
 #include <QJSEngine>
 #include "revision.h"
 
+namespace qtquickvcp {
+
 class RevisionSingleton : public QObject
 {
     Q_OBJECT
@@ -31,6 +33,7 @@ public:
 
 signals:
     void nameChanged(QString name);
-};
+}; // class RevisionSingleton
+}; // namespace qtquickvcp
 
 #endif // REVISIONSINGLETON_H

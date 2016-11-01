@@ -20,8 +20,8 @@
 **
 ****************************************************************************/
 
-#ifndef QEMCCOMMAND_H
-#define QEMCCOMMAND_H
+#ifndef APPLICATIONCOMMAND_H
+#define APPLICATIONCOMMAND_H
 
 #include <abstractserviceimplementation.h>
 #include <QTimer>
@@ -33,9 +33,11 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/status.pb.h>
 #include <machinetalk/protobuf/emcclass.pb.h>
-#include "qapplicationstatus.h"
+#include "applicationstatus.h"
 
-class QApplicationCommand : public AbstractServiceImplementation
+namespace qtquickvcp {
+
+class ApplicationCommand : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_PROPERTY(QString commandUri READ commandUri WRITE setCommandUri NOTIFY commandUriChanged)
@@ -47,7 +49,7 @@ class QApplicationCommand : public AbstractServiceImplementation
     Q_ENUMS(State ConnectionError SpindleBrake JogType TaskState TaskMode SpindleMode TrajectoryMode)
 
 public:
-    explicit QApplicationCommand(QObject *parent = 0);
+    explicit ApplicationCommand(QObject *parent = 0);
 
     enum SocketState {
         Down = 1,
@@ -246,6 +248,8 @@ signals:
     void errorStringChanged(QString arg);
     void heartbeatPeriodChanged(int arg);
     void connectedChanged(bool arg);
-};
 
-#endif // QEMCCOMMAND_H
+}; // class ApplicationCommand
+}; // namespace qtquickvcp
+
+#endif // APPLICATIONCOMMAND_H

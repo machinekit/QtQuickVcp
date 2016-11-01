@@ -19,9 +19,8 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
-#ifndef QEMCSTATUS_H
-#define QEMCSTATUS_H
+#ifndef APPLICATIONSTATUS_H
+#define APPLICATIONSTATUS_H
 
 #include <abstractserviceimplementation.h>
 #include <service.h>
@@ -34,7 +33,9 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/status.pb.h>
 
-class QApplicationStatus : public AbstractServiceImplementation
+namespace qtquickvcp {
+
+class ApplicationStatus : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_PROPERTY(QString statusUri READ statusUri WRITE setStatusUri NOTIFY statusUriChanged)
@@ -57,7 +58,7 @@ class QApplicationStatus : public AbstractServiceImplementation
     Q_FLAGS(StatusChannels)
 
 public:
-    explicit QApplicationStatus(QObject *parent = 0);
+    explicit ApplicationStatus(QObject *parent = 0);
 
     enum SocketState {
         Down = 1,
@@ -351,6 +352,7 @@ signals:
     void runningChanged(bool arg);
     void syncedChanged(bool arg);
     void connectedChanged(bool arg);
-};
+}; // class ApplicationStatus
+}; // namespace qtquickvcp
 
-#endif // QEMCSTATUS_H
+#endif // APPLICATIONSTATUS_H

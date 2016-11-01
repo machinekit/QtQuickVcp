@@ -19,39 +19,41 @@
 ** Alexander Rössler <mail AT rossler DOT systems>
 **
 ****************************************************************************/
-#include "qapplicationplugins.h"
+#include "applicationplugins.h"
 
-QApplicationPlugins::QApplicationPlugins(QQuickItem *parent) :
+namespace qtquickvcp {
+
+ApplicationPlugins::ApplicationPlugins(QQuickItem *parent) :
     QQuickItem(parent)
 {
 
 }
 
-QQmlListProperty<QApplicationPluginItem> QApplicationPlugins::plugins()
+QQmlListProperty<ApplicationPluginItem> ApplicationPlugins::plugins()
 {
-    return QQmlListProperty<QApplicationPluginItem>(this, m_plugins);
+    return QQmlListProperty<ApplicationPluginItem>(this, m_plugins);
 }
 
-int QApplicationPlugins::pluginCount() const
+int ApplicationPlugins::pluginCount() const
 {
     return m_plugins.count();
 }
 
-QApplicationPluginItem *QApplicationPlugins::plugin(int index) const
+ApplicationPluginItem *ApplicationPlugins::plugin(int index) const
 {
     return m_plugins.at(index);
 }
 
-void QApplicationPlugins::readPluginFile(QString filePath)
+void ApplicationPlugins::readPluginFile(QString filePath)
 {
     QSettings ini(filePath, QSettings::IniFormat);
     QFileInfo info(filePath);
-    QApplicationPluginItem *item = new QApplicationPluginItem(this);
+    ApplicationPluginItem *item = new ApplicationPluginItem(this);
     QString typeString;
     QString name;
     QString description;
     QUrl mainFile;
-    QApplicationPluginItem::PluginType type = QApplicationPluginItem::Qt5QmlPlugin;
+    ApplicationPluginItem::PluginType type = ApplicationPluginItem::Qt5QmlPlugin;
 
     ini.beginGroup("Default");
     name = ini.value("name", "Unnamed").toString();
@@ -60,11 +62,11 @@ void QApplicationPlugins::readPluginFile(QString filePath)
     ini.endGroup();
     if (typeString == "QT5_QML")
     {
-        type = QApplicationPluginItem::Qt5QmlPlugin;
+        type = ApplicationPluginItem::Qt5QmlPlugin;
     }
     else if (typeString == "PYTHON")
     {
-        type = QApplicationPluginItem::PythonPlugin;
+        type = ApplicationPluginItem::PythonPlugin;
     }
     mainFile = QUrl("file://" + info.path() + "/" + name + ".qml");
 
@@ -75,7 +77,7 @@ void QApplicationPlugins::readPluginFile(QString filePath)
     m_plugins.append(item);
 }
 
-void QApplicationPlugins::updatePlugins()
+void ApplicationPlugins::updatePlugins()
 {
     qDeleteAll(m_plugins);
     m_plugins.clear();
@@ -98,13 +100,14 @@ void QApplicationPlugins::updatePlugins()
         }
     }
 
-    emit pluginsChanged(QQmlListProperty<QApplicationPluginItem>(this, m_plugins));
+    emit pluginsChanged(QQmlListProperty<ApplicationPluginItem>(this, m_plugins));
 }
 
-void QApplicationPlugins::clearPlugins()
+void ApplicationPlugins::clearPlugins()
 {
     qDeleteAll(m_plugins);
     m_plugins.clear();
 
-    emit pluginsChanged(QQmlListProperty<QApplicationPluginItem>(this, m_plugins));
+    emit pluginsChanged(QQmlListProperty<ApplicationPluginItem>(this, m_plugins));
 }
+}; // namespace qtquickvcp

@@ -19,7 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qapplicationconfigfilter.h"
+#include "applicationconfigfilter.h"
+
+namespace qtquickvcp {
 
 /*!
     \qmltype ApplicationConfigFilter
@@ -60,10 +62,11 @@
     If this property is empty the configuration description will not be filtered.
 */
 
-QApplicationConfigFilter::QApplicationConfigFilter(QObject *parent) :
+ApplicationConfigFilter::ApplicationConfigFilter(QObject *parent) :
     QObject(parent),
-    m_type(QApplicationConfigItem::Qt5QmlApplication),
+    m_type(ApplicationConfigItem::Qt5QmlApplication),
     m_name(""),
     m_description("")
 {
 }
+}; // namespace qtquickvcp

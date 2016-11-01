@@ -19,17 +19,18 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
-#ifndef QAPPLICATIONFILEITEM_H
-#define QAPPLICATIONFILEITEM_H
+#ifndef APPLICATIONFILEITEM_H
+#define APPLICATIONFILEITEM_H
 
 #include <QVariant>
 #include <QDateTime>
 
-class QApplicationFileItem
+namespace qtquickvcp {
+
+class ApplicationFileItem
 {
 public:
-    explicit QApplicationFileItem();
+    explicit ApplicationFileItem();
 
     QString name() const;
     void setName(const QString &name);
@@ -56,6 +57,7 @@ private:
     QString m_group;
     QDateTime m_lastModified;
     bool m_dir;
-};
+}; // class ApplicationFileItem
+}; // namespace qtquickvcp
 
-#endif // QAPPLICATIONFILEITEM_H
+#endif // APPLICATIONFILEITEM_H

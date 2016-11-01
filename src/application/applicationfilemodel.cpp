@@ -20,32 +20,34 @@
 **
 ****************************************************************************/
 
-#include "qapplicationfilemodel.h"
+#include "applicationfilemodel.h"
 
-QApplicationFileModel::QApplicationFileModel(QObject *parent):
+namespace qtquickvcp {
+
+ApplicationFileModel::ApplicationFileModel(QObject *parent):
     QAbstractListModel(parent)
 {
 
 }
 
-QApplicationFileModel::~QApplicationFileModel()
+ApplicationFileModel::~ApplicationFileModel()
 {
     qDeleteAll(m_items);
 }
 
-QVariant QApplicationFileModel::data(const QModelIndex &index, int role) const
+QVariant ApplicationFileModel::data(const QModelIndex &index, int role) const
 {
     return internalData(index, role);
 }
 
-QModelIndex QApplicationFileModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex ApplicationFileModel::index(int row, int column, const QModelIndex &parent) const
 {
     Q_UNUSED(column)
     Q_UNUSED(parent)
     return createIndex(row, 0);
 }
 
-Qt::ItemFlags QApplicationFileModel::flags(const QModelIndex &index) const
+Qt::ItemFlags ApplicationFileModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -57,13 +59,13 @@ Qt::ItemFlags QApplicationFileModel::flags(const QModelIndex &index) const
     }
 }
 
-int QApplicationFileModel::rowCount(const QModelIndex &parent) const
+int ApplicationFileModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return m_items.count();
 }
 
-QHash<int, QByteArray> QApplicationFileModel::roleNames() const
+QHash<int, QByteArray> ApplicationFileModel::roleNames() const
 {
 
     QHash<int, QByteArray> roles;
@@ -76,19 +78,19 @@ QHash<int, QByteArray> QApplicationFileModel::roleNames() const
     return roles;
 }
 
-void QApplicationFileModel::addItem(QApplicationFileItem *item)
+void ApplicationFileModel::addItem(ApplicationFileItem *item)
 {
     beginUpdate();
     m_items.append(item);
     endUpdate();
 }
 
-QString QApplicationFileModel::getName(int row)
+QString ApplicationFileModel::getName(int row)
 {
     return data(createIndex(row, 0), NameRole).toString();
 }
 
-void QApplicationFileModel::clear()
+void ApplicationFileModel::clear()
 {
     if (m_items.count() == 0)
     {
@@ -101,24 +103,24 @@ void QApplicationFileModel::clear()
     endRemoveRows();
 }
 
-void QApplicationFileModel::beginUpdate()
+void ApplicationFileModel::beginUpdate()
 {
     beginResetModel();
 }
 
-void QApplicationFileModel::endUpdate()
+void ApplicationFileModel::endUpdate()
 {
     endResetModel();
 }
 
-QVariant QApplicationFileModel::internalData(const QModelIndex &index, int role) const
+QVariant ApplicationFileModel::internalData(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || (index.row() > (m_items.count() - 1)))
     {
         return QVariant();
     }
 
-    QApplicationFileItem *item = m_items.at(index.row());
+    ApplicationFileItem *item = m_items.at(index.row());
 
     switch (role)
     {
@@ -141,7 +143,7 @@ QVariant QApplicationFileModel::internalData(const QModelIndex &index, int role)
     return QVariant();
 }
 
-QString QApplicationFileModel::formatByteSize(qint64 bytes) const
+QString ApplicationFileModel::formatByteSize(qint64 bytes) const
 {
     const qint64 B = 1;
     const qint64 kB = B * 1024;
@@ -165,3 +167,4 @@ QString QApplicationFileModel::formatByteSize(qint64 bytes) const
         return QString::number((double)bytes, 'f', 0) + "B";
     }
 }
+}; // namespace qtquickvcp
