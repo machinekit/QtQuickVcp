@@ -11,18 +11,18 @@ include(../common/common.pri)
 # Input
 SOURCES += \
     plugin.cpp \
-    qhalpin.cpp \
-    qhalremotecomponent.cpp \
-    qhalgroup.cpp \
-    qhalsignal.cpp \
+    halgroup.cpp \
+    halpin.cpp \
+    halremotecomponent.cpp \
+    halsignal.cpp
 
 HEADERS += \
     plugin.h \
-    qhalpin.h \
-    qhalremotecomponent.h \
-    qhalgroup.h \
-    qhalsignal.h \
-    debughelper.h
+    debughelper.h \
+    halgroup.h \
+    halpin.h \
+    halremotecomponent.h \
+    halsignal.h
 
 QML_INFRA_FILES = \
     qmldir

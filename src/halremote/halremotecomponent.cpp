@@ -19,7 +19,7 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qhalremotecomponent.h"
+#include "halremotecomponent.h"
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
@@ -29,6 +29,8 @@ namespace gpb = google::protobuf;
 #endif
 
 using namespace nzmqt;
+
+namespace qtquickvcp {
 
 /*!
     \qmltype HalRemoteComponent
@@ -185,7 +187,7 @@ using namespace nzmqt;
 */
 
 /** Remote HAL Component implementation for use with C++ and QML */
-QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
+HalRemoteComponent::HalRemoteComponent(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_halrcmdUri(""),
     m_halrcompUri(""),
@@ -210,13 +212,13 @@ QHalRemoteComponent::QHalRemoteComponent(QObject *parent) :
     m_uuid = QUuid::createUuid();
 
     connect(m_halrcmdHeartbeatTimer, &QTimer::timeout,
-            this, &QHalRemoteComponent::halrcmdHeartbeatTimerTick);
+            this, &HalRemoteComponent::halrcmdHeartbeatTimerTick);
     connect(m_halrcompHeartbeatTimer, &QTimer::timeout,
-            this, &QHalRemoteComponent::halrcompHeartbeatTimerTick);
+            this, &HalRemoteComponent::halrcompHeartbeatTimerTick);
 }
 
 /** Scans all children of the container item for pins and adds them to a map */
-void QHalRemoteComponent::addPins()
+void HalRemoteComponent::addPins()
 {
     QObjectList halObjects;
 
@@ -228,15 +230,15 @@ void QHalRemoteComponent::addPins()
     halObjects = recurseObjects(m_containerItem->children());
     foreach (QObject *object, halObjects)
     {
-        QHalPin *pin = static_cast<QHalPin *>(object);
+        HalPin *pin = static_cast<HalPin *>(object);
         if (pin->name().isEmpty()  || (pin->enabled() == false))    // ignore pins with empty name and disabled pins
         {
             continue;
         }
         m_pinsByName[pin->name()] = pin;
         m_pins.append(pin);
-        connect(pin, &QHalPin::valueChanged,
-                this, &QHalRemoteComponent::pinChange);
+        connect(pin, &HalPin::valueChanged,
+                this, &HalRemoteComponent::pinChange);
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_name, "pin added: " << pin->name())
 #endif
@@ -246,9 +248,9 @@ void QHalRemoteComponent::addPins()
 }
 
 /** Removes all previously added pins */
-void QHalRemoteComponent::removePins()
+void HalRemoteComponent::removePins()
 {
-    foreach (QHalPin *pin, m_pinsByName)
+    foreach (HalPin *pin, m_pinsByName)
     {
         disconnect(pin, SIGNAL(valueChanged(QVariant)),
                 this, SLOT(pinChange(QVariant)));
@@ -266,9 +268,9 @@ void QHalRemoteComponent::removePins()
 }
 
 /** Sets synced of all pins to false */
-void QHalRemoteComponent::unsyncPins()
+void HalRemoteComponent::unsyncPins()
 {
-    QMapIterator<QString, QHalPin*> i(m_pinsByName);
+    QMapIterator<QString, HalPin*> i(m_pinsByName);
     while (i.hasNext()) {
         i.next();
         i.value()->setSynced(false);
@@ -276,11 +278,11 @@ void QHalRemoteComponent::unsyncPins()
 }
 
 /** Connects the 0MQ sockets */
-bool QHalRemoteComponent::connectSockets()
+bool HalRemoteComponent::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
-            this, &QHalRemoteComponent::pollError);
+            this, &HalRemoteComponent::pollError);
     m_context->start();
 
     m_halrcmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
@@ -303,9 +305,9 @@ bool QHalRemoteComponent::connectSockets()
     }
 
     connect(m_halrcompSocket, &ZMQSocket::messageReceived,
-            this, &QHalRemoteComponent::halrcompMessageReceived);
+            this, &HalRemoteComponent::halrcompMessageReceived);
     connect(m_halrcmdSocket, &ZMQSocket::messageReceived,
-            this, &QHalRemoteComponent::halrcmdMessageReceived);
+            this, &HalRemoteComponent::halrcmdMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_name, "sockets connected" << m_halrcompUri << m_halrcmdUri)
@@ -315,7 +317,7 @@ bool QHalRemoteComponent::connectSockets()
 }
 
 /** Disconnects the 0MQ sockets */
-void QHalRemoteComponent::disconnectSockets()
+void HalRemoteComponent::disconnectSockets()
 {
     m_halrcmdSocketState = Down;
     m_halrcompSocketState = Down;
@@ -343,32 +345,32 @@ void QHalRemoteComponent::disconnectSockets()
 }
 
 /** Generates a Bind messages and sends it over the suitable 0MQ socket */
-void QHalRemoteComponent::bindPins()
+void HalRemoteComponent::bindPins()
 {
     pb::Component *component;
 
     component = m_tx.add_comp();
     component->set_name(m_name.toStdString());
     component->set_no_create(!m_create);
-    foreach (QHalPin *pin, m_pinsByName)
+    foreach (HalPin *pin, m_pinsByName)
     {
         pb::Pin *halPin = component->add_pin();
         halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());  // pin name is always component.name
         halPin->set_type(static_cast<pb::ValueType>(pin->type()));
         halPin->set_dir(static_cast<pb::HalPinDirection>(pin->direction()));
-        if (pin->type() == QHalPin::Float)
+        if (pin->type() == HalPin::Float)
         {
             halPin->set_halfloat(pin->value().toDouble());
         }
-        else if (pin->type() == QHalPin::Bit)
+        else if (pin->type() == HalPin::Bit)
         {
             halPin->set_halbit(pin->value().toBool());
         }
-        else if (pin->type() == QHalPin::S32)
+        else if (pin->type() == HalPin::S32)
         {
             halPin->set_hals32(pin->value().toInt());
         }
-        else if (pin->type() == QHalPin::U32)
+        else if (pin->type() == HalPin::U32)
         {
             halPin->set_halu32(pin->value().toUInt());
         }
@@ -384,20 +386,20 @@ void QHalRemoteComponent::bindPins()
     sendHalrcmdMessage(pb::MT_HALRCOMP_BIND);
 }
 
-void QHalRemoteComponent::subscribe()
+void HalRemoteComponent::subscribe()
 {
     m_halrcompSocketState = Trying;
     m_halrcompSocket->subscribeTo(m_name.toLocal8Bit());
 }
 
-void QHalRemoteComponent::unsubscribe()
+void HalRemoteComponent::unsubscribe()
 {
     m_halrcompSocketState = Down;
     m_halrcompSocket->unsubscribeFrom(m_name.toLocal8Bit());
 }
 
 /** Updates a local pin with the value of a remote pin */
-void QHalRemoteComponent::pinUpdate(const pb::Pin &remotePin, QHalPin *localPin)
+void HalRemoteComponent::pinUpdate(const pb::Pin &remotePin, HalPin *localPin)
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(2, m_name,  "pin update" << localPin->name() << remotePin.halfloat() << remotePin.halbit() << remotePin.hals32() << remotePin.halu32())
@@ -422,27 +424,27 @@ void QHalRemoteComponent::pinUpdate(const pb::Pin &remotePin, QHalPin *localPin)
 }
 
 /** Adds a local pin based on remote pin representation **/
-QHalPin *QHalRemoteComponent::addLocalPin(const pb::Pin &remotePin)
+HalPin *HalRemoteComponent::addLocalPin(const pb::Pin &remotePin)
 {
     QString name = QString::fromStdString(remotePin.name());
     name = splitPinFromHalName(name);
-    QHalPin *localPin = new QHalPin(this);
+    HalPin *localPin = new HalPin(this);
     localPin->setName(name);
-    localPin->setType(static_cast<QHalPin::HalPinType>(remotePin.type()));
-    localPin->setDirection(static_cast<QHalPin::HalPinDirection>(remotePin.dir()));
+    localPin->setType(static_cast<HalPin::HalPinType>(remotePin.type()));
+    localPin->setDirection(static_cast<HalPin::HalPinDirection>(remotePin.dir()));
     m_pinsByName[name] = localPin;
     m_pins.append(localPin);
-    connect(localPin, &QHalPin::valueChanged,
-            this, &QHalRemoteComponent::pinChange);
+    connect(localPin, &HalPin::valueChanged,
+            this, &HalRemoteComponent::pinChange);
 
     return localPin;
 }
 
 /** Updates a remote pin witht the value of a local pin */
-void QHalRemoteComponent::pinChange(QVariant value)
+void HalRemoteComponent::pinChange(QVariant value)
 {
     Q_UNUSED(value)
-    QHalPin *pin;
+    HalPin *pin;
     pb::Pin *halPin;
 
     if (m_connectionState != Connected) // only accept pin changes if we are connected
@@ -450,9 +452,9 @@ void QHalRemoteComponent::pinChange(QVariant value)
         return;
     }
 
-    pin = static_cast<QHalPin *>(QObject::sender());
+    pin = static_cast<HalPin *>(QObject::sender());
 
-    if (pin->direction() == QHalPin::In)   // Only update Output or IO pins
+    if (pin->direction() == HalPin::In)   // Only update Output or IO pins
     {
         return;
     }
@@ -472,19 +474,19 @@ void QHalRemoteComponent::pinChange(QVariant value)
 
     halPin->set_handle(pin->handle());
     halPin->set_type(static_cast<pb::ValueType>(pin->type()));
-    if (pin->type() == QHalPin::Float)
+    if (pin->type() == HalPin::Float)
     {
         halPin->set_halfloat(pin->value().toDouble());
     }
-    else if (pin->type() == QHalPin::Bit)
+    else if (pin->type() == HalPin::Bit)
     {
         halPin->set_halbit(pin->value().toBool());
     }
-    else if (pin->type() == QHalPin::S32)
+    else if (pin->type() == HalPin::S32)
     {
         halPin->set_hals32(pin->value().toInt());
     }
-    else if (pin->type() == QHalPin::U32)
+    else if (pin->type() == HalPin::U32)
     {
         halPin->set_halu32(pin->value().toUInt());
     }
@@ -492,22 +494,22 @@ void QHalRemoteComponent::pinChange(QVariant value)
     sendHalrcmdMessage(pb::MT_HALRCOMP_SET);
 }
 
-QQmlListProperty<QHalPin> QHalRemoteComponent::pins()
+QQmlListProperty<HalPin> HalRemoteComponent::pins()
 {
-    return QQmlListProperty<QHalPin>(this, m_pins);
+    return QQmlListProperty<HalPin>(this, m_pins);
 }
 
-int QHalRemoteComponent::pinCount() const
+int HalRemoteComponent::pinCount() const
 {
     return m_pins.count();
 }
 
-QHalPin *QHalRemoteComponent::pin(int index) const
+HalPin *HalRemoteComponent::pin(int index) const
 {
     return m_pins.at(index);
 }
 
-void QHalRemoteComponent::start()
+void HalRemoteComponent::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, m_name, "start")
@@ -523,7 +525,7 @@ void QHalRemoteComponent::start()
     }
 }
 
-void QHalRemoteComponent::stop()
+void HalRemoteComponent::stop()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_name, "stop")
@@ -534,7 +536,7 @@ void QHalRemoteComponent::stop()
     updateState(Disconnected);  // clears also the error
 }
 
-void QHalRemoteComponent::cleanup()
+void HalRemoteComponent::cleanup()
 {
     if (m_connected)
     {
@@ -545,7 +547,7 @@ void QHalRemoteComponent::cleanup()
     removePins();
 }
 
-void QHalRemoteComponent::startHalrcmdHeartbeat()
+void HalRemoteComponent::startHalrcmdHeartbeat()
 {
     m_halrcmdPingOutstanding = false;
 
@@ -556,12 +558,12 @@ void QHalRemoteComponent::startHalrcmdHeartbeat()
     }
 }
 
-void QHalRemoteComponent::stopHalrcmdHeartbeat()
+void HalRemoteComponent::stopHalrcmdHeartbeat()
 {
     m_halrcmdHeartbeatTimer->stop();
 }
 
-void QHalRemoteComponent::startHalrcompHeartbeat(int interval)
+void HalRemoteComponent::startHalrcompHeartbeat(int interval)
 {
     m_halrcompHeartbeatTimer->stop();
 
@@ -572,12 +574,12 @@ void QHalRemoteComponent::startHalrcompHeartbeat(int interval)
     }
 }
 
-void QHalRemoteComponent::stopHalrcompHeartbeat()
+void HalRemoteComponent::stopHalrcompHeartbeat()
 {
     m_halrcompHeartbeatTimer->stop();
 }
 
-void QHalRemoteComponent::refreshHalrcompHeartbeat()
+void HalRemoteComponent::refreshHalrcompHeartbeat()
 {
     if (m_halrcompHeartbeatTimer->isActive())
     {
@@ -586,12 +588,12 @@ void QHalRemoteComponent::refreshHalrcompHeartbeat()
     }
 }
 
-void QHalRemoteComponent::updateState(QHalRemoteComponent::State state)
+void HalRemoteComponent::updateState(HalRemoteComponent::State state)
 {
     updateState(state, NoError, "");
 }
 
-void QHalRemoteComponent::updateState(State state, QHalRemoteComponent::ConnectionError error, QString errorString)
+void HalRemoteComponent::updateState(State state, HalRemoteComponent::ConnectionError error, QString errorString)
 {
     if (state != m_connectionState)
     {
@@ -623,7 +625,7 @@ void QHalRemoteComponent::updateState(State state, QHalRemoteComponent::Connecti
     updateError(error, errorString);
 }
 
-void QHalRemoteComponent::updateError(QHalRemoteComponent::ConnectionError error, QString errorString)
+void HalRemoteComponent::updateError(HalRemoteComponent::ConnectionError error, QString errorString)
 {
     if (m_errorString != errorString)
     {
@@ -642,7 +644,7 @@ void QHalRemoteComponent::updateError(QHalRemoteComponent::ConnectionError error
     }
 }
 
-void QHalRemoteComponent::pollError(int errorNum, const QString &errorMsg)
+void HalRemoteComponent::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
@@ -650,14 +652,14 @@ void QHalRemoteComponent::pollError(int errorNum, const QString &errorMsg)
 }
 
 /** Recurses through a list of objects */
-QObjectList QHalRemoteComponent::recurseObjects(const QObjectList &list)
+QObjectList HalRemoteComponent::recurseObjects(const QObjectList &list)
 {
     QObjectList halObjects;
 
     foreach (QObject *object, list)
     {
-        QHalPin *halPin;
-        halPin = qobject_cast<QHalPin *>(object);
+        HalPin *halPin;
+        halPin = qobject_cast<HalPin *>(object);
         if (halPin != nullptr)
         {
             halObjects.append(object);
@@ -673,7 +675,7 @@ QObjectList QHalRemoteComponent::recurseObjects(const QObjectList &list)
 }
 
 /** Processes all message received on the update 0MQ socket */
-void QHalRemoteComponent::halrcompMessageReceived(const QList<QByteArray> &messageList)
+void HalRemoteComponent::halrcompMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -691,7 +693,7 @@ void QHalRemoteComponent::halrcompMessageReceived(const QList<QByteArray> &messa
         for (int i = 0; i < m_rx.pin_size(); ++i)
         {
             pb::Pin remotePin = m_rx.pin(i);
-            QHalPin *localPin = m_pinsByHandle.value(remotePin.handle(), nullptr);
+            HalPin *localPin = m_pinsByHandle.value(remotePin.handle(), nullptr);
             if (localPin != nullptr) // in case we received a wrong pin handle
             {
                 pinUpdate(remotePin, localPin);
@@ -717,7 +719,7 @@ void QHalRemoteComponent::halrcompMessageReceived(const QList<QByteArray> &messa
                 QString name = QString::fromStdString(remotePin.name());
                 name = splitPinFromHalName(name);
 
-                QHalPin *localPin = m_pinsByName.value(name, nullptr);
+                HalPin *localPin = m_pinsByName.value(name, nullptr);
                 if (localPin == nullptr)
                 {
                     localPin = addLocalPin(remotePin);
@@ -790,7 +792,7 @@ void QHalRemoteComponent::halrcompMessageReceived(const QList<QByteArray> &messa
 }
 
 /** Processes all message received on the command 0MQ socket */
-void QHalRemoteComponent::halrcmdMessageReceived(const QList<QByteArray> &messageList)
+void HalRemoteComponent::halrcmdMessageReceived(const QList<QByteArray> &messageList)
 {
     m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
@@ -879,7 +881,7 @@ void QHalRemoteComponent::halrcmdMessageReceived(const QList<QByteArray> &messag
     }
 }
 
-void QHalRemoteComponent::sendHalrcmdMessage(pb::ContainerType type)
+void HalRemoteComponent::sendHalrcmdMessage(pb::ContainerType type)
 {
     if (m_halrcmdSocket == nullptr) {  // disallow sending messages when not connected
         return;
@@ -898,7 +900,7 @@ void QHalRemoteComponent::sendHalrcmdMessage(pb::ContainerType type)
 }
 
 /** splits HAL pin name from full HAL name **/
-QString QHalRemoteComponent::splitPinFromHalName(const QString &name)
+QString HalRemoteComponent::splitPinFromHalName(const QString &name)
 {
     QString newName;
     int dotIndex = name.indexOf(".");
@@ -913,7 +915,7 @@ QString QHalRemoteComponent::splitPinFromHalName(const QString &name)
     return newName;
 }
 
-void QHalRemoteComponent::halrcmdHeartbeatTimerTick()
+void HalRemoteComponent::halrcmdHeartbeatTimerTick()
 {
     if (m_halrcmdPingOutstanding)
     {
@@ -934,7 +936,7 @@ void QHalRemoteComponent::halrcmdHeartbeatTimerTick()
 #endif
 }
 
-void QHalRemoteComponent::halrcompHeartbeatTimerTick()
+void HalRemoteComponent::halrcompHeartbeatTimerTick()
 {
     m_halrcompSocketState = Down;
     updateState(Timeout);
@@ -943,4 +945,4 @@ void QHalRemoteComponent::halrcompHeartbeatTimerTick()
     DEBUG_TAG(1, m_name, "halcmd timeout")
 #endif
 }
-
+}; // namespace qtquickvcp

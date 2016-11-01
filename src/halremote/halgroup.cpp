@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-#include "qhalgroup.h"
+#include "halgroup.h"
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
@@ -31,13 +31,15 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
+namespace qtquickvcp {
+
 /*! \qmlproperty bool HalGroup::connected
 
     This property hold wheter the HAL group is connected or not. This is the
     same as \l{connectionState} == \c{HalGroup.Connected}.
  */
 
-QHalGroup::QHalGroup(QObject *parent) :
+HalGroup::HalGroup(QObject *parent) :
     AbstractServiceImplementation(parent),
     m_halgroupUri(""),
     m_name("default"),
@@ -52,18 +54,18 @@ QHalGroup::QHalGroup(QObject *parent) :
     m_halgroupHeartbeatTimer(new QTimer(this))
 {
     connect(m_halgroupHeartbeatTimer, &QTimer::timeout,
-            this, &QHalGroup::halgroupHeartbeatTimerTick);
+            this, &HalGroup::halgroupHeartbeatTimerTick);
 }
 
 /** Recurses through a list of objects */
-QList<QHalSignal *> QHalGroup::recurseObjects(const QObjectList &list) const
+QList<HalSignal *> HalGroup::recurseObjects(const QObjectList &list) const
 {
-    QList<QHalSignal*> halSignals;
+    QList<HalSignal*> halSignals;
 
     foreach (QObject *object, list)
     {
-        QHalSignal *halSignal;
-        halSignal = qobject_cast<QHalSignal*>(object);
+        HalSignal *halSignal;
+        halSignal = qobject_cast<HalSignal*>(object);
         if (halSignal != nullptr)
         {
             halSignals.append(halSignal);
@@ -78,7 +80,7 @@ QList<QHalSignal *> QHalGroup::recurseObjects(const QObjectList &list) const
     return halSignals;
 }
 
-void QHalGroup::start()
+void HalGroup::start()
 {
 #ifdef QT_DEBUG
    DEBUG_TAG(1, m_name, "start")
@@ -93,7 +95,7 @@ void QHalGroup::start()
     }
 }
 
-void QHalGroup::stop()
+void HalGroup::stop()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_name, "stop")
@@ -104,7 +106,7 @@ void QHalGroup::stop()
     updateState(Disconnected);  // clears also the error
 }
 
-void QHalGroup::cleanup()
+void HalGroup::cleanup()
 {
     if (m_connected)
     {
@@ -114,7 +116,7 @@ void QHalGroup::cleanup()
     removeSignals();
 }
 
-void QHalGroup::startHalgroupHeartbeat(int interval)
+void HalGroup::startHalgroupHeartbeat(int interval)
 {
     m_halgroupHeartbeatTimer->stop();
 
@@ -125,12 +127,12 @@ void QHalGroup::startHalgroupHeartbeat(int interval)
     }
 }
 
-void QHalGroup::stopHalgroupHeartbeat()
+void HalGroup::stopHalgroupHeartbeat()
 {
     m_halgroupHeartbeatTimer->stop();
 }
 
-void QHalGroup::refreshHalgroupHeartbeat()
+void HalGroup::refreshHalgroupHeartbeat()
 {
     if (m_halgroupHeartbeatTimer->isActive())
     {
@@ -139,12 +141,12 @@ void QHalGroup::refreshHalgroupHeartbeat()
     }
 }
 
-void QHalGroup::updateState(QHalGroup::State state)
+void HalGroup::updateState(HalGroup::State state)
 {
     updateState(state, NoError, "");
 }
 
-void QHalGroup::updateState(QHalGroup::State state, ConnectionError error, const QString &errorString)
+void HalGroup::updateState(HalGroup::State state, ConnectionError error, const QString &errorString)
 {
     if (state != m_connectionState)
     {
@@ -172,7 +174,7 @@ void QHalGroup::updateState(QHalGroup::State state, ConnectionError error, const
     updateError(error, errorString);
 }
 
-void QHalGroup::updateError(QHalGroup::ConnectionError error, const QString &errorString)
+void HalGroup::updateError(HalGroup::ConnectionError error, const QString &errorString)
 {
     if (m_errorString != errorString)
     {
@@ -193,7 +195,7 @@ void QHalGroup::updateError(QHalGroup::ConnectionError error, const QString &err
 }
 
 /** Updates a local signal with the value of a remote signal */
-void QHalGroup::signalUpdate(const pb::Signal &remoteSignal, QHalSignal *localSignal)
+void HalGroup::signalUpdate(const pb::Signal &remoteSignal, HalSignal *localSignal)
 {
     bool updated;
 #ifdef QT_DEBUG
@@ -204,28 +206,28 @@ void QHalGroup::signalUpdate(const pb::Signal &remoteSignal, QHalSignal *localSi
 
     if (remoteSignal.type() == pb::HAL_FLOAT)
     {
-        localSignal->setType(QHalSignal::Float);
+        localSignal->setType(HalSignal::Float);
         localSignal->setValue(QVariant(remoteSignal.halfloat()));
         m_values[localSignal->name()] = remoteSignal.halfloat();
         updated =  true;
     }
     else if (remoteSignal.type() == pb::HAL_BIT)
     {
-        localSignal->setType(QHalSignal::Bit);
+        localSignal->setType(HalSignal::Bit);
         localSignal->setValue(QVariant(remoteSignal.halbit()));
         m_values[localSignal->name()] = remoteSignal.halbit();
         updated =  true;
     }
     else if (remoteSignal.type() == pb::HAL_S32)
     {
-        localSignal->setType(QHalSignal::S32);
+        localSignal->setType(HalSignal::S32);
         localSignal->setValue(QVariant(remoteSignal.hals32()));
         m_values[localSignal->name()] = remoteSignal.hals32();
         updated =  true;
     }
     else if (remoteSignal.type() == pb::HAL_U32)
     {
-        localSignal->setType(QHalSignal::U32);
+        localSignal->setType(HalSignal::U32);
         localSignal->setValue(QVariant(remoteSignal.halu32()));
         m_values[localSignal->name()] = (int)remoteSignal.halu32();
         updated =  true;
@@ -238,7 +240,7 @@ void QHalGroup::signalUpdate(const pb::Signal &remoteSignal, QHalSignal *localSi
     }
 }
 
-void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
+void HalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
 
@@ -256,7 +258,7 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
         for (int i = 0; i < m_rx.signal_size(); ++i)
         {
             pb::Signal remoteSignal = m_rx.signal(i);
-            QHalSignal *localSignal = m_signalsByHandle.value(remoteSignal.handle(), nullptr);
+            HalSignal *localSignal = m_signalsByHandle.value(remoteSignal.handle(), nullptr);
             if (localSignal != nullptr) // in case we received a wrong signal handle
             {
                 signalUpdate(remoteSignal, localSignal);
@@ -284,10 +286,10 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
                     {
                         name = name.mid(dotIndex + 1);
                     }
-                    QHalSignal *localSignal = m_signalsByName.value(name, nullptr);
+                    HalSignal *localSignal = m_signalsByName.value(name, nullptr);
                     if (localSignal == nullptr)
                     {
-                        localSignal = new QHalSignal(this); // create a local signal
+                        localSignal = new HalSignal(this); // create a local signal
                         localSignal->setName(name);
                         m_localSignals.append(localSignal);
                         m_signalsByName.insert(name, localSignal);
@@ -353,14 +355,14 @@ void QHalGroup::halgroupMessageReceived(const QList<QByteArray> &messageList)
 #endif
 }
 
-void QHalGroup::pollError(int errorNum, const QString &errorMsg)
+void HalGroup::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
     updateState(Error, SocketError, errorString);
 }
 
-void QHalGroup::halgroupHeartbeatTimerTick()
+void HalGroup::halgroupHeartbeatTimerTick()
 {
     m_halgroupSocketState = Down;
     updateState(Timeout);
@@ -371,9 +373,9 @@ void QHalGroup::halgroupHeartbeatTimerTick()
 }
 
 /** Scans all children of the container item for signals and adds them to a map */
-void QHalGroup::addSignals()
+void HalGroup::addSignals()
 {
-    QList<QHalSignal*> halSignals;
+    QList<HalSignal*> halSignals;
 
     if (m_containerItem == nullptr)
     {
@@ -381,7 +383,7 @@ void QHalGroup::addSignals()
     }
 
     halSignals = recurseObjects(m_containerItem->children());
-    foreach (QHalSignal *signal, halSignals)
+    foreach (HalSignal *signal, halSignals)
     {
         if (signal->name().isEmpty() || (signal->enabled() == false))   // ignore signals with empty name or disabled
         {
@@ -395,7 +397,7 @@ void QHalGroup::addSignals()
 }
 
 /** Removes all previously added signals */
-void QHalGroup::removeSignals()
+void HalGroup::removeSignals()
 {
     m_signalsByHandle.clear();
     m_signalsByName.clear();
@@ -412,9 +414,9 @@ void QHalGroup::removeSignals()
 }
 
 /** Sets synced of all signals to false */
-void QHalGroup::unsyncSignals()
+void HalGroup::unsyncSignals()
 {
-    QMapIterator<QString, QHalSignal*> i(m_signalsByName);
+    QMapIterator<QString, HalSignal*> i(m_signalsByName);
     while (i.hasNext()) {
         i.next();
         i.value()->setSynced(false);
@@ -422,11 +424,11 @@ void QHalGroup::unsyncSignals()
 }
 
 /** Connects the 0MQ sockets */
-bool QHalGroup::connectSockets()
+bool HalGroup::connectSockets()
 {
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
-            this, &QHalGroup::pollError);
+            this, &HalGroup::pollError);
     m_context->start();
 
     m_halgroupSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
@@ -443,7 +445,7 @@ bool QHalGroup::connectSockets()
     }
 
     connect(m_halgroupSocket, &ZMQSocket::messageReceived,
-            this, &QHalGroup::halgroupMessageReceived);
+            this, &HalGroup::halgroupMessageReceived);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_name, "socket connected" << m_halgroupUri)
@@ -453,7 +455,7 @@ bool QHalGroup::connectSockets()
 }
 
 /** Disconnects the 0MQ sockets */
-void QHalGroup::disconnectSockets()
+void HalGroup::disconnectSockets()
 {
     m_halgroupSocketState = Down;
 
@@ -472,14 +474,15 @@ void QHalGroup::disconnectSockets()
     }
 }
 
-void QHalGroup::subscribe()
+void HalGroup::subscribe()
 {
     m_halgroupSocketState = Trying;
     m_halgroupSocket->subscribeTo(m_name.toLocal8Bit());
 }
 
-void QHalGroup::unsubscribe()
+void HalGroup::unsubscribe()
 {
     m_halgroupSocketState = Down;
     m_halgroupSocket->unsubscribeFrom(m_name.toLocal8Bit());
 }
+}; // namespace qtquickvcp

@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
-#include "qhalsignal.h"
+#include "halsignal.h"
 
-QHalSignal::QHalSignal(QObject *parent) :
+namespace qtquickvcp {
+
+HalSignal::HalSignal(QObject *parent) :
     QObject(parent),
     m_name("default"),
     m_type(Bit),
@@ -33,7 +35,7 @@ QHalSignal::QHalSignal(QObject *parent) :
 {
 }
 
-void QHalSignal::setName(QString arg)
+void HalSignal::setName(QString arg)
 {
     if (m_name != arg) {
         m_name = arg;
@@ -41,7 +43,7 @@ void QHalSignal::setName(QString arg)
     }
 }
 
-void QHalSignal::setType(QHalSignal::ValueType arg)
+void HalSignal::setType(HalSignal::ValueType arg)
 {
     if (m_type != arg) {
         m_type = arg;
@@ -65,7 +67,7 @@ void QHalSignal::setType(QHalSignal::ValueType arg)
     }
 }
 
-void QHalSignal::setValue(QVariant arg)
+void HalSignal::setValue(QVariant arg)
 {
     if ((m_value != arg) || (m_value.type() != arg.type())) {
         m_value = arg;
@@ -73,7 +75,7 @@ void QHalSignal::setValue(QVariant arg)
     }
 }
 
-void QHalSignal::setHandle(int arg)
+void HalSignal::setHandle(int arg)
 {
     if (m_handle != arg) {
         m_handle = arg;
@@ -81,7 +83,7 @@ void QHalSignal::setHandle(int arg)
     }
 }
 
-void QHalSignal::setEnabled(bool arg)
+void HalSignal::setEnabled(bool arg)
 {
     if (m_enabled != arg) {
         m_enabled = arg;
@@ -89,10 +91,11 @@ void QHalSignal::setEnabled(bool arg)
     }
 }
 
-void QHalSignal::setSynced(bool arg)
+void HalSignal::setSynced(bool arg)
 {
     if (m_synced != arg) {
         m_synced = arg;
         emit syncedChanged(arg);
     }
 }
+}; // namespace qtquickvcp

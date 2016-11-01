@@ -19,7 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#include "qhalpin.h"
+#include "halpin.h"
+
+namespace qtquickvcp {
 
 /*!
     \qmltype HalPin
@@ -122,7 +124,7 @@
     to \c true when the echo from the \l HalRemoteComponent is received.
 */
 
-QHalPin::QHalPin(QObject *parent) :
+HalPin::HalPin(QObject *parent) :
     QObject(parent),
     m_name("default"),
     m_type(Bit),
@@ -135,7 +137,7 @@ QHalPin::QHalPin(QObject *parent) :
 {
 }
 
-void QHalPin::setType(QHalPin::HalPinType arg)
+void HalPin::setType(HalPin::HalPinType arg)
 {
     if (m_type != arg) {
         m_type = arg;
@@ -159,7 +161,7 @@ void QHalPin::setType(QHalPin::HalPinType arg)
     }
 }
 
-void QHalPin::setName(QString arg)
+void HalPin::setName(QString arg)
 {
     if (m_name != arg) {
         m_name = arg;
@@ -167,7 +169,7 @@ void QHalPin::setName(QString arg)
     }
 }
 
-void QHalPin::setDirection(QHalPin::HalPinDirection arg)
+void HalPin::setDirection(HalPin::HalPinDirection arg)
 {
     if (m_direction != arg) {
         m_direction = arg;
@@ -175,7 +177,7 @@ void QHalPin::setDirection(QHalPin::HalPinDirection arg)
     }
 }
 
-void QHalPin::setValue(QVariant arg, bool synced)
+void HalPin::setValue(QVariant arg, bool synced)
 {
     if ((m_value != arg) || (m_value.type() != arg.type())) {
         m_value = arg;
@@ -194,7 +196,7 @@ void QHalPin::setValue(QVariant arg, bool synced)
     }
 }
 
-void QHalPin::setHandle(int arg)
+void HalPin::setHandle(int arg)
 {
     if (m_handle != arg) {
         m_handle = arg;
@@ -202,7 +204,7 @@ void QHalPin::setHandle(int arg)
     }
 }
 
-void QHalPin::setEnabled(bool arg)
+void HalPin::setEnabled(bool arg)
 {
     if (m_enabled != arg) {
         m_enabled = arg;
@@ -210,10 +212,11 @@ void QHalPin::setEnabled(bool arg)
     }
 }
 
-void QHalPin::setSynced(bool arg)
+void HalPin::setSynced(bool arg)
 {
     if (m_synced != arg) {
         m_synced = arg;
         emit syncedChanged(arg);
     }
 }
+}; // namespace qtquickvcp

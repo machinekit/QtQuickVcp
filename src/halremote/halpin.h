@@ -19,33 +19,42 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
-#ifndef QHALSIGNAL_H
-#define QHALSIGNAL_H
+#ifndef HALPIN_H
+#define HALPIN_H
 
 #include <QObject>
 #include <QVariant>
 #include <machinetalk/protobuf/message.pb.h>
 
-class QHalSignal : public QObject
+namespace qtquickvcp {
+
+class HalPin : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(ValueType type READ type NOTIFY typeChanged)
-    Q_PROPERTY(QVariant value READ value NOTIFY valueChanged)
+    Q_PROPERTY(HalPinType type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(HalPinDirection direction READ direction WRITE setDirection NOTIFY directionChanged)
+    Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(int handle READ handle NOTIFY handleChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
-    Q_ENUMS(ValueType)
+    Q_ENUMS(HalPinType)
+    Q_ENUMS(HalPinDirection)
 
 public:
-    explicit QHalSignal(QObject *parent = 0);
+    explicit HalPin(QObject *parent = 0);
 
-    enum ValueType {
+    enum HalPinType {
         Bit = pb::HAL_BIT,
         Float = pb::HAL_FLOAT,
         S32 = pb::HAL_S32,
         U32 = pb::HAL_U32
+    };
+
+    enum HalPinDirection {
+      In = pb::HAL_IN,
+      Out = pb::HAL_OUT,
+      IO = pb::HAL_IO
     };
 
     QString name() const
@@ -53,9 +62,14 @@ public:
         return m_name;
     }
 
-    ValueType type() const
+    HalPinType type() const
     {
         return m_type;
+    }
+
+    HalPinDirection direction() const
+    {
+        return m_direction;
     }
 
     QVariant value() const
@@ -78,29 +92,36 @@ public:
         return m_synced;
     }
 
-public slots:
-    void setName(QString arg);
-    void setType(ValueType arg);
-    void setValue(QVariant arg);
-    void setHandle(int arg);
-    void setEnabled(bool arg);
-    void setSynced(bool arg);
-
 signals:
+
     void nameChanged(QString arg);
-    void typeChanged(ValueType arg);
+    void typeChanged(HalPinType arg);
+    void directionChanged(HalPinDirection arg);
     void valueChanged(QVariant arg);
     void handleChanged(int arg);
     void enabledChanged(bool arg);
     void syncedChanged(bool arg);
 
-private:
-    QString m_name;
-    ValueType m_type;
-    QVariant m_value;
-    int m_handle;
-    bool m_enabled;
-    bool m_synced;
-};
+public slots:
 
-#endif // QHALSIGNAL_H
+void setType(HalPinType arg);
+void setName(QString arg);
+void setDirection(HalPinDirection arg);
+void setValue(QVariant arg, bool synced = false);
+void setHandle(int arg);
+void setEnabled(bool arg);
+void setSynced(bool arg);
+
+private:
+    QString         m_name;
+    HalPinType       m_type;
+    HalPinDirection m_direction;
+    QVariant        m_value;
+    QVariant        m_syncValue;
+    int             m_handle;
+    bool            m_enabled;
+    bool            m_synced;
+}; // class HalPin
+}; // namespace qtquickvcp
+
+#endif // HALPIN_H

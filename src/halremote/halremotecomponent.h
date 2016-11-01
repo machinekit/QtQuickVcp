@@ -19,8 +19,8 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#ifndef QCOMPONENT_H
-#define QCOMPONENT_H
+#ifndef HALREMOTECOMPONENT_H
+#define HALREMOTECOMPONENT_H
 
 #include <abstractserviceimplementation.h>
 #include <QCoreApplication>
@@ -28,12 +28,14 @@
 #include <QTimer>
 #include <QUuid>
 #include <QQmlListProperty>
-#include "qhalpin.h"
+#include "halpin.h"
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 #include <google/protobuf/text_format.h>
 
-class QHalRemoteComponent : public AbstractServiceImplementation
+namespace qtquickvcp {
+
+class HalRemoteComponent : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -48,13 +50,13 @@ class QHalRemoteComponent : public AbstractServiceImplementation
     Q_PROPERTY(QObject *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
     Q_PROPERTY(bool create READ create WRITE setCreate NOTIFY createChanged)
     Q_PROPERTY(bool bind READ bind WRITE setBind NOTIFY bindChanged)
-    Q_PROPERTY(QQmlListProperty<QHalPin> pins READ pins NOTIFY pinsChanged)
+    Q_PROPERTY(QQmlListProperty<qtquickvcp::HalPin> pins READ pins NOTIFY pinsChanged)
     Q_ENUMS(SocketState)
     Q_ENUMS(State)
     Q_ENUMS(ConnectionError)
 
 public:
-    explicit QHalRemoteComponent(QObject *parent = 0);
+    explicit HalRemoteComponent(QObject *parent = 0);
 
     enum SocketState {
         Down = 1,
@@ -188,9 +190,9 @@ public slots:
         emit createChanged(arg);
     }
 
-    QQmlListProperty<QHalPin> pins();
+    QQmlListProperty<HalPin> pins();
     int pinCount() const;
-    QHalPin *pin(int index) const;
+    HalPin *pin(int index) const;
 
     void setBind(bool bind)
     {
@@ -226,9 +228,9 @@ private:
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;
-    QMap<QString, QHalPin*> m_pinsByName;
-    QHash<int, QHalPin*>    m_pinsByHandle;
-    QList<QHalPin*>         m_pins;
+    QMap<QString, HalPin*> m_pinsByName;
+    QHash<int, HalPin*>    m_pinsByHandle;
+    QList<HalPin*>         m_pins;
 
     QObjectList recurseObjects(const QObjectList &list);
     void start();
@@ -244,8 +246,8 @@ private:
     void updateError(ConnectionError error, QString errorString);
     void sendHalrcmdMessage(pb::ContainerType type);
 
-    void pinUpdate(const pb::Pin &remotePin, QHalPin *localPin);
-    QHalPin *addLocalPin(const pb::Pin &remotePin);
+    void pinUpdate(const pb::Pin &remotePin, HalPin *localPin);
+    HalPin *addLocalPin(const pb::Pin &remotePin);
 
     void addPins();
     void removePins();
@@ -276,8 +278,9 @@ signals:
     void errorStringChanged(QString arg);
     void connectedChanged(bool arg);
     void createChanged(bool arg);
-    void pinsChanged(QQmlListProperty<QHalPin> arg);
+    void pinsChanged(QQmlListProperty<HalPin> arg);
     void bindChanged(bool bind);
-};
+}; // class HalRemoteComponent
+}; // namespace qtquickvcp
 
-#endif // QCOMPONENT_H
+#endif // HALREMOTECOMPONENT_H

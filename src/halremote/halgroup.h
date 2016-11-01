@@ -20,19 +20,21 @@
 **
 ****************************************************************************/
 
-#ifndef QHALGROUP_H
-#define QHALGROUP_H
+#ifndef HALGROUP_H
+#define HALGROUP_H
 
 #include <abstractserviceimplementation.h>
 #include <QHash>
 #include <QTimer>
 #include <QJsonObject>
-#include "qhalsignal.h"
+#include "halsignal.h"
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/message.pb.h>
 
-class QHalGroup : public AbstractServiceImplementation
+namespace qtquickvcp {
+
+class HalGroup : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_PROPERTY(QString halgroupUri READ halgroupUri WRITE setHalgroupUri NOTIFY halgroupUriChanged)
@@ -46,7 +48,7 @@ class QHalGroup : public AbstractServiceImplementation
     Q_ENUMS(State ConnectionError)
 
 public:
-    explicit QHalGroup(QObject *parent = 0);
+    explicit HalGroup(QObject *parent = 0);
 
     enum SocketState {
         Down = 1,
@@ -151,11 +153,11 @@ private:
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
     pb::Container   m_tx;
-    QMap<QString, QHalSignal*> m_signalsByName;
-    QHash<int, QHalSignal*>    m_signalsByHandle;
-    QList<QHalSignal*>         m_localSignals;
+    QMap<QString, HalSignal*> m_signalsByName;
+    QHash<int, HalSignal*>    m_signalsByHandle;
+    QList<HalSignal*>         m_localSignals;
 
-    QList<QHalSignal*> recurseObjects(const QObjectList &list) const;
+    QList<HalSignal*> recurseObjects(const QObjectList &list) const;
     void start();
     void stop();
     void cleanup();
@@ -167,7 +169,7 @@ private:
     void updateError(ConnectionError error, const QString &errorString);
 
 private slots:
-    void signalUpdate(const pb::Signal &remoteSignal, QHalSignal *localSignal);
+    void signalUpdate(const pb::Signal &remoteSignal, HalSignal *localSignal);
 
     void halgroupMessageReceived(const QList<QByteArray> &messageList);
     void pollError(int errorNum, const QString &errorMsg);
@@ -190,6 +192,7 @@ signals:
     void containerItemChanged(QObject * arg);
     void valuesChanged(QJsonObject arg);
     void connectedChanged(bool arg);
-};
+}; // class HalGroup
+}; // namespace qtquickvcp
 
-#endif // QHALGROUP_H
+#endif // HALGROUP_H
