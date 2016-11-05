@@ -23,7 +23,7 @@
 #define APPLICATIONSTATUS_H
 
 #include <abstractserviceimplementation.h>
-#include <service.h>
+#include <machinetalkservice.h>
 #include <QStringList>
 #include <QTimer>
 #include <nzmqt/nzmqt.hpp>

@@ -26,34 +26,18 @@
 #include <QObject>
 #include <QQmlParserStatus>
 
+namespace qtquickvcp {
+
 class AbstractServiceImplementation : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(bool required READ required WRITE setRequired NOTIFY requiredChanged)
-    //Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
-    //Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
-    //Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
-    //Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
 
 public:
     explicit AbstractServiceImplementation(QObject *parent = 0);
     ~AbstractServiceImplementation();
-
-    /*enum State {
-        Disconnected = 0,
-        Connecting = 1,
-        Connected = 2,
-        Error = 3
-    };
-
-    enum ConnectionError {
-        NoError = 0,
-        ServiceError = 1,
-        TimeoutError = 2,
-        SocketError = 3
-    };*/
 
     void classBegin() {}
     void componentComplete();
@@ -100,6 +84,7 @@ private slots:
 signals:
     void requiredChanged(bool arg);
     void readyChanged(bool arg);
-};
+}; // class AbstractServiceImplementation
+}; // namespace qtquickvcp
 
 #endif // ABSTRACTSERVICEIMPLEMENTATION_H

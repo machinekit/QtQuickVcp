@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 #include "applicationconfig.h"
-#include "service.h"
+#include "machinetalkservice.h"
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;
@@ -484,7 +484,7 @@ void ApplicationConfig::configMessageReceived(const QList<QByteArray> &messageLi
                 m_selectedConfig->setDescription(QString::fromStdString(app.description()));
                 m_selectedConfig->setType(type);
 
-                baseFilePath = Service::applicationTempPath(m_selectedConfig->name());
+                baseFilePath = MachinetalkService::applicationTempPath(m_selectedConfig->name());
                 if (!dir.mkpath(baseFilePath))
                 {
                     qDebug() << "not able to create directory";
@@ -576,7 +576,7 @@ void ApplicationConfig::cleanupFiles()
 {
     if (!m_selectedConfig->name().isEmpty())
     {
-        QString path = Service::applicationTempPath(m_selectedConfig->name());
+        QString path = MachinetalkService::applicationTempPath(m_selectedConfig->name());
         QDir dir(path);
         dir.removeRecursively();
     }

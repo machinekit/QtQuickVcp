@@ -27,7 +27,6 @@ SOURCES += \
 
 HEADERS += \
     plugin.h \
-    debughelper.h \
     gcodeprogramitem.h \
     gcodeprogramloader.h \
     gcodeprogrammodel.h \

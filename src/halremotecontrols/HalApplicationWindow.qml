@@ -300,7 +300,7 @@ Rectangle {
         halrcmdUri: halrcmdService.uri
         halrcompUri: halrcompService.uri
         heartbeatPeriod: 3000
-        ready: (halrcompService.ready && halrcmdService.ready) || (remoteComponent.state === HalRemoteComponent.Connected)
+        ready: (halrcompService.ready && halrcmdService.ready) || remoteComponent.connected
         containerItem: parent
     }
 
@@ -316,15 +316,13 @@ Rectangle {
 
     state: {
         switch (remoteComponent.connectionState) {
-        case HalRemoteComponent.Connected:
+        case HalRemoteComponent.Synced:
             if (_ready)
                 return "connected";
             else
                 return "disconnected";
         case HalRemoteComponent.Error:
                 return "error";
-        case HalRemoteComponent.Timeout:
-            return "timeout";
         default:
             return "disconnected";
         }

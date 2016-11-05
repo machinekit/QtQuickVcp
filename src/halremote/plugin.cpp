@@ -45,7 +45,7 @@ void MachinekitHalRemotePlugin::initializeEngine(QQmlEngine *engine, const char 
     Q_UNUSED(engine);
 
     const char *private_uri = "Machinekit.HalRemote.Private";
-    qmlRegisterUncreatableType<AbstractServiceImplementation>(private_uri, 1, 0, "AnstractServiceImplementation",
+    qmlRegisterUncreatableType<qtquickvcp::AbstractServiceImplementation>(private_uri, 1, 0, "AnstractServiceImplementation",
                                                               QLatin1String("Do not create objects of type AbstractServiceImplementation"));
 }
 

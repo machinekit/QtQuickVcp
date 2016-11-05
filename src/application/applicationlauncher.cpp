@@ -18,10 +18,10 @@ ApplicationLauncher::ApplicationLauncher(QObject *parent) :
     m_commandIdentity("launcher"),
     m_heartbeatPeriod(3000),
     m_connected(false),
-    m_subscribeSocketState(Service::Down),
-    m_commandSocketState(Service::Down),
-    m_connectionState(Service::Disconnected),
-    m_error(Service::NoError),
+    m_subscribeSocketState(MachinetalkService::Down),
+    m_commandSocketState(MachinetalkService::Down),
+    m_connectionState(MachinetalkService::Disconnected),
+    m_error(MachinetalkService::NoError),
     m_errorString(""),
     m_launchers(QJsonValue(QJsonArray())),
     m_synced(false),
@@ -42,7 +42,7 @@ ApplicationLauncher::ApplicationLauncher(QObject *parent) :
 
 ApplicationLauncher::~ApplicationLauncher()
 {
-    Service::removeTempPath("launcher"); // clean up dir created by json
+    MachinetalkService::removeTempPath("launcher"); // clean up dir created by json
 }
 
 void ApplicationLauncher::start(int index)
@@ -131,7 +131,7 @@ bool ApplicationLauncher::connectSockets()
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateState(Service::Error, Service::SocketError, errorString);
+        updateState(MachinetalkService::Error, MachinetalkService::SocketError, errorString);
         return false;
     }
 
@@ -150,8 +150,8 @@ bool ApplicationLauncher::connectSockets()
 /** Disconnects the 0MQ sockets */
 void ApplicationLauncher::disconnectSockets()
 {
-    m_commandSocketState = Service::Down;
-    m_subscribeSocketState = Service::Down;
+    m_commandSocketState = MachinetalkService::Down;
+    m_subscribeSocketState = MachinetalkService::Down;
 
     if (m_commandSocket != nullptr)
     {
@@ -177,13 +177,13 @@ void ApplicationLauncher::disconnectSockets()
 
 void ApplicationLauncher::subscribe(const QString &topic)
 {
-    m_subscribeSocketState = Service::Trying;
+    m_subscribeSocketState = MachinetalkService::Trying;
     m_subscribeSocket->subscribeTo(topic.toLocal8Bit());
 }
 
 void ApplicationLauncher::unsubscribe(const QString &topic)
 {
-    m_subscribeSocketState = Service::Down;
+    m_subscribeSocketState = MachinetalkService::Down;
     m_subscribeSocket->unsubscribeFrom(topic.toLocal8Bit());
 }
 
@@ -192,8 +192,8 @@ void ApplicationLauncher::start()
 #ifdef QT_DEBUG
    DEBUG_TAG(1, m_commandIdentity, "start")
 #endif
-    m_commandSocketState = Service::Trying;
-    updateState(Service::Connecting);
+    m_commandSocketState = MachinetalkService::Trying;
+    updateState(MachinetalkService::Connecting);
 
     if (connectSockets())
     {
@@ -211,7 +211,7 @@ void ApplicationLauncher::stop()
 
     cleanup();
 
-    updateState(Service::Disconnected);  // clears also the error
+    updateState(MachinetalkService::Disconnected);  // clears also the error
 }
 
 void ApplicationLauncher::cleanup()
@@ -265,12 +265,12 @@ void ApplicationLauncher::refreshSubscribeHeartbeat()
     }
 }
 
-void ApplicationLauncher::updateState(Service::State state)
+void ApplicationLauncher::updateState(MachinetalkService::State state)
 {
-    updateState(state, Service::NoError, "");
+    updateState(state, MachinetalkService::NoError, "");
 }
 
-void ApplicationLauncher::updateState(Service::State state, Service::ConnectionError error, QString errorString)
+void ApplicationLauncher::updateState(MachinetalkService::State state, MachinetalkService::ConnectionError error, QString errorString)
 {
     if (state != m_connectionState)
     {
@@ -281,7 +281,7 @@ void ApplicationLauncher::updateState(Service::State state, Service::ConnectionE
             m_connected = false;
             emit connectedChanged(false);
         }
-        else if (state == Service::Connected) {
+        else if (state == MachinetalkService::Connected) {
             m_connected = true;
             emit connectedChanged(true);
         }
@@ -289,7 +289,7 @@ void ApplicationLauncher::updateState(Service::State state, Service::ConnectionE
         m_connectionState = state;
         emit connectionStateChanged(m_connectionState);
 
-        if ((state == Service::Disconnected) || (state == Service::Error)) {
+        if ((state == MachinetalkService::Disconnected) || (state == MachinetalkService::Error)) {
             initializeObject();
         }
     }
@@ -297,7 +297,7 @@ void ApplicationLauncher::updateState(Service::State state, Service::ConnectionE
     updateError(error, errorString);
 }
 
-void ApplicationLauncher::updateError(Service::ConnectionError error, QString errorString)
+void ApplicationLauncher::updateError(MachinetalkService::ConnectionError error, QString errorString)
 {
     if (m_errorString != errorString)
     {
@@ -307,7 +307,7 @@ void ApplicationLauncher::updateError(Service::ConnectionError error, QString er
 
     if (m_error != error)
     {
-        if (error != Service::NoError)
+        if (error != MachinetalkService::NoError)
         {
             cleanup();
         }
@@ -320,7 +320,7 @@ void ApplicationLauncher::pollError(int errorNum, const QString &errorMsg)
 {
     QString errorString;
     errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
-    updateState(Service::Error, Service::SocketError, errorString);
+    updateState(MachinetalkService::Error, MachinetalkService::SocketError, errorString);
 }
 
 /** Processes all message received on the update 0MQ socket */
@@ -340,13 +340,13 @@ void ApplicationLauncher::subscribeMessageReceived(const QList<QByteArray> &mess
     if (m_rx.type() == pb::MT_LAUNCHER_FULL_UPDATE) //value update
     {
         m_launchers = QJsonValue(QJsonArray()); // clear old value
-        Service::updateValue(m_rx, &m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
+        MachinetalkService::updateValue(m_rx, &m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
         emit launchersChanged(m_launchers);
 
-        if (m_subscribeSocketState != Service::Up)
+        if (m_subscribeSocketState != MachinetalkService::Up)
         {
-            m_subscribeSocketState = Service::Up;
-            updateState(Service::Connected);
+            m_subscribeSocketState = MachinetalkService::Up;
+            updateState(MachinetalkService::Connected);
         }
 
         updateSync();
@@ -358,20 +358,20 @@ void ApplicationLauncher::subscribeMessageReceived(const QList<QByteArray> &mess
         }
     }
     else if (m_rx.type() == pb::MT_LAUNCHER_INCREMENTAL_UPDATE){
-        Service::updateValue(m_rx, &m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
+        MachinetalkService::updateValue(m_rx, &m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
         emit launchersChanged(m_launchers);
 
         refreshSubscribeHeartbeat();
     }
     else if (m_rx.type() == pb::MT_PING)
     {
-        if (m_subscribeSocketState == Service::Up)
+        if (m_subscribeSocketState == MachinetalkService::Up)
         {
             refreshSubscribeHeartbeat();
         }
         else
         {
-            updateState(Service::Connecting);
+            updateState(MachinetalkService::Connecting);
             unsubscribe("launcher");  // clean up previous subscription
             subscribe("launcher");    // trigger a fresh subscribe -> full update
         }
@@ -385,8 +385,8 @@ void ApplicationLauncher::subscribeMessageReceived(const QList<QByteArray> &mess
             errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
         }
 
-        m_subscribeSocketState = Service::Down;
-        updateState(Service::Error, Service::CommandError, errorString);
+        m_subscribeSocketState = MachinetalkService::Down;
+        updateState(MachinetalkService::Error, MachinetalkService::CommandError, errorString);
 
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_commandIdentity, "proto error on subscribe" << errorString)
@@ -416,10 +416,10 @@ void ApplicationLauncher::commandMessageReceived(const QList<QByteArray> &messag
     {
         m_commandPingOutstanding = false;
 
-        if (m_commandSocketState != Service::Up)
+        if (m_commandSocketState != MachinetalkService::Up)
         {
-            m_commandSocketState = Service::Up;
-            updateState(Service::Connected);
+            m_commandSocketState = MachinetalkService::Up;
+            updateState(MachinetalkService::Connected);
         }
 
 #ifdef QT_DEBUG
@@ -437,8 +437,8 @@ void ApplicationLauncher::commandMessageReceived(const QList<QByteArray> &messag
             errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
         }
 
-        m_commandSocketState = Service::Down;
-        updateState(Service::Error, Service::ServiceError, errorString);
+        m_commandSocketState = MachinetalkService::Down;
+        updateState(MachinetalkService::Error, MachinetalkService::ServiceError, errorString);
 
 #ifdef QT_DEBUG
         DEBUG_TAG(1, "command", "error" << errorString)
@@ -468,7 +468,7 @@ void ApplicationLauncher::sendCommandMessage(pb::ContainerType type)
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateState(Service::Error, Service::SocketError, errorString);
+        updateState(MachinetalkService::Error, MachinetalkService::SocketError, errorString);
     }
 }
 
@@ -495,8 +495,8 @@ void ApplicationLauncher::commandHeartbeatTimerTick()
 {
     if (m_commandPingOutstanding)
     {
-        m_commandSocketState = Service::Trying;
-        updateState(Service::Timeout);
+        m_commandSocketState = MachinetalkService::Trying;
+        updateState(MachinetalkService::Timeout);
 
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_commandIdentity, "launchercmd timeout")
@@ -514,8 +514,8 @@ void ApplicationLauncher::commandHeartbeatTimerTick()
 
 void ApplicationLauncher::subscribeHeartbeatTimerTick()
 {
-    m_subscribeSocketState = Service::Down;
-    updateState(Service::Timeout);
+    m_subscribeSocketState = MachinetalkService::Down;
+    updateState(MachinetalkService::Timeout);
 
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_commandIdentity, "launchercmd timeout")

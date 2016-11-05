@@ -23,7 +23,7 @@
 #define APPLICATIONLAUNCHER_H
 
 #include <abstractserviceimplementation.h>
-#include <service.h>
+#include <machinetalkservice.h>
 #include <QJsonValue>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
@@ -41,8 +41,8 @@ class ApplicationLauncher : public AbstractServiceImplementation
     Q_PROPERTY(QString launcherUri READ launcherUri WRITE setLauncherUri NOTIFY launcherUriChanged)
     Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
-    Q_PROPERTY(Service::State connectionState READ connectionState NOTIFY connectionStateChanged)
-    Q_PROPERTY(Service::ConnectionError error READ error NOTIFY errorChanged)
+    Q_PROPERTY(MachinetalkService::State connectionState READ connectionState NOTIFY connectionStateChanged)
+    Q_PROPERTY(MachinetalkService::ConnectionError error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QJsonValue launchers READ launchers NOTIFY launchersChanged)
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
@@ -71,12 +71,12 @@ public:
         return m_connected;
     }
 
-    Service::State connectionState() const
+    MachinetalkService::State connectionState() const
     {
         return m_connectionState;
     }
 
-    Service::ConnectionError error() const
+    MachinetalkService::ConnectionError error() const
     {
         return m_error;
     }
@@ -137,10 +137,10 @@ private:
     QString m_commandIdentity;
     int m_heartbeatPeriod;
     bool m_connected;
-    Service::SocketState m_subscribeSocketState;
-    Service::SocketState m_commandSocketState;
-    Service::State m_connectionState;
-    Service::ConnectionError m_error;
+    MachinetalkService::SocketState m_subscribeSocketState;
+    MachinetalkService::SocketState m_commandSocketState;
+    MachinetalkService::State m_connectionState;
+    MachinetalkService::ConnectionError m_error;
     QString m_errorString;
     QJsonValue m_launchers;
     bool m_synced;
@@ -163,9 +163,9 @@ private:
     void startSubscribeHeartbeat(int interval);
     void stopSubscribeHeartbeat();
     void refreshSubscribeHeartbeat();
-    void updateState(Service::State state);
-    void updateState(Service::State state, Service::ConnectionError error, QString errorString);
-    void updateError(Service::ConnectionError error, QString errorString);
+    void updateState(MachinetalkService::State state);
+    void updateState(MachinetalkService::State state, MachinetalkService::ConnectionError error, QString errorString);
+    void updateError(MachinetalkService::ConnectionError error, QString errorString);
     void sendCommandMessage(pb::ContainerType type);
     void updateSync();
     void clearSync();
@@ -188,8 +188,8 @@ signals:
     void launcherUriChanged(QString arg);
     void heartbeatPeriodChanged(int arg);
     void connectedChanged(bool arg);
-    void connectionStateChanged(Service::State arg);
-    void errorChanged(Service::ConnectionError arg);
+    void connectionStateChanged(MachinetalkService::State arg);
+    void errorChanged(MachinetalkService::ConnectionError arg);
     void errorStringChanged(QString arg);
     void launchersChanged(QJsonValue arg);
     void syncedChanged(bool arg);

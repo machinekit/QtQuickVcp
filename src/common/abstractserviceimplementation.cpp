@@ -22,6 +22,8 @@
 
 #include "abstractserviceimplementation.h"
 
+namespace qtquickvcp {
+
 AbstractServiceImplementation::AbstractServiceImplementation(QObject *parent) :
     QObject(parent),
     QQmlParserStatus(),
@@ -84,3 +86,4 @@ void AbstractServiceImplementation::reset()
         start();
     }
 }
+}; // namespace qtquickvcp

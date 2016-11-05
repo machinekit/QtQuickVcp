@@ -1,6 +1,7 @@
 HEADERS += $$PWD/abstractserviceimplementation.h \
-    $$PWD/service.h
+    $$PWD/debughelper.h \
+    $$PWD/machinetalkservice.h
 SOURCES += $$PWD/abstractserviceimplementation.cpp \
-    $$PWD/service.cpp
+    $$PWD/machinetalkservice.cpp
 
 INCLUDEPATH += $$PWD

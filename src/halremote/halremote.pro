@@ -7,6 +7,7 @@ include(../plugin.pri)
 include(../zeromq.pri)
 include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)
 include(../common/common.pri)
+include(../machinetalk/machinetalk.pri)
 
 # Input
 SOURCES += \
@@ -18,7 +19,6 @@ SOURCES += \
 
 HEADERS += \
     plugin.h \
-    debughelper.h \
     halgroup.h \
     halpin.h \
     halremotecomponent.h \

@@ -31,7 +31,6 @@ SOURCES += \
 
 HEADERS += \
     plugin.h \
-    debughelper.h \
     fileio.h \
     revisionsingleton.h \
     revision.h \

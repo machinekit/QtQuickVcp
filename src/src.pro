@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 CONFIG += ordered
-SUBDIRS += halremote \
+SUBDIRS += machinetalk \
+    halremote \
     controls \
     halremotecontrols \
     videoview \
