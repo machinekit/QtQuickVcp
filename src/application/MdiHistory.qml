@@ -48,19 +48,19 @@ QtObject {
     }
 
     function add(command) {
-        var tmpModel = model.splice(0);
+        var tmpModel = JSON.parse(JSON.stringify(model)); // copy array
         tmpModel.push({ "command": command });
         settings.setValue("mdi.history", tmpModel);
     }
 
     function remove(index) {
-        var tmpModel = model.splice(0);
+        var tmpModel = JSON.parse(JSON.stringify(model)); // copy array
         tmpModel.splice(index, 1);
         settings.setValue("mdi.history", tmpModel);
     }
 
     function insert(index, command) {
-        var tmpModel = model.splice(0);
+        var tmpModel = JSON.parse(JSON.stringify(model)); // copy array
         tmpModel.splice(index, 0, command);
         settings.setValue("mdi.history", tmpModel);
     }
