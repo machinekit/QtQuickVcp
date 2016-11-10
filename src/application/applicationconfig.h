@@ -48,18 +48,54 @@ public:
     explicit ApplicationConfig(QQuickItem *parent = 0);
     ~ApplicationConfig();
 
-    bool isSynced() const;
-    ApplicationConfigItem *selectedConfig() const;
-    ApplicationConfigFilter *filter() const;
-    QQmlListProperty<ApplicationConfigItem> configs();
-    int appConfigCount() const;
-    ApplicationConfigItem *appConfig(int index) const;
+    bool isSynced() const
+    {
+        return m_synced;
+    }
+
+    ApplicationConfigItem *selectedConfig() const
+    {
+        return m_selectedConfig;
+    }
+
+    ApplicationConfigFilter *filter() const
+    {
+        return m_filter;
+    }
+
+    QQmlListProperty<ApplicationConfigItem> configs()
+    {
+        return QQmlListProperty<ApplicationConfigItem>(this, m_configs);
+    }
+    int appConfigCount() const
+    {
+        return m_configs.count();
+    }
+    ApplicationConfigItem *appConfig(int index) const
+    {
+        return m_configs.at(index);
+    }
 
 public slots:
+    void setSelectedConfig(ApplicationConfigItem * arg)
+    {
+        if (m_selectedConfig != arg) {
+            m_selectedConfig = arg;
+            emit selectedConfigChanged(arg);
+        }
+    }
+
+    void setFilter(ApplicationConfigFilter * arg)
+    {
+        if (m_filter == arg)
+            return;
+
+        m_filter = arg;
+        emit filterChanged(arg);
+    }
+
     void selectConfig(QString name);
     void unselectConfig();
-    void setSelectedConfig(ApplicationConfigItem * arg);
-    void setFilter(ApplicationConfigFilter * arg);
 
 private:
     bool m_synced;

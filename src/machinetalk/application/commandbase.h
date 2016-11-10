@@ -140,12 +140,14 @@ public slots:
     void sendEmcAxisAbort(pb::Container *tx);
     void sendEmcAxisIncrJog(pb::Container *tx);
     void sendEmcToolLoadToolTable(pb::Container *tx);
+    void sendEmcToolUpdateToolTable(pb::Container *tx);
     void sendEmcTaskPlanExecute(pb::Container *tx);
     void sendEmcCoolantMistOn(pb::Container *tx);
     void sendEmcCoolantMistOff(pb::Container *tx);
     void sendEmcTaskPlanInit(pb::Container *tx);
     void sendEmcTaskPlanOpen(pb::Container *tx);
     void sendEmcTaskPlanSetOptionalStop(pb::Container *tx);
+    void sendEmcTaskPlanSetBlockDelete(pb::Container *tx);
     void sendEmcTaskSetMode(pb::Container *tx);
     void sendEmcTaskSetState(pb::Container *tx);
     void sendEmcTrajSetSoEnable(pb::Container *tx);
@@ -173,6 +175,7 @@ public slots:
     void sendEmcAxisSetMaxPositionLimit(pb::Container *tx);
     void sendEmcAxisSetMinPositionLimit(pb::Container *tx);
     void sendEmcAxisUnhome(pb::Container *tx);
+    void sendShutdown(pb::Container *tx);
 
 protected:
     void start(); // start trigger

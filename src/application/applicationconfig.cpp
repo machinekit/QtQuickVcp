@@ -181,53 +181,6 @@ ApplicationConfig::~ApplicationConfig()
     cleanupFiles();
 }
 
-bool ApplicationConfig::isSynced() const
-{
-    return m_synced;
-}
-
-ApplicationConfigItem *ApplicationConfig::selectedConfig() const
-{
-    return m_selectedConfig;
-}
-
-ApplicationConfigFilter *ApplicationConfig::filter() const
-{
-    return m_filter;
-}
-
-QQmlListProperty<ApplicationConfigItem> ApplicationConfig::configs()
-{
-    return QQmlListProperty<ApplicationConfigItem>(this, m_configs);
-}
-
-int ApplicationConfig::appConfigCount() const
-{
-    return m_configs.count();
-}
-
-ApplicationConfigItem *ApplicationConfig::appConfig(int index) const
-{
-    return m_configs.at(index);
-}
-
-void ApplicationConfig::setSelectedConfig(ApplicationConfigItem *arg)
-{
-    if (m_selectedConfig != arg) {
-        m_selectedConfig = arg;
-        emit selectedConfigChanged(arg);
-    }
-}
-
-void ApplicationConfig::setFilter(ApplicationConfigFilter *arg)
-{
-    if (m_filter == arg)
-        return;
-
-    m_filter = arg;
-    emit filterChanged(arg);
-}
-
 void ApplicationConfig::cleanupFiles()
 {
     if (!m_selectedConfig->name().isEmpty())

@@ -23,53 +23,26 @@
 #ifndef APPLICATIONCOMMAND_H
 #define APPLICATIONCOMMAND_H
 
-#include <abstractserviceimplementation.h>
-#include <QTimer>
 #include <QUrl>
 #include <QCoreApplication>
 #include <QHostInfo>
-#include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/status.pb.h>
 #include <machinetalk/protobuf/emcclass.pb.h>
+#include <application/commandbase.h>
 #include "applicationstatus.h"
 
 namespace qtquickvcp {
 
-class ApplicationCommand : public AbstractServiceImplementation
+class ApplicationCommand : public application::CommandBase
 {
     Q_OBJECT
-    Q_PROPERTY(QString commandUri READ commandUri WRITE setCommandUri NOTIFY commandUriChanged)
-    Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
-    Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
-    Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
-    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_ENUMS(State ConnectionError SpindleBrake JogType TaskState TaskMode SpindleMode TrajectoryMode)
+    Q_ENUMS(SpindleBrake JogType TaskState TaskMode SpindleMode TrajectoryMode)
 
 public:
     explicit ApplicationCommand(QObject *parent = 0);
-
-    enum SocketState {
-        Down = 1,
-        Trying = 2,
-        Up = 3
-    };
-
-    enum State {
-        Disconnected = 0,
-        Connecting = 1,
-        Connected = 2,
-        Timeout = 3,
-        Error = 4
-    };
-
-    enum ConnectionError {
-        NoError = 0,
-        ServiceError = 1,
-        SocketError = 2
-    };
 
     enum SpindleBrake {
         ReleaseBrake,
@@ -110,56 +83,12 @@ public:
         TeleopMode = pb::EMC_TRAJ_MODE_TELEOP
     };
 
-    QString commandUri() const
-    {
-        return m_commandUri;
-    }
-
-    State connectionState() const
-    {
-        return m_connectionState;
-    }
-
-    ConnectionError error() const
-    {
-        return m_error;
-    }
-
-    QString errorString() const
-    {
-        return m_errorString;
-    }
-
-    int heartbeatPeriod() const
-    {
-        return m_heartbeatPeriod;
-    }
-
     bool isConnected() const
     {
         return m_connected;
     }
 
 public slots:
-
-    void setCommandUri(QString arg)
-    {
-        if (m_commandUri == arg)
-            return;
-
-        m_commandUri = arg;
-        emit commandUriChanged(arg);
-    }
-
-    void heartbeatPeriod(int arg)
-    {
-        if (m_heartbeatPeriod == arg)
-            return;
-
-        m_heartbeatPeriod = arg;
-        emit heartbeatPeriodChanged(arg);
-    }
-
     void abort(const QString &interpreter);
     void runProgram(const QString &interpreter, int lineNumber);
     void pauseProgram(const QString &interpreter);
@@ -203,50 +132,18 @@ public slots:
     void setTrajectoryMode(TrajectoryMode mode);
     void unhomeAxis(int index);
     void shutdown();
+
 private:
+    bool m_connected;
 
-    QString         m_commandUri;
-    int             m_heartbeatPeriod;
-    bool            m_connected;
-    SocketState     m_commandSocketState;
-    State           m_connectionState;
-    ConnectionError m_error;
-    QString         m_errorString;
-
-    nzmqt::PollingZMQContext *m_context;
-    nzmqt::ZMQSocket *m_commandSocket;
-    QTimer      *m_commandHeartbeatTimer;
-    int         m_commandPingErrorCount;
-    int         m_commandPingErrorThreshold;
-    QUuid       m_uuid;
     // more efficient to reuse a protobuf Message
-    pb::Container   m_rx;
     pb::Container   m_tx;
 
-    void start();
-    void stop();
-    void cleanup();
-    void startCommandHeartbeat();
-    void stopCommandHeartbeat();
-    void updateState(State state);
-    void updateState(State state, ConnectionError error, const QString &errorString);
-    void updateError(ConnectionError error, const QString &errorString);
-    void sendCommandMessage(pb::ContainerType type);
-
 private slots:
-    void commandMessageReceived(const QList<QByteArray> &messageList);
-    void pollError(int errorNum, const QString &errorMsg);
-    void commandHeartbeatTimerTick();
-
-    bool connectSockets();
-    void disconnectSockets();
+    void setConnected();
+    void clearConnected();
 
 signals:
-    void commandUriChanged(QString arg);
-    void connectionStateChanged(State arg);
-    void errorChanged(ConnectionError arg);
-    void errorStringChanged(QString arg);
-    void heartbeatPeriodChanged(int arg);
     void connectedChanged(bool arg);
 
 }; // class ApplicationCommand

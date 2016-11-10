@@ -188,6 +188,11 @@ void CommandBase::sendEmcToolLoadToolTable(pb::Container *tx)
     sendCommandMessage(pb::MT_EMC_TOOL_LOAD_TOOL_TABLE, tx);
 }
 
+void CommandBase::sendEmcToolUpdateToolTable(pb::Container *tx)
+{
+    sendCommandMessage(pb::MT_EMC_TOOL_UPDATE_TOOL_TABLE, tx);
+}
+
 void CommandBase::sendEmcTaskPlanExecute(pb::Container *tx)
 {
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_EXECUTE, tx);
@@ -216,6 +221,11 @@ void CommandBase::sendEmcTaskPlanOpen(pb::Container *tx)
 void CommandBase::sendEmcTaskPlanSetOptionalStop(pb::Container *tx)
 {
     sendCommandMessage(pb::MT_EMC_TASK_PLAN_SET_OPTIONAL_STOP, tx);
+}
+
+void CommandBase::sendEmcTaskPlanSetBlockDelete(pb::Container *tx)
+{
+    sendCommandMessage(pb::MT_EMC_TASK_PLAN_SET_BLOCK_DELETE, tx);
 }
 
 void CommandBase::sendEmcTaskSetMode(pb::Container *tx)
@@ -351,6 +361,11 @@ void CommandBase::sendEmcAxisSetMinPositionLimit(pb::Container *tx)
 void CommandBase::sendEmcAxisUnhome(pb::Container *tx)
 {
     sendCommandMessage(pb::MT_EMC_AXIS_UNHOME, tx);
+}
+
+void CommandBase::sendShutdown(pb::Container *tx)
+{
+    sendCommandMessage(pb::MT_SHUTDOWN, tx);
 }
 
 void CommandBase::fsmDownEntered()
