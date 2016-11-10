@@ -76,7 +76,7 @@ public:
         return m_errorString;
     }
 
-    QObject * containerItem() const
+    QObject *containerItem() const
     {
         return m_containerItem;
     }
@@ -92,8 +92,6 @@ public:
     }
 
 public slots:
-    void pinChange(QVariant value);
-
     void setName(QString name)
     {
         if (this->state() != Down) {
@@ -136,9 +134,20 @@ public slots:
         emit bindChanged(bind);
     }
 
-    QQmlListProperty<HalPin> pins();
-    int pinCount() const;
-    HalPin *pin(int index) const;
+    QQmlListProperty<HalPin> pins()
+    {
+        return QQmlListProperty<HalPin>(this, m_pins);
+    }
+    int pinCount() const
+    {
+        return m_pins.count();
+    }
+    HalPin *pin(int index) const
+    {
+        return m_pins.at(index);
+    }
+
+    void pinChange(QVariant value);
 
 private:
     QString         m_name;
@@ -157,9 +166,10 @@ private:
 
     QObjectList recurseObjects(const QObjectList &list);
     void bindPins();
+    static QString splitPinFromHalName(const QString &name);
 
-private slots:
     void pinUpdate(const pb::Pin &remotePin, HalPin *localPin);
+    HalPin *addLocalPin(const pb::Pin &remotePin);
 
     // RemoteComponentBase interface
 private slots:

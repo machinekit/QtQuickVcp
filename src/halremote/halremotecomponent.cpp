@@ -183,21 +183,6 @@ HalRemoteComponent::HalRemoteComponent(QObject *parent) :
 {
 }
 
-QQmlListProperty<HalPin> HalRemoteComponent::pins()
-{
-    return QQmlListProperty<HalPin>(this, m_pins);
-}
-
-int HalRemoteComponent::pinCount() const
-{
-    return m_pins.count();
-}
-
-HalPin *HalRemoteComponent::pin(int index) const
-{
-    return m_pins.at(index);
-}
-
 /** Updates a remote pin witht the value of a local pin */
 void HalRemoteComponent::pinChange(QVariant value)
 {
@@ -259,9 +244,8 @@ QObjectList HalRemoteComponent::recurseObjects(const QObjectList &list)
 
     foreach (QObject *object, list)
     {
-        HalPin *halPin;
-        halPin = qobject_cast<HalPin *>(object);
-        if (halPin != NULL)
+        HalPin *halPin = qobject_cast<HalPin *>(object);
+        if (halPin != nullptr)
         {
             halObjects.append(object);
         }
@@ -298,6 +282,23 @@ void HalRemoteComponent::pinUpdate(const pb::Pin &remotePin, HalPin *localPin)
     {
         localPin->setValue(QVariant(remotePin.halu32()), true);
     }
+}
+
+/** Adds a local pin based on remote pin representation **/
+HalPin *HalRemoteComponent::addLocalPin(const pb::Pin &remotePin)
+{
+    QString name = QString::fromStdString(remotePin.name());
+    name = splitPinFromHalName(name);
+    HalPin *localPin = new HalPin(this);
+    localPin->setName(name);
+    localPin->setType(static_cast<HalPin::HalPinType>(remotePin.type()));
+    localPin->setDirection(static_cast<HalPin::HalPinDirection>(remotePin.dir()));
+    m_pinsByName[name] = localPin;
+    m_pins.append(localPin);
+    connect(localPin, &HalPin::valueChanged,
+            this, &HalRemoteComponent::pinChange);
+
+    return localPin;
 }
 
 /** Generates a Bind messages and sends it over the suitable 0MQ socket */
@@ -342,12 +343,28 @@ void HalRemoteComponent::bindPins()
     sendHalrcompBind(&m_tx);
 }
 
+/** splits HAL pin name from full HAL name **/
+QString HalRemoteComponent::splitPinFromHalName(const QString &name)
+{
+    QString newName;
+    int dotIndex = name.indexOf(".");
+    if (dotIndex != -1)    // strip comp prefix
+    {
+        newName = name.mid(dotIndex + 1);
+    }
+    else
+    {
+        newName = name;
+    }
+    return newName;
+}
+
 /** Scans all children of the container item for pins and adds them to a map */
 void HalRemoteComponent::addPins()
 {
     QObjectList halObjects;
 
-    if (m_containerItem == NULL)
+    if (m_containerItem == nullptr)
     {
         return;
     }
@@ -408,24 +425,35 @@ void HalRemoteComponent::unsyncPins()
 void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic, pb::Container *rx)
 {
     Q_UNUSED(topic);
+    bool pinsAdded = false;
 
-    for (int i = 0; i < rx->comp_size(); ++i)  // TODO: we can handle only one component
+    if (rx->comp_size() == 0) // empty message
     {
-        pb::Component component = rx->comp(i);  // shouldnt we check the name?
-        for (int j = 0; j < component.pin_size(); j++)
+        return;
+    }
+
+    pb::Component component = rx->comp(0);  // shouldnt we check the name?
+    for (int i = 0; i < component.pin_size(); ++i)
+    {
+        const pb::Pin &remotePin = component.pin(i);
+        QString name = QString::fromStdString(remotePin.name());
+        name = splitPinFromHalName(name);
+
+        HalPin *localPin = m_pinsByName.value(name, nullptr);
+        if (localPin == nullptr)
         {
-            pb::Pin remotePin = component.pin(j);
-            QString name = QString::fromStdString(remotePin.name());
-            int dotIndex = name.indexOf(".");
-            if (dotIndex != -1)    // strip comp prefix
-            {
-                name = name.mid(dotIndex + 1);
-            }
-            HalPin *localPin = m_pinsByName.value(name);
-            localPin->setHandle(static_cast<int>(remotePin.handle()));
-            m_pinsByHandle.insert(static_cast<int>(remotePin.handle()), localPin);
-            pinUpdate(remotePin, localPin);
+            localPin = addLocalPin(remotePin);
+            pinsAdded = true;
         }
+
+        localPin->setHandle(static_cast<int>(remotePin.handle()));
+        m_pinsByHandle.insert(static_cast<int>(remotePin.handle()), localPin);
+        pinUpdate(remotePin, localPin);
+    }
+
+    if (pinsAdded)
+    {
+        emit pinsChanged(pins());
     }
 }
 
@@ -436,8 +464,8 @@ void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &top
     for (int i = 0; i < rx->pin_size(); ++i)
     {
         pb::Pin remotePin = rx->pin(i);
-        HalPin *localPin = m_pinsByHandle.value(remotePin.handle(), NULL);
-        if (localPin != NULL) // in case we received a wrong pin handle
+        HalPin *localPin = m_pinsByHandle.value(remotePin.handle(), nullptr);
+        if (localPin != nullptr) // in case we received a wrong pin handle
         {
             pinUpdate(remotePin, localPin);
         }
