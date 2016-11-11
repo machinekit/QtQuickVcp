@@ -45,6 +45,6 @@ private:
     QList<Service*> m_services;
 
 }; // class ServiceList
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // SERVICELIST_H

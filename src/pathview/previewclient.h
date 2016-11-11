@@ -201,6 +201,6 @@ signals:
     void interpreterNoteChanged(QString arg);
     void connectedChanged(bool arg);
 }; // class PreviewClient
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // PREVIEWCLIENT_H

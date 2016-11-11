@@ -149,6 +149,6 @@ private slots:
     void updateStreamBuffer();
     void updateStreamBufferItem();
 }; // class MjpegStreamerClient
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // MJPEGSTREAMER2_H

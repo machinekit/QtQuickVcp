@@ -95,6 +95,6 @@ signals:
     void validChanged(bool arg);
 
 }; // class ApplicationDescription
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONDESCRIPTION_H

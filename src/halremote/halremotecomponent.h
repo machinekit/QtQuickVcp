@@ -196,6 +196,6 @@ signals:
     void bindChanged(bool bind);
     void pinsChanged(QQmlListProperty<HalPin> arg);
 }; // class HalRemoteComponent
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // HALREMOTECOMPONENT_H

@@ -353,6 +353,6 @@ signals:
     void syncedChanged(bool arg);
     void connectedChanged(bool arg);
 }; // class ApplicationStatus
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONSTATUS_H

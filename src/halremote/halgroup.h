@@ -193,6 +193,6 @@ signals:
     void valuesChanged(QJsonObject arg);
     void connectedChanged(bool arg);
 }; // class HalGroup
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // HALGROUP_H

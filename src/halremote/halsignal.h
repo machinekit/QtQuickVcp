@@ -104,6 +104,6 @@ private:
     bool m_enabled;
     bool m_synced;
 }; // class HalSignal
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // HALSIGNAL_H

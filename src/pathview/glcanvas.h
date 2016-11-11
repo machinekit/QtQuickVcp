@@ -53,6 +53,6 @@ public slots:
 private:
     GLView * m_context;
 }; // class GLCanvas
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GLCANVAS_H

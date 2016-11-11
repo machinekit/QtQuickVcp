@@ -183,6 +183,6 @@ signals:
 
     void loadingChanged(bool arg);
 }; // class ApplicationConfigItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONCONFIGITEM_H

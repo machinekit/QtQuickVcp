@@ -107,6 +107,6 @@ private:
     bool m_centered;
     bool m_selected;
 }; // GLCubeItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GLCUBEITEM_H

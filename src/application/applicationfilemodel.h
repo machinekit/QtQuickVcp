@@ -64,6 +64,6 @@ private:
     QVariant internalData(const QModelIndex &index, int role) const;
     QString formatByteSize(qint64 bytes) const;
 }; // class ApplicationFileModel
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONFILEMODEL_H

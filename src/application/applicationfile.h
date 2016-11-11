@@ -251,6 +251,6 @@ signals:
     void networkReadyChanged(bool networkReady);
     void modelChanged(ApplicationFileModel * model);
 }; // class ApplicationFile
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONFILE_H

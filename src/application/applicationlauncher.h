@@ -77,6 +77,6 @@ signals:
     void launchersChanged(QJsonValue arg);
     void syncedChanged(bool arg);
 }; // class ApplicationLauncher
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONLAUNCHER_H

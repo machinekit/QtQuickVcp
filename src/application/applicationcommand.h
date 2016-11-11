@@ -147,6 +147,6 @@ signals:
     void connectedChanged(bool arg);
 
 }; // class ApplicationCommand
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONCOMMAND_H

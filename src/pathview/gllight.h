@@ -121,6 +121,6 @@ private:
     bool m_enabled;
     float m_ambientCoefficient;
 }; // class GLLight
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GLLIGHT_H

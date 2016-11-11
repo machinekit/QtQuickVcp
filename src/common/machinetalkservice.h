@@ -67,6 +67,6 @@ public:
                            QJsonObject *object,
                            const QString tempDir);
 };
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // SERVICE_H

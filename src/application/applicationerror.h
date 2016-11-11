@@ -177,6 +177,6 @@ signals:
     void messageReceived(ErrorType type, const QString &text);
     void connectedChanged(bool arg);
 }; // class ApplicationError
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONERROR_H

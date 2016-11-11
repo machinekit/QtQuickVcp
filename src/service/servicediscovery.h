@@ -185,6 +185,6 @@ private slots:
     void networkSessionError(QNetworkSession::SessionError error);
     void unicastLookup();
 }; // class ServiceDiscovery
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // SERVICEDISCOVERY_H

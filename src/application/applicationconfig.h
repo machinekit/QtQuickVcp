@@ -121,6 +121,6 @@ signals:
     void filterChanged(ApplicationConfigFilter * arg);
     void syncedChanged(bool synced);
 }; // class ApplicationConfig
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONCONFIG_H

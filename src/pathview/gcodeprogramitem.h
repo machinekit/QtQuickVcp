@@ -60,6 +60,6 @@ private:
     bool m_active;
     bool m_executed;
 }; // class GCodeProgramItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GCODEPROGRAMITEM_H

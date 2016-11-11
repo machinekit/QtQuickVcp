@@ -234,6 +234,6 @@ signals:
     void lineWidthChanged(float lineWidth);
     void traverseLineStippleLengthChanged(float traverseLineStippleLength);
 }; // class GLPathItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GLPATHITEM_H

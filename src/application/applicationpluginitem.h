@@ -109,6 +109,6 @@ signals:
     void typeChanged(PluginType type);
     void mainFileChanged(QUrl mainFile);
 }; // class ApplicationPluginItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONPLUGINITEM_H

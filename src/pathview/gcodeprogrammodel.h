@@ -88,6 +88,6 @@ private:
     QVariant internalData(const QModelIndex &index, int role) const;
     bool internalSetData(const QModelIndex &index, const QVariant &value, int role);
 }; // class GCodeProgramModel
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GCODEPROGRAMMODEL_H

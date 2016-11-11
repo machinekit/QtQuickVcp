@@ -58,6 +58,6 @@ private:
     QDateTime m_lastModified;
     bool m_dir;
 }; // class ApplicationFileItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONFILEITEM_H

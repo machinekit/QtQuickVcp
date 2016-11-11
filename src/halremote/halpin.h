@@ -122,6 +122,6 @@ private:
     bool            m_enabled;
     bool            m_synced;
 }; // class HalPin
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // HALPIN_H

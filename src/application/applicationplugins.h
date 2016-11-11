@@ -72,6 +72,6 @@ signals:
     void searchPathsChanged(QStringList searchPaths);
     void pluginsChanged(QQmlListProperty<ApplicationPluginItem> arg);
 }; // class ApplicationPlugin
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONPLUGINS_H

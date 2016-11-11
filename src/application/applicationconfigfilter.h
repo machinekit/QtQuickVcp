@@ -91,6 +91,6 @@ signals:
     void descriptionChanged(QString arg);
 
 }; // class ApplicationConfigItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONCONFIGFILTER_H

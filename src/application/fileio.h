@@ -84,6 +84,6 @@ private:
     }
 
 }; // class FileIO
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif  // FILEIO_H

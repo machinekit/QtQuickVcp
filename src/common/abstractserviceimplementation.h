@@ -85,6 +85,6 @@ signals:
     void requiredChanged(bool arg);
     void readyChanged(bool arg);
 }; // class AbstractServiceImplementation
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // ABSTRACTSERVICEIMPLEMENTATION_H

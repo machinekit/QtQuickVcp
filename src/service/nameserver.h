@@ -88,6 +88,6 @@ signals:
     void hostAddressChanged(QHostAddress arg);
     void portChanged(int arg);
 }; // class NameServer
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // QNAMESERVER_H

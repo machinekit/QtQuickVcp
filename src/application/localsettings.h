@@ -92,6 +92,6 @@ private:
     void saveSettings();
     void updateFilePath();
 }; // class LocalSettings
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // LOCALSETTINGS_H

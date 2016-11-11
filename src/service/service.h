@@ -212,6 +212,6 @@ signals:
     void requiredChanged(bool arg);
     void queriesChanged();
 }; // class Service
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // SERVICE_H

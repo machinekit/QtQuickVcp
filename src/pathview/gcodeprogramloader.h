@@ -114,6 +114,6 @@ private:
     QString m_remotePath;
     GCodeProgramModel * m_model;
 }; // class GCodeProgramLoader
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GCODEPROGRAMLOADER_H
