@@ -112,7 +112,6 @@ private:
 private slots:
     void describeApplicationReceived(pb::Container *rx);
     void applicationDetailReceived(pb::Container *rx);
-    void errorReceived(pb::Container *rx);
     void syncConfig();
     void unsyncConfig();
 

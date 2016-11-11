@@ -209,7 +209,6 @@ private slots:
     void fsmSyncedLaunchercmdTryingEvent();
     void fsmSyncedDisconnectEvent();
 
-    virtual void errorReceived(pb::Container *rx) = 0;
     virtual void launcherFullUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
     virtual void launcherIncrementalUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
     virtual void syncStatus() = 0;

@@ -320,18 +320,6 @@ void ApplicationConfig::applicationDetailReceived(pb::Container *rx)
     }
 }
 
-void ApplicationConfig::errorReceived(pb::Container *rx)
-{
-    QString errorString;
-
-    for (int i = 0; i < rx->note_size(); ++i)
-    {
-        errorString.append(QString::fromStdString(rx->note(i)) + "\n");
-    }
-
-    // TODO: to something with errorString
-}
-
 void ApplicationConfig::syncConfig()
 {
     m_synced = true;

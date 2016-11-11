@@ -89,18 +89,6 @@ void ApplicationLauncher::shutdown()
     sendLauncherShutdown(&m_tx);
 }
 
-void ApplicationLauncher::errorReceived(pb::Container *rx)
-{
-    QString errorString;
-
-    for (int i = 0; i < rx->note_size(); ++i)
-    {
-        errorString.append(QString::fromStdString(rx->note(i)) + "\n");
-    }
-
-    // TODO: to something with errorString
-}
-
 void ApplicationLauncher::launcherFullUpdateReceived(const QByteArray &topic, pb::Container *rx)
 {
     Q_UNUSED(topic);

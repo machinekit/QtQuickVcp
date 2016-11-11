@@ -44,9 +44,9 @@ Item {
         file.onUploadFinished.connect(fileUploadFinished);
         error.onMessageReceived.connect(errorMessageReceived);
         file.onErrorChanged.connect(fileError);
-        status.onErrorChanged.connect(statusError);
-        command.onErrorChanged.connect(commandError);
-        error.onErrorChanged.connect(errorError);
+        status.onErrorStringChanged.connect(statusError);
+        command.onErrorStringChanged.connect(commandError);
+        error.onErrorStringChanged.connect(errorError);
     }
 
     function statusTaskChanged() {
@@ -109,21 +109,21 @@ Item {
         }
     }
 
-    function statusError() {
-        if (status.error !== ApplicationStatus.NoError) {
-            console.log("status error: " + status.errorString);
+    function statusError(note) {
+        if (note !== "") {
+            console.log("status error: " + note);
         }
     }
 
-    function commandError() {
-        if (command.error !== ApplicationCommand.NoError) {
-            console.log("command error: " + command.errorString);
+    function commandError(note) {
+        if (note !== "") {
+            console.log("command error: " + note);
         }
     }
 
-    function errorError() {
-        if (error.error !== ApplicationError.NoError) {
-            console.log("error error: " + error.errorString);
+    function errorError(note) {
+        if (note !== "") {
+            console.log("error error: " + note);
         }
     }
 
@@ -151,7 +151,7 @@ Item {
     ApplicationStatus {
         id: applicationStatus
         statusUri: statusService.uri
-        ready: (statusService.ready || connected)
+        ready: (statusService.ready || synced)
     }
 
     ApplicationCommand {

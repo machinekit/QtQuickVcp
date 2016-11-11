@@ -173,7 +173,6 @@ void ConfigBase::processConfigChannelMessage(pb::Container *rx)
             m_errorString.append(QString::fromStdString(rx->note(i)) + "\n");
         }
         emit errorStringChanged(m_errorString);
-        errorReceived(rx);
     }
 
     emit configMessageReceived(rx);

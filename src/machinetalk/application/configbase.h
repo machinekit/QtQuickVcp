@@ -178,7 +178,6 @@ private slots:
 
     virtual void describeApplicationReceived(pb::Container *rx) = 0;
     virtual void applicationDetailReceived(pb::Container *rx) = 0;
-    virtual void errorReceived(pb::Container *rx) = 0;
     virtual void syncConfig() = 0;
     virtual void unsyncConfig() = 0;
 

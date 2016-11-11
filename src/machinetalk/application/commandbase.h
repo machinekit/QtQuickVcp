@@ -212,7 +212,6 @@ private slots:
     void fsmUpCommandTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void errorReceived(pb::Container *rx) = 0;
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;
 
