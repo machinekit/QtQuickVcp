@@ -95,10 +95,14 @@ Item {
                         Label {
                             anchors.fill: parent
                             anchors.rightMargin: 5
-                            text: String(lineNumber)
+                            verticalAlignment: Text.AlignVCenter
+                            wrapMode: Text.NoWrap
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
                             horizontalAlignment: Text.AlignRight
                             color: selected ? "white" : label.color
                             font: dummyLabel.font
+                            text: String(lineNumber)
                         }
                     }
 
@@ -114,8 +118,12 @@ Item {
                             id: label
                             anchors.fill: parent
                             anchors.leftMargin: 5
-                            text: String(gcode).trim()
+                            verticalAlignment: Text.AlignVCenter
+                            wrapMode: Text.NoWrap
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
                             font: dummyLabel.font
+                            text: String(gcode).trim()
                         }
                     }
 

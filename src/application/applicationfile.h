@@ -220,7 +220,7 @@ private:
     void updateError(TransferError error, const QString &errorString);
     QString generateTempPath();
     void cleanupTempPath();
-    QString applicationFilePath(const QString &remoteFilePath);
+    QString applicationFilePath(const QString &remoteFilePath, const QString &serverDirectory);
     void initializeFtp();
     void cleanupFtp();
     void cleanupFile();

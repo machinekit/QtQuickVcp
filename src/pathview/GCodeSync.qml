@@ -25,7 +25,7 @@ import Machinekit.Application 1.0
 import Machinekit.PathView 1.0
 
 QtObject {
-    property var status: {"synced": false}
+    property var status: { "synced": false }
     property var model: undefined
 
     property int _lastLine: 1
