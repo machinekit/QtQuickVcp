@@ -139,7 +139,7 @@ void ApplicationFile::startDownload()
 
     url.setUrl(m_uri);
 
-    localFilePath = applicationFilePath(fileName);
+    localFilePath = applicationFilePath(fileName, m_serverDirectory);
     m_localFilePath = QUrl::fromLocalFile(localFilePath).toString();
     emit localFilePathChanged(m_localFilePath);
 
@@ -311,9 +311,9 @@ void ApplicationFile::cleanupTempPath()
     dir.removeRecursively();
 }
 
-QString ApplicationFile::applicationFilePath(const QString &fileName)
+QString ApplicationFile::applicationFilePath(const QString &fileName, const QString &serverDirectory)
 {
-    return QDir(QUrl(m_localPath).toLocalFile()).filePath(fileName);
+    return QDir(QUrl(m_localPath).toLocalFile() + "/" + serverDirectory).filePath(fileName);
 }
 
 void ApplicationFile::initializeFtp()
