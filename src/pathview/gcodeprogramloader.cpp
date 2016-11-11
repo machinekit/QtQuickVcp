@@ -46,7 +46,7 @@ void GCodeProgramLoader::load()
     QString remotePath = QUrl(m_remotePath).toLocalFile();
     QString remoteFilePath;
 
-    if (localFilePath.indexOf(localPath) == 0)
+    if (localFilePath.indexOf(localPath) == 0)  // file is in local download path
     {
         remoteFilePath = QDir(remotePath).filePath(localFilePath.mid(localPath.length() + 1));
     }
