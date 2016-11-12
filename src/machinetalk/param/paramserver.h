@@ -137,9 +137,9 @@ public slots:
     }
 
 
-    void sendParamMessage(pb::ContainerType type, pb::Container *tx);
-    void sendFullUpdate(pb::Container *tx);
-    void sendIncrementalUpdate(pb::Container *tx);
+    void sendParamMessage(pb::ContainerType type, pb::Container &tx);
+    void sendFullUpdate(pb::Container &tx);
+    void sendIncrementalUpdate(pb::Container &tx);
 
 protected:
 

@@ -105,17 +105,17 @@ void ParamServer::processParamcmdChannelMessage(const pb::Container &rx)
     emit paramcmdMessageReceived(rx);
 }
 
-void ParamServer::sendParamMessage(pb::ContainerType type, pb::Container *tx)
+void ParamServer::sendParamMessage(pb::ContainerType type, pb::Container &tx)
 {
     m_paramChannel->sendSocketMessage(type, tx);
 }
 
-void ParamServer::sendFullUpdate(pb::Container *tx)
+void ParamServer::sendFullUpdate(pb::Container &tx)
 {
     sendParamMessage(pb::MT_FULL_UPDATE, tx);
 }
 
-void ParamServer::sendIncrementalUpdate(pb::Container *tx)
+void ParamServer::sendIncrementalUpdate(pb::Container &tx)
 {
     sendParamMessage(pb::MT_INCREMENTAL_UPDATE, tx);
 }

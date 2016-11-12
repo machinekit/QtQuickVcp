@@ -153,9 +153,9 @@ public slots:
     }
 
 
-    void sendHalrcmdMessage(pb::ContainerType type, pb::Container *tx);
-    void sendHalrcompBind(pb::Container *tx);
-    void sendHalrcompSet(pb::Container *tx);
+    void sendHalrcmdMessage(pb::ContainerType type, pb::Container &tx);
+    void sendHalrcompBind(pb::Container &tx);
+    void sendHalrcompSet(pb::Container &tx);
     void addHalrcompTopic(const QString &name);
     void removeHalrcompTopic(const QString &name);
     void clearHalrcompTopics();

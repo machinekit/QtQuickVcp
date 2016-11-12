@@ -151,8 +151,8 @@ public slots:
     }
 
 
-    void sendParamcmdMessage(pb::ContainerType type, pb::Container *tx);
-    void sendIncrementalUpdate(pb::Container *tx);
+    void sendParamcmdMessage(pb::ContainerType type, pb::Container &tx);
+    void sendIncrementalUpdate(pb::Container &tx);
     void addParamTopic(const QString &name);
     void removeParamTopic(const QString &name);
     void clearParamTopics();

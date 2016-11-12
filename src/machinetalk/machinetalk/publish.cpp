@@ -165,20 +165,20 @@ void Publish::processSocketMessage(const QList<QByteArray> &messageList)
     emit socketMessageReceived(rx);
 }
 
-void Publish::sendSocketMessage(pb::ContainerType type, pb::Container *tx)
+void Publish::sendSocketMessage(pb::ContainerType type, pb::Container &tx)
 {
     if (m_socket == nullptr) {  // disallow sending messages when not connected
         return;
     }
 
-    tx->set_type(type);
+    tx.set_type(type);
 #ifdef QT_DEBUG
     std::string s;
-    gpb::TextFormat::PrintToString(*tx, &s);
+    gpb::TextFormat::PrintToString(tx, &s);
     DEBUG_TAG(3, m_debugName, "sent message" << QString::fromStdString(s));
 #endif
     try {
-        m_socket->sendMessage(QByteArray(tx->SerializeAsString().c_str(), tx->ByteSize()));
+        m_socket->sendMessage(QByteArray(tx.SerializeAsString().c_str(), tx.ByteSize()));
     }
     catch (const zmq::error_t &e) {
         QString errorString;
@@ -186,21 +186,21 @@ void Publish::sendSocketMessage(pb::ContainerType type, pb::Container *tx)
         //updateState(SocketError, errorString);  TODO
         return;
     }
-    tx->Clear();
+    tx.Clear();
 }
 
 void Publish::sendPing()
 {
-    pb::Container *tx = &m_socketTx;
+    pb::Container &tx = m_socketTx;
     sendSocketMessage(pb::MT_PING, tx);
 }
 
-void Publish::sendFullUpdate(pb::Container *tx)
+void Publish::sendFullUpdate(pb::Container &tx)
 {
     sendSocketMessage(pb::MT_FULL_UPDATE, tx);
 }
 
-void Publish::sendIncrementalUpdate(pb::Container *tx)
+void Publish::sendIncrementalUpdate(pb::Container &tx)
 {
     sendSocketMessage(pb::MT_INCREMENTAL_UPDATE, tx);
 }

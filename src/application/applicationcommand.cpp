@@ -47,7 +47,7 @@ void ApplicationCommand::abort(const QString &interpreter)
 
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskAbort(&m_tx);
+    sendEmcTaskAbort(m_tx);
 }
 
 void ApplicationCommand::runProgram(const QString &interpreter, int lineNumber = 0)
@@ -60,7 +60,7 @@ void ApplicationCommand::runProgram(const QString &interpreter, int lineNumber =
     commandParams->set_line_number(lineNumber);
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskPlanRun(&m_tx);
+    sendEmcTaskPlanRun(m_tx);
 }
 
 void ApplicationCommand::pauseProgram(const QString &interpreter)
@@ -71,7 +71,7 @@ void ApplicationCommand::pauseProgram(const QString &interpreter)
 
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskPlanPause(&m_tx);
+    sendEmcTaskPlanPause(m_tx);
 }
 
 void ApplicationCommand::stepProgram(const QString &interpreter)
@@ -82,7 +82,7 @@ void ApplicationCommand::stepProgram(const QString &interpreter)
 
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskPlanStep(&m_tx);
+    sendEmcTaskPlanStep(m_tx);
 }
 
 void ApplicationCommand::resumeProgram(const QString &interpreter)
@@ -93,7 +93,7 @@ void ApplicationCommand::resumeProgram(const QString &interpreter)
 
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskPlanResume(&m_tx);
+    sendEmcTaskPlanResume(m_tx);
 }
 
 void ApplicationCommand::setSpindleBrake(ApplicationCommand::SpindleBrake brake)
@@ -104,11 +104,11 @@ void ApplicationCommand::setSpindleBrake(ApplicationCommand::SpindleBrake brake)
 
     if (brake == EngageBrake)
     {
-        sendEmcSpindleBrakeEngage(&m_tx);
+        sendEmcSpindleBrakeEngage(m_tx);
     }
     else if (brake == ReleaseBrake)
     {
-        sendEmcSpindleBrakeRelease(&m_tx);
+        sendEmcSpindleBrakeRelease(m_tx);
     }
 }
 
@@ -121,7 +121,7 @@ void ApplicationCommand::setDebugLevel(int debugLevel)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_debug_level(debugLevel);
 
-    sendEmcSetDebug(&m_tx);
+    sendEmcSetDebug(m_tx);
 }
 
 void ApplicationCommand::setFeedOverride(double scale)
@@ -133,7 +133,7 @@ void ApplicationCommand::setFeedOverride(double scale)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_scale(scale);
 
-    sendEmcTrajSetScale(&m_tx);
+    sendEmcTrajSetScale(m_tx);
 }
 
 void ApplicationCommand::setRapidOverride(double scale)
@@ -145,7 +145,7 @@ void ApplicationCommand::setRapidOverride(double scale)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_scale(scale);
 
-    sendEmcTrajSetRapidScale(&m_tx);
+    sendEmcTrajSetRapidScale(m_tx);
 }
 
 void ApplicationCommand::setFloodEnabled(bool enable)
@@ -156,11 +156,11 @@ void ApplicationCommand::setFloodEnabled(bool enable)
 
     if (enable)
     {
-        sendEmcCoolantFloodOn(&m_tx);
+        sendEmcCoolantFloodOn(m_tx);
     }
     else
     {
-        sendEmcCoolantFloodOff(&m_tx);
+        sendEmcCoolantFloodOff(m_tx);
     }
 }
 
@@ -173,7 +173,7 @@ void ApplicationCommand::homeAxis(int index)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_index(index);
 
-    sendEmcAxisHome(&m_tx);
+    sendEmcAxisHome(m_tx);
 }
 
 void ApplicationCommand::jog(ApplicationCommand::JogType type, int axisIndex)
@@ -197,17 +197,17 @@ void ApplicationCommand::jog(ApplicationCommand::JogType type, int axisIndex, do
 
     if (type == StopJog)
     {
-        sendEmcAxisAbort(&m_tx);
+        sendEmcAxisAbort(m_tx);
     }
     else if (type == ContinuousJog) {
         commandParams->set_velocity(velocity);
-        sendEmcAxisJog(&m_tx);
+        sendEmcAxisJog(m_tx);
     }
     else if (type == IncrementJog)
     {
         commandParams->set_velocity(velocity);
         commandParams->set_distance(distance);
-        sendEmcAxisIncrJog(&m_tx);
+        sendEmcAxisIncrJog(m_tx);
     }
     else
     {
@@ -221,7 +221,7 @@ void ApplicationCommand::loadToolTable()
         return;
     }
 
-    sendEmcToolLoadToolTable(&m_tx);
+    sendEmcToolLoadToolTable(m_tx);
 }
 
 void ApplicationCommand::updateToolTable(const QJsonArray &toolTable)
@@ -258,7 +258,7 @@ void ApplicationCommand::updateToolTable(const QJsonArray &toolTable)
         offset->set_w(offsetObject.value("w").toDouble(0.0));
     }
 
-    sendEmcToolUpdateToolTable(&m_tx);
+    sendEmcToolUpdateToolTable(m_tx);
 }
 
 void ApplicationCommand::setMaximumVelocity(double velocity)
@@ -270,7 +270,7 @@ void ApplicationCommand::setMaximumVelocity(double velocity)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_velocity(velocity);
 
-    sendEmcTrajSetMaxVelocity(&m_tx);
+    sendEmcTrajSetMaxVelocity(m_tx);
 }
 
 void ApplicationCommand::executeMdi(const QString &interpreter, const QString &command)
@@ -283,7 +283,7 @@ void ApplicationCommand::executeMdi(const QString &interpreter, const QString &c
     commandParams->set_command(command.toStdString());
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskPlanExecute(&m_tx);
+    sendEmcTaskPlanExecute(m_tx);
 }
 
 void ApplicationCommand::setMistEnabled(bool enable)
@@ -294,11 +294,11 @@ void ApplicationCommand::setMistEnabled(bool enable)
 
     if (enable)
     {
-        sendEmcCoolantMistOn(&m_tx);
+        sendEmcCoolantMistOn(m_tx);
     }
     else
     {
-        sendEmcCoolantMistOff(&m_tx);
+        sendEmcCoolantMistOff(m_tx);
     }
 }
 
@@ -312,7 +312,7 @@ void ApplicationCommand::setTaskMode(const QString &interpreter, TaskMode mode)
     commandParams->set_task_mode((pb::EmcTaskModeType)mode);
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskSetMode(&m_tx);
+    sendEmcTaskSetMode(m_tx);
 }
 
 void ApplicationCommand::overrideLimits()
@@ -321,7 +321,7 @@ void ApplicationCommand::overrideLimits()
         return;
     }
 
-    sendEmcAxisOverrideLimits(&m_tx);
+    sendEmcAxisOverrideLimits(m_tx);
 }
 
 void ApplicationCommand::openProgram(const QString &interpreter, const QString &filePath)
@@ -334,7 +334,7 @@ void ApplicationCommand::openProgram(const QString &interpreter, const QString &
     commandParams->set_path(QUrl(filePath).toLocalFile().toStdString());
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskPlanOpen(&m_tx);
+    sendEmcTaskPlanOpen(m_tx);
 }
 
 void ApplicationCommand::resetProgram(const QString &interpreter)
@@ -345,7 +345,7 @@ void ApplicationCommand::resetProgram(const QString &interpreter)
 
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskPlanInit(&m_tx);
+    sendEmcTaskPlanInit(m_tx);
 }
 
 void ApplicationCommand::setAdaptiveFeedEnabled(bool enable)
@@ -357,7 +357,7 @@ void ApplicationCommand::setAdaptiveFeedEnabled(bool enable)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_enable(enable);
 
-    sendEmcMotionAdaptive(&m_tx);
+    sendEmcMotionAdaptive(m_tx);
 }
 
 void ApplicationCommand::setAnalogOutput(int index, double value)
@@ -370,7 +370,7 @@ void ApplicationCommand::setAnalogOutput(int index, double value)
     commandParams->set_index(index);
     commandParams->set_value(value);
 
-    sendEmcMotionSetAout(&m_tx);
+    sendEmcMotionSetAout(m_tx);
 }
 
 void ApplicationCommand::setBlockDeleteEnabled(bool enable)
@@ -382,7 +382,7 @@ void ApplicationCommand::setBlockDeleteEnabled(bool enable)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_enable(enable);
 
-    sendEmcTaskPlanSetBlockDelete(&m_tx);
+    sendEmcTaskPlanSetBlockDelete(m_tx);
 }
 
 void ApplicationCommand::setDigitalOutput(int index, bool enable)
@@ -395,7 +395,7 @@ void ApplicationCommand::setDigitalOutput(int index, bool enable)
     commandParams->set_index(index);
     commandParams->set_enable(enable);
 
-    sendEmcMotionSetDout(&m_tx);
+    sendEmcMotionSetDout(m_tx);
 }
 
 void ApplicationCommand::setFeedHoldEnabled(bool enable)
@@ -407,7 +407,7 @@ void ApplicationCommand::setFeedHoldEnabled(bool enable)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_enable(enable);
 
-    sendEmcTrajSetFhEnable(&m_tx);
+    sendEmcTrajSetFhEnable(m_tx);
 }
 
 void ApplicationCommand::setFeedOverrideEnabled(bool enable)
@@ -419,7 +419,7 @@ void ApplicationCommand::setFeedOverrideEnabled(bool enable)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_enable(enable);
 
-    sendEmcTrajSetFoEnable(&m_tx);
+    sendEmcTrajSetFoEnable(m_tx);
 }
 
 void ApplicationCommand::setAxisMaxPositionLimit(int axisIndex, double value)
@@ -432,7 +432,7 @@ void ApplicationCommand::setAxisMaxPositionLimit(int axisIndex, double value)
     commandParams->set_index(axisIndex);
     commandParams->set_value(value);
 
-    sendEmcAxisSetMaxPositionLimit(&m_tx);
+    sendEmcAxisSetMaxPositionLimit(m_tx);
 }
 
 void ApplicationCommand::setAxisMinPositionLimit(int axisIndex, double value)
@@ -445,7 +445,7 @@ void ApplicationCommand::setAxisMinPositionLimit(int axisIndex, double value)
     commandParams->set_index(axisIndex);
     commandParams->set_value(value);
 
-    sendEmcAxisSetMinPositionLimit(&m_tx);
+    sendEmcAxisSetMinPositionLimit(m_tx);
 }
 
 void ApplicationCommand::setOptionalStopEnabled(bool enable)
@@ -457,7 +457,7 @@ void ApplicationCommand::setOptionalStopEnabled(bool enable)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_enable(enable);
 
-    sendEmcTaskPlanSetOptionalStop(&m_tx);
+    sendEmcTaskPlanSetOptionalStop(m_tx);
 }
 
 void ApplicationCommand::setSpindleOverrideEnabled(bool enable)
@@ -469,7 +469,7 @@ void ApplicationCommand::setSpindleOverrideEnabled(bool enable)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_enable(enable);
 
-    sendEmcTrajSetSoEnable(&m_tx);
+    sendEmcTrajSetSoEnable(m_tx);
 }
 
 void ApplicationCommand::setSpindle(ApplicationCommand::SpindleMode mode)
@@ -489,23 +489,23 @@ void ApplicationCommand::setSpindle(ApplicationCommand::SpindleMode mode, double
     {
     case SpindleForward:
         commandParams->set_velocity(velocity);
-        sendEmcSpindleOn(&m_tx);
+        sendEmcSpindleOn(m_tx);
         break;
     case SpindleReverse:
         commandParams->set_velocity(velocity * -1.0);
-        sendEmcSpindleOn(&m_tx);
+        sendEmcSpindleOn(m_tx);
         break;
     case SpindleOff:
-        sendEmcSpindleOff(&m_tx);
+        sendEmcSpindleOff(m_tx);
         break;
     case SpindleIncrease:
-        sendEmcSpindleIncrease(&m_tx);
+        sendEmcSpindleIncrease(m_tx);
         break;
     case SpindleDecrease:
-        sendEmcSpindleDecrease(&m_tx);
+        sendEmcSpindleDecrease(m_tx);
         break;
     case SpindleConstant:
-        sendEmcSpindleConstant(&m_tx);
+        sendEmcSpindleConstant(m_tx);
         break;
     }
 }
@@ -519,7 +519,7 @@ void ApplicationCommand::setSpindleOverride(double scale)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_scale(scale);
 
-    sendEmcTrajSetSpindleScale(&m_tx);
+    sendEmcTrajSetSpindleScale(m_tx);
 }
 
 void ApplicationCommand::setTaskState(const QString &interpreter, TaskState state)
@@ -532,7 +532,7 @@ void ApplicationCommand::setTaskState(const QString &interpreter, TaskState stat
     commandParams->set_task_state((pb::EmcTaskStateType)state);
     m_tx.set_interp_name(interpreter.toStdString());
 
-    sendEmcTaskSetState(&m_tx);
+    sendEmcTaskSetState(m_tx);
 }
 
 void ApplicationCommand::setTeleopEnabled(bool enable)
@@ -544,7 +544,7 @@ void ApplicationCommand::setTeleopEnabled(bool enable)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_enable(enable);
 
-    sendEmcTrajSetTeleopEnable(&m_tx);
+    sendEmcTrajSetTeleopEnable(m_tx);
 }
 
 void ApplicationCommand::setTeleopVector(double a, double b, double c, double u = 0.0, double v = 0.0, double w = 0.0)
@@ -562,7 +562,7 @@ void ApplicationCommand::setTeleopVector(double a, double b, double c, double u 
     pose->set_v(v);
     pose->set_w(w);
 
-    sendEmcTrajSetTeleopVector(&m_tx);
+    sendEmcTrajSetTeleopVector(m_tx);
 }
 
 void ApplicationCommand::setToolOffset(int index, double zOffset, double xOffset, double diameter, double frontangle, double backangle, int orientation)
@@ -582,7 +582,7 @@ void ApplicationCommand::setToolOffset(int index, double zOffset, double xOffset
     tooldata->set_backangle(backangle);
     tooldata->set_orientation(orientation);
 
-    sendEmcToolSetOffset(&m_tx);
+    sendEmcToolSetOffset(m_tx);
 }
 
 void ApplicationCommand::setTrajectoryMode(TrajectoryMode mode)
@@ -594,7 +594,7 @@ void ApplicationCommand::setTrajectoryMode(TrajectoryMode mode)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_traj_mode((pb::EmcTrajectoryModeType)mode);
 
-    sendEmcTrajSetMode(&m_tx);
+    sendEmcTrajSetMode(m_tx);
 }
 
 void ApplicationCommand::unhomeAxis(int index)
@@ -606,7 +606,7 @@ void ApplicationCommand::unhomeAxis(int index)
     pb::EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     commandParams->set_index(index);
 
-    sendEmcAxisUnhome(&m_tx);
+    sendEmcAxisUnhome(m_tx);
 }
 
 void ApplicationCommand::shutdown()
@@ -615,7 +615,7 @@ void ApplicationCommand::shutdown()
         return;
     }
 
-    sendShutdown(&m_tx);
+    sendShutdown(m_tx);
 }
 
 void ApplicationCommand::setConnected()

@@ -128,8 +128,8 @@ public slots:
     }
 
 
-    void sendConfigMessage(pb::ContainerType type, pb::Container *tx);
-    void sendRetrieveApplication(pb::Container *tx);
+    void sendConfigMessage(pb::ContainerType type, pb::Container &tx);
+    void sendRetrieveApplication(pb::Container &tx);
 
 protected:
     void start(); // start trigger

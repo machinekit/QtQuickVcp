@@ -344,7 +344,7 @@ void ApplicationConfig::selectConfig(QString name)
     pb::Application *app = m_tx.add_app();
 
     app->set_name(name.toStdString());
-    sendRetrieveApplication(&m_tx);
+    sendRetrieveApplication(m_tx);
 }
 
 void ApplicationConfig::unselectConfig()

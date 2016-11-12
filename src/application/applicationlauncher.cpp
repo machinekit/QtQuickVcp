@@ -36,7 +36,7 @@ void ApplicationLauncher::start(int index)
 #endif
 
     m_tx.set_index(index);
-    sendLauncherStart(&m_tx);
+    sendLauncherStart(m_tx);
 }
 
 void ApplicationLauncher::kill(int index)
@@ -46,7 +46,7 @@ void ApplicationLauncher::kill(int index)
     }
 
     m_tx.set_index(index);
-    sendLauncherKill(&m_tx);
+    sendLauncherKill(m_tx);
 }
 
 void ApplicationLauncher::terminate(int index)
@@ -56,7 +56,7 @@ void ApplicationLauncher::terminate(int index)
     }
 
     m_tx.set_index(index);
-    sendLauncherTerminate(&m_tx);
+    sendLauncherTerminate(m_tx);
 }
 
 void ApplicationLauncher::writeToStdin(int index, const QString &data)
@@ -67,7 +67,7 @@ void ApplicationLauncher::writeToStdin(int index, const QString &data)
 
     m_tx.set_index(index);
     m_tx.set_name(data.toStdString());
-    sendLauncherWriteStdin(&m_tx);
+    sendLauncherWriteStdin(m_tx);
 }
 
 void ApplicationLauncher::call(const QString &command)
@@ -77,7 +77,7 @@ void ApplicationLauncher::call(const QString &command)
     }
 
     m_tx.set_name(command.toStdString());
-    sendLauncherCall(&m_tx);
+    sendLauncherCall(m_tx);
 }
 
 void ApplicationLauncher::shutdown()
@@ -86,7 +86,7 @@ void ApplicationLauncher::shutdown()
         return;
     }
 
-    sendLauncherShutdown(&m_tx);
+    sendLauncherShutdown(m_tx);
 }
 
 void ApplicationLauncher::launcherFullUpdateReceived(const QByteArray &topic, const pb::Container &rx)

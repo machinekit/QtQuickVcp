@@ -199,37 +199,37 @@ void LauncherBase::processLauncherChannelMessage(const QByteArray &topic, const 
     emit launcherMessageReceived(topic, rx);
 }
 
-void LauncherBase::sendLaunchercmdMessage(pb::ContainerType type, pb::Container *tx)
+void LauncherBase::sendLaunchercmdMessage(pb::ContainerType type, pb::Container &tx)
 {
     m_launchercmdChannel->sendSocketMessage(type, tx);
 }
 
-void LauncherBase::sendLauncherStart(pb::Container *tx)
+void LauncherBase::sendLauncherStart(pb::Container &tx)
 {
     sendLaunchercmdMessage(pb::MT_LAUNCHER_START, tx);
 }
 
-void LauncherBase::sendLauncherKill(pb::Container *tx)
+void LauncherBase::sendLauncherKill(pb::Container &tx)
 {
     sendLaunchercmdMessage(pb::MT_LAUNCHER_KILL, tx);
 }
 
-void LauncherBase::sendLauncherTerminate(pb::Container *tx)
+void LauncherBase::sendLauncherTerminate(pb::Container &tx)
 {
     sendLaunchercmdMessage(pb::MT_LAUNCHER_TERMINATE, tx);
 }
 
-void LauncherBase::sendLauncherWriteStdin(pb::Container *tx)
+void LauncherBase::sendLauncherWriteStdin(pb::Container &tx)
 {
     sendLaunchercmdMessage(pb::MT_LAUNCHER_WRITE_STDIN, tx);
 }
 
-void LauncherBase::sendLauncherCall(pb::Container *tx)
+void LauncherBase::sendLauncherCall(pb::Container &tx)
 {
     sendLaunchercmdMessage(pb::MT_LAUNCHER_CALL, tx);
 }
 
-void LauncherBase::sendLauncherShutdown(pb::Container *tx)
+void LauncherBase::sendLauncherShutdown(pb::Container &tx)
 {
     sendLaunchercmdMessage(pb::MT_LAUNCHER_SHUTDOWN, tx);
 }

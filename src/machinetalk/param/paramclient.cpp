@@ -200,12 +200,12 @@ void ParamClient::processParamChannelMessage(const QByteArray &topic, const pb::
     emit paramMessageReceived(topic, rx);
 }
 
-void ParamClient::sendParamcmdMessage(pb::ContainerType type, pb::Container *tx)
+void ParamClient::sendParamcmdMessage(pb::ContainerType type, pb::Container &tx)
 {
     m_paramcmdChannel->sendSocketMessage(type, tx);
 }
 
-void ParamClient::sendIncrementalUpdate(pb::Container *tx)
+void ParamClient::sendIncrementalUpdate(pb::Container &tx)
 {
     sendParamcmdMessage(pb::MT_INCREMENTAL_UPDATE, tx);
 }

@@ -234,7 +234,7 @@ void HalRemoteComponent::pinChange(QVariant value)
         halPin->set_halu32(pin->value().toUInt());
     }
 
-    sendHalrcompSet(&m_tx);
+    sendHalrcompSet(m_tx);
 }
 
 /** Recurses through a list of objects */
@@ -340,7 +340,7 @@ void HalRemoteComponent::bindPins()
     DEBUG_TAG(3, m_name, QString::fromStdString(s));
 #endif
 
-    sendHalrcompBind(&m_tx);
+    sendHalrcompBind(m_tx);
 }
 
 /** splits HAL pin name from full HAL name **/

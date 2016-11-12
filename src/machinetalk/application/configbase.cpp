@@ -178,7 +178,7 @@ void ConfigBase::processConfigChannelMessage(const pb::Container &rx)
     emit configMessageReceived(rx);
 }
 
-void ConfigBase::sendConfigMessage(pb::ContainerType type, pb::Container *tx)
+void ConfigBase::sendConfigMessage(pb::ContainerType type, pb::Container &tx)
 {
     m_configChannel->sendSocketMessage(type, tx);
     if (type == pb::MT_RETRIEVE_APPLICATION)
@@ -193,11 +193,11 @@ void ConfigBase::sendConfigMessage(pb::ContainerType type, pb::Container *tx)
 
 void ConfigBase::sendListApplications()
 {
-    pb::Container *tx = &m_configTx;
+    pb::Container &tx = m_configTx;
     sendConfigMessage(pb::MT_LIST_APPLICATIONS, tx);
 }
 
-void ConfigBase::sendRetrieveApplication(pb::Container *tx)
+void ConfigBase::sendRetrieveApplication(pb::Container &tx)
 {
     sendConfigMessage(pb::MT_RETRIEVE_APPLICATION, tx);
 }

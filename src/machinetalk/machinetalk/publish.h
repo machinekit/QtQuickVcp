@@ -112,9 +112,9 @@ public slots:
     }
 
 
-    void sendSocketMessage(pb::ContainerType type, pb::Container *tx);
-    void sendFullUpdate(pb::Container *tx);
-    void sendIncrementalUpdate(pb::Container *tx);
+    void sendSocketMessage(pb::ContainerType type, pb::Container &tx);
+    void sendFullUpdate(pb::Container &tx);
+    void sendIncrementalUpdate(pb::Container &tx);
 
 protected:
     void start(); // start trigger

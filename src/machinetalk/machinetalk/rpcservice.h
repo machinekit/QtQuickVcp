@@ -97,7 +97,7 @@ public slots:
     }
 
 
-    void sendSocketMessage(pb::ContainerType type, pb::Container *tx);
+    void sendSocketMessage(pb::ContainerType type, pb::Container &tx);
 
 protected:
     void start(); // start trigger

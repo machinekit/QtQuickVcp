@@ -309,7 +309,7 @@ void RemoteComponentBase::processHalrcompChannelMessage(const QByteArray &topic,
     emit halrcompMessageReceived(topic, rx);
 }
 
-void RemoteComponentBase::sendHalrcmdMessage(pb::ContainerType type, pb::Container *tx)
+void RemoteComponentBase::sendHalrcmdMessage(pb::ContainerType type, pb::Container &tx)
 {
     m_halrcmdChannel->sendSocketMessage(type, tx);
     if (type == pb::MT_HALRCOMP_BIND)
@@ -330,12 +330,12 @@ void RemoteComponentBase::sendHalrcmdMessage(pb::ContainerType type, pb::Contain
     }
 }
 
-void RemoteComponentBase::sendHalrcompBind(pb::Container *tx)
+void RemoteComponentBase::sendHalrcompBind(pb::Container &tx)
 {
     sendHalrcmdMessage(pb::MT_HALRCOMP_BIND, tx);
 }
 
-void RemoteComponentBase::sendHalrcompSet(pb::Container *tx)
+void RemoteComponentBase::sendHalrcompSet(pb::Container &tx)
 {
     sendHalrcmdMessage(pb::MT_HALRCOMP_SET, tx);
 }

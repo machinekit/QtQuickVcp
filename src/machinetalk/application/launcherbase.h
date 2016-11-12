@@ -150,13 +150,13 @@ public slots:
     }
 
 
-    void sendLaunchercmdMessage(pb::ContainerType type, pb::Container *tx);
-    void sendLauncherStart(pb::Container *tx);
-    void sendLauncherKill(pb::Container *tx);
-    void sendLauncherTerminate(pb::Container *tx);
-    void sendLauncherWriteStdin(pb::Container *tx);
-    void sendLauncherCall(pb::Container *tx);
-    void sendLauncherShutdown(pb::Container *tx);
+    void sendLaunchercmdMessage(pb::ContainerType type, pb::Container &tx);
+    void sendLauncherStart(pb::Container &tx);
+    void sendLauncherKill(pb::Container &tx);
+    void sendLauncherTerminate(pb::Container &tx);
+    void sendLauncherWriteStdin(pb::Container &tx);
+    void sendLauncherCall(pb::Container &tx);
+    void sendLauncherShutdown(pb::Container &tx);
     void addLauncherTopic(const QString &name);
     void removeLauncherTopic(const QString &name);
     void clearLauncherTopics();

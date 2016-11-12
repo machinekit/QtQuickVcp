@@ -191,23 +191,23 @@ void SyncClient::processSubChannelMessage(const QByteArray &topic, const pb::Con
     emit subMessageReceived(topic, rx);
 }
 
-void SyncClient::sendSyncMessage(pb::ContainerType type, pb::Container *tx)
+void SyncClient::sendSyncMessage(pb::ContainerType type, pb::Container &tx)
 {
     m_syncChannel->sendSocketMessage(type, tx);
 }
 
-void SyncClient::sendPubMessage(pb::ContainerType type, pb::Container *tx)
+void SyncClient::sendPubMessage(pb::ContainerType type, pb::Container &tx)
 {
     m_pubChannel->sendSocketMessage(type, tx);
 }
 
 void SyncClient::sendSync()
 {
-    pb::Container *tx = &m_syncTx;
+    pb::Container &tx = m_syncTx;
     sendSyncMessage(pb::MT_SYNC, tx);
 }
 
-void SyncClient::sendIncrementalUpdate(pb::Container *tx)
+void SyncClient::sendIncrementalUpdate(pb::Container &tx)
 {
     sendPubMessage(pb::MT_INCREMENTAL_UPDATE, tx);
 }

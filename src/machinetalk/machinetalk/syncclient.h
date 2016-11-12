@@ -173,10 +173,10 @@ public slots:
     }
 
 
-    void sendSyncMessage(pb::ContainerType type, pb::Container *tx);
+    void sendSyncMessage(pb::ContainerType type, pb::Container &tx);
 
-    void sendPubMessage(pb::ContainerType type, pb::Container *tx);
-    void sendIncrementalUpdate(pb::Container *tx);
+    void sendPubMessage(pb::ContainerType type, pb::Container &tx);
+    void sendIncrementalUpdate(pb::Container &tx);
     void addSubTopic(const QString &name);
     void removeSubTopic(const QString &name);
     void clearSubTopics();
