@@ -22,27 +22,22 @@
 #ifndef APPLICATIONSTATUS_H
 #define APPLICATIONSTATUS_H
 
-#include <abstractserviceimplementation.h>
-#include <machinetalkservice.h>
 #include <QStringList>
 #include <QTimer>
-#include <nzmqt/nzmqt.hpp>
+#include <QHash>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/status.pb.h>
+#include <machinetalkservice.h>
+#include <application/statusbase.h>
 
 namespace qtquickvcp {
 
-class ApplicationStatus : public AbstractServiceImplementation
+class ApplicationStatus : public application::StatusBase
 {
     Q_OBJECT
-    Q_PROPERTY(QString statusUri READ statusUri WRITE setStatusUri NOTIFY statusUriChanged)
-    Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
-    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
-    Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
-    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QJsonObject config READ config NOTIFY configChanged)
     Q_PROPERTY(QJsonObject motion READ motion NOTIFY motionChanged)
     Q_PROPERTY(QJsonObject io READ io NOTIFY ioChanged)
@@ -51,7 +46,7 @@ class ApplicationStatus : public AbstractServiceImplementation
     Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
     Q_PROPERTY(StatusChannels channels READ channels WRITE setChannels NOTIFY channelsChanged)
-    Q_ENUMS(State ConnectionError OriginIndex TrajectoryMode MotionStatus
+    Q_ENUMS(OriginIndex TrajectoryMode MotionStatus
             AxisType KinematicsType CanonUnits TaskExecState TaskState
             TaskMode InterpreterState InterpreterExitCode PositionOffset
             PositionFeedback TimeUnits MotionType)
@@ -59,26 +54,6 @@ class ApplicationStatus : public AbstractServiceImplementation
 
 public:
     explicit ApplicationStatus(QObject *parent = 0);
-
-    enum SocketState {
-        Down = 1,
-        Trying = 2,
-        Up = 3
-    };
-
-    enum State {
-        Disconnected = 0,
-        Connecting = 1,
-        Connected = 2,
-        Timeout = 3,
-        Error = 4
-    };
-
-    enum ConnectionError {
-        NoError = 0,
-        ServiceError = 1,
-        SocketError = 2
-    };
 
     enum OriginIndex {
         OriginG54 = pb::ORIGIN_G54,
@@ -191,6 +166,7 @@ public:
     };
 
     enum StatusChannel {
+        NoChannel = 0x0,
         MotionChannel = 0x1,
         ConfigChannel = 0x2,
         IoChannel     = 0x4,
@@ -198,26 +174,6 @@ public:
         InterpChannel = 0x10
     };
     Q_DECLARE_FLAGS(StatusChannels, StatusChannel)
-
-    QString statusUri() const
-    {
-        return m_statusUri;
-    }
-
-    State connectionState() const
-    {
-        return m_connectionState;
-    }
-
-    ConnectionError error() const
-    {
-        return m_error;
-    }
-
-    QString errorString() const
-    {
-        return m_errorString;
-    }
 
     QJsonObject config() const
     {
@@ -259,22 +215,7 @@ public:
         return m_synced;
     }
 
-    bool isConnected() const
-    {
-        return m_connected;
-    }
-
 public slots:
-
-    void setStatusUri(QString arg)
-    {
-        if (m_statusUri == arg)
-            return;
-
-        m_statusUri = arg;
-        emit statusUriChanged(arg);
-    }
-
     void setChannels(StatusChannels arg)
     {
         if (m_channels == arg)
@@ -285,12 +226,6 @@ public slots:
     }
 
 private:
-    QString         m_statusUri;
-    SocketState     m_statusSocketState;
-    bool            m_connected;
-    State           m_connectionState;
-    ConnectionError m_error;
-    QString         m_errorString;
     QJsonObject     m_config;
     QJsonObject     m_motion;
     QJsonObject     m_io;
@@ -300,58 +235,36 @@ private:
     bool            m_synced;
     StatusChannels  m_syncedChannels;
     StatusChannels  m_channels;
+    QHash<QByteArray, StatusChannel> m_channelMap;
 
-    nzmqt::PollingZMQContext *m_context;
-    nzmqt::ZMQSocket *m_statusSocket;
-    QStringList  m_subscriptions;
-    QTimer      *m_statusHeartbeatTimer;
-    // more efficient to reuse a protobuf Message
-    pb::Container   m_rx;
-
-    void start();
-    void stop();
-    void cleanup();
-    void startStatusHeartbeat(int interval);
-    void stopStatusHeartbeat();
-    void refreshStatusHeartbeat();
-    void updateState(State state);
-    void updateState(State state, ConnectionError error, const QString &errorString);
-    void updateError(ConnectionError error, const QString &errorString);
+    void emcstatUpdateReceived(StatusChannel channel, const pb::Container &rx);
     void updateSync(StatusChannel channel);
-    void clearSync();
-    void updateMotion(const pb::EmcStatusMotion &motion);
-    void updateConfig(const pb::EmcStatusConfig &config);
-    void updateIo(const pb::EmcStatusIo &io);
-    void updateTask(const pb::EmcStatusTask &task);
-    void updateInterp(const pb::EmcStatusInterp &interp);
+    void updateMotionObject(const pb::EmcStatusMotion &motion);
+    void updateConfigObject(const pb::EmcStatusConfig &config);
+    void updateIoObject(const pb::EmcStatusIo &io);
+    void updateTaskObject(const pb::EmcStatusTask &task);
+    void updateInterpObject(const pb::EmcStatusInterp &interp);
     void initializeObject(StatusChannel channel);
 
-private slots:
-    void statusMessageReceived(const QList<QByteArray> &messageList);
-    void pollError(int errorNum, const QString &errorMsg);
-    void statusHeartbeatTimerTick();
 
-    bool connectSockets();
-    void disconnectSockets();
-    void subscribe();
-    void unsubscribe();
+private slots:
+    void emcstatFullUpdateReceived(const QByteArray &topic, const pb::Container &rx);
+    void emcstatIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx);
+    void syncStatus();
+    void unsyncStatus();
+    void updateTopics();
 
     void updateRunning(const QJsonObject &object);
 
 signals:
-    void statusUriChanged(QString arg);
-    void connectionStateChanged(State arg);
-    void errorChanged(ConnectionError arg);
-    void errorStringChanged(QString arg);
-    void configChanged(QJsonObject arg);
-    void motionChanged(QJsonObject arg);
-    void ioChanged(QJsonObject arg);
-    void taskChanged(QJsonObject arg);
-    void interpChanged(QJsonObject arg);
+    void configChanged(const QJsonObject &arg);
+    void motionChanged(const QJsonObject &arg);
+    void ioChanged(const QJsonObject &arg);
+    void taskChanged(const QJsonObject &arg);
+    void interpChanged(const QJsonObject &arg);
     void channelsChanged(StatusChannels arg);
     void runningChanged(bool arg);
     void syncedChanged(bool arg);
-    void connectedChanged(bool arg);
 }; // class ApplicationStatus
 } // namespace qtquickvcp
 
