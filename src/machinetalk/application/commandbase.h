@@ -201,7 +201,7 @@ private slots:
     void startCommandChannel();
     void stopCommandChannel();
     void commandChannelStateChanged(machinetalk::RpcClient::State state);
-    void processCommandChannelMessage(pb::Container *rx);
+    void processCommandChannelMessage(const pb::Container &rx);
 
     void fsmDownEntered();
     void fsmDownConnectEvent();
@@ -218,7 +218,7 @@ private slots:
 signals:
 
     void commandUriChanged(QString uri);
-    void commandMessageReceived(pb::Container *rx);
+    void commandMessageReceived(const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(CommandBase::State state);
     void errorStringChanged(QString errorString);

@@ -40,7 +40,7 @@ SyncClient::SyncClient(QObject *parent) :
     connect(m_syncChannel, &machinetalk::RpcClient::stateChanged,
             this, &SyncClient::syncChannelStateChanged);
     connect(m_syncChannel, &machinetalk::RpcClient::socketMessageReceived,
-            this, &SyncClient::processSyncChannelMessage, Qt::QueuedConnection);
+            this, &SyncClient::processSyncChannelMessage);
     // initialize sub channel
     m_subChannel = new machinetalk::Subscribe(this);
     m_subChannel->setDebugName(m_debugName + " - sub");
@@ -49,7 +49,7 @@ SyncClient::SyncClient(QObject *parent) :
     connect(m_subChannel, &machinetalk::Subscribe::stateChanged,
             this, &SyncClient::subChannelStateChanged);
     connect(m_subChannel, &machinetalk::Subscribe::socketMessageReceived,
-            this, &SyncClient::processSubChannelMessage, Qt::QueuedConnection);
+            this, &SyncClient::processSubChannelMessage);
     // initialize pub channel
     m_pubChannel = new machinetalk::Publish(this);
     m_pubChannel->setDebugName(m_debugName + " - pub");
@@ -178,14 +178,14 @@ void SyncClient::stopPubChannel()
 }
 
 /** Processes all message received on sync */
-void SyncClient::processSyncChannelMessage(pb::Container *rx)
+void SyncClient::processSyncChannelMessage(const pb::Container &rx)
 {
 
     emit syncMessageReceived(rx);
 }
 
 /** Processes all message received on sub */
-void SyncClient::processSubChannelMessage(const QByteArray &topic, pb::Container *rx)
+void SyncClient::processSubChannelMessage(const QByteArray &topic, const pb::Container &rx)
 {
 
     emit subMessageReceived(topic, rx);

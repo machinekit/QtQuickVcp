@@ -155,7 +155,7 @@ private slots:
     void startConfigChannel();
     void stopConfigChannel();
     void configChannelStateChanged(machinetalk::RpcClient::State state);
-    void processConfigChannelMessage(pb::Container *rx);
+    void processConfigChannelMessage(const pb::Container &rx);
     void sendListApplications();
 
     void fsmDownEntered();
@@ -176,15 +176,15 @@ private slots:
     void fsmLoadingConfigTryingEvent();
     void fsmLoadingDisconnectEvent();
 
-    virtual void describeApplicationReceived(pb::Container *rx) = 0;
-    virtual void applicationDetailReceived(pb::Container *rx) = 0;
+    virtual void describeApplicationReceived(const pb::Container &rx) = 0;
+    virtual void applicationDetailReceived(const pb::Container &rx) = 0;
     virtual void syncConfig() = 0;
     virtual void unsyncConfig() = 0;
 
 signals:
 
     void configUriChanged(QString uri);
-    void configMessageReceived(pb::Container *rx);
+    void configMessageReceived(const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(ConfigBase::State state);
     void errorStringChanged(QString errorString);

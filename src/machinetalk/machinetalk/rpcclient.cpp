@@ -140,7 +140,7 @@ bool RpcClient::startSocket()
     }
 
     connect(m_socket, &ZMQSocket::messageReceived,
-            this, &RpcClient::processSocketMessage, Qt::QueuedConnection);
+            this, &RpcClient::processSocketMessage);
 
 
 #ifdef QT_DEBUG
@@ -218,12 +218,12 @@ void RpcClient::heartbeatTimerTick()
 /** Processes all message received on socket */
 void RpcClient::processSocketMessage(const QList<QByteArray> &messageList)
 {
-    pb::Container *rx = &m_socketRx;
-    rx->ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
+    pb::Container &rx = m_socketRx;
+    rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
 #ifdef QT_DEBUG
     std::string s;
-    gpb::TextFormat::PrintToString(*rx, &s);
+    gpb::TextFormat::PrintToString(rx, &s);
     DEBUG_TAG(3, m_debugName, "server message" << QString::fromStdString(s));
 #endif
 
@@ -240,7 +240,7 @@ void RpcClient::processSocketMessage(const QList<QByteArray> &messageList)
     }
 
     // react to ping acknowledge message
-    if (rx->type() == pb::MT_PING_ACKNOWLEDGE)
+    if (rx.type() == pb::MT_PING_ACKNOWLEDGE)
     {
         return; // ping acknowledge is uninteresting
     }

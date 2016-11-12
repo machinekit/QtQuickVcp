@@ -163,7 +163,7 @@ private slots:
 
     void startParamcmdChannel();
     void stopParamcmdChannel();
-    void processParamcmdChannelMessage(pb::Container *rx);
+    void processParamcmdChannelMessage(const pb::Container &rx);
 
     void startParamChannel();
     void stopParamChannel();
@@ -173,13 +173,13 @@ private slots:
     void fsmUpEntered();
     void fsmUpDisconnectEvent();
 
-    virtual void incrementalUpdateReceived(pb::Container *rx) = 0;
+    virtual void incrementalUpdateReceived(const pb::Container &rx) = 0;
 
 signals:
 
     void paramcmdUriChanged(QString uri);
     void paramUriChanged(QString uri);
-    void paramcmdMessageReceived(pb::Container *rx);
+    void paramcmdMessageReceived(const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(ParamServer::State state);
     void errorStringChanged(QString errorString);

@@ -39,7 +39,7 @@ LauncherBase::LauncherBase(QObject *parent) :
     connect(m_launchercmdChannel, &machinetalk::RpcClient::stateChanged,
             this, &LauncherBase::launchercmdChannelStateChanged);
     connect(m_launchercmdChannel, &machinetalk::RpcClient::socketMessageReceived,
-            this, &LauncherBase::processLaunchercmdChannelMessage, Qt::QueuedConnection);
+            this, &LauncherBase::processLaunchercmdChannelMessage);
     // initialize launcher channel
     m_launcherChannel = new application::LauncherSubscribe(this);
     m_launcherChannel->setDebugName(m_debugName + " - launcher");
@@ -48,7 +48,7 @@ LauncherBase::LauncherBase(QObject *parent) :
     connect(m_launcherChannel, &application::LauncherSubscribe::stateChanged,
             this, &LauncherBase::launcherChannelStateChanged);
     connect(m_launcherChannel, &application::LauncherSubscribe::socketMessageReceived,
-            this, &LauncherBase::processLauncherChannelMessage, Qt::QueuedConnection);
+            this, &LauncherBase::processLauncherChannelMessage);
 
     connect(m_launchercmdChannel, &machinetalk::RpcClient::heartbeatIntervalChanged,
             this, &LauncherBase::launchercmdHeartbeatIntervalChanged);
@@ -161,18 +161,18 @@ void LauncherBase::stopLauncherChannel()
 }
 
 /** Processes all message received on launchercmd */
-void LauncherBase::processLaunchercmdChannelMessage(pb::Container *rx)
+void LauncherBase::processLaunchercmdChannelMessage(const pb::Container &rx)
 {
 
     // react to error message
-    if (rx->type() == pb::MT_ERROR)
+    if (rx.type() == pb::MT_ERROR)
     {
 
         // update error string with note
         m_errorString = "";
-        for (int i = 0; i < rx->note_size(); ++i)
+        for (int i = 0; i < rx.note_size(); ++i)
         {
-            m_errorString.append(QString::fromStdString(rx->note(i)) + "\n");
+            m_errorString.append(QString::fromStdString(rx.note(i)) + "\n");
         }
         emit errorStringChanged(m_errorString);
     }
@@ -181,17 +181,17 @@ void LauncherBase::processLaunchercmdChannelMessage(pb::Container *rx)
 }
 
 /** Processes all message received on launcher */
-void LauncherBase::processLauncherChannelMessage(const QByteArray &topic, pb::Container *rx)
+void LauncherBase::processLauncherChannelMessage(const QByteArray &topic, const pb::Container &rx)
 {
 
     // react to launcher full update message
-    if (rx->type() == pb::MT_LAUNCHER_FULL_UPDATE)
+    if (rx.type() == pb::MT_LAUNCHER_FULL_UPDATE)
     {
         launcherFullUpdateReceived(topic, rx);
     }
 
     // react to launcher incremental update message
-    if (rx->type() == pb::MT_LAUNCHER_INCREMENTAL_UPDATE)
+    if (rx.type() == pb::MT_LAUNCHER_INCREMENTAL_UPDATE)
     {
         launcherIncrementalUpdateReceived(topic, rx);
     }

@@ -138,7 +138,7 @@ bool LauncherSubscribe::startSocket()
     }
 
     connect(m_socket, &ZMQSocket::messageReceived,
-            this, &LauncherSubscribe::processSocketMessage, Qt::QueuedConnection);
+            this, &LauncherSubscribe::processSocketMessage);
 
 
     foreach(QString topic, m_socketTopics)
@@ -213,7 +213,7 @@ void LauncherSubscribe::heartbeatTimerTick()
 /** Processes all message received on socket */
 void LauncherSubscribe::processSocketMessage(const QList<QByteArray> &messageList)
 {
-    pb::Container *rx = &m_socketRx;
+    pb::Container &rx = m_socketRx;
     QByteArray topic;
 
     if (messageList.length() < 2)  // in case we received insufficient data
@@ -223,11 +223,11 @@ void LauncherSubscribe::processSocketMessage(const QList<QByteArray> &messageLis
 
     // we only handle the first two messges
     topic = messageList.at(0);
-    rx->ParseFromArray(messageList.at(1).data(), messageList.at(1).size());
+    rx.ParseFromArray(messageList.at(1).data(), messageList.at(1).size());
 
 #ifdef QT_DEBUG
     std::string s;
-    gpb::TextFormat::PrintToString(*rx, &s);
+    gpb::TextFormat::PrintToString(rx, &s);
     DEBUG_TAG(3, m_debugName, "server message" << QString::fromStdString(s));
 #endif
 
@@ -239,17 +239,17 @@ void LauncherSubscribe::processSocketMessage(const QList<QByteArray> &messageLis
     }
 
     // react to ping message
-    if (rx->type() == pb::MT_PING)
+    if (rx.type() == pb::MT_PING)
     {
         return; // ping is uninteresting
     }
 
     // react to launcher full update message
-    if (rx->type() == pb::MT_LAUNCHER_FULL_UPDATE)
+    if (rx.type() == pb::MT_LAUNCHER_FULL_UPDATE)
     {
-        if (rx->has_pparams())
+        if (rx.has_pparams())
         {
-            pb::ProtocolParameters pparams = rx->pparams();
+            pb::ProtocolParameters pparams = rx.pparams();
             m_heartbeatInterval = pparams.keepalive_timer();
         }
 

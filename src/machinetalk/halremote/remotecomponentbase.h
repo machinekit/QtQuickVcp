@@ -188,12 +188,12 @@ private slots:
     void startHalrcmdChannel();
     void stopHalrcmdChannel();
     void halrcmdChannelStateChanged(machinetalk::RpcClient::State state);
-    void processHalrcmdChannelMessage(pb::Container *rx);
+    void processHalrcmdChannelMessage(const pb::Container &rx);
 
     void startHalrcompChannel();
     void stopHalrcompChannel();
     void halrcompChannelStateChanged(halremote::HalrcompSubscribe::State state);
-    void processHalrcompChannelMessage(const QByteArray &topic, pb::Container *rx);
+    void processHalrcompChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
     void fsmDownEntered();
     void fsmDownConnectEvent();
@@ -222,9 +222,9 @@ private slots:
     void fsmErrorEntered();
     void fsmErrorDisconnectEvent();
 
-    virtual void halrcompFullUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void halrcompIncrementalUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void halrcompErrorReceived(const QByteArray &topic, pb::Container *rx) = 0;
+    virtual void halrcompFullUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void halrcompIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void halrcompErrorReceived(const QByteArray &topic, const pb::Container &rx) = 0;
     virtual void bindComponent() = 0;
     virtual void addPins() = 0;
     virtual void removePins() = 0;
@@ -239,8 +239,8 @@ signals:
 
     void halrcmdUriChanged(QString uri);
     void halrcompUriChanged(QString uri);
-    void halrcmdMessageReceived(pb::Container *rx);
-    void halrcompMessageReceived(const QByteArray &topic, pb::Container *rx);
+    void halrcmdMessageReceived(const pb::Container &rx);
+    void halrcompMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(RemoteComponentBase::State state);
     void errorStringChanged(QString errorString);

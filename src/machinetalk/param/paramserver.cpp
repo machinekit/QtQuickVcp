@@ -37,7 +37,7 @@ ParamServer::ParamServer(QObject *parent) :
     connect(m_paramcmdChannel, &machinetalk::RpcService::socketUriChanged,
             this, &ParamServer::paramcmdUriChanged);
     connect(m_paramcmdChannel, &machinetalk::RpcService::socketMessageReceived,
-            this, &ParamServer::processParamcmdChannelMessage, Qt::QueuedConnection);
+            this, &ParamServer::processParamcmdChannelMessage);
     // initialize param channel
     m_paramChannel = new machinetalk::Publish(this);
     m_paramChannel->setDebugName(m_debugName + " - param");
@@ -93,11 +93,11 @@ void ParamServer::stopParamChannel()
 }
 
 /** Processes all message received on paramcmd */
-void ParamServer::processParamcmdChannelMessage(pb::Container *rx)
+void ParamServer::processParamcmdChannelMessage(const pb::Container &rx)
 {
 
     // react to incremental update message
-    if (rx->type() == pb::MT_INCREMENTAL_UPDATE)
+    if (rx.type() == pb::MT_INCREMENTAL_UPDATE)
     {
         incrementalUpdateReceived(rx);
     }

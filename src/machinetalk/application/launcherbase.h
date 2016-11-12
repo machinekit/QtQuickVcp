@@ -188,12 +188,12 @@ private slots:
     void startLaunchercmdChannel();
     void stopLaunchercmdChannel();
     void launchercmdChannelStateChanged(machinetalk::RpcClient::State state);
-    void processLaunchercmdChannelMessage(pb::Container *rx);
+    void processLaunchercmdChannelMessage(const pb::Container &rx);
 
     void startLauncherChannel();
     void stopLauncherChannel();
     void launcherChannelStateChanged(application::LauncherSubscribe::State state);
-    void processLauncherChannelMessage(const QByteArray &topic, pb::Container *rx);
+    void processLauncherChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
     void fsmDownEntered();
     void fsmDownConnectEvent();
@@ -209,8 +209,8 @@ private slots:
     void fsmSyncedLaunchercmdTryingEvent();
     void fsmSyncedDisconnectEvent();
 
-    virtual void launcherFullUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void launcherIncrementalUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
+    virtual void launcherFullUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void launcherIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
     virtual void syncStatus() = 0;
     virtual void unsyncStatus() = 0;
 
@@ -218,8 +218,8 @@ signals:
 
     void launchercmdUriChanged(QString uri);
     void launcherUriChanged(QString uri);
-    void launchercmdMessageReceived(pb::Container *rx);
-    void launcherMessageReceived(const QByteArray &topic, pb::Container *rx);
+    void launchercmdMessageReceived(const pb::Container &rx);
+    void launcherMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(LauncherBase::State state);
     void errorStringChanged(QString errorString);

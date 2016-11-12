@@ -175,7 +175,7 @@ private slots:
 signals:
 
     void socketUriChanged(QString uri);
-    void socketMessageReceived(pb::Container *rx);
+    void socketMessageReceived(const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(RpcClient::State state);
     void errorStringChanged(QString errorString);

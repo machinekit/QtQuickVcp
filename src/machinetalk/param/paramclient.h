@@ -187,7 +187,7 @@ private slots:
     void startParamChannel();
     void stopParamChannel();
     void paramChannelStateChanged(machinetalk::Subscribe::State state);
-    void processParamChannelMessage(const QByteArray &topic, pb::Container *rx);
+    void processParamChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
     void fsmDownEntered();
     void fsmDownConnectEvent();
@@ -208,8 +208,8 @@ private slots:
     void fsmUpParamTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void fullUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void incrementalUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
+    virtual void fullUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void incrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
     virtual void removeKeys() = 0;
     virtual void unsyncKeys() = 0;
     virtual void setSynced() = 0;
@@ -219,7 +219,7 @@ signals:
 
     void paramcmdUriChanged(QString uri);
     void paramUriChanged(QString uri);
-    void paramMessageReceived(const QByteArray &topic, pb::Container *rx);
+    void paramMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(ParamClient::State state);
     void errorStringChanged(QString errorString);

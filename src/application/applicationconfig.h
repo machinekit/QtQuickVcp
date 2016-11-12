@@ -110,8 +110,8 @@ private:
     void cleanupFiles();
 
 private slots:
-    void describeApplicationReceived(pb::Container *rx);
-    void applicationDetailReceived(pb::Container *rx);
+    void describeApplicationReceived(const pb::Container &rx);
+    void applicationDetailReceived(const pb::Container &rx);
     void syncConfig();
     void unsyncConfig();
 

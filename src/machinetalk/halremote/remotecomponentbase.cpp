@@ -39,7 +39,7 @@ RemoteComponentBase::RemoteComponentBase(QObject *parent) :
     connect(m_halrcmdChannel, &machinetalk::RpcClient::stateChanged,
             this, &RemoteComponentBase::halrcmdChannelStateChanged);
     connect(m_halrcmdChannel, &machinetalk::RpcClient::socketMessageReceived,
-            this, &RemoteComponentBase::processHalrcmdChannelMessage, Qt::QueuedConnection);
+            this, &RemoteComponentBase::processHalrcmdChannelMessage);
     // initialize halrcomp channel
     m_halrcompChannel = new halremote::HalrcompSubscribe(this);
     m_halrcompChannel->setDebugName(m_debugName + " - halrcomp");
@@ -48,7 +48,7 @@ RemoteComponentBase::RemoteComponentBase(QObject *parent) :
     connect(m_halrcompChannel, &halremote::HalrcompSubscribe::stateChanged,
             this, &RemoteComponentBase::halrcompChannelStateChanged);
     connect(m_halrcompChannel, &halremote::HalrcompSubscribe::socketMessageReceived,
-            this, &RemoteComponentBase::processHalrcompChannelMessage, Qt::QueuedConnection);
+            this, &RemoteComponentBase::processHalrcompChannelMessage);
 
     connect(m_halrcmdChannel, &machinetalk::RpcClient::heartbeatIntervalChanged,
             this, &RemoteComponentBase::halrcmdHeartbeatIntervalChanged);
@@ -219,11 +219,11 @@ void RemoteComponentBase::stopHalrcompChannel()
 }
 
 /** Processes all message received on halrcmd */
-void RemoteComponentBase::processHalrcmdChannelMessage(pb::Container *rx)
+void RemoteComponentBase::processHalrcmdChannelMessage(const pb::Container &rx)
 {
 
     // react to halrcomp bind confirm message
-    if (rx->type() == pb::MT_HALRCOMP_BIND_CONFIRM)
+    if (rx.type() == pb::MT_HALRCOMP_BIND_CONFIRM)
     {
 
         if (m_state == Binding)
@@ -233,14 +233,14 @@ void RemoteComponentBase::processHalrcmdChannelMessage(pb::Container *rx)
     }
 
     // react to halrcomp bind reject message
-    if (rx->type() == pb::MT_HALRCOMP_BIND_REJECT)
+    if (rx.type() == pb::MT_HALRCOMP_BIND_REJECT)
     {
 
         // update error string with note
         m_errorString = "";
-        for (int i = 0; i < rx->note_size(); ++i)
+        for (int i = 0; i < rx.note_size(); ++i)
         {
-            m_errorString.append(QString::fromStdString(rx->note(i)) + "\n");
+            m_errorString.append(QString::fromStdString(rx.note(i)) + "\n");
         }
         emit errorStringChanged(m_errorString);
 
@@ -251,14 +251,14 @@ void RemoteComponentBase::processHalrcmdChannelMessage(pb::Container *rx)
     }
 
     // react to halrcomp set reject message
-    if (rx->type() == pb::MT_HALRCOMP_SET_REJECT)
+    if (rx.type() == pb::MT_HALRCOMP_SET_REJECT)
     {
 
         // update error string with note
         m_errorString = "";
-        for (int i = 0; i < rx->note_size(); ++i)
+        for (int i = 0; i < rx.note_size(); ++i)
         {
-            m_errorString.append(QString::fromStdString(rx->note(i)) + "\n");
+            m_errorString.append(QString::fromStdString(rx.note(i)) + "\n");
         }
         emit errorStringChanged(m_errorString);
 
@@ -272,30 +272,30 @@ void RemoteComponentBase::processHalrcmdChannelMessage(pb::Container *rx)
 }
 
 /** Processes all message received on halrcomp */
-void RemoteComponentBase::processHalrcompChannelMessage(const QByteArray &topic, pb::Container *rx)
+void RemoteComponentBase::processHalrcompChannelMessage(const QByteArray &topic, const pb::Container &rx)
 {
 
     // react to halrcomp full update message
-    if (rx->type() == pb::MT_HALRCOMP_FULL_UPDATE)
+    if (rx.type() == pb::MT_HALRCOMP_FULL_UPDATE)
     {
         halrcompFullUpdateReceived(topic, rx);
     }
 
     // react to halrcomp incremental update message
-    if (rx->type() == pb::MT_HALRCOMP_INCREMENTAL_UPDATE)
+    if (rx.type() == pb::MT_HALRCOMP_INCREMENTAL_UPDATE)
     {
         halrcompIncrementalUpdateReceived(topic, rx);
     }
 
     // react to halrcomp error message
-    if (rx->type() == pb::MT_HALRCOMP_ERROR)
+    if (rx.type() == pb::MT_HALRCOMP_ERROR)
     {
 
         // update error string with note
         m_errorString = "";
-        for (int i = 0; i < rx->note_size(); ++i)
+        for (int i = 0; i < rx.note_size(); ++i)
         {
-            m_errorString.append(QString::fromStdString(rx->note(i)) + "\n");
+            m_errorString.append(QString::fromStdString(rx.note(i)) + "\n");
         }
         emit errorStringChanged(m_errorString);
 

@@ -91,7 +91,7 @@ bool RpcService::startSocket()
     }
 
     connect(m_socket, &ZMQSocket::messageReceived,
-            this, &RpcService::processSocketMessage, Qt::QueuedConnection);
+            this, &RpcService::processSocketMessage);
 
 
 #ifdef QT_DEBUG
@@ -115,17 +115,17 @@ void RpcService::stopSocket()
 /** Processes all message received on socket */
 void RpcService::processSocketMessage(const QList<QByteArray> &messageList)
 {
-    pb::Container *rx = &m_socketRx;
-    rx->ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
+    pb::Container &rx = m_socketRx;
+    rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
 #ifdef QT_DEBUG
     std::string s;
-    gpb::TextFormat::PrintToString(*rx, &s);
+    gpb::TextFormat::PrintToString(rx, &s);
     DEBUG_TAG(3, m_debugName, "server message" << QString::fromStdString(s));
 #endif
 
     // react to ping message
-    if (rx->type() == pb::MT_PING)
+    if (rx.type() == pb::MT_PING)
     {
 
         if (m_state == Up)

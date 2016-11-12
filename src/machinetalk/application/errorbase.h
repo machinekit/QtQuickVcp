@@ -153,7 +153,7 @@ private slots:
     void startErrorChannel();
     void stopErrorChannel();
     void errorChannelStateChanged(application::ErrorSubscribe::State state);
-    void processErrorChannelMessage(const QByteArray &topic, pb::Container *rx);
+    void processErrorChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
     void fsmDownEntered();
     void fsmDownConnectEvent();
@@ -164,12 +164,12 @@ private slots:
     void fsmUpErrorTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void emcNmlErrorReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void emcNmlTextReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void emcNmlDisplayReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void emcOperatorTextReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void emcOperatorErrorReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void emcOperatorDisplayReceived(const QByteArray &topic, pb::Container *rx) = 0;
+    virtual void emcNmlErrorReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void emcNmlTextReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void emcNmlDisplayReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void emcOperatorTextReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void emcOperatorErrorReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void emcOperatorDisplayReceived(const QByteArray &topic, const pb::Container &rx) = 0;
     virtual void updateTopics() = 0;
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;
@@ -177,7 +177,7 @@ private slots:
 signals:
 
     void errorUriChanged(QString uri);
-    void errorMessageReceived(const QByteArray &topic, pb::Container *rx);
+    void errorMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(ErrorBase::State state);
     void errorStringChanged(QString errorString);

@@ -176,9 +176,9 @@ private slots:
     void addPins();
     void removePins();
     void unsyncPins();
-    void halrcompFullUpdateReceived(const QByteArray &topic, pb::Container *rx);
-    void halrcompIncrementalUpdateReceived(const QByteArray &topic, pb::Container *rx);
-    void halrcompErrorReceived(const QByteArray &topic, pb::Container *rx);
+    void halrcompFullUpdateReceived(const QByteArray &topic, const pb::Container &rx);
+    void halrcompIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx);
+    void halrcompErrorReceived(const QByteArray &topic, const pb::Container &rx);
     void bindComponent();
     void setConnected();
     void setError();

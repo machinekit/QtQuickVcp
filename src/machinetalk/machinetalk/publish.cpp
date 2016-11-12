@@ -96,7 +96,7 @@ bool Publish::startSocket()
     }
 
     connect(m_socket, &ZMQSocket::messageReceived,
-            this, &Publish::processSocketMessage, Qt::QueuedConnection);
+            this, &Publish::processSocketMessage);
 
 
 #ifdef QT_DEBUG
@@ -153,12 +153,12 @@ void Publish::heartbeatTimerTick()
 /** Processes all message received on socket */
 void Publish::processSocketMessage(const QList<QByteArray> &messageList)
 {
-    pb::Container *rx = &m_socketRx;
-    rx->ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
+    pb::Container &rx = m_socketRx;
+    rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
 
 #ifdef QT_DEBUG
     std::string s;
-    gpb::TextFormat::PrintToString(*rx, &s);
+    gpb::TextFormat::PrintToString(rx, &s);
     DEBUG_TAG(3, m_debugName, "server message" << QString::fromStdString(s));
 #endif
 

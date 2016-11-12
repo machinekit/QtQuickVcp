@@ -68,8 +68,8 @@ private:
     void initializeObject();
 
 private slots:
-    void launcherFullUpdateReceived(const QByteArray &topic, pb::Container *rx);
-    void launcherIncrementalUpdateReceived(const QByteArray &topic, pb::Container *rx);
+    void launcherFullUpdateReceived(const QByteArray &topic, const pb::Container &rx);
+    void launcherIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx);
     void syncStatus();
     void unsyncStatus();
 

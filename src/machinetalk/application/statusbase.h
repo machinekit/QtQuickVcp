@@ -36,7 +36,8 @@ public:
     enum State {
         Down = 0,
         Trying = 1,
-        Up = 2,
+        Syncing = 2,
+        Up = 3,
     };
 
     void classBegin() {}
@@ -132,6 +133,7 @@ public slots:
 protected:
     void start(); // start trigger
     void stop(); // stop trigger
+    void channelsSynced(); // channels synced trigger
 
 private:
     bool m_componentCompleted;
@@ -153,19 +155,23 @@ private slots:
     void startStatusChannel();
     void stopStatusChannel();
     void statusChannelStateChanged(application::StatusSubscribe::State state);
-    void processStatusChannelMessage(const QByteArray &topic, pb::Container *rx);
+    void processStatusChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
     void fsmDownEntered();
     void fsmDownConnectEvent();
     void fsmTryingEntered();
     void fsmTryingStatusUpEvent();
     void fsmTryingDisconnectEvent();
+    void fsmSyncingEntered();
+    void fsmSyncingChannelsSyncedEvent();
+    void fsmSyncingStatusTryingEvent();
+    void fsmSyncingDisconnectEvent();
     void fsmUpEntered();
     void fsmUpStatusTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void emcstatFullUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
-    virtual void emcstatIncrementalUpdateReceived(const QByteArray &topic, pb::Container *rx) = 0;
+    virtual void emcstatFullUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
+    virtual void emcstatIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
     virtual void syncStatus() = 0;
     virtual void unsyncStatus() = 0;
     virtual void updateTopics() = 0;
@@ -173,7 +179,7 @@ private slots:
 signals:
 
     void statusUriChanged(QString uri);
-    void statusMessageReceived(const QByteArray &topic, pb::Container *rx);
+    void statusMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(StatusBase::State state);
     void errorStringChanged(QString errorString);
@@ -186,6 +192,12 @@ signals:
     void fsmTryingStatusUpQueued();
     void fsmTryingDisconnect();
     void fsmTryingDisconnectQueued();
+    void fsmSyncingChannelsSynced();
+    void fsmSyncingChannelsSyncedQueued();
+    void fsmSyncingStatusTrying();
+    void fsmSyncingStatusTryingQueued();
+    void fsmSyncingDisconnect();
+    void fsmSyncingDisconnectQueued();
     void fsmUpStatusTrying();
     void fsmUpStatusTryingQueued();
     void fsmUpDisconnect();

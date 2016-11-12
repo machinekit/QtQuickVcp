@@ -210,13 +210,13 @@ private slots:
     void startSyncChannel();
     void stopSyncChannel();
     void syncChannelStateChanged(machinetalk::RpcClient::State state);
-    void processSyncChannelMessage(pb::Container *rx);
+    void processSyncChannelMessage(const pb::Container &rx);
     void sendSync();
 
     void startSubChannel();
     void stopSubChannel();
     void subChannelStateChanged(machinetalk::Subscribe::State state);
-    void processSubChannelMessage(const QByteArray &topic, pb::Container *rx);
+    void processSubChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
     void startPubChannel();
     void stopPubChannel();
@@ -241,8 +241,8 @@ signals:
     void syncUriChanged(QString uri);
     void subUriChanged(QString uri);
     void pubUriChanged(QString uri);
-    void syncMessageReceived(pb::Container *rx);
-    void subMessageReceived(const QByteArray &topic, pb::Container *rx);
+    void syncMessageReceived(const pb::Container &rx);
+    void subMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(SyncClient::State state);
     void errorStringChanged(QString errorString);

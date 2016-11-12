@@ -38,7 +38,7 @@ ConfigBase::ConfigBase(QObject *parent) :
     connect(m_configChannel, &machinetalk::RpcClient::stateChanged,
             this, &ConfigBase::configChannelStateChanged);
     connect(m_configChannel, &machinetalk::RpcClient::socketMessageReceived,
-            this, &ConfigBase::processConfigChannelMessage, Qt::QueuedConnection);
+            this, &ConfigBase::processConfigChannelMessage);
 
     connect(m_configChannel, &machinetalk::RpcClient::heartbeatIntervalChanged,
             this, &ConfigBase::configHeartbeatIntervalChanged);
@@ -137,11 +137,11 @@ void ConfigBase::stopConfigChannel()
 }
 
 /** Processes all message received on config */
-void ConfigBase::processConfigChannelMessage(pb::Container *rx)
+void ConfigBase::processConfigChannelMessage(const pb::Container &rx)
 {
 
     // react to describe application message
-    if (rx->type() == pb::MT_DESCRIBE_APPLICATION)
+    if (rx.type() == pb::MT_DESCRIBE_APPLICATION)
     {
 
         if (m_state == Listing)
@@ -152,7 +152,7 @@ void ConfigBase::processConfigChannelMessage(pb::Container *rx)
     }
 
     // react to application detail message
-    if (rx->type() == pb::MT_APPLICATION_DETAIL)
+    if (rx.type() == pb::MT_APPLICATION_DETAIL)
     {
 
         if (m_state == Loading)
@@ -163,14 +163,14 @@ void ConfigBase::processConfigChannelMessage(pb::Container *rx)
     }
 
     // react to error message
-    if (rx->type() == pb::MT_ERROR)
+    if (rx.type() == pb::MT_ERROR)
     {
 
         // update error string with note
         m_errorString = "";
-        for (int i = 0; i < rx->note_size(); ++i)
+        for (int i = 0; i < rx.note_size(); ++i)
         {
-            m_errorString.append(QString::fromStdString(rx->note(i)) + "\n");
+            m_errorString.append(QString::fromStdString(rx.note(i)) + "\n");
         }
         emit errorStringChanged(m_errorString);
     }

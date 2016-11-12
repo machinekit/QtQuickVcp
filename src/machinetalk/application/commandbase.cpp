@@ -38,7 +38,7 @@ CommandBase::CommandBase(QObject *parent) :
     connect(m_commandChannel, &machinetalk::RpcClient::stateChanged,
             this, &CommandBase::commandChannelStateChanged);
     connect(m_commandChannel, &machinetalk::RpcClient::socketMessageReceived,
-            this, &CommandBase::processCommandChannelMessage, Qt::QueuedConnection);
+            this, &CommandBase::processCommandChannelMessage);
 
     connect(m_commandChannel, &machinetalk::RpcClient::heartbeatIntervalChanged,
             this, &CommandBase::commandHeartbeatIntervalChanged);
@@ -98,18 +98,18 @@ void CommandBase::stopCommandChannel()
 }
 
 /** Processes all message received on command */
-void CommandBase::processCommandChannelMessage(pb::Container *rx)
+void CommandBase::processCommandChannelMessage(const pb::Container &rx)
 {
 
     // react to error message
-    if (rx->type() == pb::MT_ERROR)
+    if (rx.type() == pb::MT_ERROR)
     {
 
         // update error string with note
         m_errorString = "";
-        for (int i = 0; i < rx->note_size(); ++i)
+        for (int i = 0; i < rx.note_size(); ++i)
         {
-            m_errorString.append(QString::fromStdString(rx->note(i)) + "\n");
+            m_errorString.append(QString::fromStdString(rx.note(i)) + "\n");
         }
         emit errorStringChanged(m_errorString);
     }

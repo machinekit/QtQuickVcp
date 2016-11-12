@@ -38,7 +38,7 @@ StatusBase::StatusBase(QObject *parent) :
     connect(m_statusChannel, &application::StatusSubscribe::stateChanged,
             this, &StatusBase::statusChannelStateChanged);
     connect(m_statusChannel, &application::StatusSubscribe::socketMessageReceived,
-            this, &StatusBase::processStatusChannelMessage, Qt::QueuedConnection);
+            this, &StatusBase::processStatusChannelMessage);
 
     connect(m_statusChannel, &application::StatusSubscribe::heartbeatIntervalChanged,
             this, &StatusBase::statusHeartbeatIntervalChanged);
@@ -48,6 +48,8 @@ StatusBase::StatusBase(QObject *parent) :
     connect(downState, &QState::entered, this, &StatusBase::fsmDownEntered, Qt::QueuedConnection);
     QState *tryingState = new QState(m_fsm);
     connect(tryingState, &QState::entered, this, &StatusBase::fsmTryingEntered, Qt::QueuedConnection);
+    QState *syncingState = new QState(m_fsm);
+    connect(syncingState, &QState::entered, this, &StatusBase::fsmSyncingEntered, Qt::QueuedConnection);
     QState *upState = new QState(m_fsm);
     connect(upState, &QState::entered, this, &StatusBase::fsmUpEntered, Qt::QueuedConnection);
     connect(upState, &QState::entered, this, &StatusBase::syncStatus, Qt::QueuedConnection);
@@ -60,10 +62,19 @@ StatusBase::StatusBase(QObject *parent) :
     downState->addTransition(this, &StatusBase::fsmDownConnectQueued, tryingState);
     connect(this, &StatusBase::fsmTryingStatusUp,
             this, &StatusBase::fsmTryingStatusUpQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &StatusBase::fsmTryingStatusUpQueued, upState);
+    tryingState->addTransition(this, &StatusBase::fsmTryingStatusUpQueued, syncingState);
     connect(this, &StatusBase::fsmTryingDisconnect,
             this, &StatusBase::fsmTryingDisconnectQueued, Qt::QueuedConnection);
     tryingState->addTransition(this, &StatusBase::fsmTryingDisconnectQueued, downState);
+    connect(this, &StatusBase::fsmSyncingChannelsSynced,
+            this, &StatusBase::fsmSyncingChannelsSyncedQueued, Qt::QueuedConnection);
+    syncingState->addTransition(this, &StatusBase::fsmSyncingChannelsSyncedQueued, upState);
+    connect(this, &StatusBase::fsmSyncingStatusTrying,
+            this, &StatusBase::fsmSyncingStatusTryingQueued, Qt::QueuedConnection);
+    syncingState->addTransition(this, &StatusBase::fsmSyncingStatusTryingQueued, tryingState);
+    connect(this, &StatusBase::fsmSyncingDisconnect,
+            this, &StatusBase::fsmSyncingDisconnectQueued, Qt::QueuedConnection);
+    syncingState->addTransition(this, &StatusBase::fsmSyncingDisconnectQueued, downState);
     connect(this, &StatusBase::fsmUpStatusTrying,
             this, &StatusBase::fsmUpStatusTryingQueued, Qt::QueuedConnection);
     upState->addTransition(this, &StatusBase::fsmUpStatusTryingQueued, tryingState);
@@ -77,6 +88,12 @@ StatusBase::StatusBase(QObject *parent) :
             this, &StatusBase::fsmTryingStatusUpEvent, Qt::QueuedConnection);
     connect(this, &StatusBase::fsmTryingDisconnect,
             this, &StatusBase::fsmTryingDisconnectEvent, Qt::QueuedConnection);
+    connect(this, &StatusBase::fsmSyncingChannelsSynced,
+            this, &StatusBase::fsmSyncingChannelsSyncedEvent, Qt::QueuedConnection);
+    connect(this, &StatusBase::fsmSyncingStatusTrying,
+            this, &StatusBase::fsmSyncingStatusTryingEvent, Qt::QueuedConnection);
+    connect(this, &StatusBase::fsmSyncingDisconnect,
+            this, &StatusBase::fsmSyncingDisconnectEvent, Qt::QueuedConnection);
     connect(this, &StatusBase::fsmUpStatusTrying,
             this, &StatusBase::fsmUpStatusTryingEvent, Qt::QueuedConnection);
     connect(this, &StatusBase::fsmUpDisconnect,
@@ -116,17 +133,17 @@ void StatusBase::stopStatusChannel()
 }
 
 /** Processes all message received on status */
-void StatusBase::processStatusChannelMessage(const QByteArray &topic, pb::Container *rx)
+void StatusBase::processStatusChannelMessage(const QByteArray &topic, const pb::Container &rx)
 {
 
     // react to emcstat full update message
-    if (rx->type() == pb::MT_EMCSTAT_FULL_UPDATE)
+    if (rx.type() == pb::MT_EMCSTAT_FULL_UPDATE)
     {
         emcstatFullUpdateReceived(topic, rx);
     }
 
     // react to emcstat incremental update message
-    if (rx->type() == pb::MT_EMCSTAT_INCREMENTAL_UPDATE)
+    if (rx.type() == pb::MT_EMCSTAT_INCREMENTAL_UPDATE)
     {
         emcstatIncrementalUpdateReceived(topic, rx);
     }
@@ -175,10 +192,50 @@ void StatusBase::fsmTryingStatusUpEvent()
     DEBUG_TAG(1, m_debugName, "Event STATUS UP");
 #endif
 
-    m_state = Up;
+    m_state = Syncing;
 }
 
 void StatusBase::fsmTryingDisconnectEvent()
+{
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+#endif
+
+    m_state = Down;
+    stopStatusChannel();
+}
+
+void StatusBase::fsmSyncingEntered()
+{
+    if (m_previousState != Syncing)
+    {
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, m_debugName, "State SYNCING");
+#endif
+        m_previousState = Syncing;
+        emit stateChanged(m_state);
+    }
+}
+
+void StatusBase::fsmSyncingChannelsSyncedEvent()
+{
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, m_debugName, "Event CHANNELS SYNCED");
+#endif
+
+    m_state = Up;
+}
+
+void StatusBase::fsmSyncingStatusTryingEvent()
+{
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, m_debugName, "Event STATUS TRYING");
+#endif
+
+    m_state = Trying;
+}
+
+void StatusBase::fsmSyncingDisconnectEvent()
 {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -230,6 +287,14 @@ void StatusBase::statusChannelStateChanged(application::StatusSubscribe::State s
         }
     }
 
+    if (state == application::StatusSubscribe::Trying)
+    {
+        if (m_state == Syncing)
+        {
+            emit fsmSyncingStatusTrying();
+        }
+    }
+
     if (state == application::StatusSubscribe::Up)
     {
         if (m_state == Trying)
@@ -255,6 +320,14 @@ void StatusBase::stop()
     }
     if (m_state == Up) {
         emit fsmUpDisconnect();
+    }
+}
+
+/** channels synced trigger */
+void StatusBase::channelsSynced()
+{
+    if (m_state == Syncing) {
+        emit fsmSyncingChannelsSynced();
     }
 }
 }; // namespace application

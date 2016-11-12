@@ -422,17 +422,17 @@ void HalRemoteComponent::unsyncPins()
     }
 }
 
-void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic, pb::Container *rx)
+void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic,const pb::Container &rx)
 {
     Q_UNUSED(topic);
     bool pinsAdded = false;
 
-    if (rx->comp_size() == 0) // empty message
+    if (rx.comp_size() == 0) // empty message
     {
         return;
     }
 
-    pb::Component component = rx->comp(0);  // shouldnt we check the name?
+    pb::Component component = rx.comp(0);  // shouldnt we check the name?
     for (int i = 0; i < component.pin_size(); ++i)
     {
         const pb::Pin &remotePin = component.pin(i);
@@ -457,13 +457,13 @@ void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic, pb:
     }
 }
 
-void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &topic, pb::Container *rx)
+void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx)
 {
     Q_UNUSED(topic);
 
-    for (int i = 0; i < rx->pin_size(); ++i)
+    for (int i = 0; i < rx.pin_size(); ++i)
     {
-        pb::Pin remotePin = rx->pin(i);
+        pb::Pin remotePin = rx.pin(i);
         HalPin *localPin = m_pinsByHandle.value(remotePin.handle(), nullptr);
         if (localPin != nullptr) // in case we received a wrong pin handle
         {
@@ -472,14 +472,14 @@ void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &top
     }
 }
 
-void HalRemoteComponent::halrcompErrorReceived(const QByteArray &topic, pb::Container *rx)
+void HalRemoteComponent::halrcompErrorReceived(const QByteArray &topic, const pb::Container &rx)
 {
     Q_UNUSED(topic);
     QString errorString;
 
-    for (int i = 0; i < rx->note_size(); ++i)
+    for (int i = 0; i < rx.note_size(); ++i)
     {
-        errorString.append(QString::fromStdString(rx->note(i)) + "\n");
+        errorString.append(QString::fromStdString(rx.note(i)) + "\n");
     }
 }
 

@@ -46,7 +46,7 @@ ParamClient::ParamClient(QObject *parent) :
     connect(m_paramChannel, &machinetalk::Subscribe::stateChanged,
             this, &ParamClient::paramChannelStateChanged);
     connect(m_paramChannel, &machinetalk::Subscribe::socketMessageReceived,
-            this, &ParamClient::processParamChannelMessage, Qt::QueuedConnection);
+            this, &ParamClient::processParamChannelMessage);
 
     connect(m_paramcmdChannel, &machinetalk::RpcClient::heartbeatIntervalChanged,
             this, &ParamClient::paramcmdHeartbeatIntervalChanged);
@@ -182,17 +182,17 @@ void ParamClient::stopParamChannel()
 }
 
 /** Processes all message received on param */
-void ParamClient::processParamChannelMessage(const QByteArray &topic, pb::Container *rx)
+void ParamClient::processParamChannelMessage(const QByteArray &topic, const pb::Container &rx)
 {
 
     // react to full update message
-    if (rx->type() == pb::MT_FULL_UPDATE)
+    if (rx.type() == pb::MT_FULL_UPDATE)
     {
         fullUpdateReceived(topic, rx);
     }
 
     // react to incremental update message
-    if (rx->type() == pb::MT_INCREMENTAL_UPDATE)
+    if (rx.type() == pb::MT_INCREMENTAL_UPDATE)
     {
         incrementalUpdateReceived(topic, rx);
     }

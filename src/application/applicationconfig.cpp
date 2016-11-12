@@ -191,13 +191,13 @@ void ApplicationConfig::cleanupFiles()
     }
 }
 
-void ApplicationConfig::describeApplicationReceived(pb::Container *rx)
+void ApplicationConfig::describeApplicationReceived(const pb::Container &rx)
 {
-    for (int i = 0; i < rx->app_size(); ++i)
+    for (int i = 0; i < rx.app_size(); ++i)
     {
         pb::Application app;
 
-        app = rx->app(i);
+        app = rx.app(i);
 
         ApplicationConfigItem::ApplicationType type;
         QString name;
@@ -223,13 +223,13 @@ void ApplicationConfig::describeApplicationReceived(pb::Container *rx)
     }
 }
 
-void ApplicationConfig::applicationDetailReceived(pb::Container *rx)
+void ApplicationConfig::applicationDetailReceived(const pb::Container &rx)
 {
-    for (int i = 0; i < rx->app_size(); ++i)
+    for (int i = 0; i < rx.app_size(); ++i)
     {
         pb::Application app;
 
-        app = rx->app(i);
+        app = rx.app(i);
 
         ApplicationConfigItem::ApplicationType type;
 

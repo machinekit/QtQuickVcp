@@ -38,7 +38,7 @@ ErrorBase::ErrorBase(QObject *parent) :
     connect(m_errorChannel, &application::ErrorSubscribe::stateChanged,
             this, &ErrorBase::errorChannelStateChanged);
     connect(m_errorChannel, &application::ErrorSubscribe::socketMessageReceived,
-            this, &ErrorBase::processErrorChannelMessage, Qt::QueuedConnection);
+            this, &ErrorBase::processErrorChannelMessage);
 
     connect(m_errorChannel, &application::ErrorSubscribe::heartbeatIntervalChanged,
             this, &ErrorBase::errorHeartbeatIntervalChanged);
@@ -116,41 +116,41 @@ void ErrorBase::stopErrorChannel()
 }
 
 /** Processes all message received on error */
-void ErrorBase::processErrorChannelMessage(const QByteArray &topic, pb::Container *rx)
+void ErrorBase::processErrorChannelMessage(const QByteArray &topic, const pb::Container &rx)
 {
 
     // react to emc nml error message
-    if (rx->type() == pb::MT_EMC_NML_ERROR)
+    if (rx.type() == pb::MT_EMC_NML_ERROR)
     {
         emcNmlErrorReceived(topic, rx);
     }
 
     // react to emc nml text message
-    if (rx->type() == pb::MT_EMC_NML_TEXT)
+    if (rx.type() == pb::MT_EMC_NML_TEXT)
     {
         emcNmlTextReceived(topic, rx);
     }
 
     // react to emc nml display message
-    if (rx->type() == pb::MT_EMC_NML_DISPLAY)
+    if (rx.type() == pb::MT_EMC_NML_DISPLAY)
     {
         emcNmlDisplayReceived(topic, rx);
     }
 
     // react to emc operator text message
-    if (rx->type() == pb::MT_EMC_OPERATOR_TEXT)
+    if (rx.type() == pb::MT_EMC_OPERATOR_TEXT)
     {
         emcOperatorTextReceived(topic, rx);
     }
 
     // react to emc operator error message
-    if (rx->type() == pb::MT_EMC_OPERATOR_ERROR)
+    if (rx.type() == pb::MT_EMC_OPERATOR_ERROR)
     {
         emcOperatorErrorReceived(topic, rx);
     }
 
     // react to emc operator display message
-    if (rx->type() == pb::MT_EMC_OPERATOR_DISPLAY)
+    if (rx.type() == pb::MT_EMC_OPERATOR_DISPLAY)
     {
         emcOperatorDisplayReceived(topic, rx);
     }

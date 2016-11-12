@@ -171,7 +171,7 @@ private slots:
 signals:
 
     void socketUriChanged(QString uri);
-    void socketMessageReceived(const QByteArray &topic, pb::Container *rx);
+    void socketMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
     void stateChanged(ErrorSubscribe::State state);
     void errorStringChanged(QString errorString);
