@@ -133,7 +133,7 @@ public:
     }
 
 public slots:
-    void setUri(QString arg)
+    void setUri(const QString &arg)
     {
         if (m_uri == arg)
             return;
@@ -142,7 +142,7 @@ public slots:
         emit uriChanged(arg);
     }
 
-    void setLocalFilePath(QString arg)
+    void setLocalFilePath(const QString &arg)
     {
         if (m_localFilePath == arg)
             return;
@@ -151,7 +151,7 @@ public slots:
         emit localFilePathChanged(arg);
     }
 
-    void setRemoteFilePath(QString arg)
+    void setRemoteFilePath(const QString &arg)
     {
         if (m_remoteFilePath == arg)
             return;
@@ -160,7 +160,7 @@ public slots:
         emit remoteFilePathChanged(arg);
     }
 
-    void setLocalPath(QString arg)
+    void setLocalPath(const QString &arg)
     {
         if (m_localPath == arg)
             return;
@@ -169,7 +169,7 @@ public slots:
         emit localPathChanged(arg);
     }
 
-    void setRemotePath(QString arg)
+    void setRemotePath(const QString &arg)
     {
         if (m_remotePath == arg)
             return;
@@ -178,7 +178,7 @@ public slots:
         emit remotePathChanged(arg);
     }
 
-    void setServerDirectory(QString serverDirectory)
+    void setServerDirectory(const QString &serverDirectory)
     {
         if (m_serverDirectory == serverDirectory)
             return;
@@ -232,14 +232,14 @@ private slots:
     void ftpCommandFinished(int, bool error);
 
 signals:
-    void uriChanged(QString arg);
+    void uriChanged(const QString &arg);
     void errorChanged(TransferError arg);
-    void errorStringChanged(QString arg);
-    void localFilePathChanged(QString arg);
-    void remoteFilePathChanged(QString arg);
-    void localPathChanged(QString arg);
-    void remotePathChanged(QString arg);
-    void serverDirectoryChanged(QString serverDirectory);
+    void errorStringChanged(const QString &arg);
+    void localFilePathChanged(const QString &arg);
+    void remoteFilePathChanged(const QString &arg);
+    void localPathChanged(const QString &arg);
+    void remotePathChanged(const QString &arg);
+    void serverDirectoryChanged(const QString &serverDirectory);
     void progressChanged(double arg);
     void transferStateChanged(TransferState arg);
     void uploadFinished();

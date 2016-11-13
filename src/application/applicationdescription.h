@@ -66,7 +66,7 @@ public:
     }
 
 public slots:
-    void setSourceDir(QUrl arg)
+    void setSourceDir(const QUrl &arg)
     {
         if (m_sourceDir != arg) {
             m_sourceDir = arg;
@@ -88,10 +88,10 @@ private:
     QString getMainFile(QStringList fileList, QString baseFilePath, QString applicationName);
 
 signals:
-    void sourceDirChanged(QUrl arg);
-    void mainFileChanged(QUrl arg);
-    void nameChanged(QString arg);
-    void descriptionChanged(QString arg);
+    void sourceDirChanged(const QUrl &arg);
+    void mainFileChanged(const QUrl &arg);
+    void nameChanged(const QString &arg);
+    void descriptionChanged(const QString &arg);
     void validChanged(bool arg);
 
 }; // class ApplicationDescription

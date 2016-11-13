@@ -62,7 +62,7 @@ public slots:
         }
     }
 
-    void setName(QString arg)
+    void setName(const QString &arg)
     {
         if (m_name == arg)
             return;
@@ -71,7 +71,7 @@ public slots:
         emit nameChanged(arg);
     }
 
-    void setDescription(QString arg)
+    void setDescription(const QString &arg)
     {
         if (m_description == arg)
             return;
@@ -87,8 +87,8 @@ private:
 
 signals:
     void typeChanged(ApplicationConfigItem::ApplicationType arg);
-    void nameChanged(QString arg);
-    void descriptionChanged(QString arg);
+    void nameChanged(const QString &arg);
+    void descriptionChanged(const QString &arg);
 
 }; // class ApplicationConfigItem
 } // namespace qtquickvcp

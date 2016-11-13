@@ -64,15 +64,15 @@ public:
     }
 
 public slots:
-    void setName(QString name)
+    void setName(const QString &name)
     {
         if (m_name == name)
             return;
 
         m_name = name;
-        emit nameChanged(name);
+        emit nameChanged(m_name);
     }
-    void setDescription(QString description)
+    void setDescription(const QString &description)
     {
         if (m_description == description)
             return;
@@ -88,7 +88,7 @@ public slots:
         m_type = type;
         emit typeChanged(type);
     }
-    void setMainFile(QUrl mainFile)
+    void setMainFile(const QUrl &mainFile)
     {
         if (m_mainFile == mainFile)
             return;
@@ -104,10 +104,10 @@ private:
     QUrl m_mainFile;
 
 signals:
-    void nameChanged(QString name);
-    void descriptionChanged(QString description);
+    void nameChanged(const QString &name);
+    void descriptionChanged(const QString &description);
     void typeChanged(PluginType type);
-    void mainFileChanged(QUrl mainFile);
+    void mainFileChanged(const QUrl &mainFile);
 }; // class ApplicationPluginItem
 } // namespace qtquickvcp
 

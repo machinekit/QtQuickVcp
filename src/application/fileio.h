@@ -40,7 +40,7 @@ public slots:
     void write();
     void read();
 
-    void setFileName(QUrl fileName)
+    void setFileName(const QUrl &fileName)
     {
         if (m_fileUrl == fileName)
             return;
@@ -49,7 +49,7 @@ public slots:
         emit fileNameChanged(fileName);
     }
 
-    void setText(QString text)
+    void setText(const QString &text)
     {
         if (m_text == text)
             return;
@@ -64,8 +64,8 @@ signals:
     void writingCompleted();
     void readingCompleted();
     void error(const QString &error);
-    void fileNameChanged(QUrl fileUrl);
-    void textChanged(QString text);
+    void fileNameChanged(const QUrl &fileUrl);
+    void textChanged(const QString &text);
     void workingChanged(bool working);
 
 private:

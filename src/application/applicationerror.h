@@ -114,7 +114,7 @@ public:
 
 public slots:
 
-    void setErrorUri(QString arg)
+    void setErrorUri(const QString &arg)
     {
         if (m_errorUri == arg)
             return;
@@ -169,10 +169,10 @@ private slots:
     void unsubscribe();
 
 signals:
-    void errorUriChanged(QString arg);
+    void errorUriChanged(const QString &arg);
     void connectionStateChanged(State arg);
     void errorChanged(ConnectionError arg);
-    void errorStringChanged(QString arg);
+    void errorStringChanged(const QString &arg);
     void channelsChanged(ErrorChannels arg);
     void messageReceived(ErrorType type, const QString &text);
     void connectedChanged(bool arg);

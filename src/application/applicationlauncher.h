@@ -74,7 +74,7 @@ private slots:
     void unsyncStatus();
 
 signals:
-    void launchersChanged(QJsonValue arg);
+    void launchersChanged(const QJsonValue &arg);
     void syncedChanged(bool arg);
 }; // class ApplicationLauncher
 } // namespace qtquickvcp

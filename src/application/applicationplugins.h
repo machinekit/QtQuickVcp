@@ -53,7 +53,7 @@ public slots:
     void updatePlugins();
     void clearPlugins();
 
-    void setSearchPaths(QStringList searchPaths)
+    void setSearchPaths(const QStringList &searchPaths)
     {
         if (m_searchPaths == searchPaths)
             return;
@@ -69,7 +69,7 @@ private:
     void readPluginFile(QString filePath);
 
 signals:
-    void searchPathsChanged(QStringList searchPaths);
+    void searchPathsChanged(const QStringList &searchPaths);
     void pluginsChanged(QQmlListProperty<ApplicationPluginItem> arg);
 }; // class ApplicationPlugin
 } // namespace qtquickvcp
