@@ -23,7 +23,6 @@
 #define APPLICATIONSTATUS_H
 
 #include <QStringList>
-#include <QTimer>
 #include <QHash>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/message.h>
