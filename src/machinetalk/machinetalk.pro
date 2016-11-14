@@ -26,7 +26,8 @@ SOURCES += $$PWD/machinetalk/rpcclient.cpp \
            $$PWD/application/errorbase.cpp \
            $$PWD/application/statussubscribe.cpp \
            $$PWD/application/statusbase.cpp \
-           $$PWD/application/commandbase.cpp
+           $$PWD/application/commandbase.cpp \
+           $$PWD/machinetalkservice.cpp
 
 HEADERS += $$PWD/machinetalk/rpcclient.h \
            $$PWD/machinetalk/subscribe.h \
@@ -40,6 +41,9 @@ HEADERS += $$PWD/machinetalk/rpcclient.h \
            $$PWD/application/statussubscribe.h \
            $$PWD/application/statusbase.h \
            $$PWD/application/commandbase.h \
+           $$PWD/pathview/previewclientbase.h \
+           $$PWD/pathview/previewsubscribe.h \
+           $$PWD/machinetalkservice.h
            $$PWD/machinetalk_global.h
 
 #macx | win32: {
