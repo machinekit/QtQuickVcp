@@ -116,6 +116,11 @@ LauncherBase::LauncherBase(QObject *parent) :
             this, &LauncherBase::fsmSyncedLaunchercmdTryingEvent, Qt::QueuedConnection);
     connect(this, &LauncherBase::fsmSyncedDisconnect,
             this, &LauncherBase::fsmSyncedDisconnectEvent, Qt::QueuedConnection);
+
+     connect(this, &LauncherBase::startSignal,
+             this, &LauncherBase::startSlot, Qt::QueuedConnection);
+     connect(this, &LauncherBase::stopSignal,
+             this, &LauncherBase::stopSlot, Qt::QueuedConnection);
 }
 
 LauncherBase::~LauncherBase()
@@ -420,6 +425,12 @@ void LauncherBase::launcherChannelStateChanged(application::LauncherSubscribe::S
 /** start trigger */
 void LauncherBase::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void LauncherBase::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownConnect();
     }
@@ -427,6 +438,12 @@ void LauncherBase::start()
 
 /** stop trigger */
 void LauncherBase::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void LauncherBase::stopSlot()
 {
     if (m_state == Trying) {
         emit fsmTryingDisconnect();

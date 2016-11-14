@@ -65,6 +65,11 @@ Publish::Publish(QObject *parent) :
     connect(m_context, &PollingZMQContext::pollError,
             this, &Publish::socketError);
     m_context->start();
+
+     connect(this, &Publish::startSignal,
+             this, &Publish::startSlot, Qt::QueuedConnection);
+     connect(this, &Publish::stopSignal,
+             this, &Publish::stopSlot, Qt::QueuedConnection);
 }
 
 Publish::~Publish()
@@ -272,6 +277,12 @@ void Publish::fsmUpHeartbeatTickEvent()
 /** start trigger */
 void Publish::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void Publish::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownStart();
     }
@@ -279,6 +290,12 @@ void Publish::start()
 
 /** stop trigger */
 void Publish::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void Publish::stopSlot()
 {
     if (m_state == Up) {
         emit fsmUpStop();

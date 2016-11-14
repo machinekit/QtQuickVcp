@@ -234,9 +234,11 @@ private slots:
     virtual void setDisconnected() = 0;
     virtual void setConnecting() = 0;
     virtual void setTimeout() = 0;
+    void noBindSlot(); // no bind trigger
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void halrcmdUriChanged(QString uri);
     void halrcompUriChanged(QString uri);
     void halrcmdMessageReceived(const pb::Container &rx);
@@ -286,6 +288,10 @@ signals:
     void fsmSyncedDisconnectQueued();
     void fsmErrorDisconnect();
     void fsmErrorDisconnectQueued();
+    // trigger signals
+    void noBindSignal(QPrivateSignal dummy);
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace halremote
 #endif //REMOTE_COMPONENT_BASE_H

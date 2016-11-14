@@ -180,9 +180,10 @@ private slots:
     virtual void applicationDetailReceived(const pb::Container &rx) = 0;
     virtual void syncConfig() = 0;
     virtual void unsyncConfig() = 0;
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void configUriChanged(QString uri);
     void configMessageReceived(const pb::Container &rx);
     void debugNameChanged(QString debugName);
@@ -215,6 +216,9 @@ signals:
     void fsmLoadingConfigTryingQueued();
     void fsmLoadingDisconnect();
     void fsmLoadingDisconnectQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace application
 #endif //CONFIG_BASE_H

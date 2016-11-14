@@ -214,9 +214,10 @@ private slots:
     virtual void unsyncKeys() = 0;
     virtual void setSynced() = 0;
     virtual void clearSynced() = 0;
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void paramcmdUriChanged(QString uri);
     void paramUriChanged(QString uri);
     void paramMessageReceived(const QByteArray &topic, const pb::Container &rx);
@@ -253,6 +254,9 @@ signals:
     void fsmUpParamTryingQueued();
     void fsmUpDisconnect();
     void fsmUpDisconnectQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace param
 #endif //PARAM_CLIENT_H

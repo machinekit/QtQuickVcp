@@ -89,6 +89,11 @@ Subscribe::Subscribe(QObject *parent) :
     connect(m_context, &PollingZMQContext::pollError,
             this, &Subscribe::socketError);
     m_context->start();
+
+     connect(this, &Subscribe::startSignal,
+             this, &Subscribe::startSlot, Qt::QueuedConnection);
+     connect(this, &Subscribe::stopSignal,
+             this, &Subscribe::stopSlot, Qt::QueuedConnection);
 }
 
 Subscribe::~Subscribe()
@@ -384,6 +389,12 @@ void Subscribe::fsmUpStopEvent()
 /** start trigger */
 void Subscribe::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void Subscribe::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownStart();
     }
@@ -391,6 +402,12 @@ void Subscribe::start()
 
 /** stop trigger */
 void Subscribe::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void Subscribe::stopSlot()
 {
     if (m_state == Trying) {
         emit fsmTryingStop();

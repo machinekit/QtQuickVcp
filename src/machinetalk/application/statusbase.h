@@ -175,9 +175,11 @@ private slots:
     virtual void syncStatus() = 0;
     virtual void unsyncStatus() = 0;
     virtual void updateTopics() = 0;
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
+    void channelsSyncedSlot(); // channels synced trigger
 
 signals:
-
     void statusUriChanged(QString uri);
     void statusMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
@@ -202,6 +204,10 @@ signals:
     void fsmUpStatusTryingQueued();
     void fsmUpDisconnect();
     void fsmUpDisconnectQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
+    void channelsSyncedSignal(QPrivateSignal dummy);
 };
 }; // namespace application
 #endif //STATUS_BASE_H

@@ -123,6 +123,11 @@ SyncClient::SyncClient(QObject *parent) :
             this, &SyncClient::fsmSyncedSyncStateTryingEvent, Qt::QueuedConnection);
     connect(this, &SyncClient::fsmSyncedStop,
             this, &SyncClient::fsmSyncedStopEvent, Qt::QueuedConnection);
+
+     connect(this, &SyncClient::startSignal,
+             this, &SyncClient::startSlot, Qt::QueuedConnection);
+     connect(this, &SyncClient::stopSignal,
+             this, &SyncClient::stopSlot, Qt::QueuedConnection);
 }
 
 SyncClient::~SyncClient()
@@ -405,6 +410,12 @@ void SyncClient::subChannelStateChanged(machinetalk::Subscribe::State state)
 /** start trigger */
 void SyncClient::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void SyncClient::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownStart();
     }
@@ -412,6 +423,12 @@ void SyncClient::start()
 
 /** stop trigger */
 void SyncClient::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void SyncClient::stopSlot()
 {
     if (m_state == Trying) {
         emit fsmTryingStop();

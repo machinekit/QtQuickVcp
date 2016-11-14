@@ -213,9 +213,10 @@ private slots:
     virtual void launcherIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
     virtual void syncStatus() = 0;
     virtual void unsyncStatus() = 0;
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void launchercmdUriChanged(QString uri);
     void launcherUriChanged(QString uri);
     void launchercmdMessageReceived(const pb::Container &rx);
@@ -245,6 +246,9 @@ signals:
     void fsmSyncedLaunchercmdTryingQueued();
     void fsmSyncedDisconnect();
     void fsmSyncedDisconnectQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace application
 #endif //LAUNCHER_BASE_H

@@ -167,9 +167,10 @@ private slots:
     void fsmUpMessageReceivedEvent();
     void fsmUpDisconnectEvent();
 
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void socketUriChanged(QString uri);
     void socketMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
@@ -192,6 +193,9 @@ signals:
     void fsmUpMessageReceivedQueued();
     void fsmUpDisconnect();
     void fsmUpDisconnectQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace application
 #endif //LAUNCHER_SUBSCRIBE_H

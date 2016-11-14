@@ -66,6 +66,7 @@ ParamServer::ParamServer(QObject *parent) :
             this, &ParamServer::fsmDownConnectEvent, Qt::QueuedConnection);
     connect(this, &ParamServer::fsmUpDisconnect,
             this, &ParamServer::fsmUpDisconnectEvent, Qt::QueuedConnection);
+
 }
 
 ParamServer::~ParamServer()

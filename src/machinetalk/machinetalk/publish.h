@@ -160,9 +160,10 @@ private slots:
     void fsmUpStopEvent();
     void fsmUpHeartbeatTickEvent();
 
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void socketUriChanged(QString uri);
     void socketMessageReceived(const pb::Container &rx);
     void debugNameChanged(QString debugName);
@@ -177,6 +178,9 @@ signals:
     void fsmUpStopQueued();
     void fsmUpHeartbeatTick();
     void fsmUpHeartbeatTickQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace machinetalk
 #endif //PUBLISH_H

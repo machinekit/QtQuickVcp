@@ -214,9 +214,10 @@ private slots:
 
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void commandUriChanged(QString uri);
     void commandMessageReceived(const pb::Container &rx);
     void debugNameChanged(QString debugName);
@@ -235,6 +236,9 @@ signals:
     void fsmUpCommandTryingQueued();
     void fsmUpDisconnect();
     void fsmUpDisconnectQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace application
 #endif //COMMAND_BASE_H

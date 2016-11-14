@@ -60,6 +60,11 @@ RpcService::RpcService(QObject *parent) :
     connect(m_context, &PollingZMQContext::pollError,
             this, &RpcService::socketError);
     m_context->start();
+
+     connect(this, &RpcService::startSignal,
+             this, &RpcService::startSlot, Qt::QueuedConnection);
+     connect(this, &RpcService::stopSignal,
+             this, &RpcService::stopSlot, Qt::QueuedConnection);
 }
 
 RpcService::~RpcService()
@@ -232,6 +237,12 @@ void RpcService::fsmUpStopEvent()
 /** start trigger */
 void RpcService::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void RpcService::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownStart();
     }
@@ -239,6 +250,12 @@ void RpcService::start()
 
 /** stop trigger */
 void RpcService::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void RpcService::stopSlot()
 {
     if (m_state == Up) {
         emit fsmUpStop();

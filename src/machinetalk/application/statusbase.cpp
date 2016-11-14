@@ -98,6 +98,13 @@ StatusBase::StatusBase(QObject *parent) :
             this, &StatusBase::fsmUpStatusTryingEvent, Qt::QueuedConnection);
     connect(this, &StatusBase::fsmUpDisconnect,
             this, &StatusBase::fsmUpDisconnectEvent, Qt::QueuedConnection);
+
+     connect(this, &StatusBase::startSignal,
+             this, &StatusBase::startSlot, Qt::QueuedConnection);
+     connect(this, &StatusBase::stopSignal,
+             this, &StatusBase::stopSlot, Qt::QueuedConnection);
+     connect(this, &StatusBase::channelsSyncedSignal,
+             this, &StatusBase::channelsSyncedSlot, Qt::QueuedConnection);
 }
 
 StatusBase::~StatusBase()
@@ -307,6 +314,12 @@ void StatusBase::statusChannelStateChanged(application::StatusSubscribe::State s
 /** start trigger */
 void StatusBase::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void StatusBase::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownConnect();
     }
@@ -314,6 +327,12 @@ void StatusBase::start()
 
 /** stop trigger */
 void StatusBase::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void StatusBase::stopSlot()
 {
     if (m_state == Trying) {
         emit fsmTryingDisconnect();
@@ -325,6 +344,12 @@ void StatusBase::stop()
 
 /** channels synced trigger */
 void StatusBase::channelsSynced()
+{
+    emit channelsSyncedSignal(QPrivateSignal());
+}
+
+/** channels synced queued trigger function */
+void StatusBase::channelsSyncedSlot()
 {
     if (m_state == Syncing) {
         emit fsmSyncingChannelsSynced();

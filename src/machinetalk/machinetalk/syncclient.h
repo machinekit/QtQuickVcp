@@ -235,9 +235,10 @@ private slots:
     void fsmSyncedSyncStateTryingEvent();
     void fsmSyncedStopEvent();
 
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void syncUriChanged(QString uri);
     void subUriChanged(QString uri);
     void pubUriChanged(QString uri);
@@ -269,6 +270,9 @@ signals:
     void fsmSyncedSyncStateTryingQueued();
     void fsmSyncedStop();
     void fsmSyncedStopQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace machinetalk
 #endif //SYNC_CLIENT_H

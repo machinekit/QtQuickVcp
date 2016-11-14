@@ -89,6 +89,11 @@ LauncherSubscribe::LauncherSubscribe(QObject *parent) :
     connect(m_context, &PollingZMQContext::pollError,
             this, &LauncherSubscribe::socketError);
     m_context->start();
+
+     connect(this, &LauncherSubscribe::startSignal,
+             this, &LauncherSubscribe::startSlot, Qt::QueuedConnection);
+     connect(this, &LauncherSubscribe::stopSignal,
+             this, &LauncherSubscribe::stopSlot, Qt::QueuedConnection);
 }
 
 LauncherSubscribe::~LauncherSubscribe()
@@ -384,6 +389,12 @@ void LauncherSubscribe::fsmUpDisconnectEvent()
 /** start trigger */
 void LauncherSubscribe::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void LauncherSubscribe::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownConnect();
     }
@@ -391,6 +402,12 @@ void LauncherSubscribe::start()
 
 /** stop trigger */
 void LauncherSubscribe::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void LauncherSubscribe::stopSlot()
 {
     if (m_state == Trying) {
         emit fsmTryingDisconnect();

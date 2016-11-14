@@ -173,9 +173,10 @@ private slots:
     virtual void updateTopics() = 0;
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void errorUriChanged(QString uri);
     void errorMessageReceived(const QByteArray &topic, const pb::Container &rx);
     void debugNameChanged(QString debugName);
@@ -194,6 +195,9 @@ signals:
     void fsmUpErrorTryingQueued();
     void fsmUpDisconnect();
     void fsmUpDisconnectQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace application
 #endif //ERROR_BASE_H

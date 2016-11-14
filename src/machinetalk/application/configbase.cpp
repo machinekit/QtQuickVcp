@@ -120,6 +120,11 @@ ConfigBase::ConfigBase(QObject *parent) :
             this, &ConfigBase::fsmLoadingConfigTryingEvent, Qt::QueuedConnection);
     connect(this, &ConfigBase::fsmLoadingDisconnect,
             this, &ConfigBase::fsmLoadingDisconnectEvent, Qt::QueuedConnection);
+
+     connect(this, &ConfigBase::startSignal,
+             this, &ConfigBase::startSlot, Qt::QueuedConnection);
+     connect(this, &ConfigBase::stopSignal,
+             this, &ConfigBase::stopSlot, Qt::QueuedConnection);
 }
 
 ConfigBase::~ConfigBase()
@@ -407,6 +412,12 @@ void ConfigBase::configChannelStateChanged(machinetalk::RpcClient::State state)
 /** start trigger */
 void ConfigBase::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void ConfigBase::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownConnect();
     }
@@ -414,6 +425,12 @@ void ConfigBase::start()
 
 /** stop trigger */
 void ConfigBase::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void ConfigBase::stopSlot()
 {
     if (m_state == Trying) {
         emit fsmTryingDisconnect();

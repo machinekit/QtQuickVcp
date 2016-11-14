@@ -176,7 +176,6 @@ private slots:
     virtual void incrementalUpdateReceived(const pb::Container &rx) = 0;
 
 signals:
-
     void paramcmdUriChanged(QString uri);
     void paramUriChanged(QString uri);
     void paramcmdMessageReceived(const pb::Container &rx);
@@ -190,6 +189,7 @@ signals:
     void fsmDownConnectQueued();
     void fsmUpDisconnect();
     void fsmUpDisconnectQueued();
+    // trigger signals
 };
 }; // namespace param
 #endif //PARAM_SERVER_H

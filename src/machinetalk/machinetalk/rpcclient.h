@@ -171,9 +171,10 @@ private slots:
     void fsmUpAnyMsgSentEvent();
     void fsmUpStopEvent();
 
+    void startSlot(); // start trigger
+    void stopSlot(); // stop trigger
 
 signals:
-
     void socketUriChanged(QString uri);
     void socketMessageReceived(const pb::Container &rx);
     void debugNameChanged(QString debugName);
@@ -204,6 +205,9 @@ signals:
     void fsmUpAnyMsgSentQueued();
     void fsmUpStop();
     void fsmUpStopQueued();
+    // trigger signals
+    void startSignal(QPrivateSignal dummy);
+    void stopSignal(QPrivateSignal dummy);
 };
 }; // namespace machinetalk
 #endif //RPC_CLIENT_H

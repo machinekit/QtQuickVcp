@@ -89,6 +89,11 @@ HalrcompSubscribe::HalrcompSubscribe(QObject *parent) :
     connect(m_context, &PollingZMQContext::pollError,
             this, &HalrcompSubscribe::socketError);
     m_context->start();
+
+     connect(this, &HalrcompSubscribe::startSignal,
+             this, &HalrcompSubscribe::startSlot, Qt::QueuedConnection);
+     connect(this, &HalrcompSubscribe::stopSignal,
+             this, &HalrcompSubscribe::stopSlot, Qt::QueuedConnection);
 }
 
 HalrcompSubscribe::~HalrcompSubscribe()
@@ -384,6 +389,12 @@ void HalrcompSubscribe::fsmUpDisconnectEvent()
 /** start trigger */
 void HalrcompSubscribe::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void HalrcompSubscribe::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownConnect();
     }
@@ -391,6 +402,12 @@ void HalrcompSubscribe::start()
 
 /** stop trigger */
 void HalrcompSubscribe::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void HalrcompSubscribe::stopSlot()
 {
     if (m_state == Trying) {
         emit fsmTryingDisconnect();

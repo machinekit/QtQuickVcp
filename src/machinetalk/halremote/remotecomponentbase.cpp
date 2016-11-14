@@ -174,6 +174,13 @@ RemoteComponentBase::RemoteComponentBase(QObject *parent) :
             this, &RemoteComponentBase::fsmSyncedDisconnectEvent, Qt::QueuedConnection);
     connect(this, &RemoteComponentBase::fsmErrorDisconnect,
             this, &RemoteComponentBase::fsmErrorDisconnectEvent, Qt::QueuedConnection);
+
+     connect(this, &RemoteComponentBase::noBindSignal,
+             this, &RemoteComponentBase::noBindSlot, Qt::QueuedConnection);
+     connect(this, &RemoteComponentBase::startSignal,
+             this, &RemoteComponentBase::startSlot, Qt::QueuedConnection);
+     connect(this, &RemoteComponentBase::stopSignal,
+             this, &RemoteComponentBase::stopSlot, Qt::QueuedConnection);
 }
 
 RemoteComponentBase::~RemoteComponentBase()
@@ -677,6 +684,12 @@ void RemoteComponentBase::halrcompChannelStateChanged(halremote::HalrcompSubscri
 /** no bind trigger */
 void RemoteComponentBase::noBind()
 {
+    emit noBindSignal(QPrivateSignal());
+}
+
+/** no bind queued trigger function */
+void RemoteComponentBase::noBindSlot()
+{
     if (m_state == Bind) {
         emit fsmBindNoBind();
     }
@@ -685,6 +698,12 @@ void RemoteComponentBase::noBind()
 /** start trigger */
 void RemoteComponentBase::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void RemoteComponentBase::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownConnect();
     }
@@ -692,6 +711,12 @@ void RemoteComponentBase::start()
 
 /** stop trigger */
 void RemoteComponentBase::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void RemoteComponentBase::stopSlot()
 {
     if (m_state == Trying) {
         emit fsmTryingDisconnect();

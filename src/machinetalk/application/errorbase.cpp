@@ -81,6 +81,11 @@ ErrorBase::ErrorBase(QObject *parent) :
             this, &ErrorBase::fsmUpErrorTryingEvent, Qt::QueuedConnection);
     connect(this, &ErrorBase::fsmUpDisconnect,
             this, &ErrorBase::fsmUpDisconnectEvent, Qt::QueuedConnection);
+
+     connect(this, &ErrorBase::startSignal,
+             this, &ErrorBase::startSlot, Qt::QueuedConnection);
+     connect(this, &ErrorBase::stopSignal,
+             this, &ErrorBase::stopSlot, Qt::QueuedConnection);
 }
 
 ErrorBase::~ErrorBase()
@@ -266,6 +271,12 @@ void ErrorBase::errorChannelStateChanged(application::ErrorSubscribe::State stat
 /** start trigger */
 void ErrorBase::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void ErrorBase::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownConnect();
     }
@@ -273,6 +284,12 @@ void ErrorBase::start()
 
 /** stop trigger */
 void ErrorBase::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void ErrorBase::stopSlot()
 {
     if (m_state == Trying) {
         emit fsmTryingDisconnect();

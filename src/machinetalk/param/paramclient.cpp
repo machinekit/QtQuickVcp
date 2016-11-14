@@ -137,6 +137,11 @@ ParamClient::ParamClient(QObject *parent) :
             this, &ParamClient::fsmUpParamTryingEvent, Qt::QueuedConnection);
     connect(this, &ParamClient::fsmUpDisconnect,
             this, &ParamClient::fsmUpDisconnectEvent, Qt::QueuedConnection);
+
+     connect(this, &ParamClient::startSignal,
+             this, &ParamClient::startSlot, Qt::QueuedConnection);
+     connect(this, &ParamClient::stopSignal,
+             this, &ParamClient::stopSlot, Qt::QueuedConnection);
 }
 
 ParamClient::~ParamClient()
@@ -460,6 +465,12 @@ void ParamClient::paramChannelStateChanged(machinetalk::Subscribe::State state)
 /** start trigger */
 void ParamClient::start()
 {
+    emit startSignal(QPrivateSignal());
+}
+
+/** start queued trigger function */
+void ParamClient::startSlot()
+{
     if (m_state == Down) {
         emit fsmDownConnect();
     }
@@ -467,6 +478,12 @@ void ParamClient::start()
 
 /** stop trigger */
 void ParamClient::stop()
+{
+    emit stopSignal(QPrivateSignal());
+}
+
+/** stop queued trigger function */
+void ParamClient::stopSlot()
 {
     if (m_state == Connecting) {
         emit fsmConnectingDisconnect();
