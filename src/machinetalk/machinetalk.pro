@@ -27,6 +27,8 @@ SOURCES += $$PWD/machinetalk/rpcclient.cpp \
            $$PWD/application/statussubscribe.cpp \
            $$PWD/application/statusbase.cpp \
            $$PWD/application/commandbase.cpp \
+           $$PWD/pathview/previewclientbase.cpp \
+           $$PWD/pathview/previewsubscribe.cpp \
            $$PWD/machinetalkservice.cpp
 
 HEADERS += $$PWD/machinetalk/rpcclient.h \

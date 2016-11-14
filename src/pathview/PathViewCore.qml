@@ -103,7 +103,7 @@ ApplicationItem {
         property bool _connected: false
 
         id: previewClient
-        statusUri: previewStatusService.uri
+        previewstatusUri: previewStatusService.uri
         previewUri: previewService.uri
         ready: ((previewService.ready && previewStatusService.ready) || _connected)
         model: gcodeProgramModel
