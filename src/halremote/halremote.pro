@@ -12,14 +12,12 @@ include(../machinetalk/machinetalk.pri)
 # Input
 SOURCES += \
     plugin.cpp \
-    halgroup.cpp \
     halpin.cpp \
     halremotecomponent.cpp \
     halsignal.cpp
 
 HEADERS += \
     plugin.h \
-    halgroup.h \
     halpin.h \
     halremotecomponent.h \
     halsignal.h
