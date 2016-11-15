@@ -40,6 +40,10 @@ ApplicationItem {
             file.onUploadFinished.connect(fileUploadFinished);
             file.onDownloadFinished.connect(fileDownloadFinished);
         }
+        else {
+            file.onUploadFinished.disconnect(fileUploadFinished);
+            file.onDownloadFinished.disconnect(fileDownloadFinished);
+        }
     }
 
     function fileUploadFinished() {
