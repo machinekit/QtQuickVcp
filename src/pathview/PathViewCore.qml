@@ -28,6 +28,7 @@ import Machinekit.Application 1.0
 ApplicationItem {
     property alias gcodeProgramModel: gcodeProgramModel
     property alias gcodeProgramLoader: gcodeProgramLoader
+    property alias previewClient: previewClient
 
     property bool _ready: file.ready
     property bool _previewEnabled: settings.initialized && settings.values.preview.enable

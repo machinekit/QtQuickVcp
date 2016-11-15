@@ -27,6 +27,7 @@ QtObject {
     property var core: null
     property var gcodeProgramLoader: core === null ? {} : core.gcodeProgramLoader
     property var gcodeProgramModel: core === null ? null : core.gcodeProgramModel
+    property var previewClient: core === null ? { connected: false } : core.previewClient
 
     Component.onCompleted: {
         if (core === null)
