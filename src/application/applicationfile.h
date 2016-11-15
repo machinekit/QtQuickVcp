@@ -22,7 +22,7 @@
 #ifndef APPLICATIONFILE_H
 #define APPLICATIONFILE_H
 
-#include <abstractserviceimplementation.h>
+#include <QObject>
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -34,7 +34,7 @@
 
 namespace qtquickvcp {
 
-class ApplicationFile : public AbstractServiceImplementation
+class ApplicationFile : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
@@ -49,6 +49,7 @@ class ApplicationFile : public AbstractServiceImplementation
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(bool networkReady READ networkReady NOTIFY networkReadyChanged)
     Q_PROPERTY(ApplicationFileModel *model READ model NOTIFY modelChanged)
+    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_ENUMS(TransferState TransferError)
 
 public:
@@ -132,6 +133,11 @@ public:
         return m_serverDirectory;
     }
 
+    bool ready() const
+    {
+        return m_ready;
+    }
+
 public slots:
     void setUri(const QString &arg)
     {
@@ -187,6 +193,15 @@ public slots:
         emit serverDirectoryChanged(serverDirectory);
     }
 
+    void setReady(bool ready)
+    {
+        if (m_ready == ready)
+            return;
+
+        m_ready = ready;
+        emit readyChanged(ready);
+    }
+
     void startUpload();
     void startDownload();
     void refreshFiles();
@@ -209,6 +224,7 @@ private:
     double          m_progress;
     bool            m_networkReady;
     ApplicationFileModel * m_model;
+    bool m_ready;
 
     QNetworkAccessManager   *m_networkManager;
     QFile                   *m_file;
@@ -250,6 +266,7 @@ signals:
     void createDirectoryFinished();
     void networkReadyChanged(bool networkReady);
     void modelChanged(ApplicationFileModel * model);
+    void readyChanged(bool ready);
 }; // class ApplicationFile
 } // namespace qtquickvcp
 

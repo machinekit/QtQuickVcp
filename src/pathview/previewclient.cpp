@@ -97,6 +97,7 @@ void PreviewClient::previewReceived(const QByteArray &topic, const pb::Container
 
 void PreviewClient::interpStatReceived(const QByteArray &topic, const pb::Container &rx)
 {
+    Q_UNUSED(topic);
     QStringList notes;
 
     m_interpreterState = (InterpreterState)rx.interp_state();

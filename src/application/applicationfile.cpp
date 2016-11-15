@@ -25,7 +25,7 @@
 namespace qtquickvcp {
 
 ApplicationFile::ApplicationFile(QObject *parent) :
-    AbstractServiceImplementation(parent),
+    QObject(parent),
     m_uri(""),
     m_localFilePath(""),
     m_remoteFilePath(""),
@@ -38,6 +38,7 @@ ApplicationFile::ApplicationFile(QObject *parent) :
     m_progress(0.0),
     m_networkReady(false),
     m_model(nullptr),
+    m_ready(false),
     m_networkManager(nullptr),
     m_file(nullptr),
     m_ftp(nullptr)
