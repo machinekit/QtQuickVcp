@@ -24,7 +24,7 @@ import Machinekit.Application 1.0
 
 MdiCommandAction {
     property var commands: {
-        var commandList = []
+        var commandList = [];
         if ((status.synced) && (status.config.userCommand !== undefined))
         {
             for (var i = 0; i < status.config.userCommand.length; ++i)
