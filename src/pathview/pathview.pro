@@ -47,20 +47,20 @@ RESOURCES += \
     pathview.qrc
 
 QML_FILES = \
-    BoundingBox3D.qml \
-    Coordinate3D.qml \
-    GCodeSync.qml \
-    Grid3D.qml \
-    PathView3D.qml \
-    PathViewCore.qml \
-    PathViewObject.qml \
-    ProgramExtents3D.qml \
-    ProgramOffsets3D.qml \
-    SourceView.qml \
-    ViewModeAction.qml \
-    ZoomInAction.qml \
-    ZoomOutAction.qml \
-    ZoomOriginalAction.qml
+    $$PWD/BoundingBox3D.qml \
+    $$PWD/Coordinate3D.qml \
+    $$PWD/GCodeSync.qml \
+    $$PWD/Grid3D.qml \
+    $$PWD/PathView3D.qml \
+    $$PWD/PathViewCore.qml \
+    $$PWD/PathViewObject.qml \
+    $$PWD/ProgramExtents3D.qml \
+    $$PWD/ProgramOffsets3D.qml \
+    $$PWD/SourceView.qml \
+    $$PWD/ViewModeAction.qml \
+    $$PWD/ZoomInAction.qml \
+    $$PWD/ZoomOutAction.qml \
+    $$PWD/ZoomOriginalAction.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \
@@ -75,3 +75,6 @@ OTHER_FILES += \
     TextVertexShader.glsl
 
 include(../deployment.pri)
+
+TRANSLATIONS_PATH = $$PWD/translations
+include(../translation.pri)

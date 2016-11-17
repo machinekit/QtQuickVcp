@@ -15,25 +15,25 @@ RESOURCES += \
     halremotecontrols.qrc
 
 QML_FILES = \
-    HalApplicationWindow.qml \
-    HalButton.qml \
-    HalCheckBox.qml \
-    HalColorPicker.qml \
-    HalComboBox.qml \
-    HalContainer.qml \
-    HalDial.qml \
-    HalGauge.qml \
-    HalKnob.qml \
-    HalLabel.qml \
-    HalLed.qml \
-    HalLogChart.qml \
-    HalProgressBar.qml \
-    HalRadioButton.qml \
-    HalRoundGauge.qml \
-    HalSlider.qml \
-    HalSpinBox.qml \
-    HalSwitch.qml \
-    HalVirtualJoystick.qml
+    $$PWD/HalApplicationWindow.qml \
+    $$PWD/HalButton.qml \
+    $$PWD/HalCheckBox.qml \
+    $$PWD/HalColorPicker.qml \
+    $$PWD/HalComboBox.qml \
+    $$PWD/HalContainer.qml \
+    $$PWD/HalDial.qml \
+    $$PWD/HalGauge.qml \
+    $$PWD/HalKnob.qml \
+    $$PWD/HalLabel.qml \
+    $$PWD/HalLed.qml \
+    $$PWD/HalLogChart.qml \
+    $$PWD/HalProgressBar.qml \
+    $$PWD/HalRadioButton.qml \
+    $$PWD/HalRoundGauge.qml \
+    $$PWD/HalSlider.qml \
+    $$PWD/HalSpinBox.qml \
+    $$PWD/HalSwitch.qml \
+    $$PWD/HalVirtualJoystick.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \
@@ -74,3 +74,6 @@ include(../deployment.pri)
 
 DISTFILES += \
     designer/halremotecontrols.metainfo
+
+TRANSLATIONS_PATH = $$PWD/translations
+include(../translation.pri)

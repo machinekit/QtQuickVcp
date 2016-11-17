@@ -17,21 +17,21 @@ RESOURCES += \
     controls.qrc
 
 QML_FILES = \
-    Dial.qml \
-    Gauge.qml \
-    ColorPicker.qml \
-    Knob.qml \
-    Led.qml \
-    LogChart.qml \
-    RoundGauge.qml \
-    SlideView.qml \
-    SlidePage.qml \
-    TemperatureSelector.qml \
-    TooltipArea.qml \
-    TouchButton.qml \
-    ValueChart.qml \
-    ValueModel.qml \
-    VirtualJoystick.qml
+    $$PWD/Dial.qml \
+    $$PWD/Gauge.qml \
+    $$PWD/ColorPicker.qml \
+    $$PWD/Knob.qml \
+    $$PWD/Led.qml \
+    $$PWD/LogChart.qml \
+    $$PWD/RoundGauge.qml \
+    $$PWD/SlideView.qml \
+    $$PWD/SlidePage.qml \
+    $$PWD/TemperatureSelector.qml \
+    $$PWD/TooltipArea.qml \
+    $$PWD/TouchButton.qml \
+    $$PWD/ValueChart.qml \
+    $$PWD/ValueModel.qml \
+    $$PWD/VirtualJoystick.qml
 
 include(Private/private.pri)
 
@@ -63,3 +63,6 @@ QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/VirtualJoystickSpecifics.qml
 
 include(../deployment.pri)
+
+TRANSLATIONS_PATH = $$PWD/translations
+include(../translation.pri)
