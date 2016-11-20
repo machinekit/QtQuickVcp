@@ -27,7 +27,6 @@ HalrcompSubscribe::HalrcompSubscribe(QObject *parent) :
     m_socket(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
     ,m_heartbeatTimer(new QTimer(this)),
     m_heartbeatInterval(0),
@@ -37,63 +36,26 @@ HalrcompSubscribe::HalrcompSubscribe(QObject *parent) :
 
     m_heartbeatTimer->setSingleShot(true);
     connect(m_heartbeatTimer, &QTimer::timeout, this, &HalrcompSubscribe::heartbeatTimerTick);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &HalrcompSubscribe::fsmDownEntered, Qt::QueuedConnection);
-    QState *tryingState = new QState(m_fsm);
-    connect(tryingState, &QState::entered, this, &HalrcompSubscribe::fsmTryingEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &HalrcompSubscribe::fsmUpEntered, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
     connect(this, &HalrcompSubscribe::fsmDownConnect,
-            this, &HalrcompSubscribe::fsmDownConnectQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &HalrcompSubscribe::fsmDownConnectQueued, tryingState);
+            this, &HalrcompSubscribe::fsmDownConnectEvent);
     connect(this, &HalrcompSubscribe::fsmTryingConnected,
-            this, &HalrcompSubscribe::fsmTryingConnectedQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &HalrcompSubscribe::fsmTryingConnectedQueued, upState);
+            this, &HalrcompSubscribe::fsmTryingConnectedEvent);
     connect(this, &HalrcompSubscribe::fsmTryingDisconnect,
-            this, &HalrcompSubscribe::fsmTryingDisconnectQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &HalrcompSubscribe::fsmTryingDisconnectQueued, downState);
+            this, &HalrcompSubscribe::fsmTryingDisconnectEvent);
     connect(this, &HalrcompSubscribe::fsmUpTimeout,
-            this, &HalrcompSubscribe::fsmUpTimeoutQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &HalrcompSubscribe::fsmUpTimeoutQueued, tryingState);
+            this, &HalrcompSubscribe::fsmUpTimeoutEvent);
     connect(this, &HalrcompSubscribe::fsmUpTick,
-            this, &HalrcompSubscribe::fsmUpTickQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &HalrcompSubscribe::fsmUpTickQueued, upState);
+            this, &HalrcompSubscribe::fsmUpTickEvent);
     connect(this, &HalrcompSubscribe::fsmUpMessageReceived,
-            this, &HalrcompSubscribe::fsmUpMessageReceivedQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &HalrcompSubscribe::fsmUpMessageReceivedQueued, upState);
+            this, &HalrcompSubscribe::fsmUpMessageReceivedEvent);
     connect(this, &HalrcompSubscribe::fsmUpDisconnect,
-            this, &HalrcompSubscribe::fsmUpDisconnectQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &HalrcompSubscribe::fsmUpDisconnectQueued, downState);
-
-    connect(this, &HalrcompSubscribe::fsmDownConnect,
-            this, &HalrcompSubscribe::fsmDownConnectEvent, Qt::QueuedConnection);
-    connect(this, &HalrcompSubscribe::fsmTryingConnected,
-            this, &HalrcompSubscribe::fsmTryingConnectedEvent, Qt::QueuedConnection);
-    connect(this, &HalrcompSubscribe::fsmTryingDisconnect,
-            this, &HalrcompSubscribe::fsmTryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &HalrcompSubscribe::fsmUpTimeout,
-            this, &HalrcompSubscribe::fsmUpTimeoutEvent, Qt::QueuedConnection);
-    connect(this, &HalrcompSubscribe::fsmUpTick,
-            this, &HalrcompSubscribe::fsmUpTickEvent, Qt::QueuedConnection);
-    connect(this, &HalrcompSubscribe::fsmUpMessageReceived,
-            this, &HalrcompSubscribe::fsmUpMessageReceivedEvent, Qt::QueuedConnection);
-    connect(this, &HalrcompSubscribe::fsmUpDisconnect,
-            this, &HalrcompSubscribe::fsmUpDisconnectEvent, Qt::QueuedConnection);
+            this, &HalrcompSubscribe::fsmUpDisconnectEvent);
 
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
             this, &HalrcompSubscribe::socketError);
     m_context->start();
-
-     connect(this, &HalrcompSubscribe::startSignal,
-             this, &HalrcompSubscribe::startSlot, Qt::QueuedConnection);
-     connect(this, &HalrcompSubscribe::stopSignal,
-             this, &HalrcompSubscribe::stopSlot, Qt::QueuedConnection);
 }
 
 HalrcompSubscribe::~HalrcompSubscribe()
@@ -205,13 +167,13 @@ void HalrcompSubscribe::heartbeatTimerTick()
     {
          if (m_state == Up)
          {
-             emit fsmUpTimeout();
+             emit fsmUpTimeout(QPrivateSignal());
          }
          return;
     }
     if (m_state == Up)
     {
-         emit fsmUpTick();
+        emit fsmUpTick(QPrivateSignal());
     }
 }
 
@@ -240,7 +202,7 @@ void HalrcompSubscribe::processSocketMessage(const QList<QByteArray> &messageLis
 
     if (m_state == Up)
     {
-        emit fsmUpMessageReceived();
+        emit fsmUpMessageReceived(QPrivateSignal());
     }
 
     // react to ping message
@@ -260,7 +222,7 @@ void HalrcompSubscribe::processSocketMessage(const QList<QByteArray> &messageLis
 
         if (m_state == Trying)
         {
-            emit fsmTryingConnected();
+            emit fsmTryingConnected(QPrivateSignal());
         }
     }
 
@@ -274,146 +236,159 @@ void HalrcompSubscribe::socketError(int errorNum, const QString &errorMsg)
     //updateState(SocketError, errorString);  TODO
 }
 
-void HalrcompSubscribe::fsmDownEntered()
+void HalrcompSubscribe::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void HalrcompSubscribe::fsmDownConnectEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event CONNECT");
 #endif
-
-    m_state = Trying;
-    startSocket();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        startSocket();
+     }
 }
 
-void HalrcompSubscribe::fsmTryingEntered()
+void HalrcompSubscribe::fsmTrying()
 {
-    if (m_previousState != Trying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-        m_previousState = Trying;
-        emit stateChanged(m_state);
-    }
+    m_state = Trying;
+    emit stateChanged(m_state);
 }
 
 void HalrcompSubscribe::fsmTryingConnectedEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECTED");
+        DEBUG_TAG(1, m_debugName, "Event CONNECTED");
 #endif
-
-    m_state = Up;
-    resetHeartbeatLiveness();
-    startHeartbeatTimer();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+        resetHeartbeatLiveness();
+        startHeartbeatTimer();
+     }
 }
 
 void HalrcompSubscribe::fsmTryingDisconnectEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopHeartbeatTimer();
-    stopSocket();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopHeartbeatTimer();
+        stopSocket();
+     }
 }
 
-void HalrcompSubscribe::fsmUpEntered()
+void HalrcompSubscribe::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
 }
 
 void HalrcompSubscribe::fsmUpTimeoutEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event TIMEOUT");
+        DEBUG_TAG(1, m_debugName, "Event TIMEOUT");
 #endif
-
-    m_state = Trying;
-    stopHeartbeatTimer();
-    stopSocket();
-    startSocket();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        stopHeartbeatTimer();
+        stopSocket();
+        startSocket();
+     }
 }
 
 void HalrcompSubscribe::fsmUpTickEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event TICK");
+        DEBUG_TAG(1, m_debugName, "Event TICK");
 #endif
-
-    m_state = Up;
-    resetHeartbeatTimer();
+        // execute actions
+        resetHeartbeatTimer();
+     }
 }
 
 void HalrcompSubscribe::fsmUpMessageReceivedEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event MESSAGE RECEIVED");
+        DEBUG_TAG(1, m_debugName, "Event MESSAGE RECEIVED");
 #endif
-
-    m_state = Up;
-    resetHeartbeatLiveness();
-    resetHeartbeatTimer();
+        // execute actions
+        resetHeartbeatLiveness();
+        resetHeartbeatTimer();
+     }
 }
 
 void HalrcompSubscribe::fsmUpDisconnectEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopHeartbeatTimer();
-    stopSocket();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopHeartbeatTimer();
+        stopSocket();
+     }
 }
 
-/** start trigger */
+/** start trigger function */
 void HalrcompSubscribe::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void HalrcompSubscribe::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownConnect();
+        emit fsmDownConnect(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void HalrcompSubscribe::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void HalrcompSubscribe::stopSlot()
-{
     if (m_state == Trying) {
-        emit fsmTryingDisconnect();
+        emit fsmTryingDisconnect(QPrivateSignal());
     }
     if (m_state == Up) {
-        emit fsmUpDisconnect();
+        emit fsmUpDisconnect(QPrivateSignal());
     }
 }
 }; // namespace halremote

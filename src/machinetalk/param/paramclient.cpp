@@ -28,7 +28,6 @@ ParamClient::ParamClient(QObject *parent) :
     m_paramChannel(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
 {
     // initialize paramcmd channel
@@ -53,95 +52,37 @@ ParamClient::ParamClient(QObject *parent) :
 
     connect(m_paramChannel, &machinetalk::Subscribe::heartbeatIntervalChanged,
             this, &ParamClient::paramHeartbeatIntervalChanged);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &ParamClient::fsmDownEntered, Qt::QueuedConnection);
-    QState *connectingState = new QState(m_fsm);
-    connect(connectingState, &QState::entered, this, &ParamClient::fsmConnectingEntered, Qt::QueuedConnection);
-    QState *syncingState = new QState(m_fsm);
-    connect(syncingState, &QState::entered, this, &ParamClient::fsmSyncingEntered, Qt::QueuedConnection);
-    QState *tryingState = new QState(m_fsm);
-    connect(tryingState, &QState::entered, this, &ParamClient::fsmTryingEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &ParamClient::fsmUpEntered, Qt::QueuedConnection);
-    connect(upState, &QState::entered, this, &ParamClient::setSynced, Qt::QueuedConnection);
-    connect(upState, &QState::exited, this, &ParamClient::clearSynced, Qt::QueuedConnection);
-    connect(upState, &QState::exited, this, &ParamClient::unsyncKeys, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
+    connect(this, &ParamClient::fsmUpEntered,
+            this, &ParamClient::fsmUpEntry);
+    connect(this, &ParamClient::fsmUpExited,
+            this, &ParamClient::fsmUpExit);
     connect(this, &ParamClient::fsmDownConnect,
-            this, &ParamClient::fsmDownConnectQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &ParamClient::fsmDownConnectQueued, connectingState);
+            this, &ParamClient::fsmDownConnectEvent);
     connect(this, &ParamClient::fsmConnectingParamcmdUp,
-            this, &ParamClient::fsmConnectingParamcmdUpQueued, Qt::QueuedConnection);
-    connectingState->addTransition(this, &ParamClient::fsmConnectingParamcmdUpQueued, syncingState);
+            this, &ParamClient::fsmConnectingParamcmdUpEvent);
     connect(this, &ParamClient::fsmConnectingParamUp,
-            this, &ParamClient::fsmConnectingParamUpQueued, Qt::QueuedConnection);
-    connectingState->addTransition(this, &ParamClient::fsmConnectingParamUpQueued, tryingState);
+            this, &ParamClient::fsmConnectingParamUpEvent);
     connect(this, &ParamClient::fsmConnectingDisconnect,
-            this, &ParamClient::fsmConnectingDisconnectQueued, Qt::QueuedConnection);
-    connectingState->addTransition(this, &ParamClient::fsmConnectingDisconnectQueued, downState);
+            this, &ParamClient::fsmConnectingDisconnectEvent);
     connect(this, &ParamClient::fsmSyncingParamUp,
-            this, &ParamClient::fsmSyncingParamUpQueued, Qt::QueuedConnection);
-    syncingState->addTransition(this, &ParamClient::fsmSyncingParamUpQueued, upState);
+            this, &ParamClient::fsmSyncingParamUpEvent);
     connect(this, &ParamClient::fsmSyncingParamcmdTrying,
-            this, &ParamClient::fsmSyncingParamcmdTryingQueued, Qt::QueuedConnection);
-    syncingState->addTransition(this, &ParamClient::fsmSyncingParamcmdTryingQueued, connectingState);
+            this, &ParamClient::fsmSyncingParamcmdTryingEvent);
     connect(this, &ParamClient::fsmSyncingDisconnect,
-            this, &ParamClient::fsmSyncingDisconnectQueued, Qt::QueuedConnection);
-    syncingState->addTransition(this, &ParamClient::fsmSyncingDisconnectQueued, downState);
+            this, &ParamClient::fsmSyncingDisconnectEvent);
     connect(this, &ParamClient::fsmTryingParamcmdUp,
-            this, &ParamClient::fsmTryingParamcmdUpQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &ParamClient::fsmTryingParamcmdUpQueued, upState);
+            this, &ParamClient::fsmTryingParamcmdUpEvent);
     connect(this, &ParamClient::fsmTryingParamTrying,
-            this, &ParamClient::fsmTryingParamTryingQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &ParamClient::fsmTryingParamTryingQueued, connectingState);
+            this, &ParamClient::fsmTryingParamTryingEvent);
     connect(this, &ParamClient::fsmTryingDisconnect,
-            this, &ParamClient::fsmTryingDisconnectQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &ParamClient::fsmTryingDisconnectQueued, downState);
+            this, &ParamClient::fsmTryingDisconnectEvent);
     connect(this, &ParamClient::fsmUpParamcmdTrying,
-            this, &ParamClient::fsmUpParamcmdTryingQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ParamClient::fsmUpParamcmdTryingQueued, tryingState);
+            this, &ParamClient::fsmUpParamcmdTryingEvent);
     connect(this, &ParamClient::fsmUpParamTrying,
-            this, &ParamClient::fsmUpParamTryingQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ParamClient::fsmUpParamTryingQueued, syncingState);
+            this, &ParamClient::fsmUpParamTryingEvent);
     connect(this, &ParamClient::fsmUpDisconnect,
-            this, &ParamClient::fsmUpDisconnectQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ParamClient::fsmUpDisconnectQueued, downState);
-
-    connect(this, &ParamClient::fsmDownConnect,
-            this, &ParamClient::fsmDownConnectEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmConnectingParamcmdUp,
-            this, &ParamClient::fsmConnectingParamcmdUpEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmConnectingParamUp,
-            this, &ParamClient::fsmConnectingParamUpEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmConnectingDisconnect,
-            this, &ParamClient::fsmConnectingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmSyncingParamUp,
-            this, &ParamClient::fsmSyncingParamUpEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmSyncingParamcmdTrying,
-            this, &ParamClient::fsmSyncingParamcmdTryingEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmSyncingDisconnect,
-            this, &ParamClient::fsmSyncingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmTryingParamcmdUp,
-            this, &ParamClient::fsmTryingParamcmdUpEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmTryingParamTrying,
-            this, &ParamClient::fsmTryingParamTryingEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmTryingDisconnect,
-            this, &ParamClient::fsmTryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmUpParamcmdTrying,
-            this, &ParamClient::fsmUpParamcmdTryingEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmUpParamTrying,
-            this, &ParamClient::fsmUpParamTryingEvent, Qt::QueuedConnection);
-    connect(this, &ParamClient::fsmUpDisconnect,
-            this, &ParamClient::fsmUpDisconnectEvent, Qt::QueuedConnection);
-
-     connect(this, &ParamClient::startSignal,
-             this, &ParamClient::startSlot, Qt::QueuedConnection);
-     connect(this, &ParamClient::stopSignal,
-             this, &ParamClient::stopSlot, Qt::QueuedConnection);
+            this, &ParamClient::fsmUpDisconnectEvent);
 }
 
 ParamClient::~ParamClient()
@@ -215,195 +156,267 @@ void ParamClient::sendIncrementalUpdate(pb::Container &tx)
     sendParamcmdMessage(pb::MT_INCREMENTAL_UPDATE, tx);
 }
 
-void ParamClient::fsmDownEntered()
+void ParamClient::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void ParamClient::fsmDownConnectEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event CONNECT");
 #endif
-
-    m_state = Connecting;
-    startParamcmdChannel();
-    startParamChannel();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmConnecting();
+        emit fsmConnectingEntered(QPrivateSignal());
+        // execute actions
+        startParamcmdChannel();
+        startParamChannel();
+     }
 }
 
-void ParamClient::fsmConnectingEntered()
+void ParamClient::fsmConnecting()
 {
-    if (m_previousState != Connecting)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State CONNECTING");
 #endif
-        m_previousState = Connecting;
-        emit stateChanged(m_state);
-    }
+    m_state = Connecting;
+    emit stateChanged(m_state);
 }
 
 void ParamClient::fsmConnectingParamcmdUpEvent()
 {
+    if (m_state == Connecting)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PARAMCMD UP");
+        DEBUG_TAG(1, m_debugName, "Event PARAMCMD UP");
 #endif
-
-    m_state = Syncing;
+        // handle state change
+        emit fsmConnectingExited(QPrivateSignal());
+        fsmSyncing();
+        emit fsmSyncingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ParamClient::fsmConnectingParamUpEvent()
 {
+    if (m_state == Connecting)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PARAM UP");
+        DEBUG_TAG(1, m_debugName, "Event PARAM UP");
 #endif
-
-    m_state = Trying;
+        // handle state change
+        emit fsmConnectingExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ParamClient::fsmConnectingDisconnectEvent()
 {
+    if (m_state == Connecting)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopParamcmdChannel();
-    stopParamChannel();
-    removeKeys();
+        // handle state change
+        emit fsmConnectingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopParamcmdChannel();
+        stopParamChannel();
+        removeKeys();
+     }
 }
 
-void ParamClient::fsmSyncingEntered()
+void ParamClient::fsmSyncing()
 {
-    if (m_previousState != Syncing)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCING");
 #endif
-        m_previousState = Syncing;
-        emit stateChanged(m_state);
-    }
+    m_state = Syncing;
+    emit stateChanged(m_state);
 }
 
 void ParamClient::fsmSyncingParamUpEvent()
 {
+    if (m_state == Syncing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PARAM UP");
+        DEBUG_TAG(1, m_debugName, "Event PARAM UP");
 #endif
-
-    m_state = Up;
+        // handle state change
+        emit fsmSyncingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ParamClient::fsmSyncingParamcmdTryingEvent()
 {
+    if (m_state == Syncing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PARAMCMD TRYING");
+        DEBUG_TAG(1, m_debugName, "Event PARAMCMD TRYING");
 #endif
-
-    m_state = Connecting;
+        // handle state change
+        emit fsmSyncingExited(QPrivateSignal());
+        fsmConnecting();
+        emit fsmConnectingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ParamClient::fsmSyncingDisconnectEvent()
 {
+    if (m_state == Syncing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopParamcmdChannel();
-    stopParamChannel();
-    removeKeys();
+        // handle state change
+        emit fsmSyncingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopParamcmdChannel();
+        stopParamChannel();
+        removeKeys();
+     }
 }
 
-void ParamClient::fsmTryingEntered()
+void ParamClient::fsmTrying()
 {
-    if (m_previousState != Trying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-        m_previousState = Trying;
-        emit stateChanged(m_state);
-    }
+    m_state = Trying;
+    emit stateChanged(m_state);
 }
 
 void ParamClient::fsmTryingParamcmdUpEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PARAMCMD UP");
+        DEBUG_TAG(1, m_debugName, "Event PARAMCMD UP");
 #endif
-
-    m_state = Up;
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ParamClient::fsmTryingParamTryingEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PARAM TRYING");
+        DEBUG_TAG(1, m_debugName, "Event PARAM TRYING");
 #endif
-
-    m_state = Connecting;
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmConnecting();
+        emit fsmConnectingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ParamClient::fsmTryingDisconnectEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopParamcmdChannel();
-    stopParamChannel();
-    removeKeys();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopParamcmdChannel();
+        stopParamChannel();
+        removeKeys();
+     }
 }
 
-void ParamClient::fsmUpEntered()
+void ParamClient::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
+}
+void ParamClient::fsmUpEntry()
+{
+    setSynced();
+}
+void ParamClient::fsmUpExit()
+{
+    clearSynced();
+    unsyncKeys();
 }
 
 void ParamClient::fsmUpParamcmdTryingEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PARAMCMD TRYING");
+        DEBUG_TAG(1, m_debugName, "Event PARAMCMD TRYING");
 #endif
-
-    m_state = Trying;
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ParamClient::fsmUpParamTryingEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PARAM TRYING");
+        DEBUG_TAG(1, m_debugName, "Event PARAM TRYING");
 #endif
-
-    m_state = Syncing;
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmSyncing();
+        emit fsmSyncingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ParamClient::fsmUpDisconnectEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopParamcmdChannel();
-    stopParamChannel();
-    removeKeys();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopParamcmdChannel();
+        stopParamChannel();
+        removeKeys();
+     }
 }
 
 void ParamClient::paramcmdChannelStateChanged(machinetalk::RpcClient::State state)
@@ -413,11 +426,11 @@ void ParamClient::paramcmdChannelStateChanged(machinetalk::RpcClient::State stat
     {
         if (m_state == Syncing)
         {
-            emit fsmSyncingParamcmdTrying();
+            emit fsmSyncingParamcmdTrying(QPrivateSignal());
         }
         if (m_state == Up)
         {
-            emit fsmUpParamcmdTrying();
+            emit fsmUpParamcmdTrying(QPrivateSignal());
         }
     }
 
@@ -425,11 +438,11 @@ void ParamClient::paramcmdChannelStateChanged(machinetalk::RpcClient::State stat
     {
         if (m_state == Trying)
         {
-            emit fsmTryingParamcmdUp();
+            emit fsmTryingParamcmdUp(QPrivateSignal());
         }
         if (m_state == Connecting)
         {
-            emit fsmConnectingParamcmdUp();
+            emit fsmConnectingParamcmdUp(QPrivateSignal());
         }
     }
 }
@@ -441,11 +454,11 @@ void ParamClient::paramChannelStateChanged(machinetalk::Subscribe::State state)
     {
         if (m_state == Trying)
         {
-            emit fsmTryingParamTrying();
+            emit fsmTryingParamTrying(QPrivateSignal());
         }
         if (m_state == Up)
         {
-            emit fsmUpParamTrying();
+            emit fsmUpParamTrying(QPrivateSignal());
         }
     }
 
@@ -453,49 +466,37 @@ void ParamClient::paramChannelStateChanged(machinetalk::Subscribe::State state)
     {
         if (m_state == Syncing)
         {
-            emit fsmSyncingParamUp();
+            emit fsmSyncingParamUp(QPrivateSignal());
         }
         if (m_state == Connecting)
         {
-            emit fsmConnectingParamUp();
+            emit fsmConnectingParamUp(QPrivateSignal());
         }
     }
 }
 
-/** start trigger */
+/** start trigger function */
 void ParamClient::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void ParamClient::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownConnect();
+        emit fsmDownConnect(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void ParamClient::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void ParamClient::stopSlot()
-{
     if (m_state == Connecting) {
-        emit fsmConnectingDisconnect();
+        emit fsmConnectingDisconnect(QPrivateSignal());
     }
     if (m_state == Syncing) {
-        emit fsmSyncingDisconnect();
+        emit fsmSyncingDisconnect(QPrivateSignal());
     }
     if (m_state == Trying) {
-        emit fsmTryingDisconnect();
+        emit fsmTryingDisconnect(QPrivateSignal());
     }
     if (m_state == Up) {
-        emit fsmUpDisconnect();
+        emit fsmUpDisconnect(QPrivateSignal());
     }
 }
 }; // namespace param

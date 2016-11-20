@@ -7,7 +7,6 @@
 #ifndef LAUNCHER_BASE_H
 #define LAUNCHER_BASE_H
 #include <QObject>
-#include <QStateMachine>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -176,7 +175,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_launchercmdRx;
@@ -195,16 +193,18 @@ private slots:
     void launcherChannelStateChanged(application::LauncherSubscribe::State state);
     void processLauncherChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownConnectEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingLaunchercmdUpEvent();
     void fsmTryingDisconnectEvent();
-    void fsmSyncingEntered();
+    void fsmSyncing();
     void fsmSyncingLaunchercmdTryingEvent();
     void fsmSyncingLauncherUpEvent();
     void fsmSyncingDisconnectEvent();
-    void fsmSyncedEntered();
+    void fsmSynced();
+    void fsmSyncedEntry();
+    void fsmSyncedExit();
     void fsmSyncedLauncherTryingEvent();
     void fsmSyncedLaunchercmdTryingEvent();
     void fsmSyncedDisconnectEvent();
@@ -213,8 +213,6 @@ private slots:
     virtual void launcherIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
     virtual void syncStatus() = 0;
     virtual void unsyncStatus() = 0;
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void launchercmdUriChanged(QString uri);
@@ -228,27 +226,23 @@ signals:
     void launcherHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownConnect();
-    void fsmDownConnectQueued();
-    void fsmTryingLaunchercmdUp();
-    void fsmTryingLaunchercmdUpQueued();
-    void fsmTryingDisconnect();
-    void fsmTryingDisconnectQueued();
-    void fsmSyncingLaunchercmdTrying();
-    void fsmSyncingLaunchercmdTryingQueued();
-    void fsmSyncingLauncherUp();
-    void fsmSyncingLauncherUpQueued();
-    void fsmSyncingDisconnect();
-    void fsmSyncingDisconnectQueued();
-    void fsmSyncedLauncherTrying();
-    void fsmSyncedLauncherTryingQueued();
-    void fsmSyncedLaunchercmdTrying();
-    void fsmSyncedLaunchercmdTryingQueued();
-    void fsmSyncedDisconnect();
-    void fsmSyncedDisconnectQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownConnect(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingLaunchercmdUp(QPrivateSignal);
+    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmSyncingEntered(QPrivateSignal);
+    void fsmSyncingExited(QPrivateSignal);
+    void fsmSyncingLaunchercmdTrying(QPrivateSignal);
+    void fsmSyncingLauncherUp(QPrivateSignal);
+    void fsmSyncingDisconnect(QPrivateSignal);
+    void fsmSyncedEntered(QPrivateSignal);
+    void fsmSyncedExited(QPrivateSignal);
+    void fsmSyncedLauncherTrying(QPrivateSignal);
+    void fsmSyncedLaunchercmdTrying(QPrivateSignal);
+    void fsmSyncedDisconnect(QPrivateSignal);
 };
 }; // namespace application
 #endif //LAUNCHER_BASE_H

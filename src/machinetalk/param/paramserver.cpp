@@ -28,7 +28,6 @@ ParamServer::ParamServer(QObject *parent) :
     m_paramChannel(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
 {
     // initialize paramcmd channel
@@ -46,27 +45,11 @@ ParamServer::ParamServer(QObject *parent) :
 
     connect(m_paramChannel, &machinetalk::Publish::heartbeatIntervalChanged,
             this, &ParamServer::paramHeartbeatIntervalChanged);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &ParamServer::fsmDownEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &ParamServer::fsmUpEntered, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
     connect(this, &ParamServer::fsmDownConnect,
-            this, &ParamServer::fsmDownConnectQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &ParamServer::fsmDownConnectQueued, upState);
+            this, &ParamServer::fsmDownConnectEvent);
     connect(this, &ParamServer::fsmUpDisconnect,
-            this, &ParamServer::fsmUpDisconnectQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ParamServer::fsmUpDisconnectQueued, downState);
-
-    connect(this, &ParamServer::fsmDownConnect,
-            this, &ParamServer::fsmDownConnectEvent, Qt::QueuedConnection);
-    connect(this, &ParamServer::fsmUpDisconnect,
-            this, &ParamServer::fsmUpDisconnectEvent, Qt::QueuedConnection);
-
+            this, &ParamServer::fsmUpDisconnectEvent);
 }
 
 ParamServer::~ParamServer()
@@ -121,49 +104,55 @@ void ParamServer::sendIncrementalUpdate(pb::Container &tx)
     sendParamMessage(pb::MT_INCREMENTAL_UPDATE, tx);
 }
 
-void ParamServer::fsmDownEntered()
+void ParamServer::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void ParamServer::fsmDownConnectEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event CONNECT");
 #endif
-
-    m_state = Up;
-    startParamcmdChannel();
-    startParamChannel();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+        startParamcmdChannel();
+        startParamChannel();
+     }
 }
 
-void ParamServer::fsmUpEntered()
+void ParamServer::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
 }
 
 void ParamServer::fsmUpDisconnectEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopParamcmdChannel();
-    stopParamChannel();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopParamcmdChannel();
+        stopParamChannel();
+     }
 }
 }; // namespace param

@@ -27,7 +27,6 @@ Publish::Publish(QObject *parent) :
     m_socket(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
     ,m_heartbeatTimer(new QTimer(this)),
     m_heartbeatInterval(2500),
@@ -35,41 +34,18 @@ Publish::Publish(QObject *parent) :
 
     m_heartbeatTimer->setSingleShot(true);
     connect(m_heartbeatTimer, &QTimer::timeout, this, &Publish::heartbeatTimerTick);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &Publish::fsmDownEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &Publish::fsmUpEntered, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
     connect(this, &Publish::fsmDownStart,
-            this, &Publish::fsmDownStartQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &Publish::fsmDownStartQueued, upState);
+            this, &Publish::fsmDownStartEvent);
     connect(this, &Publish::fsmUpStop,
-            this, &Publish::fsmUpStopQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &Publish::fsmUpStopQueued, downState);
+            this, &Publish::fsmUpStopEvent);
     connect(this, &Publish::fsmUpHeartbeatTick,
-            this, &Publish::fsmUpHeartbeatTickQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &Publish::fsmUpHeartbeatTickQueued, upState);
-
-    connect(this, &Publish::fsmDownStart,
-            this, &Publish::fsmDownStartEvent, Qt::QueuedConnection);
-    connect(this, &Publish::fsmUpStop,
-            this, &Publish::fsmUpStopEvent, Qt::QueuedConnection);
-    connect(this, &Publish::fsmUpHeartbeatTick,
-            this, &Publish::fsmUpHeartbeatTickEvent, Qt::QueuedConnection);
+            this, &Publish::fsmUpHeartbeatTickEvent);
 
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
             this, &Publish::socketError);
     m_context->start();
-
-     connect(this, &Publish::startSignal,
-             this, &Publish::startSlot, Qt::QueuedConnection);
-     connect(this, &Publish::stopSignal,
-             this, &Publish::stopSlot, Qt::QueuedConnection);
 }
 
 Publish::~Publish()
@@ -151,7 +127,7 @@ void Publish::heartbeatTimerTick()
 {
     if (m_state == Up)
     {
-         emit fsmUpHeartbeatTick();
+        emit fsmUpHeartbeatTick(QPrivateSignal());
     }
 }
 
@@ -217,88 +193,84 @@ void Publish::socketError(int errorNum, const QString &errorMsg)
     //updateState(SocketError, errorString);  TODO
 }
 
-void Publish::fsmDownEntered()
+void Publish::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void Publish::fsmDownStartEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event START");
+        DEBUG_TAG(1, m_debugName, "Event START");
 #endif
-
-    m_state = Up;
-    startSocket();
-    startHeartbeatTimer();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+        startSocket();
+        startHeartbeatTimer();
+     }
 }
 
-void Publish::fsmUpEntered()
+void Publish::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
 }
 
 void Publish::fsmUpStopEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event STOP");
+        DEBUG_TAG(1, m_debugName, "Event STOP");
 #endif
-
-    m_state = Down;
-    stopHeartbeatTimer();
-    stopSocket();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopHeartbeatTimer();
+        stopSocket();
+     }
 }
 
 void Publish::fsmUpHeartbeatTickEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TICK");
+        DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TICK");
 #endif
-
-    m_state = Up;
-    sendPing();
-    resetHeartbeatTimer();
+        // execute actions
+        sendPing();
+        resetHeartbeatTimer();
+     }
 }
 
-/** start trigger */
+/** start trigger function */
 void Publish::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void Publish::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownStart();
+        emit fsmDownStart(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void Publish::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void Publish::stopSlot()
-{
     if (m_state == Up) {
-        emit fsmUpStop();
+        emit fsmUpStop(QPrivateSignal());
     }
 }
 }; // namespace machinetalk

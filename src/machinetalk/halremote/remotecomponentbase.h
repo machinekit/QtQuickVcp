@@ -7,7 +7,6 @@
 #ifndef REMOTE_COMPONENT_BASE_H
 #define REMOTE_COMPONENT_BASE_H
 #include <QObject>
-#include <QStateMachine>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -176,7 +175,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_halrcmdRx;
@@ -195,31 +193,35 @@ private slots:
     void halrcompChannelStateChanged(halremote::HalrcompSubscribe::State state);
     void processHalrcompChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
-    void fsmDownEntered();
+    void fsmDown();
+    void fsmDownEntry();
+    void fsmDownExit();
     void fsmDownConnectEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingHalrcmdUpEvent();
     void fsmTryingDisconnectEvent();
-    void fsmBindEntered();
+    void fsmBind();
     void fsmBindHalrcompBindMsgSentEvent();
     void fsmBindNoBindEvent();
-    void fsmBindingEntered();
+    void fsmBinding();
     void fsmBindingBindConfirmedEvent();
     void fsmBindingBindRejectedEvent();
     void fsmBindingHalrcmdTryingEvent();
     void fsmBindingDisconnectEvent();
-    void fsmSyncingEntered();
+    void fsmSyncing();
     void fsmSyncingHalrcmdTryingEvent();
     void fsmSyncingHalrcompUpEvent();
     void fsmSyncingSyncFailedEvent();
     void fsmSyncingDisconnectEvent();
-    void fsmSyncedEntered();
+    void fsmSynced();
+    void fsmSyncedEntry();
     void fsmSyncedHalrcompTryingEvent();
     void fsmSyncedHalrcmdTryingEvent();
     void fsmSyncedSetRejectedEvent();
     void fsmSyncedHalrcompSetMsgSentEvent();
     void fsmSyncedDisconnectEvent();
-    void fsmErrorEntered();
+    void fsmError();
+    void fsmErrorEntry();
     void fsmErrorDisconnectEvent();
 
     virtual void halrcompFullUpdateReceived(const QByteArray &topic, const pb::Container &rx) = 0;
@@ -234,9 +236,6 @@ private slots:
     virtual void setDisconnected() = 0;
     virtual void setConnecting() = 0;
     virtual void setTimeout() = 0;
-    void noBindSlot(); // no bind trigger
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void halrcmdUriChanged(QString uri);
@@ -250,48 +249,39 @@ signals:
     void halrcompHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownConnect();
-    void fsmDownConnectQueued();
-    void fsmTryingHalrcmdUp();
-    void fsmTryingHalrcmdUpQueued();
-    void fsmTryingDisconnect();
-    void fsmTryingDisconnectQueued();
-    void fsmBindHalrcompBindMsgSent();
-    void fsmBindHalrcompBindMsgSentQueued();
-    void fsmBindNoBind();
-    void fsmBindNoBindQueued();
-    void fsmBindingBindConfirmed();
-    void fsmBindingBindConfirmedQueued();
-    void fsmBindingBindRejected();
-    void fsmBindingBindRejectedQueued();
-    void fsmBindingHalrcmdTrying();
-    void fsmBindingHalrcmdTryingQueued();
-    void fsmBindingDisconnect();
-    void fsmBindingDisconnectQueued();
-    void fsmSyncingHalrcmdTrying();
-    void fsmSyncingHalrcmdTryingQueued();
-    void fsmSyncingHalrcompUp();
-    void fsmSyncingHalrcompUpQueued();
-    void fsmSyncingSyncFailed();
-    void fsmSyncingSyncFailedQueued();
-    void fsmSyncingDisconnect();
-    void fsmSyncingDisconnectQueued();
-    void fsmSyncedHalrcompTrying();
-    void fsmSyncedHalrcompTryingQueued();
-    void fsmSyncedHalrcmdTrying();
-    void fsmSyncedHalrcmdTryingQueued();
-    void fsmSyncedSetRejected();
-    void fsmSyncedSetRejectedQueued();
-    void fsmSyncedHalrcompSetMsgSent();
-    void fsmSyncedHalrcompSetMsgSentQueued();
-    void fsmSyncedDisconnect();
-    void fsmSyncedDisconnectQueued();
-    void fsmErrorDisconnect();
-    void fsmErrorDisconnectQueued();
-    // trigger signals
-    void noBindSignal(QPrivateSignal dummy);
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownConnect(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingHalrcmdUp(QPrivateSignal);
+    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmBindEntered(QPrivateSignal);
+    void fsmBindExited(QPrivateSignal);
+    void fsmBindHalrcompBindMsgSent(QPrivateSignal);
+    void fsmBindNoBind(QPrivateSignal);
+    void fsmBindingEntered(QPrivateSignal);
+    void fsmBindingExited(QPrivateSignal);
+    void fsmBindingBindConfirmed(QPrivateSignal);
+    void fsmBindingBindRejected(QPrivateSignal);
+    void fsmBindingHalrcmdTrying(QPrivateSignal);
+    void fsmBindingDisconnect(QPrivateSignal);
+    void fsmSyncingEntered(QPrivateSignal);
+    void fsmSyncingExited(QPrivateSignal);
+    void fsmSyncingHalrcmdTrying(QPrivateSignal);
+    void fsmSyncingHalrcompUp(QPrivateSignal);
+    void fsmSyncingSyncFailed(QPrivateSignal);
+    void fsmSyncingDisconnect(QPrivateSignal);
+    void fsmSyncedEntered(QPrivateSignal);
+    void fsmSyncedExited(QPrivateSignal);
+    void fsmSyncedHalrcompTrying(QPrivateSignal);
+    void fsmSyncedHalrcmdTrying(QPrivateSignal);
+    void fsmSyncedSetRejected(QPrivateSignal);
+    void fsmSyncedHalrcompSetMsgSent(QPrivateSignal);
+    void fsmSyncedDisconnect(QPrivateSignal);
+    void fsmErrorEntered(QPrivateSignal);
+    void fsmErrorExited(QPrivateSignal);
+    void fsmErrorDisconnect(QPrivateSignal);
 };
 }; // namespace halremote
 #endif //REMOTE_COMPONENT_BASE_H

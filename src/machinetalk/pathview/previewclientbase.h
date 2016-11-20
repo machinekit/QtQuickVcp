@@ -7,7 +7,6 @@
 #ifndef PREVIEW_CLIENT_BASE_H
 #define PREVIEW_CLIENT_BASE_H
 #include <QObject>
-#include <QStateMachine>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -151,7 +150,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_previewRx;
@@ -169,21 +167,23 @@ private slots:
     void previewstatusChannelStateChanged(pathview::PreviewSubscribe::State state);
     void processPreviewstatusChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownConnectEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingStatusUpEvent();
     void fsmTryingPreviewUpEvent();
     void fsmTryingDisconnectEvent();
-    void fsmPreviewtryingEntered();
+    void fsmPreviewtrying();
     void fsmPreviewtryingPreviewUpEvent();
     void fsmPreviewtryingStatusTryingEvent();
     void fsmPreviewtryingDisconnectEvent();
-    void fsmStatustryingEntered();
+    void fsmStatustrying();
     void fsmStatustryingStatusUpEvent();
     void fsmStatustryingPreviewTryingEvent();
     void fsmStatustryingDisconnectEvent();
-    void fsmUpEntered();
+    void fsmUp();
+    void fsmUpEntry();
+    void fsmUpExit();
     void fsmUpPreviewTryingEvent();
     void fsmUpStatusTryingEvent();
     void fsmUpDisconnectEvent();
@@ -192,8 +192,6 @@ private slots:
     virtual void interpStatReceived(const QByteArray &topic, const pb::Container &rx) = 0;
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void previewUriChanged(QString uri);
@@ -205,35 +203,29 @@ signals:
     void errorStringChanged(QString errorString);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownConnect();
-    void fsmDownConnectQueued();
-    void fsmTryingStatusUp();
-    void fsmTryingStatusUpQueued();
-    void fsmTryingPreviewUp();
-    void fsmTryingPreviewUpQueued();
-    void fsmTryingDisconnect();
-    void fsmTryingDisconnectQueued();
-    void fsmPreviewtryingPreviewUp();
-    void fsmPreviewtryingPreviewUpQueued();
-    void fsmPreviewtryingStatusTrying();
-    void fsmPreviewtryingStatusTryingQueued();
-    void fsmPreviewtryingDisconnect();
-    void fsmPreviewtryingDisconnectQueued();
-    void fsmStatustryingStatusUp();
-    void fsmStatustryingStatusUpQueued();
-    void fsmStatustryingPreviewTrying();
-    void fsmStatustryingPreviewTryingQueued();
-    void fsmStatustryingDisconnect();
-    void fsmStatustryingDisconnectQueued();
-    void fsmUpPreviewTrying();
-    void fsmUpPreviewTryingQueued();
-    void fsmUpStatusTrying();
-    void fsmUpStatusTryingQueued();
-    void fsmUpDisconnect();
-    void fsmUpDisconnectQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownConnect(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingStatusUp(QPrivateSignal);
+    void fsmTryingPreviewUp(QPrivateSignal);
+    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmPreviewtryingEntered(QPrivateSignal);
+    void fsmPreviewtryingExited(QPrivateSignal);
+    void fsmPreviewtryingPreviewUp(QPrivateSignal);
+    void fsmPreviewtryingStatusTrying(QPrivateSignal);
+    void fsmPreviewtryingDisconnect(QPrivateSignal);
+    void fsmStatustryingEntered(QPrivateSignal);
+    void fsmStatustryingExited(QPrivateSignal);
+    void fsmStatustryingStatusUp(QPrivateSignal);
+    void fsmStatustryingPreviewTrying(QPrivateSignal);
+    void fsmStatustryingDisconnect(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpPreviewTrying(QPrivateSignal);
+    void fsmUpStatusTrying(QPrivateSignal);
+    void fsmUpDisconnect(QPrivateSignal);
 };
 }; // namespace pathview
 #endif //PREVIEW_CLIENT_BASE_H

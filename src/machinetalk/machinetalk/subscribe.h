@@ -7,7 +7,6 @@
 #ifndef SUBSCRIBE_H
 #define SUBSCRIBE_H
 #include <QObject>
-#include <QStateMachine>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 #include <google/protobuf/text_format.h>
@@ -131,7 +130,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
 
     QTimer     *m_heartbeatTimer;
@@ -156,19 +154,17 @@ private slots:
     void socketError(int errorNum, const QString& errorMsg);
 
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownStartEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingFullUpdateReceivedEvent();
     void fsmTryingStopEvent();
-    void fsmUpEntered();
+    void fsmUp();
     void fsmUpHeartbeatTimeoutEvent();
     void fsmUpHeartbeatTickEvent();
     void fsmUpAnyMsgReceivedEvent();
     void fsmUpStopEvent();
 
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void socketUriChanged(QString uri);
@@ -179,23 +175,19 @@ signals:
     void heartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownStart();
-    void fsmDownStartQueued();
-    void fsmTryingFullUpdateReceived();
-    void fsmTryingFullUpdateReceivedQueued();
-    void fsmTryingStop();
-    void fsmTryingStopQueued();
-    void fsmUpHeartbeatTimeout();
-    void fsmUpHeartbeatTimeoutQueued();
-    void fsmUpHeartbeatTick();
-    void fsmUpHeartbeatTickQueued();
-    void fsmUpAnyMsgReceived();
-    void fsmUpAnyMsgReceivedQueued();
-    void fsmUpStop();
-    void fsmUpStopQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownStart(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingFullUpdateReceived(QPrivateSignal);
+    void fsmTryingStop(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpHeartbeatTimeout(QPrivateSignal);
+    void fsmUpHeartbeatTick(QPrivateSignal);
+    void fsmUpAnyMsgReceived(QPrivateSignal);
+    void fsmUpStop(QPrivateSignal);
 };
 }; // namespace machinetalk
 #endif //SUBSCRIBE_H

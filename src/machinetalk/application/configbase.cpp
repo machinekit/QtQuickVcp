@@ -27,7 +27,6 @@ ConfigBase::ConfigBase(QObject *parent) :
     m_configChannel(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
 {
     // initialize config channel
@@ -42,89 +41,35 @@ ConfigBase::ConfigBase(QObject *parent) :
 
     connect(m_configChannel, &machinetalk::RpcClient::heartbeatIntervalChanged,
             this, &ConfigBase::configHeartbeatIntervalChanged);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &ConfigBase::fsmDownEntered, Qt::QueuedConnection);
-    QState *tryingState = new QState(m_fsm);
-    connect(tryingState, &QState::entered, this, &ConfigBase::fsmTryingEntered, Qt::QueuedConnection);
-    QState *listingState = new QState(m_fsm);
-    connect(listingState, &QState::entered, this, &ConfigBase::fsmListingEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &ConfigBase::fsmUpEntered, Qt::QueuedConnection);
-    connect(upState, &QState::entered, this, &ConfigBase::syncConfig, Qt::QueuedConnection);
-    connect(upState, &QState::exited, this, &ConfigBase::unsyncConfig, Qt::QueuedConnection);
-    QState *loadingState = new QState(m_fsm);
-    connect(loadingState, &QState::entered, this, &ConfigBase::fsmLoadingEntered, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
+    connect(this, &ConfigBase::fsmUpEntered,
+            this, &ConfigBase::fsmUpEntry);
+    connect(this, &ConfigBase::fsmUpExited,
+            this, &ConfigBase::fsmUpExit);
     connect(this, &ConfigBase::fsmDownConnect,
-            this, &ConfigBase::fsmDownConnectQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &ConfigBase::fsmDownConnectQueued, tryingState);
+            this, &ConfigBase::fsmDownConnectEvent);
     connect(this, &ConfigBase::fsmTryingConfigUp,
-            this, &ConfigBase::fsmTryingConfigUpQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &ConfigBase::fsmTryingConfigUpQueued, listingState);
+            this, &ConfigBase::fsmTryingConfigUpEvent);
     connect(this, &ConfigBase::fsmTryingDisconnect,
-            this, &ConfigBase::fsmTryingDisconnectQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &ConfigBase::fsmTryingDisconnectQueued, downState);
+            this, &ConfigBase::fsmTryingDisconnectEvent);
     connect(this, &ConfigBase::fsmListingApplicationRetrieved,
-            this, &ConfigBase::fsmListingApplicationRetrievedQueued, Qt::QueuedConnection);
-    listingState->addTransition(this, &ConfigBase::fsmListingApplicationRetrievedQueued, upState);
+            this, &ConfigBase::fsmListingApplicationRetrievedEvent);
     connect(this, &ConfigBase::fsmListingConfigTrying,
-            this, &ConfigBase::fsmListingConfigTryingQueued, Qt::QueuedConnection);
-    listingState->addTransition(this, &ConfigBase::fsmListingConfigTryingQueued, tryingState);
+            this, &ConfigBase::fsmListingConfigTryingEvent);
     connect(this, &ConfigBase::fsmListingDisconnect,
-            this, &ConfigBase::fsmListingDisconnectQueued, Qt::QueuedConnection);
-    listingState->addTransition(this, &ConfigBase::fsmListingDisconnectQueued, downState);
+            this, &ConfigBase::fsmListingDisconnectEvent);
     connect(this, &ConfigBase::fsmUpConfigTrying,
-            this, &ConfigBase::fsmUpConfigTryingQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ConfigBase::fsmUpConfigTryingQueued, tryingState);
+            this, &ConfigBase::fsmUpConfigTryingEvent);
     connect(this, &ConfigBase::fsmUpLoadApplication,
-            this, &ConfigBase::fsmUpLoadApplicationQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ConfigBase::fsmUpLoadApplicationQueued, loadingState);
+            this, &ConfigBase::fsmUpLoadApplicationEvent);
     connect(this, &ConfigBase::fsmUpDisconnect,
-            this, &ConfigBase::fsmUpDisconnectQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ConfigBase::fsmUpDisconnectQueued, downState);
+            this, &ConfigBase::fsmUpDisconnectEvent);
     connect(this, &ConfigBase::fsmLoadingApplicationLoaded,
-            this, &ConfigBase::fsmLoadingApplicationLoadedQueued, Qt::QueuedConnection);
-    loadingState->addTransition(this, &ConfigBase::fsmLoadingApplicationLoadedQueued, upState);
+            this, &ConfigBase::fsmLoadingApplicationLoadedEvent);
     connect(this, &ConfigBase::fsmLoadingConfigTrying,
-            this, &ConfigBase::fsmLoadingConfigTryingQueued, Qt::QueuedConnection);
-    loadingState->addTransition(this, &ConfigBase::fsmLoadingConfigTryingQueued, tryingState);
+            this, &ConfigBase::fsmLoadingConfigTryingEvent);
     connect(this, &ConfigBase::fsmLoadingDisconnect,
-            this, &ConfigBase::fsmLoadingDisconnectQueued, Qt::QueuedConnection);
-    loadingState->addTransition(this, &ConfigBase::fsmLoadingDisconnectQueued, downState);
-
-    connect(this, &ConfigBase::fsmDownConnect,
-            this, &ConfigBase::fsmDownConnectEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmTryingConfigUp,
-            this, &ConfigBase::fsmTryingConfigUpEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmTryingDisconnect,
-            this, &ConfigBase::fsmTryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmListingApplicationRetrieved,
-            this, &ConfigBase::fsmListingApplicationRetrievedEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmListingConfigTrying,
-            this, &ConfigBase::fsmListingConfigTryingEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmListingDisconnect,
-            this, &ConfigBase::fsmListingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmUpConfigTrying,
-            this, &ConfigBase::fsmUpConfigTryingEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmUpLoadApplication,
-            this, &ConfigBase::fsmUpLoadApplicationEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmUpDisconnect,
-            this, &ConfigBase::fsmUpDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmLoadingApplicationLoaded,
-            this, &ConfigBase::fsmLoadingApplicationLoadedEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmLoadingConfigTrying,
-            this, &ConfigBase::fsmLoadingConfigTryingEvent, Qt::QueuedConnection);
-    connect(this, &ConfigBase::fsmLoadingDisconnect,
-            this, &ConfigBase::fsmLoadingDisconnectEvent, Qt::QueuedConnection);
-
-     connect(this, &ConfigBase::startSignal,
-             this, &ConfigBase::startSlot, Qt::QueuedConnection);
-     connect(this, &ConfigBase::stopSignal,
-             this, &ConfigBase::stopSlot, Qt::QueuedConnection);
+            this, &ConfigBase::fsmLoadingDisconnectEvent);
 }
 
 ConfigBase::~ConfigBase()
@@ -151,7 +96,7 @@ void ConfigBase::processConfigChannelMessage(const pb::Container &rx)
 
         if (m_state == Listing)
         {
-            emit fsmListingApplicationRetrieved();
+            emit fsmListingApplicationRetrieved(QPrivateSignal());
         }
         describeApplicationReceived(rx);
     }
@@ -162,7 +107,7 @@ void ConfigBase::processConfigChannelMessage(const pb::Container &rx)
 
         if (m_state == Loading)
         {
-            emit fsmLoadingApplicationLoaded();
+            emit fsmLoadingApplicationLoaded(QPrivateSignal());
         }
         applicationDetailReceived(rx);
     }
@@ -191,7 +136,7 @@ void ConfigBase::sendConfigMessage(pb::ContainerType type, pb::Container &tx)
 
         if (m_state == Up)
         {
-            emit fsmUpLoadApplication();
+            emit fsmUpLoadApplication(QPrivateSignal());
         }
     }
 }
@@ -207,178 +152,243 @@ void ConfigBase::sendRetrieveApplication(pb::Container &tx)
     sendConfigMessage(pb::MT_RETRIEVE_APPLICATION, tx);
 }
 
-void ConfigBase::fsmDownEntered()
+void ConfigBase::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void ConfigBase::fsmDownConnectEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event CONNECT");
 #endif
-
-    m_state = Trying;
-    startConfigChannel();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        startConfigChannel();
+     }
 }
 
-void ConfigBase::fsmTryingEntered()
+void ConfigBase::fsmTrying()
 {
-    if (m_previousState != Trying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-        m_previousState = Trying;
-        emit stateChanged(m_state);
-    }
+    m_state = Trying;
+    emit stateChanged(m_state);
 }
 
 void ConfigBase::fsmTryingConfigUpEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONFIG UP");
+        DEBUG_TAG(1, m_debugName, "Event CONFIG UP");
 #endif
-
-    m_state = Listing;
-    sendListApplications();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmListing();
+        emit fsmListingEntered(QPrivateSignal());
+        // execute actions
+        sendListApplications();
+     }
 }
 
 void ConfigBase::fsmTryingDisconnectEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopConfigChannel();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopConfigChannel();
+     }
 }
 
-void ConfigBase::fsmListingEntered()
+void ConfigBase::fsmListing()
 {
-    if (m_previousState != Listing)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State LISTING");
 #endif
-        m_previousState = Listing;
-        emit stateChanged(m_state);
-    }
+    m_state = Listing;
+    emit stateChanged(m_state);
 }
 
 void ConfigBase::fsmListingApplicationRetrievedEvent()
 {
+    if (m_state == Listing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event APPLICATION RETRIEVED");
+        DEBUG_TAG(1, m_debugName, "Event APPLICATION RETRIEVED");
 #endif
-
-    m_state = Up;
+        // handle state change
+        emit fsmListingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ConfigBase::fsmListingConfigTryingEvent()
 {
+    if (m_state == Listing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONFIG TRYING");
+        DEBUG_TAG(1, m_debugName, "Event CONFIG TRYING");
 #endif
-
-    m_state = Trying;
+        // handle state change
+        emit fsmListingExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ConfigBase::fsmListingDisconnectEvent()
 {
+    if (m_state == Listing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopConfigChannel();
+        // handle state change
+        emit fsmListingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopConfigChannel();
+     }
 }
 
-void ConfigBase::fsmUpEntered()
+void ConfigBase::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
+}
+void ConfigBase::fsmUpEntry()
+{
+    syncConfig();
+}
+void ConfigBase::fsmUpExit()
+{
+    unsyncConfig();
 }
 
 void ConfigBase::fsmUpConfigTryingEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONFIG TRYING");
+        DEBUG_TAG(1, m_debugName, "Event CONFIG TRYING");
 #endif
-
-    m_state = Trying;
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ConfigBase::fsmUpLoadApplicationEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event LOAD APPLICATION");
+        DEBUG_TAG(1, m_debugName, "Event LOAD APPLICATION");
 #endif
-
-    m_state = Loading;
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmLoading();
+        emit fsmLoadingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ConfigBase::fsmUpDisconnectEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopConfigChannel();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopConfigChannel();
+     }
 }
 
-void ConfigBase::fsmLoadingEntered()
+void ConfigBase::fsmLoading()
 {
-    if (m_previousState != Loading)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State LOADING");
 #endif
-        m_previousState = Loading;
-        emit stateChanged(m_state);
-    }
+    m_state = Loading;
+    emit stateChanged(m_state);
 }
 
 void ConfigBase::fsmLoadingApplicationLoadedEvent()
 {
+    if (m_state == Loading)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event APPLICATION LOADED");
+        DEBUG_TAG(1, m_debugName, "Event APPLICATION LOADED");
 #endif
-
-    m_state = Up;
+        // handle state change
+        emit fsmLoadingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ConfigBase::fsmLoadingConfigTryingEvent()
 {
+    if (m_state == Loading)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONFIG TRYING");
+        DEBUG_TAG(1, m_debugName, "Event CONFIG TRYING");
 #endif
-
-    m_state = Trying;
+        // handle state change
+        emit fsmLoadingExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void ConfigBase::fsmLoadingDisconnectEvent()
 {
+    if (m_state == Loading)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopConfigChannel();
+        // handle state change
+        emit fsmLoadingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopConfigChannel();
+     }
 }
 
 void ConfigBase::configChannelStateChanged(machinetalk::RpcClient::State state)
@@ -388,15 +398,15 @@ void ConfigBase::configChannelStateChanged(machinetalk::RpcClient::State state)
     {
         if (m_state == Listing)
         {
-            emit fsmListingConfigTrying();
+            emit fsmListingConfigTrying(QPrivateSignal());
         }
         if (m_state == Up)
         {
-            emit fsmUpConfigTrying();
+            emit fsmUpConfigTrying(QPrivateSignal());
         }
         if (m_state == Loading)
         {
-            emit fsmLoadingConfigTrying();
+            emit fsmLoadingConfigTrying(QPrivateSignal());
         }
     }
 
@@ -404,45 +414,33 @@ void ConfigBase::configChannelStateChanged(machinetalk::RpcClient::State state)
     {
         if (m_state == Trying)
         {
-            emit fsmTryingConfigUp();
+            emit fsmTryingConfigUp(QPrivateSignal());
         }
     }
 }
 
-/** start trigger */
+/** start trigger function */
 void ConfigBase::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void ConfigBase::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownConnect();
+        emit fsmDownConnect(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void ConfigBase::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void ConfigBase::stopSlot()
-{
     if (m_state == Trying) {
-        emit fsmTryingDisconnect();
+        emit fsmTryingDisconnect(QPrivateSignal());
     }
     if (m_state == Listing) {
-        emit fsmListingDisconnect();
+        emit fsmListingDisconnect(QPrivateSignal());
     }
     if (m_state == Up) {
-        emit fsmUpDisconnect();
+        emit fsmUpDisconnect(QPrivateSignal());
     }
     if (m_state == Loading) {
-        emit fsmLoadingDisconnect();
+        emit fsmLoadingDisconnect(QPrivateSignal());
     }
 }
 }; // namespace application

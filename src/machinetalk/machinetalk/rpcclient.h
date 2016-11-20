@@ -7,7 +7,6 @@
 #ifndef RPC_CLIENT_H
 #define RPC_CLIENT_H
 #include <QObject>
-#include <QStateMachine>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 #include <google/protobuf/text_format.h>
@@ -129,7 +128,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
 
     QTimer     *m_heartbeatTimer;
@@ -156,23 +154,21 @@ private slots:
 
     void sendPing();
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownStartEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingAnyMsgReceivedEvent();
     void fsmTryingHeartbeatTimeoutEvent();
     void fsmTryingHeartbeatTickEvent();
     void fsmTryingAnyMsgSentEvent();
     void fsmTryingStopEvent();
-    void fsmUpEntered();
+    void fsmUp();
     void fsmUpHeartbeatTimeoutEvent();
     void fsmUpHeartbeatTickEvent();
     void fsmUpAnyMsgReceivedEvent();
     void fsmUpAnyMsgSentEvent();
     void fsmUpStopEvent();
 
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void socketUriChanged(QString uri);
@@ -183,31 +179,23 @@ signals:
     void heartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownStart();
-    void fsmDownStartQueued();
-    void fsmTryingAnyMsgReceived();
-    void fsmTryingAnyMsgReceivedQueued();
-    void fsmTryingHeartbeatTimeout();
-    void fsmTryingHeartbeatTimeoutQueued();
-    void fsmTryingHeartbeatTick();
-    void fsmTryingHeartbeatTickQueued();
-    void fsmTryingAnyMsgSent();
-    void fsmTryingAnyMsgSentQueued();
-    void fsmTryingStop();
-    void fsmTryingStopQueued();
-    void fsmUpHeartbeatTimeout();
-    void fsmUpHeartbeatTimeoutQueued();
-    void fsmUpHeartbeatTick();
-    void fsmUpHeartbeatTickQueued();
-    void fsmUpAnyMsgReceived();
-    void fsmUpAnyMsgReceivedQueued();
-    void fsmUpAnyMsgSent();
-    void fsmUpAnyMsgSentQueued();
-    void fsmUpStop();
-    void fsmUpStopQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownStart(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingAnyMsgReceived(QPrivateSignal);
+    void fsmTryingHeartbeatTimeout(QPrivateSignal);
+    void fsmTryingHeartbeatTick(QPrivateSignal);
+    void fsmTryingAnyMsgSent(QPrivateSignal);
+    void fsmTryingStop(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpHeartbeatTimeout(QPrivateSignal);
+    void fsmUpHeartbeatTick(QPrivateSignal);
+    void fsmUpAnyMsgReceived(QPrivateSignal);
+    void fsmUpAnyMsgSent(QPrivateSignal);
+    void fsmUpStop(QPrivateSignal);
 };
 }; // namespace machinetalk
 #endif //RPC_CLIENT_H

@@ -27,7 +27,6 @@ ErrorSubscribe::ErrorSubscribe(QObject *parent) :
     m_socket(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
     ,m_heartbeatTimer(new QTimer(this)),
     m_heartbeatInterval(0),
@@ -37,63 +36,26 @@ ErrorSubscribe::ErrorSubscribe(QObject *parent) :
 
     m_heartbeatTimer->setSingleShot(true);
     connect(m_heartbeatTimer, &QTimer::timeout, this, &ErrorSubscribe::heartbeatTimerTick);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &ErrorSubscribe::fsmDownEntered, Qt::QueuedConnection);
-    QState *tryingState = new QState(m_fsm);
-    connect(tryingState, &QState::entered, this, &ErrorSubscribe::fsmTryingEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &ErrorSubscribe::fsmUpEntered, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
     connect(this, &ErrorSubscribe::fsmDownConnect,
-            this, &ErrorSubscribe::fsmDownConnectQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &ErrorSubscribe::fsmDownConnectQueued, tryingState);
+            this, &ErrorSubscribe::fsmDownConnectEvent);
     connect(this, &ErrorSubscribe::fsmTryingConnected,
-            this, &ErrorSubscribe::fsmTryingConnectedQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &ErrorSubscribe::fsmTryingConnectedQueued, upState);
+            this, &ErrorSubscribe::fsmTryingConnectedEvent);
     connect(this, &ErrorSubscribe::fsmTryingDisconnect,
-            this, &ErrorSubscribe::fsmTryingDisconnectQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &ErrorSubscribe::fsmTryingDisconnectQueued, downState);
+            this, &ErrorSubscribe::fsmTryingDisconnectEvent);
     connect(this, &ErrorSubscribe::fsmUpTimeout,
-            this, &ErrorSubscribe::fsmUpTimeoutQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ErrorSubscribe::fsmUpTimeoutQueued, tryingState);
+            this, &ErrorSubscribe::fsmUpTimeoutEvent);
     connect(this, &ErrorSubscribe::fsmUpTick,
-            this, &ErrorSubscribe::fsmUpTickQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ErrorSubscribe::fsmUpTickQueued, upState);
+            this, &ErrorSubscribe::fsmUpTickEvent);
     connect(this, &ErrorSubscribe::fsmUpMessageReceived,
-            this, &ErrorSubscribe::fsmUpMessageReceivedQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ErrorSubscribe::fsmUpMessageReceivedQueued, upState);
+            this, &ErrorSubscribe::fsmUpMessageReceivedEvent);
     connect(this, &ErrorSubscribe::fsmUpDisconnect,
-            this, &ErrorSubscribe::fsmUpDisconnectQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &ErrorSubscribe::fsmUpDisconnectQueued, downState);
-
-    connect(this, &ErrorSubscribe::fsmDownConnect,
-            this, &ErrorSubscribe::fsmDownConnectEvent, Qt::QueuedConnection);
-    connect(this, &ErrorSubscribe::fsmTryingConnected,
-            this, &ErrorSubscribe::fsmTryingConnectedEvent, Qt::QueuedConnection);
-    connect(this, &ErrorSubscribe::fsmTryingDisconnect,
-            this, &ErrorSubscribe::fsmTryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &ErrorSubscribe::fsmUpTimeout,
-            this, &ErrorSubscribe::fsmUpTimeoutEvent, Qt::QueuedConnection);
-    connect(this, &ErrorSubscribe::fsmUpTick,
-            this, &ErrorSubscribe::fsmUpTickEvent, Qt::QueuedConnection);
-    connect(this, &ErrorSubscribe::fsmUpMessageReceived,
-            this, &ErrorSubscribe::fsmUpMessageReceivedEvent, Qt::QueuedConnection);
-    connect(this, &ErrorSubscribe::fsmUpDisconnect,
-            this, &ErrorSubscribe::fsmUpDisconnectEvent, Qt::QueuedConnection);
+            this, &ErrorSubscribe::fsmUpDisconnectEvent);
 
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
             this, &ErrorSubscribe::socketError);
     m_context->start();
-
-     connect(this, &ErrorSubscribe::startSignal,
-             this, &ErrorSubscribe::startSlot, Qt::QueuedConnection);
-     connect(this, &ErrorSubscribe::stopSignal,
-             this, &ErrorSubscribe::stopSlot, Qt::QueuedConnection);
 }
 
 ErrorSubscribe::~ErrorSubscribe()
@@ -205,13 +167,13 @@ void ErrorSubscribe::heartbeatTimerTick()
     {
          if (m_state == Up)
          {
-             emit fsmUpTimeout();
+             emit fsmUpTimeout(QPrivateSignal());
          }
          return;
     }
     if (m_state == Up)
     {
-         emit fsmUpTick();
+        emit fsmUpTick(QPrivateSignal());
     }
 }
 
@@ -240,7 +202,7 @@ void ErrorSubscribe::processSocketMessage(const QList<QByteArray> &messageList)
 
     if (m_state == Up)
     {
-        emit fsmUpMessageReceived();
+        emit fsmUpMessageReceived(QPrivateSignal());
     }
 
     // react to ping message
@@ -254,7 +216,7 @@ void ErrorSubscribe::processSocketMessage(const QList<QByteArray> &messageList)
 
         if (m_state == Trying)
         {
-            emit fsmTryingConnected();
+            emit fsmTryingConnected(QPrivateSignal());
         }
         return; // ping is uninteresting
     }
@@ -269,146 +231,159 @@ void ErrorSubscribe::socketError(int errorNum, const QString &errorMsg)
     //updateState(SocketError, errorString);  TODO
 }
 
-void ErrorSubscribe::fsmDownEntered()
+void ErrorSubscribe::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void ErrorSubscribe::fsmDownConnectEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event CONNECT");
 #endif
-
-    m_state = Trying;
-    startSocket();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        startSocket();
+     }
 }
 
-void ErrorSubscribe::fsmTryingEntered()
+void ErrorSubscribe::fsmTrying()
 {
-    if (m_previousState != Trying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-        m_previousState = Trying;
-        emit stateChanged(m_state);
-    }
+    m_state = Trying;
+    emit stateChanged(m_state);
 }
 
 void ErrorSubscribe::fsmTryingConnectedEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECTED");
+        DEBUG_TAG(1, m_debugName, "Event CONNECTED");
 #endif
-
-    m_state = Up;
-    resetHeartbeatLiveness();
-    startHeartbeatTimer();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+        resetHeartbeatLiveness();
+        startHeartbeatTimer();
+     }
 }
 
 void ErrorSubscribe::fsmTryingDisconnectEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopHeartbeatTimer();
-    stopSocket();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopHeartbeatTimer();
+        stopSocket();
+     }
 }
 
-void ErrorSubscribe::fsmUpEntered()
+void ErrorSubscribe::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
 }
 
 void ErrorSubscribe::fsmUpTimeoutEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event TIMEOUT");
+        DEBUG_TAG(1, m_debugName, "Event TIMEOUT");
 #endif
-
-    m_state = Trying;
-    stopHeartbeatTimer();
-    stopSocket();
-    startSocket();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        stopHeartbeatTimer();
+        stopSocket();
+        startSocket();
+     }
 }
 
 void ErrorSubscribe::fsmUpTickEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event TICK");
+        DEBUG_TAG(1, m_debugName, "Event TICK");
 #endif
-
-    m_state = Up;
-    resetHeartbeatTimer();
+        // execute actions
+        resetHeartbeatTimer();
+     }
 }
 
 void ErrorSubscribe::fsmUpMessageReceivedEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event MESSAGE RECEIVED");
+        DEBUG_TAG(1, m_debugName, "Event MESSAGE RECEIVED");
 #endif
-
-    m_state = Up;
-    resetHeartbeatLiveness();
-    resetHeartbeatTimer();
+        // execute actions
+        resetHeartbeatLiveness();
+        resetHeartbeatTimer();
+     }
 }
 
 void ErrorSubscribe::fsmUpDisconnectEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopHeartbeatTimer();
-    stopSocket();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopHeartbeatTimer();
+        stopSocket();
+     }
 }
 
-/** start trigger */
+/** start trigger function */
 void ErrorSubscribe::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void ErrorSubscribe::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownConnect();
+        emit fsmDownConnect(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void ErrorSubscribe::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void ErrorSubscribe::stopSlot()
-{
     if (m_state == Trying) {
-        emit fsmTryingDisconnect();
+        emit fsmTryingDisconnect(QPrivateSignal());
     }
     if (m_state == Up) {
-        emit fsmUpDisconnect();
+        emit fsmUpDisconnect(QPrivateSignal());
     }
 }
 }; // namespace application

@@ -7,7 +7,6 @@
 #ifndef PUBLISH_H
 #define PUBLISH_H
 #include <QObject>
-#include <QStateMachine>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 #include <google/protobuf/text_format.h>
@@ -130,7 +129,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
 
     QTimer     *m_heartbeatTimer;
@@ -154,14 +152,12 @@ private slots:
 
     void sendPing();
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownStartEvent();
-    void fsmUpEntered();
+    void fsmUp();
     void fsmUpStopEvent();
     void fsmUpHeartbeatTickEvent();
 
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void socketUriChanged(QString uri);
@@ -172,15 +168,13 @@ signals:
     void heartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownStart();
-    void fsmDownStartQueued();
-    void fsmUpStop();
-    void fsmUpStopQueued();
-    void fsmUpHeartbeatTick();
-    void fsmUpHeartbeatTickQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownStart(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpStop(QPrivateSignal);
+    void fsmUpHeartbeatTick(QPrivateSignal);
 };
 }; // namespace machinetalk
 #endif //PUBLISH_H

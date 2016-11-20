@@ -7,7 +7,6 @@
 #ifndef ERROR_SUBSCRIBE_H
 #define ERROR_SUBSCRIBE_H
 #include <QObject>
-#include <QStateMachine>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 #include <google/protobuf/text_format.h>
@@ -131,7 +130,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
 
     QTimer     *m_heartbeatTimer;
@@ -156,19 +154,17 @@ private slots:
     void socketError(int errorNum, const QString& errorMsg);
 
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownConnectEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingConnectedEvent();
     void fsmTryingDisconnectEvent();
-    void fsmUpEntered();
+    void fsmUp();
     void fsmUpTimeoutEvent();
     void fsmUpTickEvent();
     void fsmUpMessageReceivedEvent();
     void fsmUpDisconnectEvent();
 
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void socketUriChanged(QString uri);
@@ -179,23 +175,19 @@ signals:
     void heartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownConnect();
-    void fsmDownConnectQueued();
-    void fsmTryingConnected();
-    void fsmTryingConnectedQueued();
-    void fsmTryingDisconnect();
-    void fsmTryingDisconnectQueued();
-    void fsmUpTimeout();
-    void fsmUpTimeoutQueued();
-    void fsmUpTick();
-    void fsmUpTickQueued();
-    void fsmUpMessageReceived();
-    void fsmUpMessageReceivedQueued();
-    void fsmUpDisconnect();
-    void fsmUpDisconnectQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownConnect(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingConnected(QPrivateSignal);
+    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpTimeout(QPrivateSignal);
+    void fsmUpTick(QPrivateSignal);
+    void fsmUpMessageReceived(QPrivateSignal);
+    void fsmUpDisconnect(QPrivateSignal);
 };
 }; // namespace application
 #endif //ERROR_SUBSCRIBE_H

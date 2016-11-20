@@ -28,7 +28,6 @@ PreviewClientBase::PreviewClientBase(QObject *parent) :
     m_previewstatusChannel(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
 {
     // initialize preview channel
@@ -49,94 +48,37 @@ PreviewClientBase::PreviewClientBase(QObject *parent) :
             this, &PreviewClientBase::previewstatusChannelStateChanged);
     connect(m_previewstatusChannel, &pathview::PreviewSubscribe::socketMessageReceived,
             this, &PreviewClientBase::processPreviewstatusChannelMessage);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &PreviewClientBase::fsmDownEntered, Qt::QueuedConnection);
-    QState *tryingState = new QState(m_fsm);
-    connect(tryingState, &QState::entered, this, &PreviewClientBase::fsmTryingEntered, Qt::QueuedConnection);
-    QState *previewtryingState = new QState(m_fsm);
-    connect(previewtryingState, &QState::entered, this, &PreviewClientBase::fsmPreviewtryingEntered, Qt::QueuedConnection);
-    QState *statustryingState = new QState(m_fsm);
-    connect(statustryingState, &QState::entered, this, &PreviewClientBase::fsmStatustryingEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &PreviewClientBase::fsmUpEntered, Qt::QueuedConnection);
-    connect(upState, &QState::entered, this, &PreviewClientBase::setConnected, Qt::QueuedConnection);
-    connect(upState, &QState::exited, this, &PreviewClientBase::clearConnected, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
+    connect(this, &PreviewClientBase::fsmUpEntered,
+            this, &PreviewClientBase::fsmUpEntry);
+    connect(this, &PreviewClientBase::fsmUpExited,
+            this, &PreviewClientBase::fsmUpExit);
     connect(this, &PreviewClientBase::fsmDownConnect,
-            this, &PreviewClientBase::fsmDownConnectQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &PreviewClientBase::fsmDownConnectQueued, tryingState);
+            this, &PreviewClientBase::fsmDownConnectEvent);
     connect(this, &PreviewClientBase::fsmTryingStatusUp,
-            this, &PreviewClientBase::fsmTryingStatusUpQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &PreviewClientBase::fsmTryingStatusUpQueued, previewtryingState);
+            this, &PreviewClientBase::fsmTryingStatusUpEvent);
     connect(this, &PreviewClientBase::fsmTryingPreviewUp,
-            this, &PreviewClientBase::fsmTryingPreviewUpQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &PreviewClientBase::fsmTryingPreviewUpQueued, statustryingState);
+            this, &PreviewClientBase::fsmTryingPreviewUpEvent);
     connect(this, &PreviewClientBase::fsmTryingDisconnect,
-            this, &PreviewClientBase::fsmTryingDisconnectQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &PreviewClientBase::fsmTryingDisconnectQueued, downState);
+            this, &PreviewClientBase::fsmTryingDisconnectEvent);
     connect(this, &PreviewClientBase::fsmPreviewtryingPreviewUp,
-            this, &PreviewClientBase::fsmPreviewtryingPreviewUpQueued, Qt::QueuedConnection);
-    previewtryingState->addTransition(this, &PreviewClientBase::fsmPreviewtryingPreviewUpQueued, upState);
+            this, &PreviewClientBase::fsmPreviewtryingPreviewUpEvent);
     connect(this, &PreviewClientBase::fsmPreviewtryingStatusTrying,
-            this, &PreviewClientBase::fsmPreviewtryingStatusTryingQueued, Qt::QueuedConnection);
-    previewtryingState->addTransition(this, &PreviewClientBase::fsmPreviewtryingStatusTryingQueued, tryingState);
+            this, &PreviewClientBase::fsmPreviewtryingStatusTryingEvent);
     connect(this, &PreviewClientBase::fsmPreviewtryingDisconnect,
-            this, &PreviewClientBase::fsmPreviewtryingDisconnectQueued, Qt::QueuedConnection);
-    previewtryingState->addTransition(this, &PreviewClientBase::fsmPreviewtryingDisconnectQueued, downState);
+            this, &PreviewClientBase::fsmPreviewtryingDisconnectEvent);
     connect(this, &PreviewClientBase::fsmStatustryingStatusUp,
-            this, &PreviewClientBase::fsmStatustryingStatusUpQueued, Qt::QueuedConnection);
-    statustryingState->addTransition(this, &PreviewClientBase::fsmStatustryingStatusUpQueued, upState);
+            this, &PreviewClientBase::fsmStatustryingStatusUpEvent);
     connect(this, &PreviewClientBase::fsmStatustryingPreviewTrying,
-            this, &PreviewClientBase::fsmStatustryingPreviewTryingQueued, Qt::QueuedConnection);
-    statustryingState->addTransition(this, &PreviewClientBase::fsmStatustryingPreviewTryingQueued, tryingState);
+            this, &PreviewClientBase::fsmStatustryingPreviewTryingEvent);
     connect(this, &PreviewClientBase::fsmStatustryingDisconnect,
-            this, &PreviewClientBase::fsmStatustryingDisconnectQueued, Qt::QueuedConnection);
-    statustryingState->addTransition(this, &PreviewClientBase::fsmStatustryingDisconnectQueued, downState);
+            this, &PreviewClientBase::fsmStatustryingDisconnectEvent);
     connect(this, &PreviewClientBase::fsmUpPreviewTrying,
-            this, &PreviewClientBase::fsmUpPreviewTryingQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &PreviewClientBase::fsmUpPreviewTryingQueued, previewtryingState);
+            this, &PreviewClientBase::fsmUpPreviewTryingEvent);
     connect(this, &PreviewClientBase::fsmUpStatusTrying,
-            this, &PreviewClientBase::fsmUpStatusTryingQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &PreviewClientBase::fsmUpStatusTryingQueued, statustryingState);
+            this, &PreviewClientBase::fsmUpStatusTryingEvent);
     connect(this, &PreviewClientBase::fsmUpDisconnect,
-            this, &PreviewClientBase::fsmUpDisconnectQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &PreviewClientBase::fsmUpDisconnectQueued, downState);
-
-    connect(this, &PreviewClientBase::fsmDownConnect,
-            this, &PreviewClientBase::fsmDownConnectEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmTryingStatusUp,
-            this, &PreviewClientBase::fsmTryingStatusUpEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmTryingPreviewUp,
-            this, &PreviewClientBase::fsmTryingPreviewUpEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmTryingDisconnect,
-            this, &PreviewClientBase::fsmTryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmPreviewtryingPreviewUp,
-            this, &PreviewClientBase::fsmPreviewtryingPreviewUpEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmPreviewtryingStatusTrying,
-            this, &PreviewClientBase::fsmPreviewtryingStatusTryingEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmPreviewtryingDisconnect,
-            this, &PreviewClientBase::fsmPreviewtryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmStatustryingStatusUp,
-            this, &PreviewClientBase::fsmStatustryingStatusUpEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmStatustryingPreviewTrying,
-            this, &PreviewClientBase::fsmStatustryingPreviewTryingEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmStatustryingDisconnect,
-            this, &PreviewClientBase::fsmStatustryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmUpPreviewTrying,
-            this, &PreviewClientBase::fsmUpPreviewTryingEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmUpStatusTrying,
-            this, &PreviewClientBase::fsmUpStatusTryingEvent, Qt::QueuedConnection);
-    connect(this, &PreviewClientBase::fsmUpDisconnect,
-            this, &PreviewClientBase::fsmUpDisconnectEvent, Qt::QueuedConnection);
-
-     connect(this, &PreviewClientBase::startSignal,
-             this, &PreviewClientBase::startSlot, Qt::QueuedConnection);
-     connect(this, &PreviewClientBase::stopSignal,
-             this, &PreviewClientBase::stopSlot, Qt::QueuedConnection);
+            this, &PreviewClientBase::fsmUpDisconnectEvent);
 }
 
 PreviewClientBase::~PreviewClientBase()
@@ -225,191 +167,262 @@ void PreviewClientBase::processPreviewstatusChannelMessage(const QByteArray &top
     emit previewstatusMessageReceived(topic, rx);
 }
 
-void PreviewClientBase::fsmDownEntered()
+void PreviewClientBase::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void PreviewClientBase::fsmDownConnectEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event CONNECT");
 #endif
-
-    m_state = Trying;
-    startPreviewChannel();
-    startPreviewstatusChannel();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        startPreviewChannel();
+        startPreviewstatusChannel();
+     }
 }
 
-void PreviewClientBase::fsmTryingEntered()
+void PreviewClientBase::fsmTrying()
 {
-    if (m_previousState != Trying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-        m_previousState = Trying;
-        emit stateChanged(m_state);
-    }
+    m_state = Trying;
+    emit stateChanged(m_state);
 }
 
 void PreviewClientBase::fsmTryingStatusUpEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event STATUS UP");
+        DEBUG_TAG(1, m_debugName, "Event STATUS UP");
 #endif
-
-    m_state = Previewtrying;
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmPreviewtrying();
+        emit fsmPreviewtryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void PreviewClientBase::fsmTryingPreviewUpEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PREVIEW UP");
+        DEBUG_TAG(1, m_debugName, "Event PREVIEW UP");
 #endif
-
-    m_state = Statustrying;
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmStatustrying();
+        emit fsmStatustryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void PreviewClientBase::fsmTryingDisconnectEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopPreviewChannel();
-    stopPreviewstatusChannel();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopPreviewChannel();
+        stopPreviewstatusChannel();
+     }
 }
 
-void PreviewClientBase::fsmPreviewtryingEntered()
+void PreviewClientBase::fsmPreviewtrying()
 {
-    if (m_previousState != Previewtrying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State PREVIEWTRYING");
 #endif
-        m_previousState = Previewtrying;
-        emit stateChanged(m_state);
-    }
+    m_state = Previewtrying;
+    emit stateChanged(m_state);
 }
 
 void PreviewClientBase::fsmPreviewtryingPreviewUpEvent()
 {
+    if (m_state == Previewtrying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PREVIEW UP");
+        DEBUG_TAG(1, m_debugName, "Event PREVIEW UP");
 #endif
-
-    m_state = Up;
+        // handle state change
+        emit fsmPreviewtryingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void PreviewClientBase::fsmPreviewtryingStatusTryingEvent()
 {
+    if (m_state == Previewtrying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event STATUS TRYING");
+        DEBUG_TAG(1, m_debugName, "Event STATUS TRYING");
 #endif
-
-    m_state = Trying;
+        // handle state change
+        emit fsmPreviewtryingExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void PreviewClientBase::fsmPreviewtryingDisconnectEvent()
 {
+    if (m_state == Previewtrying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopPreviewChannel();
-    stopPreviewstatusChannel();
+        // handle state change
+        emit fsmPreviewtryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopPreviewChannel();
+        stopPreviewstatusChannel();
+     }
 }
 
-void PreviewClientBase::fsmStatustryingEntered()
+void PreviewClientBase::fsmStatustrying()
 {
-    if (m_previousState != Statustrying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State STATUSTRYING");
 #endif
-        m_previousState = Statustrying;
-        emit stateChanged(m_state);
-    }
+    m_state = Statustrying;
+    emit stateChanged(m_state);
 }
 
 void PreviewClientBase::fsmStatustryingStatusUpEvent()
 {
+    if (m_state == Statustrying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event STATUS UP");
+        DEBUG_TAG(1, m_debugName, "Event STATUS UP");
 #endif
-
-    m_state = Up;
+        // handle state change
+        emit fsmStatustryingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void PreviewClientBase::fsmStatustryingPreviewTryingEvent()
 {
+    if (m_state == Statustrying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PREVIEW TRYING");
+        DEBUG_TAG(1, m_debugName, "Event PREVIEW TRYING");
 #endif
-
-    m_state = Trying;
+        // handle state change
+        emit fsmStatustryingExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void PreviewClientBase::fsmStatustryingDisconnectEvent()
 {
+    if (m_state == Statustrying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopPreviewChannel();
-    stopPreviewstatusChannel();
+        // handle state change
+        emit fsmStatustryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopPreviewChannel();
+        stopPreviewstatusChannel();
+     }
 }
 
-void PreviewClientBase::fsmUpEntered()
+void PreviewClientBase::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
+}
+void PreviewClientBase::fsmUpEntry()
+{
+    setConnected();
+}
+void PreviewClientBase::fsmUpExit()
+{
+    clearConnected();
 }
 
 void PreviewClientBase::fsmUpPreviewTryingEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PREVIEW TRYING");
+        DEBUG_TAG(1, m_debugName, "Event PREVIEW TRYING");
 #endif
-
-    m_state = Previewtrying;
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmPreviewtrying();
+        emit fsmPreviewtryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void PreviewClientBase::fsmUpStatusTryingEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event STATUS TRYING");
+        DEBUG_TAG(1, m_debugName, "Event STATUS TRYING");
 #endif
-
-    m_state = Statustrying;
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmStatustrying();
+        emit fsmStatustryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void PreviewClientBase::fsmUpDisconnectEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopPreviewChannel();
-    stopPreviewstatusChannel();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopPreviewChannel();
+        stopPreviewstatusChannel();
+     }
 }
 
 void PreviewClientBase::previewChannelStateChanged(pathview::PreviewSubscribe::State state)
@@ -419,11 +432,11 @@ void PreviewClientBase::previewChannelStateChanged(pathview::PreviewSubscribe::S
     {
         if (m_state == Up)
         {
-            emit fsmUpPreviewTrying();
+            emit fsmUpPreviewTrying(QPrivateSignal());
         }
         if (m_state == Statustrying)
         {
-            emit fsmStatustryingPreviewTrying();
+            emit fsmStatustryingPreviewTrying(QPrivateSignal());
         }
     }
 
@@ -431,11 +444,11 @@ void PreviewClientBase::previewChannelStateChanged(pathview::PreviewSubscribe::S
     {
         if (m_state == Trying)
         {
-            emit fsmTryingPreviewUp();
+            emit fsmTryingPreviewUp(QPrivateSignal());
         }
         if (m_state == Previewtrying)
         {
-            emit fsmPreviewtryingPreviewUp();
+            emit fsmPreviewtryingPreviewUp(QPrivateSignal());
         }
     }
 }
@@ -447,11 +460,11 @@ void PreviewClientBase::previewstatusChannelStateChanged(pathview::PreviewSubscr
     {
         if (m_state == Up)
         {
-            emit fsmUpStatusTrying();
+            emit fsmUpStatusTrying(QPrivateSignal());
         }
         if (m_state == Previewtrying)
         {
-            emit fsmPreviewtryingStatusTrying();
+            emit fsmPreviewtryingStatusTrying(QPrivateSignal());
         }
     }
 
@@ -459,43 +472,31 @@ void PreviewClientBase::previewstatusChannelStateChanged(pathview::PreviewSubscr
     {
         if (m_state == Trying)
         {
-            emit fsmTryingStatusUp();
+            emit fsmTryingStatusUp(QPrivateSignal());
         }
         if (m_state == Statustrying)
         {
-            emit fsmStatustryingStatusUp();
+            emit fsmStatustryingStatusUp(QPrivateSignal());
         }
     }
 }
 
-/** start trigger */
+/** start trigger function */
 void PreviewClientBase::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void PreviewClientBase::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownConnect();
+        emit fsmDownConnect(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void PreviewClientBase::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void PreviewClientBase::stopSlot()
-{
     if (m_state == Trying) {
-        emit fsmTryingDisconnect();
+        emit fsmTryingDisconnect(QPrivateSignal());
     }
     if (m_state == Up) {
-        emit fsmUpDisconnect();
+        emit fsmUpDisconnect(QPrivateSignal());
     }
 }
 }; // namespace pathview

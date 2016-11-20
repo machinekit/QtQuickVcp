@@ -28,7 +28,6 @@ LauncherBase::LauncherBase(QObject *parent) :
     m_launcherChannel(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
 {
     // initialize launchercmd channel
@@ -55,72 +54,29 @@ LauncherBase::LauncherBase(QObject *parent) :
 
     connect(m_launcherChannel, &application::LauncherSubscribe::heartbeatIntervalChanged,
             this, &LauncherBase::launcherHeartbeatIntervalChanged);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &LauncherBase::fsmDownEntered, Qt::QueuedConnection);
-    QState *tryingState = new QState(m_fsm);
-    connect(tryingState, &QState::entered, this, &LauncherBase::fsmTryingEntered, Qt::QueuedConnection);
-    QState *syncingState = new QState(m_fsm);
-    connect(syncingState, &QState::entered, this, &LauncherBase::fsmSyncingEntered, Qt::QueuedConnection);
-    QState *syncedState = new QState(m_fsm);
-    connect(syncedState, &QState::entered, this, &LauncherBase::fsmSyncedEntered, Qt::QueuedConnection);
-    connect(syncedState, &QState::entered, this, &LauncherBase::syncStatus, Qt::QueuedConnection);
-    connect(syncedState, &QState::exited, this, &LauncherBase::unsyncStatus, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
+    connect(this, &LauncherBase::fsmSyncedEntered,
+            this, &LauncherBase::fsmSyncedEntry);
+    connect(this, &LauncherBase::fsmSyncedExited,
+            this, &LauncherBase::fsmSyncedExit);
     connect(this, &LauncherBase::fsmDownConnect,
-            this, &LauncherBase::fsmDownConnectQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &LauncherBase::fsmDownConnectQueued, tryingState);
+            this, &LauncherBase::fsmDownConnectEvent);
     connect(this, &LauncherBase::fsmTryingLaunchercmdUp,
-            this, &LauncherBase::fsmTryingLaunchercmdUpQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &LauncherBase::fsmTryingLaunchercmdUpQueued, syncingState);
+            this, &LauncherBase::fsmTryingLaunchercmdUpEvent);
     connect(this, &LauncherBase::fsmTryingDisconnect,
-            this, &LauncherBase::fsmTryingDisconnectQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &LauncherBase::fsmTryingDisconnectQueued, downState);
+            this, &LauncherBase::fsmTryingDisconnectEvent);
     connect(this, &LauncherBase::fsmSyncingLaunchercmdTrying,
-            this, &LauncherBase::fsmSyncingLaunchercmdTryingQueued, Qt::QueuedConnection);
-    syncingState->addTransition(this, &LauncherBase::fsmSyncingLaunchercmdTryingQueued, tryingState);
+            this, &LauncherBase::fsmSyncingLaunchercmdTryingEvent);
     connect(this, &LauncherBase::fsmSyncingLauncherUp,
-            this, &LauncherBase::fsmSyncingLauncherUpQueued, Qt::QueuedConnection);
-    syncingState->addTransition(this, &LauncherBase::fsmSyncingLauncherUpQueued, syncedState);
+            this, &LauncherBase::fsmSyncingLauncherUpEvent);
     connect(this, &LauncherBase::fsmSyncingDisconnect,
-            this, &LauncherBase::fsmSyncingDisconnectQueued, Qt::QueuedConnection);
-    syncingState->addTransition(this, &LauncherBase::fsmSyncingDisconnectQueued, downState);
+            this, &LauncherBase::fsmSyncingDisconnectEvent);
     connect(this, &LauncherBase::fsmSyncedLauncherTrying,
-            this, &LauncherBase::fsmSyncedLauncherTryingQueued, Qt::QueuedConnection);
-    syncedState->addTransition(this, &LauncherBase::fsmSyncedLauncherTryingQueued, syncingState);
+            this, &LauncherBase::fsmSyncedLauncherTryingEvent);
     connect(this, &LauncherBase::fsmSyncedLaunchercmdTrying,
-            this, &LauncherBase::fsmSyncedLaunchercmdTryingQueued, Qt::QueuedConnection);
-    syncedState->addTransition(this, &LauncherBase::fsmSyncedLaunchercmdTryingQueued, tryingState);
+            this, &LauncherBase::fsmSyncedLaunchercmdTryingEvent);
     connect(this, &LauncherBase::fsmSyncedDisconnect,
-            this, &LauncherBase::fsmSyncedDisconnectQueued, Qt::QueuedConnection);
-    syncedState->addTransition(this, &LauncherBase::fsmSyncedDisconnectQueued, downState);
-
-    connect(this, &LauncherBase::fsmDownConnect,
-            this, &LauncherBase::fsmDownConnectEvent, Qt::QueuedConnection);
-    connect(this, &LauncherBase::fsmTryingLaunchercmdUp,
-            this, &LauncherBase::fsmTryingLaunchercmdUpEvent, Qt::QueuedConnection);
-    connect(this, &LauncherBase::fsmTryingDisconnect,
-            this, &LauncherBase::fsmTryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &LauncherBase::fsmSyncingLaunchercmdTrying,
-            this, &LauncherBase::fsmSyncingLaunchercmdTryingEvent, Qt::QueuedConnection);
-    connect(this, &LauncherBase::fsmSyncingLauncherUp,
-            this, &LauncherBase::fsmSyncingLauncherUpEvent, Qt::QueuedConnection);
-    connect(this, &LauncherBase::fsmSyncingDisconnect,
-            this, &LauncherBase::fsmSyncingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &LauncherBase::fsmSyncedLauncherTrying,
-            this, &LauncherBase::fsmSyncedLauncherTryingEvent, Qt::QueuedConnection);
-    connect(this, &LauncherBase::fsmSyncedLaunchercmdTrying,
-            this, &LauncherBase::fsmSyncedLaunchercmdTryingEvent, Qt::QueuedConnection);
-    connect(this, &LauncherBase::fsmSyncedDisconnect,
-            this, &LauncherBase::fsmSyncedDisconnectEvent, Qt::QueuedConnection);
-
-     connect(this, &LauncherBase::startSignal,
-             this, &LauncherBase::startSlot, Qt::QueuedConnection);
-     connect(this, &LauncherBase::stopSignal,
-             this, &LauncherBase::stopSlot, Qt::QueuedConnection);
+            this, &LauncherBase::fsmSyncedDisconnectEvent);
 }
 
 LauncherBase::~LauncherBase()
@@ -239,143 +195,193 @@ void LauncherBase::sendLauncherShutdown(pb::Container &tx)
     sendLaunchercmdMessage(pb::MT_LAUNCHER_SHUTDOWN, tx);
 }
 
-void LauncherBase::fsmDownEntered()
+void LauncherBase::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void LauncherBase::fsmDownConnectEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event CONNECT");
 #endif
-
-    m_state = Trying;
-    startLaunchercmdChannel();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        startLaunchercmdChannel();
+     }
 }
 
-void LauncherBase::fsmTryingEntered()
+void LauncherBase::fsmTrying()
 {
-    if (m_previousState != Trying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-        m_previousState = Trying;
-        emit stateChanged(m_state);
-    }
+    m_state = Trying;
+    emit stateChanged(m_state);
 }
 
 void LauncherBase::fsmTryingLaunchercmdUpEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event LAUNCHERCMD UP");
+        DEBUG_TAG(1, m_debugName, "Event LAUNCHERCMD UP");
 #endif
-
-    m_state = Syncing;
-    startLauncherChannel();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmSyncing();
+        emit fsmSyncingEntered(QPrivateSignal());
+        // execute actions
+        startLauncherChannel();
+     }
 }
 
 void LauncherBase::fsmTryingDisconnectEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopLaunchercmdChannel();
-    stopLauncherChannel();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopLaunchercmdChannel();
+        stopLauncherChannel();
+     }
 }
 
-void LauncherBase::fsmSyncingEntered()
+void LauncherBase::fsmSyncing()
 {
-    if (m_previousState != Syncing)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCING");
 #endif
-        m_previousState = Syncing;
-        emit stateChanged(m_state);
-    }
+    m_state = Syncing;
+    emit stateChanged(m_state);
 }
 
 void LauncherBase::fsmSyncingLaunchercmdTryingEvent()
 {
+    if (m_state == Syncing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event LAUNCHERCMD TRYING");
+        DEBUG_TAG(1, m_debugName, "Event LAUNCHERCMD TRYING");
 #endif
-
-    m_state = Trying;
-    stopLauncherChannel();
+        // handle state change
+        emit fsmSyncingExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        stopLauncherChannel();
+     }
 }
 
 void LauncherBase::fsmSyncingLauncherUpEvent()
 {
+    if (m_state == Syncing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event LAUNCHER UP");
+        DEBUG_TAG(1, m_debugName, "Event LAUNCHER UP");
 #endif
-
-    m_state = Synced;
+        // handle state change
+        emit fsmSyncingExited(QPrivateSignal());
+        fsmSynced();
+        emit fsmSyncedEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void LauncherBase::fsmSyncingDisconnectEvent()
 {
+    if (m_state == Syncing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopLaunchercmdChannel();
-    stopLauncherChannel();
+        // handle state change
+        emit fsmSyncingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopLaunchercmdChannel();
+        stopLauncherChannel();
+     }
 }
 
-void LauncherBase::fsmSyncedEntered()
+void LauncherBase::fsmSynced()
 {
-    if (m_previousState != Synced)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCED");
 #endif
-        m_previousState = Synced;
-        emit stateChanged(m_state);
-    }
+    m_state = Synced;
+    emit stateChanged(m_state);
+}
+void LauncherBase::fsmSyncedEntry()
+{
+    syncStatus();
+}
+void LauncherBase::fsmSyncedExit()
+{
+    unsyncStatus();
 }
 
 void LauncherBase::fsmSyncedLauncherTryingEvent()
 {
+    if (m_state == Synced)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event LAUNCHER TRYING");
+        DEBUG_TAG(1, m_debugName, "Event LAUNCHER TRYING");
 #endif
-
-    m_state = Syncing;
+        // handle state change
+        emit fsmSyncedExited(QPrivateSignal());
+        fsmSyncing();
+        emit fsmSyncingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void LauncherBase::fsmSyncedLaunchercmdTryingEvent()
 {
+    if (m_state == Synced)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event LAUNCHERCMD TRYING");
+        DEBUG_TAG(1, m_debugName, "Event LAUNCHERCMD TRYING");
 #endif
-
-    m_state = Trying;
-    stopLauncherChannel();
+        // handle state change
+        emit fsmSyncedExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        stopLauncherChannel();
+     }
 }
 
 void LauncherBase::fsmSyncedDisconnectEvent()
 {
+    if (m_state == Synced)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopLaunchercmdChannel();
-    stopLauncherChannel();
+        // handle state change
+        emit fsmSyncedExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopLaunchercmdChannel();
+        stopLauncherChannel();
+     }
 }
 
 void LauncherBase::launchercmdChannelStateChanged(machinetalk::RpcClient::State state)
@@ -385,11 +391,11 @@ void LauncherBase::launchercmdChannelStateChanged(machinetalk::RpcClient::State 
     {
         if (m_state == Syncing)
         {
-            emit fsmSyncingLaunchercmdTrying();
+            emit fsmSyncingLaunchercmdTrying(QPrivateSignal());
         }
         if (m_state == Synced)
         {
-            emit fsmSyncedLaunchercmdTrying();
+            emit fsmSyncedLaunchercmdTrying(QPrivateSignal());
         }
     }
 
@@ -397,7 +403,7 @@ void LauncherBase::launchercmdChannelStateChanged(machinetalk::RpcClient::State 
     {
         if (m_state == Trying)
         {
-            emit fsmTryingLaunchercmdUp();
+            emit fsmTryingLaunchercmdUp(QPrivateSignal());
         }
     }
 }
@@ -409,7 +415,7 @@ void LauncherBase::launcherChannelStateChanged(application::LauncherSubscribe::S
     {
         if (m_state == Synced)
         {
-            emit fsmSyncedLauncherTrying();
+            emit fsmSyncedLauncherTrying(QPrivateSignal());
         }
     }
 
@@ -417,42 +423,30 @@ void LauncherBase::launcherChannelStateChanged(application::LauncherSubscribe::S
     {
         if (m_state == Syncing)
         {
-            emit fsmSyncingLauncherUp();
+            emit fsmSyncingLauncherUp(QPrivateSignal());
         }
     }
 }
 
-/** start trigger */
+/** start trigger function */
 void LauncherBase::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void LauncherBase::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownConnect();
+        emit fsmDownConnect(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void LauncherBase::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void LauncherBase::stopSlot()
-{
     if (m_state == Trying) {
-        emit fsmTryingDisconnect();
+        emit fsmTryingDisconnect(QPrivateSignal());
     }
     if (m_state == Syncing) {
-        emit fsmSyncingDisconnect();
+        emit fsmSyncingDisconnect(QPrivateSignal());
     }
     if (m_state == Synced) {
-        emit fsmSyncedDisconnect();
+        emit fsmSyncedDisconnect(QPrivateSignal());
     }
 }
 }; // namespace application

@@ -7,7 +7,6 @@
 #ifndef PARAM_CLIENT_H
 #define PARAM_CLIENT_H
 #include <QObject>
-#include <QStateMachine>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -172,7 +171,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_paramcmdTx;
@@ -189,21 +187,23 @@ private slots:
     void paramChannelStateChanged(machinetalk::Subscribe::State state);
     void processParamChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownConnectEvent();
-    void fsmConnectingEntered();
+    void fsmConnecting();
     void fsmConnectingParamcmdUpEvent();
     void fsmConnectingParamUpEvent();
     void fsmConnectingDisconnectEvent();
-    void fsmSyncingEntered();
+    void fsmSyncing();
     void fsmSyncingParamUpEvent();
     void fsmSyncingParamcmdTryingEvent();
     void fsmSyncingDisconnectEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingParamcmdUpEvent();
     void fsmTryingParamTryingEvent();
     void fsmTryingDisconnectEvent();
-    void fsmUpEntered();
+    void fsmUp();
+    void fsmUpEntry();
+    void fsmUpExit();
     void fsmUpParamcmdTryingEvent();
     void fsmUpParamTryingEvent();
     void fsmUpDisconnectEvent();
@@ -214,8 +214,6 @@ private slots:
     virtual void unsyncKeys() = 0;
     virtual void setSynced() = 0;
     virtual void clearSynced() = 0;
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void paramcmdUriChanged(QString uri);
@@ -228,35 +226,29 @@ signals:
     void paramHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownConnect();
-    void fsmDownConnectQueued();
-    void fsmConnectingParamcmdUp();
-    void fsmConnectingParamcmdUpQueued();
-    void fsmConnectingParamUp();
-    void fsmConnectingParamUpQueued();
-    void fsmConnectingDisconnect();
-    void fsmConnectingDisconnectQueued();
-    void fsmSyncingParamUp();
-    void fsmSyncingParamUpQueued();
-    void fsmSyncingParamcmdTrying();
-    void fsmSyncingParamcmdTryingQueued();
-    void fsmSyncingDisconnect();
-    void fsmSyncingDisconnectQueued();
-    void fsmTryingParamcmdUp();
-    void fsmTryingParamcmdUpQueued();
-    void fsmTryingParamTrying();
-    void fsmTryingParamTryingQueued();
-    void fsmTryingDisconnect();
-    void fsmTryingDisconnectQueued();
-    void fsmUpParamcmdTrying();
-    void fsmUpParamcmdTryingQueued();
-    void fsmUpParamTrying();
-    void fsmUpParamTryingQueued();
-    void fsmUpDisconnect();
-    void fsmUpDisconnectQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownConnect(QPrivateSignal);
+    void fsmConnectingEntered(QPrivateSignal);
+    void fsmConnectingExited(QPrivateSignal);
+    void fsmConnectingParamcmdUp(QPrivateSignal);
+    void fsmConnectingParamUp(QPrivateSignal);
+    void fsmConnectingDisconnect(QPrivateSignal);
+    void fsmSyncingEntered(QPrivateSignal);
+    void fsmSyncingExited(QPrivateSignal);
+    void fsmSyncingParamUp(QPrivateSignal);
+    void fsmSyncingParamcmdTrying(QPrivateSignal);
+    void fsmSyncingDisconnect(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingParamcmdUp(QPrivateSignal);
+    void fsmTryingParamTrying(QPrivateSignal);
+    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpParamcmdTrying(QPrivateSignal);
+    void fsmUpParamTrying(QPrivateSignal);
+    void fsmUpDisconnect(QPrivateSignal);
 };
 }; // namespace param
 #endif //PARAM_CLIENT_H

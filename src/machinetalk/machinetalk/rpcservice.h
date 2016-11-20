@@ -7,7 +7,6 @@
 #ifndef RPC_SERVICE_H
 #define RPC_SERVICE_H
 #include <QObject>
-#include <QStateMachine>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 #include <google/protobuf/text_format.h>
@@ -113,7 +112,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_socketRx;
@@ -129,14 +127,12 @@ private slots:
 
     void sendPingAcknowledge();
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownStartEvent();
-    void fsmUpEntered();
+    void fsmUp();
     void fsmUpPingReceivedEvent();
     void fsmUpStopEvent();
 
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void socketUriChanged(QString uri);
@@ -146,15 +142,13 @@ signals:
     void errorStringChanged(QString errorString);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownStart();
-    void fsmDownStartQueued();
-    void fsmUpPingReceived();
-    void fsmUpPingReceivedQueued();
-    void fsmUpStop();
-    void fsmUpStopQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownStart(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpPingReceived(QPrivateSignal);
+    void fsmUpStop(QPrivateSignal);
 };
 }; // namespace machinetalk
 #endif //RPC_SERVICE_H

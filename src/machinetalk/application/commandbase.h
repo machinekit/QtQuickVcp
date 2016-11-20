@@ -7,7 +7,6 @@
 #ifndef COMMAND_BASE_H
 #define COMMAND_BASE_H
 #include <QObject>
-#include <QStateMachine>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -190,7 +189,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_commandRx;
@@ -203,19 +201,19 @@ private slots:
     void commandChannelStateChanged(machinetalk::RpcClient::State state);
     void processCommandChannelMessage(const pb::Container &rx);
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownConnectEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingCommandUpEvent();
     void fsmTryingDisconnectEvent();
-    void fsmUpEntered();
+    void fsmUp();
+    void fsmUpEntry();
+    void fsmUpExit();
     void fsmUpCommandTryingEvent();
     void fsmUpDisconnectEvent();
 
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void commandUriChanged(QString uri);
@@ -226,19 +224,17 @@ signals:
     void commandHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownConnect();
-    void fsmDownConnectQueued();
-    void fsmTryingCommandUp();
-    void fsmTryingCommandUpQueued();
-    void fsmTryingDisconnect();
-    void fsmTryingDisconnectQueued();
-    void fsmUpCommandTrying();
-    void fsmUpCommandTryingQueued();
-    void fsmUpDisconnect();
-    void fsmUpDisconnectQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownConnect(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingCommandUp(QPrivateSignal);
+    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpCommandTrying(QPrivateSignal);
+    void fsmUpDisconnect(QPrivateSignal);
 };
 }; // namespace application
 #endif //COMMAND_BASE_H

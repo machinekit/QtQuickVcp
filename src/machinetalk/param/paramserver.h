@@ -7,7 +7,6 @@
 #ifndef PARAM_SERVER_H
 #define PARAM_SERVER_H
 #include <QObject>
-#include <QStateMachine>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -153,7 +152,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_paramcmdRx;
@@ -168,9 +166,9 @@ private slots:
     void startParamChannel();
     void stopParamChannel();
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownConnectEvent();
-    void fsmUpEntered();
+    void fsmUp();
     void fsmUpDisconnectEvent();
 
     virtual void incrementalUpdateReceived(const pb::Container &rx) = 0;
@@ -185,11 +183,12 @@ signals:
     void paramHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownConnect();
-    void fsmDownConnectQueued();
-    void fsmUpDisconnect();
-    void fsmUpDisconnectQueued();
-    // trigger signals
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownConnect(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpDisconnect(QPrivateSignal);
 };
 }; // namespace param
 #endif //PARAM_SERVER_H

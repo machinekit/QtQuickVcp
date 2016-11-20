@@ -7,7 +7,6 @@
 #ifndef CONFIG_BASE_H
 #define CONFIG_BASE_H
 #include <QObject>
-#include <QStateMachine>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -144,7 +143,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_configRx;
@@ -158,20 +156,22 @@ private slots:
     void processConfigChannelMessage(const pb::Container &rx);
     void sendListApplications();
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownConnectEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingConfigUpEvent();
     void fsmTryingDisconnectEvent();
-    void fsmListingEntered();
+    void fsmListing();
     void fsmListingApplicationRetrievedEvent();
     void fsmListingConfigTryingEvent();
     void fsmListingDisconnectEvent();
-    void fsmUpEntered();
+    void fsmUp();
+    void fsmUpEntry();
+    void fsmUpExit();
     void fsmUpConfigTryingEvent();
     void fsmUpLoadApplicationEvent();
     void fsmUpDisconnectEvent();
-    void fsmLoadingEntered();
+    void fsmLoading();
     void fsmLoadingApplicationLoadedEvent();
     void fsmLoadingConfigTryingEvent();
     void fsmLoadingDisconnectEvent();
@@ -180,8 +180,6 @@ private slots:
     virtual void applicationDetailReceived(const pb::Container &rx) = 0;
     virtual void syncConfig() = 0;
     virtual void unsyncConfig() = 0;
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void configUriChanged(QString uri);
@@ -192,33 +190,28 @@ signals:
     void configHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownConnect();
-    void fsmDownConnectQueued();
-    void fsmTryingConfigUp();
-    void fsmTryingConfigUpQueued();
-    void fsmTryingDisconnect();
-    void fsmTryingDisconnectQueued();
-    void fsmListingApplicationRetrieved();
-    void fsmListingApplicationRetrievedQueued();
-    void fsmListingConfigTrying();
-    void fsmListingConfigTryingQueued();
-    void fsmListingDisconnect();
-    void fsmListingDisconnectQueued();
-    void fsmUpConfigTrying();
-    void fsmUpConfigTryingQueued();
-    void fsmUpLoadApplication();
-    void fsmUpLoadApplicationQueued();
-    void fsmUpDisconnect();
-    void fsmUpDisconnectQueued();
-    void fsmLoadingApplicationLoaded();
-    void fsmLoadingApplicationLoadedQueued();
-    void fsmLoadingConfigTrying();
-    void fsmLoadingConfigTryingQueued();
-    void fsmLoadingDisconnect();
-    void fsmLoadingDisconnectQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownConnect(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingConfigUp(QPrivateSignal);
+    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmListingEntered(QPrivateSignal);
+    void fsmListingExited(QPrivateSignal);
+    void fsmListingApplicationRetrieved(QPrivateSignal);
+    void fsmListingConfigTrying(QPrivateSignal);
+    void fsmListingDisconnect(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpConfigTrying(QPrivateSignal);
+    void fsmUpLoadApplication(QPrivateSignal);
+    void fsmUpDisconnect(QPrivateSignal);
+    void fsmLoadingEntered(QPrivateSignal);
+    void fsmLoadingExited(QPrivateSignal);
+    void fsmLoadingApplicationLoaded(QPrivateSignal);
+    void fsmLoadingConfigTrying(QPrivateSignal);
+    void fsmLoadingDisconnect(QPrivateSignal);
 };
 }; // namespace application
 #endif //CONFIG_BASE_H

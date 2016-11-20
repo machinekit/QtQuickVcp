@@ -29,7 +29,6 @@ SyncClient::SyncClient(QObject *parent) :
     m_pubChannel(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
 {
     // initialize sync channel
@@ -64,70 +63,25 @@ SyncClient::SyncClient(QObject *parent) :
 
     connect(m_pubChannel, &machinetalk::Publish::heartbeatIntervalChanged,
             this, &SyncClient::pubHeartbeatIntervalChanged);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &SyncClient::fsmDownEntered, Qt::QueuedConnection);
-    QState *tryingState = new QState(m_fsm);
-    connect(tryingState, &QState::entered, this, &SyncClient::fsmTryingEntered, Qt::QueuedConnection);
-    QState *syncingState = new QState(m_fsm);
-    connect(syncingState, &QState::entered, this, &SyncClient::fsmSyncingEntered, Qt::QueuedConnection);
-    QState *syncedState = new QState(m_fsm);
-    connect(syncedState, &QState::entered, this, &SyncClient::fsmSyncedEntered, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
     connect(this, &SyncClient::fsmDownStart,
-            this, &SyncClient::fsmDownStartQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &SyncClient::fsmDownStartQueued, tryingState);
+            this, &SyncClient::fsmDownStartEvent);
     connect(this, &SyncClient::fsmTryingSyncStateUp,
-            this, &SyncClient::fsmTryingSyncStateUpQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &SyncClient::fsmTryingSyncStateUpQueued, syncingState);
+            this, &SyncClient::fsmTryingSyncStateUpEvent);
     connect(this, &SyncClient::fsmTryingStop,
-            this, &SyncClient::fsmTryingStopQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &SyncClient::fsmTryingStopQueued, downState);
+            this, &SyncClient::fsmTryingStopEvent);
     connect(this, &SyncClient::fsmSyncingSyncStateTrying,
-            this, &SyncClient::fsmSyncingSyncStateTryingQueued, Qt::QueuedConnection);
-    syncingState->addTransition(this, &SyncClient::fsmSyncingSyncStateTryingQueued, tryingState);
+            this, &SyncClient::fsmSyncingSyncStateTryingEvent);
     connect(this, &SyncClient::fsmSyncingSubStateUp,
-            this, &SyncClient::fsmSyncingSubStateUpQueued, Qt::QueuedConnection);
-    syncingState->addTransition(this, &SyncClient::fsmSyncingSubStateUpQueued, syncedState);
+            this, &SyncClient::fsmSyncingSubStateUpEvent);
     connect(this, &SyncClient::fsmSyncingStop,
-            this, &SyncClient::fsmSyncingStopQueued, Qt::QueuedConnection);
-    syncingState->addTransition(this, &SyncClient::fsmSyncingStopQueued, downState);
+            this, &SyncClient::fsmSyncingStopEvent);
     connect(this, &SyncClient::fsmSyncedSubStateTrying,
-            this, &SyncClient::fsmSyncedSubStateTryingQueued, Qt::QueuedConnection);
-    syncedState->addTransition(this, &SyncClient::fsmSyncedSubStateTryingQueued, syncingState);
+            this, &SyncClient::fsmSyncedSubStateTryingEvent);
     connect(this, &SyncClient::fsmSyncedSyncStateTrying,
-            this, &SyncClient::fsmSyncedSyncStateTryingQueued, Qt::QueuedConnection);
-    syncedState->addTransition(this, &SyncClient::fsmSyncedSyncStateTryingQueued, tryingState);
+            this, &SyncClient::fsmSyncedSyncStateTryingEvent);
     connect(this, &SyncClient::fsmSyncedStop,
-            this, &SyncClient::fsmSyncedStopQueued, Qt::QueuedConnection);
-    syncedState->addTransition(this, &SyncClient::fsmSyncedStopQueued, downState);
-
-    connect(this, &SyncClient::fsmDownStart,
-            this, &SyncClient::fsmDownStartEvent, Qt::QueuedConnection);
-    connect(this, &SyncClient::fsmTryingSyncStateUp,
-            this, &SyncClient::fsmTryingSyncStateUpEvent, Qt::QueuedConnection);
-    connect(this, &SyncClient::fsmTryingStop,
-            this, &SyncClient::fsmTryingStopEvent, Qt::QueuedConnection);
-    connect(this, &SyncClient::fsmSyncingSyncStateTrying,
-            this, &SyncClient::fsmSyncingSyncStateTryingEvent, Qt::QueuedConnection);
-    connect(this, &SyncClient::fsmSyncingSubStateUp,
-            this, &SyncClient::fsmSyncingSubStateUpEvent, Qt::QueuedConnection);
-    connect(this, &SyncClient::fsmSyncingStop,
-            this, &SyncClient::fsmSyncingStopEvent, Qt::QueuedConnection);
-    connect(this, &SyncClient::fsmSyncedSubStateTrying,
-            this, &SyncClient::fsmSyncedSubStateTryingEvent, Qt::QueuedConnection);
-    connect(this, &SyncClient::fsmSyncedSyncStateTrying,
-            this, &SyncClient::fsmSyncedSyncStateTryingEvent, Qt::QueuedConnection);
-    connect(this, &SyncClient::fsmSyncedStop,
-            this, &SyncClient::fsmSyncedStopEvent, Qt::QueuedConnection);
-
-     connect(this, &SyncClient::startSignal,
-             this, &SyncClient::startSlot, Qt::QueuedConnection);
-     connect(this, &SyncClient::stopSignal,
-             this, &SyncClient::stopSlot, Qt::QueuedConnection);
+            this, &SyncClient::fsmSyncedStopEvent);
 }
 
 SyncClient::~SyncClient()
@@ -217,150 +171,192 @@ void SyncClient::sendIncrementalUpdate(pb::Container &tx)
     sendPubMessage(pb::MT_INCREMENTAL_UPDATE, tx);
 }
 
-void SyncClient::fsmDownEntered()
+void SyncClient::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void SyncClient::fsmDownStartEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event START");
+        DEBUG_TAG(1, m_debugName, "Event START");
 #endif
-
-    m_state = Trying;
-    startSyncChannel();
-    startPubChannel();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        startSyncChannel();
+        startPubChannel();
+     }
 }
 
-void SyncClient::fsmTryingEntered()
+void SyncClient::fsmTrying()
 {
-    if (m_previousState != Trying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-        m_previousState = Trying;
-        emit stateChanged(m_state);
-    }
+    m_state = Trying;
+    emit stateChanged(m_state);
 }
 
 void SyncClient::fsmTryingSyncStateUpEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event SYNC STATE UP");
+        DEBUG_TAG(1, m_debugName, "Event SYNC STATE UP");
 #endif
-
-    m_state = Syncing;
-    sendSync();
-    startSubChannel();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmSyncing();
+        emit fsmSyncingEntered(QPrivateSignal());
+        // execute actions
+        sendSync();
+        startSubChannel();
+     }
 }
 
 void SyncClient::fsmTryingStopEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event STOP");
+        DEBUG_TAG(1, m_debugName, "Event STOP");
 #endif
-
-    m_state = Down;
-    stopSyncChannel();
-    stopSubChannel();
-    stopPubChannel();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopSyncChannel();
+        stopSubChannel();
+        stopPubChannel();
+     }
 }
 
-void SyncClient::fsmSyncingEntered()
+void SyncClient::fsmSyncing()
 {
-    if (m_previousState != Syncing)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCING");
 #endif
-        m_previousState = Syncing;
-        emit stateChanged(m_state);
-    }
+    m_state = Syncing;
+    emit stateChanged(m_state);
 }
 
 void SyncClient::fsmSyncingSyncStateTryingEvent()
 {
+    if (m_state == Syncing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event SYNC STATE TRYING");
+        DEBUG_TAG(1, m_debugName, "Event SYNC STATE TRYING");
 #endif
-
-    m_state = Trying;
-    stopSubChannel();
+        // handle state change
+        emit fsmSyncingExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        stopSubChannel();
+     }
 }
 
 void SyncClient::fsmSyncingSubStateUpEvent()
 {
+    if (m_state == Syncing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event SUB STATE UP");
+        DEBUG_TAG(1, m_debugName, "Event SUB STATE UP");
 #endif
-
-    m_state = Synced;
-    synced();
+        // handle state change
+        emit fsmSyncingExited(QPrivateSignal());
+        fsmSynced();
+        emit fsmSyncedEntered(QPrivateSignal());
+        // execute actions
+        synced();
+     }
 }
 
 void SyncClient::fsmSyncingStopEvent()
 {
+    if (m_state == Syncing)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event STOP");
+        DEBUG_TAG(1, m_debugName, "Event STOP");
 #endif
-
-    m_state = Down;
-    stopSyncChannel();
-    stopSubChannel();
-    stopPubChannel();
+        // handle state change
+        emit fsmSyncingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopSyncChannel();
+        stopSubChannel();
+        stopPubChannel();
+     }
 }
 
-void SyncClient::fsmSyncedEntered()
+void SyncClient::fsmSynced()
 {
-    if (m_previousState != Synced)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCED");
 #endif
-        m_previousState = Synced;
-        emit stateChanged(m_state);
-    }
+    m_state = Synced;
+    emit stateChanged(m_state);
 }
 
 void SyncClient::fsmSyncedSubStateTryingEvent()
 {
+    if (m_state == Synced)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event SUB STATE TRYING");
+        DEBUG_TAG(1, m_debugName, "Event SUB STATE TRYING");
 #endif
-
-    m_state = Syncing;
-    sendSync();
+        // handle state change
+        emit fsmSyncedExited(QPrivateSignal());
+        fsmSyncing();
+        emit fsmSyncingEntered(QPrivateSignal());
+        // execute actions
+        sendSync();
+     }
 }
 
 void SyncClient::fsmSyncedSyncStateTryingEvent()
 {
+    if (m_state == Synced)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event SYNC STATE TRYING");
+        DEBUG_TAG(1, m_debugName, "Event SYNC STATE TRYING");
 #endif
-
-    m_state = Trying;
-    stopSubChannel();
+        // handle state change
+        emit fsmSyncedExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        stopSubChannel();
+     }
 }
 
 void SyncClient::fsmSyncedStopEvent()
 {
+    if (m_state == Synced)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event STOP");
+        DEBUG_TAG(1, m_debugName, "Event STOP");
 #endif
-
-    m_state = Down;
-    stopSyncChannel();
-    stopSubChannel();
-    stopPubChannel();
+        // handle state change
+        emit fsmSyncedExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopSyncChannel();
+        stopSubChannel();
+        stopPubChannel();
+     }
 }
 
 void SyncClient::syncChannelStateChanged(machinetalk::RpcClient::State state)
@@ -370,11 +366,11 @@ void SyncClient::syncChannelStateChanged(machinetalk::RpcClient::State state)
     {
         if (m_state == Syncing)
         {
-            emit fsmSyncingSyncStateTrying();
+            emit fsmSyncingSyncStateTrying(QPrivateSignal());
         }
         if (m_state == Synced)
         {
-            emit fsmSyncedSyncStateTrying();
+            emit fsmSyncedSyncStateTrying(QPrivateSignal());
         }
     }
 
@@ -382,7 +378,7 @@ void SyncClient::syncChannelStateChanged(machinetalk::RpcClient::State state)
     {
         if (m_state == Trying)
         {
-            emit fsmTryingSyncStateUp();
+            emit fsmTryingSyncStateUp(QPrivateSignal());
         }
     }
 }
@@ -394,7 +390,7 @@ void SyncClient::subChannelStateChanged(machinetalk::Subscribe::State state)
     {
         if (m_state == Synced)
         {
-            emit fsmSyncedSubStateTrying();
+            emit fsmSyncedSubStateTrying(QPrivateSignal());
         }
     }
 
@@ -402,42 +398,30 @@ void SyncClient::subChannelStateChanged(machinetalk::Subscribe::State state)
     {
         if (m_state == Syncing)
         {
-            emit fsmSyncingSubStateUp();
+            emit fsmSyncingSubStateUp(QPrivateSignal());
         }
     }
 }
 
-/** start trigger */
+/** start trigger function */
 void SyncClient::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void SyncClient::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownStart();
+        emit fsmDownStart(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void SyncClient::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void SyncClient::stopSlot()
-{
     if (m_state == Trying) {
-        emit fsmTryingStop();
+        emit fsmTryingStop(QPrivateSignal());
     }
     if (m_state == Syncing) {
-        emit fsmSyncingStop();
+        emit fsmSyncingStop(QPrivateSignal());
     }
     if (m_state == Synced) {
-        emit fsmSyncedStop();
+        emit fsmSyncedStop(QPrivateSignal());
     }
 }
 }; // namespace machinetalk

@@ -27,58 +27,24 @@ PreviewSubscribe::PreviewSubscribe(QObject *parent) :
     m_socket(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
 {
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &PreviewSubscribe::fsmDownEntered, Qt::QueuedConnection);
-    QState *tryingState = new QState(m_fsm);
-    connect(tryingState, &QState::entered, this, &PreviewSubscribe::fsmTryingEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &PreviewSubscribe::fsmUpEntered, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
     connect(this, &PreviewSubscribe::fsmDownConnect,
-            this, &PreviewSubscribe::fsmDownConnectQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &PreviewSubscribe::fsmDownConnectQueued, tryingState);
+            this, &PreviewSubscribe::fsmDownConnectEvent);
     connect(this, &PreviewSubscribe::fsmTryingConnected,
-            this, &PreviewSubscribe::fsmTryingConnectedQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &PreviewSubscribe::fsmTryingConnectedQueued, upState);
+            this, &PreviewSubscribe::fsmTryingConnectedEvent);
     connect(this, &PreviewSubscribe::fsmTryingDisconnect,
-            this, &PreviewSubscribe::fsmTryingDisconnectQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &PreviewSubscribe::fsmTryingDisconnectQueued, downState);
+            this, &PreviewSubscribe::fsmTryingDisconnectEvent);
     connect(this, &PreviewSubscribe::fsmUpMessageReceived,
-            this, &PreviewSubscribe::fsmUpMessageReceivedQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &PreviewSubscribe::fsmUpMessageReceivedQueued, upState);
+            this, &PreviewSubscribe::fsmUpMessageReceivedEvent);
     connect(this, &PreviewSubscribe::fsmUpDisconnect,
-            this, &PreviewSubscribe::fsmUpDisconnectQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &PreviewSubscribe::fsmUpDisconnectQueued, downState);
-
-    connect(this, &PreviewSubscribe::fsmDownConnect,
-            this, &PreviewSubscribe::fsmDownConnectEvent, Qt::QueuedConnection);
-    connect(this, &PreviewSubscribe::fsmTryingConnected,
-            this, &PreviewSubscribe::fsmTryingConnectedEvent, Qt::QueuedConnection);
-    connect(this, &PreviewSubscribe::fsmTryingDisconnect,
-            this, &PreviewSubscribe::fsmTryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &PreviewSubscribe::fsmUpMessageReceived,
-            this, &PreviewSubscribe::fsmUpMessageReceivedEvent, Qt::QueuedConnection);
-    connect(this, &PreviewSubscribe::fsmUpDisconnect,
-            this, &PreviewSubscribe::fsmUpDisconnectEvent, Qt::QueuedConnection);
+            this, &PreviewSubscribe::fsmUpDisconnectEvent);
 
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
             this, &PreviewSubscribe::socketError);
     m_context->start();
-
-     connect(this, &PreviewSubscribe::startSignal,
-             this, &PreviewSubscribe::startSlot, Qt::QueuedConnection);
-     connect(this, &PreviewSubscribe::stopSignal,
-             this, &PreviewSubscribe::stopSlot, Qt::QueuedConnection);
-     connect(this, &PreviewSubscribe::connectedSignal,
-             this, &PreviewSubscribe::connectedSlot, Qt::QueuedConnection);
 }
 
 PreviewSubscribe::~PreviewSubscribe()
@@ -179,7 +145,7 @@ void PreviewSubscribe::processSocketMessage(const QList<QByteArray> &messageList
 
     if (m_state == Up)
     {
-        emit fsmUpMessageReceived();
+        emit fsmUpMessageReceived(QPrivateSignal());
     }
 
     emit socketMessageReceived(topic, rx);
@@ -192,130 +158,129 @@ void PreviewSubscribe::socketError(int errorNum, const QString &errorMsg)
     //updateState(SocketError, errorString);  TODO
 }
 
-void PreviewSubscribe::fsmDownEntered()
+void PreviewSubscribe::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void PreviewSubscribe::fsmDownConnectEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event CONNECT");
 #endif
-
-    m_state = Trying;
-    startSocket();
-    connected();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        startSocket();
+        connected();
+     }
 }
 
-void PreviewSubscribe::fsmTryingEntered()
+void PreviewSubscribe::fsmTrying()
 {
-    if (m_previousState != Trying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-        m_previousState = Trying;
-        emit stateChanged(m_state);
-    }
+    m_state = Trying;
+    emit stateChanged(m_state);
 }
 
 void PreviewSubscribe::fsmTryingConnectedEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECTED");
+        DEBUG_TAG(1, m_debugName, "Event CONNECTED");
 #endif
-
-    m_state = Up;
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void PreviewSubscribe::fsmTryingDisconnectEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopSocket();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopSocket();
+     }
 }
 
-void PreviewSubscribe::fsmUpEntered()
+void PreviewSubscribe::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
 }
 
 void PreviewSubscribe::fsmUpMessageReceivedEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event MESSAGE RECEIVED");
+        DEBUG_TAG(1, m_debugName, "Event MESSAGE RECEIVED");
 #endif
-
-    m_state = Up;
+        // execute actions
+     }
 }
 
 void PreviewSubscribe::fsmUpDisconnectEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopSocket();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopSocket();
+     }
 }
 
-/** start trigger */
+/** start trigger function */
 void PreviewSubscribe::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void PreviewSubscribe::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownConnect();
+        emit fsmDownConnect(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void PreviewSubscribe::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void PreviewSubscribe::stopSlot()
-{
     if (m_state == Up) {
-        emit fsmUpDisconnect();
+        emit fsmUpDisconnect(QPrivateSignal());
     }
 }
 
-/** connected trigger */
+/** connected trigger function */
 void PreviewSubscribe::connected()
 {
-    emit connectedSignal(QPrivateSignal());
-}
-
-/** connected queued trigger function */
-void PreviewSubscribe::connectedSlot()
-{
     if (m_state == Trying) {
-        emit fsmTryingConnected();
+        emit fsmTryingConnected(QPrivateSignal());
     }
 }
 }; // namespace pathview

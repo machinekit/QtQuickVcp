@@ -7,7 +7,6 @@
 #ifndef STATUS_BASE_H
 #define STATUS_BASE_H
 #include <QObject>
-#include <QStateMachine>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -145,7 +144,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_statusRx;
@@ -157,16 +155,18 @@ private slots:
     void statusChannelStateChanged(application::StatusSubscribe::State state);
     void processStatusChannelMessage(const QByteArray &topic, const pb::Container &rx);
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownConnectEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingStatusUpEvent();
     void fsmTryingDisconnectEvent();
-    void fsmSyncingEntered();
+    void fsmSyncing();
     void fsmSyncingChannelsSyncedEvent();
     void fsmSyncingStatusTryingEvent();
     void fsmSyncingDisconnectEvent();
-    void fsmUpEntered();
+    void fsmUp();
+    void fsmUpEntry();
+    void fsmUpExit();
     void fsmUpStatusTryingEvent();
     void fsmUpDisconnectEvent();
 
@@ -175,9 +175,6 @@ private slots:
     virtual void syncStatus() = 0;
     virtual void unsyncStatus() = 0;
     virtual void updateTopics() = 0;
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
-    void channelsSyncedSlot(); // channels synced trigger
 
 signals:
     void statusUriChanged(QString uri);
@@ -188,26 +185,22 @@ signals:
     void statusHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownConnect();
-    void fsmDownConnectQueued();
-    void fsmTryingStatusUp();
-    void fsmTryingStatusUpQueued();
-    void fsmTryingDisconnect();
-    void fsmTryingDisconnectQueued();
-    void fsmSyncingChannelsSynced();
-    void fsmSyncingChannelsSyncedQueued();
-    void fsmSyncingStatusTrying();
-    void fsmSyncingStatusTryingQueued();
-    void fsmSyncingDisconnect();
-    void fsmSyncingDisconnectQueued();
-    void fsmUpStatusTrying();
-    void fsmUpStatusTryingQueued();
-    void fsmUpDisconnect();
-    void fsmUpDisconnectQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
-    void channelsSyncedSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownConnect(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingStatusUp(QPrivateSignal);
+    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmSyncingEntered(QPrivateSignal);
+    void fsmSyncingExited(QPrivateSignal);
+    void fsmSyncingChannelsSynced(QPrivateSignal);
+    void fsmSyncingStatusTrying(QPrivateSignal);
+    void fsmSyncingDisconnect(QPrivateSignal);
+    void fsmUpEntered(QPrivateSignal);
+    void fsmUpExited(QPrivateSignal);
+    void fsmUpStatusTrying(QPrivateSignal);
+    void fsmUpDisconnect(QPrivateSignal);
 };
 }; // namespace application
 #endif //STATUS_BASE_H

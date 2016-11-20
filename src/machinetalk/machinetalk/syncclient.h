@@ -7,7 +7,6 @@
 #ifndef SYNC_CLIENT_H
 #define SYNC_CLIENT_H
 #include <QObject>
-#include <QStateMachine>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -197,7 +196,6 @@ private:
 
     State         m_state;
     State         m_previousState;
-    QStateMachine *m_fsm;
     QString       m_errorString;
     // more efficient to reuse a protobuf Messages
     pb::Container m_syncRx;
@@ -221,22 +219,20 @@ private slots:
     void startPubChannel();
     void stopPubChannel();
 
-    void fsmDownEntered();
+    void fsmDown();
     void fsmDownStartEvent();
-    void fsmTryingEntered();
+    void fsmTrying();
     void fsmTryingSyncStateUpEvent();
     void fsmTryingStopEvent();
-    void fsmSyncingEntered();
+    void fsmSyncing();
     void fsmSyncingSyncStateTryingEvent();
     void fsmSyncingSubStateUpEvent();
     void fsmSyncingStopEvent();
-    void fsmSyncedEntered();
+    void fsmSynced();
     void fsmSyncedSubStateTryingEvent();
     void fsmSyncedSyncStateTryingEvent();
     void fsmSyncedStopEvent();
 
-    void startSlot(); // start trigger
-    void stopSlot(); // stop trigger
 
 signals:
     void syncUriChanged(QString uri);
@@ -252,27 +248,23 @@ signals:
     void pubHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
-    void fsmDownStart();
-    void fsmDownStartQueued();
-    void fsmTryingSyncStateUp();
-    void fsmTryingSyncStateUpQueued();
-    void fsmTryingStop();
-    void fsmTryingStopQueued();
-    void fsmSyncingSyncStateTrying();
-    void fsmSyncingSyncStateTryingQueued();
-    void fsmSyncingSubStateUp();
-    void fsmSyncingSubStateUpQueued();
-    void fsmSyncingStop();
-    void fsmSyncingStopQueued();
-    void fsmSyncedSubStateTrying();
-    void fsmSyncedSubStateTryingQueued();
-    void fsmSyncedSyncStateTrying();
-    void fsmSyncedSyncStateTryingQueued();
-    void fsmSyncedStop();
-    void fsmSyncedStopQueued();
-    // trigger signals
-    void startSignal(QPrivateSignal dummy);
-    void stopSignal(QPrivateSignal dummy);
+    void fsmDownEntered(QPrivateSignal);
+    void fsmDownExited(QPrivateSignal);
+    void fsmDownStart(QPrivateSignal);
+    void fsmTryingEntered(QPrivateSignal);
+    void fsmTryingExited(QPrivateSignal);
+    void fsmTryingSyncStateUp(QPrivateSignal);
+    void fsmTryingStop(QPrivateSignal);
+    void fsmSyncingEntered(QPrivateSignal);
+    void fsmSyncingExited(QPrivateSignal);
+    void fsmSyncingSyncStateTrying(QPrivateSignal);
+    void fsmSyncingSubStateUp(QPrivateSignal);
+    void fsmSyncingStop(QPrivateSignal);
+    void fsmSyncedEntered(QPrivateSignal);
+    void fsmSyncedExited(QPrivateSignal);
+    void fsmSyncedSubStateTrying(QPrivateSignal);
+    void fsmSyncedSyncStateTrying(QPrivateSignal);
+    void fsmSyncedStop(QPrivateSignal);
 };
 }; // namespace machinetalk
 #endif //SYNC_CLIENT_H

@@ -27,7 +27,6 @@ CommandBase::CommandBase(QObject *parent) :
     m_commandChannel(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
 {
     // initialize command channel
@@ -42,50 +41,21 @@ CommandBase::CommandBase(QObject *parent) :
 
     connect(m_commandChannel, &machinetalk::RpcClient::heartbeatIntervalChanged,
             this, &CommandBase::commandHeartbeatIntervalChanged);
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &CommandBase::fsmDownEntered, Qt::QueuedConnection);
-    QState *tryingState = new QState(m_fsm);
-    connect(tryingState, &QState::entered, this, &CommandBase::fsmTryingEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &CommandBase::fsmUpEntered, Qt::QueuedConnection);
-    connect(upState, &QState::entered, this, &CommandBase::setConnected, Qt::QueuedConnection);
-    connect(upState, &QState::exited, this, &CommandBase::clearConnected, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
+    connect(this, &CommandBase::fsmUpEntered,
+            this, &CommandBase::fsmUpEntry);
+    connect(this, &CommandBase::fsmUpExited,
+            this, &CommandBase::fsmUpExit);
     connect(this, &CommandBase::fsmDownConnect,
-            this, &CommandBase::fsmDownConnectQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &CommandBase::fsmDownConnectQueued, tryingState);
+            this, &CommandBase::fsmDownConnectEvent);
     connect(this, &CommandBase::fsmTryingCommandUp,
-            this, &CommandBase::fsmTryingCommandUpQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &CommandBase::fsmTryingCommandUpQueued, upState);
+            this, &CommandBase::fsmTryingCommandUpEvent);
     connect(this, &CommandBase::fsmTryingDisconnect,
-            this, &CommandBase::fsmTryingDisconnectQueued, Qt::QueuedConnection);
-    tryingState->addTransition(this, &CommandBase::fsmTryingDisconnectQueued, downState);
+            this, &CommandBase::fsmTryingDisconnectEvent);
     connect(this, &CommandBase::fsmUpCommandTrying,
-            this, &CommandBase::fsmUpCommandTryingQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &CommandBase::fsmUpCommandTryingQueued, tryingState);
+            this, &CommandBase::fsmUpCommandTryingEvent);
     connect(this, &CommandBase::fsmUpDisconnect,
-            this, &CommandBase::fsmUpDisconnectQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &CommandBase::fsmUpDisconnectQueued, downState);
-
-    connect(this, &CommandBase::fsmDownConnect,
-            this, &CommandBase::fsmDownConnectEvent, Qt::QueuedConnection);
-    connect(this, &CommandBase::fsmTryingCommandUp,
-            this, &CommandBase::fsmTryingCommandUpEvent, Qt::QueuedConnection);
-    connect(this, &CommandBase::fsmTryingDisconnect,
-            this, &CommandBase::fsmTryingDisconnectEvent, Qt::QueuedConnection);
-    connect(this, &CommandBase::fsmUpCommandTrying,
-            this, &CommandBase::fsmUpCommandTryingEvent, Qt::QueuedConnection);
-    connect(this, &CommandBase::fsmUpDisconnect,
-            this, &CommandBase::fsmUpDisconnectEvent, Qt::QueuedConnection);
-
-     connect(this, &CommandBase::startSignal,
-             this, &CommandBase::startSlot, Qt::QueuedConnection);
-     connect(this, &CommandBase::stopSignal,
-             this, &CommandBase::stopSlot, Qt::QueuedConnection);
+            this, &CommandBase::fsmUpDisconnectEvent);
 }
 
 CommandBase::~CommandBase()
@@ -372,90 +342,119 @@ void CommandBase::sendShutdown(pb::Container &tx)
     sendCommandMessage(pb::MT_SHUTDOWN, tx);
 }
 
-void CommandBase::fsmDownEntered()
+void CommandBase::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void CommandBase::fsmDownConnectEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event CONNECT");
 #endif
-
-    m_state = Trying;
-    startCommandChannel();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+        startCommandChannel();
+     }
 }
 
-void CommandBase::fsmTryingEntered()
+void CommandBase::fsmTrying()
 {
-    if (m_previousState != Trying)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-        m_previousState = Trying;
-        emit stateChanged(m_state);
-    }
+    m_state = Trying;
+    emit stateChanged(m_state);
 }
 
 void CommandBase::fsmTryingCommandUpEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event COMMAND UP");
+        DEBUG_TAG(1, m_debugName, "Event COMMAND UP");
 #endif
-
-    m_state = Up;
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void CommandBase::fsmTryingDisconnectEvent()
 {
+    if (m_state == Trying)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopCommandChannel();
-    clearConnected();
+        // handle state change
+        emit fsmTryingExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopCommandChannel();
+        clearConnected();
+     }
 }
 
-void CommandBase::fsmUpEntered()
+void CommandBase::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
+}
+void CommandBase::fsmUpEntry()
+{
+    setConnected();
+}
+void CommandBase::fsmUpExit()
+{
+    clearConnected();
 }
 
 void CommandBase::fsmUpCommandTryingEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event COMMAND TRYING");
+        DEBUG_TAG(1, m_debugName, "Event COMMAND TRYING");
 #endif
-
-    m_state = Trying;
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmTrying();
+        emit fsmTryingEntered(QPrivateSignal());
+        // execute actions
+     }
 }
 
 void CommandBase::fsmUpDisconnectEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
 #endif
-
-    m_state = Down;
-    stopCommandChannel();
-    clearConnected();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopCommandChannel();
+        clearConnected();
+     }
 }
 
 void CommandBase::commandChannelStateChanged(machinetalk::RpcClient::State state)
@@ -465,7 +464,7 @@ void CommandBase::commandChannelStateChanged(machinetalk::RpcClient::State state
     {
         if (m_state == Up)
         {
-            emit fsmUpCommandTrying();
+            emit fsmUpCommandTrying(QPrivateSignal());
         }
     }
 
@@ -473,39 +472,27 @@ void CommandBase::commandChannelStateChanged(machinetalk::RpcClient::State state
     {
         if (m_state == Trying)
         {
-            emit fsmTryingCommandUp();
+            emit fsmTryingCommandUp(QPrivateSignal());
         }
     }
 }
 
-/** start trigger */
+/** start trigger function */
 void CommandBase::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void CommandBase::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownConnect();
+        emit fsmDownConnect(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void CommandBase::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void CommandBase::stopSlot()
-{
     if (m_state == Trying) {
-        emit fsmTryingDisconnect();
+        emit fsmTryingDisconnect(QPrivateSignal());
     }
     if (m_state == Up) {
-        emit fsmUpDisconnect();
+        emit fsmUpDisconnect(QPrivateSignal());
     }
 }
 }; // namespace application

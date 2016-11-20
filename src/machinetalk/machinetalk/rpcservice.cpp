@@ -27,44 +27,20 @@ RpcService::RpcService(QObject *parent) :
     m_socket(nullptr),
     m_state(Down),
     m_previousState(Down),
-    m_fsm(nullptr),
     m_errorString("")
 {
-
-    m_fsm = new QStateMachine(this);
-    QState *downState = new QState(m_fsm);
-    connect(downState, &QState::entered, this, &RpcService::fsmDownEntered, Qt::QueuedConnection);
-    QState *upState = new QState(m_fsm);
-    connect(upState, &QState::entered, this, &RpcService::fsmUpEntered, Qt::QueuedConnection);
-    m_fsm->setInitialState(downState);
-    m_fsm->start();
-
+    // state machine
     connect(this, &RpcService::fsmDownStart,
-            this, &RpcService::fsmDownStartQueued, Qt::QueuedConnection);
-    downState->addTransition(this, &RpcService::fsmDownStartQueued, upState);
+            this, &RpcService::fsmDownStartEvent);
     connect(this, &RpcService::fsmUpPingReceived,
-            this, &RpcService::fsmUpPingReceivedQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &RpcService::fsmUpPingReceivedQueued, upState);
+            this, &RpcService::fsmUpPingReceivedEvent);
     connect(this, &RpcService::fsmUpStop,
-            this, &RpcService::fsmUpStopQueued, Qt::QueuedConnection);
-    upState->addTransition(this, &RpcService::fsmUpStopQueued, downState);
-
-    connect(this, &RpcService::fsmDownStart,
-            this, &RpcService::fsmDownStartEvent, Qt::QueuedConnection);
-    connect(this, &RpcService::fsmUpPingReceived,
-            this, &RpcService::fsmUpPingReceivedEvent, Qt::QueuedConnection);
-    connect(this, &RpcService::fsmUpStop,
-            this, &RpcService::fsmUpStopEvent, Qt::QueuedConnection);
+            this, &RpcService::fsmUpStopEvent);
 
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
             this, &RpcService::socketError);
     m_context->start();
-
-     connect(this, &RpcService::startSignal,
-             this, &RpcService::startSlot, Qt::QueuedConnection);
-     connect(this, &RpcService::stopSignal,
-             this, &RpcService::stopSlot, Qt::QueuedConnection);
 }
 
 RpcService::~RpcService()
@@ -135,7 +111,7 @@ void RpcService::processSocketMessage(const QList<QByteArray> &messageList)
 
         if (m_state == Up)
         {
-            emit fsmUpPingReceived();
+            emit fsmUpPingReceived(QPrivateSignal());
         }
         return; // ping is uninteresting
     }
@@ -180,85 +156,81 @@ void RpcService::socketError(int errorNum, const QString &errorMsg)
     //updateState(SocketError, errorString);  TODO
 }
 
-void RpcService::fsmDownEntered()
+void RpcService::fsmDown()
 {
-    if (m_previousState != Down)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-        m_previousState = Down;
-        emit stateChanged(m_state);
-    }
+    m_state = Down;
+    emit stateChanged(m_state);
 }
 
 void RpcService::fsmDownStartEvent()
 {
+    if (m_state == Down)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event START");
+        DEBUG_TAG(1, m_debugName, "Event START");
 #endif
-
-    m_state = Up;
-    startSocket();
+        // handle state change
+        emit fsmDownExited(QPrivateSignal());
+        fsmUp();
+        emit fsmUpEntered(QPrivateSignal());
+        // execute actions
+        startSocket();
+     }
 }
 
-void RpcService::fsmUpEntered()
+void RpcService::fsmUp()
 {
-    if (m_previousState != Up)
-    {
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-        m_previousState = Up;
-        emit stateChanged(m_state);
-    }
+    m_state = Up;
+    emit stateChanged(m_state);
 }
 
 void RpcService::fsmUpPingReceivedEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event PING RECEIVED");
+        DEBUG_TAG(1, m_debugName, "Event PING RECEIVED");
 #endif
-
-    m_state = Up;
-    sendPingAcknowledge();
+        // execute actions
+        sendPingAcknowledge();
+     }
 }
 
 void RpcService::fsmUpStopEvent()
 {
+    if (m_state == Up)
+    {
 #ifdef QT_DEBUG
-    DEBUG_TAG(1, m_debugName, "Event STOP");
+        DEBUG_TAG(1, m_debugName, "Event STOP");
 #endif
-
-    m_state = Down;
-    stopSocket();
+        // handle state change
+        emit fsmUpExited(QPrivateSignal());
+        fsmDown();
+        emit fsmDownEntered(QPrivateSignal());
+        // execute actions
+        stopSocket();
+     }
 }
 
-/** start trigger */
+/** start trigger function */
 void RpcService::start()
 {
-    emit startSignal(QPrivateSignal());
-}
-
-/** start queued trigger function */
-void RpcService::startSlot()
-{
     if (m_state == Down) {
-        emit fsmDownStart();
+        emit fsmDownStart(QPrivateSignal());
     }
 }
 
-/** stop trigger */
+/** stop trigger function */
 void RpcService::stop()
 {
-    emit stopSignal(QPrivateSignal());
-}
-
-/** stop queued trigger function */
-void RpcService::stopSlot()
-{
     if (m_state == Up) {
-        emit fsmUpStop();
+        emit fsmUpStop(QPrivateSignal());
     }
 }
 }; // namespace machinetalk
