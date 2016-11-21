@@ -41,8 +41,9 @@ public:
         Bind = 2,
         Binding = 3,
         Syncing = 4,
-        Synced = 5,
-        Error = 6,
+        Sync = 5,
+        Synced = 6,
+        Error = 7,
     };
 
     void classBegin() {}
@@ -161,6 +162,7 @@ public slots:
 
 protected:
     void noBind(); // no bind trigger
+    void pinsSynced(); // pins synced trigger
     void start(); // start trigger
     void stop(); // stop trigger
 
@@ -213,6 +215,8 @@ private slots:
     void fsmSyncingHalrcompUpEvent();
     void fsmSyncingSyncFailedEvent();
     void fsmSyncingDisconnectEvent();
+    void fsmSync();
+    void fsmSyncPinsSyncedEvent();
     void fsmSynced();
     void fsmSyncedEntry();
     void fsmSyncedHalrcompTryingEvent();
@@ -272,6 +276,9 @@ signals:
     void fsmSyncingHalrcompUp(QPrivateSignal);
     void fsmSyncingSyncFailed(QPrivateSignal);
     void fsmSyncingDisconnect(QPrivateSignal);
+    void fsmSyncEntered(QPrivateSignal);
+    void fsmSyncExited(QPrivateSignal);
+    void fsmSyncPinsSynced(QPrivateSignal);
     void fsmSyncedEntered(QPrivateSignal);
     void fsmSyncedExited(QPrivateSignal);
     void fsmSyncedHalrcompTrying(QPrivateSignal);

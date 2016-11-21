@@ -89,6 +89,8 @@ RemoteComponentBase::RemoteComponentBase(QObject *parent) :
             this, &RemoteComponentBase::fsmSyncingSyncFailedEvent);
     connect(this, &RemoteComponentBase::fsmSyncingDisconnect,
             this, &RemoteComponentBase::fsmSyncingDisconnectEvent);
+    connect(this, &RemoteComponentBase::fsmSyncPinsSynced,
+            this, &RemoteComponentBase::fsmSyncPinsSyncedEvent);
     connect(this, &RemoteComponentBase::fsmSyncedHalrcompTrying,
             this, &RemoteComponentBase::fsmSyncedHalrcompTryingEvent);
     connect(this, &RemoteComponentBase::fsmSyncedHalrcmdTrying,
@@ -492,8 +494,8 @@ void RemoteComponentBase::fsmSyncingHalrcompUpEvent()
 #endif
         // handle state change
         emit fsmSyncingExited(QPrivateSignal());
-        fsmSynced();
-        emit fsmSyncedEntered(QPrivateSignal());
+        fsmSync();
+        emit fsmSyncEntered(QPrivateSignal());
         // execute actions
      }
 }
@@ -530,6 +532,30 @@ void RemoteComponentBase::fsmSyncingDisconnectEvent()
         stopHalrcmdChannel();
         stopHalrcompChannel();
         removePins();
+     }
+}
+
+void RemoteComponentBase::fsmSync()
+{
+#ifdef QT_DEBUG
+    DEBUG_TAG(1, m_debugName, "State SYNC");
+#endif
+    m_state = Sync;
+    emit stateChanged(m_state);
+}
+
+void RemoteComponentBase::fsmSyncPinsSyncedEvent()
+{
+    if (m_state == Sync)
+    {
+#ifdef QT_DEBUG
+        DEBUG_TAG(1, m_debugName, "Event PINS SYNCED");
+#endif
+        // handle state change
+        emit fsmSyncExited(QPrivateSignal());
+        fsmSynced();
+        emit fsmSyncedEntered(QPrivateSignal());
+        // execute actions
      }
 }
 
@@ -711,6 +737,14 @@ void RemoteComponentBase::noBind()
 {
     if (m_state == Bind) {
         emit fsmBindNoBind(QPrivateSignal());
+    }
+}
+
+/** pins synced trigger function */
+void RemoteComponentBase::pinsSynced()
+{
+    if (m_state == Sync) {
+        emit fsmSyncPinsSynced(QPrivateSignal());
     }
 }
 

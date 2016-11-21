@@ -455,6 +455,8 @@ void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic,cons
     {
         emit pinsChanged(pins());
     }
+
+    pinsSynced(); // accept that pins have been synced
 }
 
 void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx)
