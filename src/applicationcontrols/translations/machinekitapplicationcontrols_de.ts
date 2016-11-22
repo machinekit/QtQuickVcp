@@ -5,11 +5,12 @@
     <name>AppPage</name>
     <message>
         <source>QML Error:</source>
-        <translation type="unfinished"></translation>
+        <translation>QML Fehler</translation>
     </message>
     <message>
         <source>Loading QML file failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Laden der QML Datei fehlgeschlagen
+</translation>
     </message>
 </context>
 <context>
@@ -108,15 +109,15 @@
     <name>ConfigPage</name>
     <message>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Zurück</translation>
     </message>
     <message>
         <source>Remote UIs</source>
-        <translation type="unfinished"></translation>
+        <translation>Remote UIs</translation>
     </message>
     <message>
         <source>Local UIs</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokale UIs</translation>
     </message>
 </context>
 <context>
@@ -238,27 +239,27 @@
     <name>InstancePage</name>
     <message>
         <source>Multicast</source>
-        <translation type="unfinished"></translation>
+        <translation>Multicast</translation>
     </message>
     <message>
         <source>Available Instances:</source>
-        <translation type="unfinished"></translation>
+        <translation>Verfügbare Instanzen:</translation>
     </message>
     <message>
         <source>Unicast</source>
-        <translation type="unfinished"></translation>
+        <translation>Unicast</translation>
     </message>
     <message>
         <source>Machinekit Instances:</source>
-        <translation type="unfinished"></translation>
+        <translation>Machinekit Instanzen:</translation>
     </message>
     <message>
         <source>Instance %1:</source>
-        <translation type="unfinished"></translation>
+        <translation>Instanz %1:</translation>
     </message>
     <message>
         <source>IP address or hostname</source>
-        <translation type="unfinished"></translation>
+        <translation>IP Adresse oder Hostname</translation>
     </message>
 </context>
 <context>
@@ -307,7 +308,7 @@
     </message>
     <message>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zurück</translation>
     </message>
     <message>
         <source>Terminating...</source>
@@ -330,7 +331,7 @@
     <name>LoadingPage</name>
     <message>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zurück</translation>
     </message>
     <message>
         <source>Loading %1...</source>
@@ -466,49 +467,49 @@
     <name>SelectedPage</name>
     <message>
         <source>Starting %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>Starte %1...</translation>
     </message>
     <message>
         <source>Error starting %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim starten von %1</translation>
     </message>
     <message>
         <source>%1 exited</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 geschlossen</translation>
     </message>
     <message>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Zurück</translation>
     </message>
     <message>
         <source>Process exited with return code %1. See the log for details.</source>
-        <translation type="unfinished"></translation>
+        <translation>Prozess beendet mit Rückgabewert %1. Siehe Log für Details.</translation>
     </message>
 </context>
 <context>
     <name>ServiceWindow</name>
     <message>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Zurück</translation>
     </message>
     <message>
         <source>Waiting for services to appear...</source>
-        <translation type="unfinished"></translation>
+        <translation>Warte auf erscheinen der Dienste...</translation>
     </message>
     <message>
         <source>%1 service</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Dienst</translation>
     </message>
 </context>
 <context>
     <name>ShutdownAction</name>
     <message>
         <source>Sh&amp;utdown</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Herunterfahren</translation>
     </message>
     <message>
         <source>Shutdown Machinekit instance [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Machinekit Instanz herunterfahren [%1]</translation>
     </message>
 </context>
 <context>

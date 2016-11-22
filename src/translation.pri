@@ -1,4 +1,3 @@
-TARGETPATH = $$replace(uri, \\., /)
 LANGUAGES = en ru de
 OUTPUT_DIR = $$OUT_PWD/../../translations
 
