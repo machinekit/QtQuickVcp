@@ -69,6 +69,10 @@ void MachinekitHalRemoteControlsPlugin::initializeEngine(QQmlEngine *engine, con
 
     if (isLoadedFromResource())
         engine->addImportPath(QStringLiteral("qrc:/"));
+
+    if (m_translator.load(QLocale(), QLatin1String("machinekithalremotecontrols"),
+                          QLatin1String("_"), QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+    QCoreApplication::installTranslator(&m_translator);
 }
 
 QString MachinekitHalRemoteControlsPlugin::fileLocation() const
