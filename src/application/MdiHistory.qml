@@ -48,9 +48,12 @@ QtObject {
     }
 
     function add(command) {
-        var tmpModel = JSON.parse(JSON.stringify(model)); // copy array
-        tmpModel.push({ "command": command });
-        settings.setValue("mdi.history", tmpModel);
+        var lastCommand = (model.length > 0) ? model[model.length - 1].command : ""
+        if (command !== lastCommand) {
+            var tmpModel = JSON.parse(JSON.stringify(model)); // copy array
+            tmpModel.push({ "command": command });
+            settings.setValue("mdi.history", tmpModel);
+        }
     }
 
     function remove(index) {
