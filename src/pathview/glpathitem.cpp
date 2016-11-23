@@ -37,6 +37,7 @@ GLPathItem::GLPathItem(QQuickItem *parent) :
     m_backplotTraverseColor(QColor(Qt::yellow)),
     m_selectedColor(QColor(Qt::magenta)),
     m_activeColor(QColor(Qt::red)),
+    m_lineWidth(1.0),
     m_traverseLineStippleLength(1.0),
     m_needsFullUpdate(true),
     m_minimumExtents(QVector3D(0, 0, 0)),
@@ -56,6 +57,8 @@ GLPathItem::GLPathItem(QQuickItem *parent) :
             this, &GLPathItem::triggerFullUpdate);
     connect(this, &GLPathItem::visibleChanged,
             this, &GLPathItem::triggerFullUpdate);
+    connect(this, &GLPathItem::lineWidthChanged,
+            this, &GLPathItem::triggerFullUpdate);
 }
 
 GLPathItem::~GLPathItem()
@@ -69,6 +72,7 @@ void GLPathItem::paint(GLView *glView)
     {
         glView->prepare(this);
         glView->reset();
+        glView->lineWidth(m_lineWidth);
         glView->beginUnion();
 
         for (int i = 0; i < m_previewPathItems.size(); ++i)
@@ -203,6 +207,11 @@ QVector3D GLPathItem::maximumExtents() const
     return m_maximumExtents;
 }
 
+float GLPathItem::lineWidth() const
+{
+    return m_lineWidth;
+}
+
 float GLPathItem::traverseLineStippleLength() const
 {
     return m_traverseLineStippleLength;
@@ -321,6 +330,14 @@ void GLPathItem::setActiveColor(QColor arg)
     if (m_activeColor != arg) {
         m_activeColor = arg;
         emit activeColorChanged(arg);
+    }
+}
+
+void GLPathItem::setLineWidth(float arg)
+{
+    if (m_lineWidth != arg) {
+        m_lineWidth = arg;
+        emit lineWidthChanged(arg);
     }
 }
 

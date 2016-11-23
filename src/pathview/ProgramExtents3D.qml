@@ -32,6 +32,7 @@ Canvas3D {
     readonly property bool valid: minimum !== maximum
     property vector3d limitMaximum: Qt.vector3d(1.5, 3.0, 2.5)
     property vector3d limitMinimum: Qt.vector3d(0.0, 0.0, 0.0)
+    property real lineWidth: 1.0
     property color color: "magenta"
     property color limitColor: "red"
     property real textSize: 0.5
@@ -98,6 +99,7 @@ Canvas3D {
         }
 
         context.color(root.color);
+        context.lineWidth(root.lineWidth);
         context.beginUnion();
 
             if (xAxisVisible)

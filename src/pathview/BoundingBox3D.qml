@@ -30,6 +30,7 @@ Canvas3D {
     readonly property vector3d size: maximum.minus(minimum)
     readonly property vector3d center: minimum.plus(maximum).times(0.5)
     property color color: "red"
+    property real lineWidth: 1.0
     property bool lineStipple: true
     property real lineStippleLength: (size.length()  / 20.0)
 
@@ -40,6 +41,7 @@ Canvas3D {
         context.prepare(this);
         context.reset();
         context.lineStipple(root.lineStipple, root.lineStippleLength);
+        context.lineWidth(root.lineWidth);
         context.color(root.color);
         context.translate(minimum);
         context.beginUnion();
@@ -72,5 +74,6 @@ Canvas3D {
         onColorChanged.connect(needsUpdate);
         onLineStippleChanged.connect(needsUpdate);
         onLineStippleLengthChanged.connect(needsUpdate);
+        onLineWidthChanged.connect(needsUpdate);
     }
 }
