@@ -43,6 +43,7 @@ class GLPathItem : public GLItem
     Q_PROPERTY(GCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(QVector3D minimumExtents READ minimumExtents NOTIFY minimumExtentsChanged)
     Q_PROPERTY(QVector3D maximumExtents READ maximumExtents NOTIFY maximumExtentsChanged)
+    Q_PROPERTY(float lineWidth READ lineWidth WRITE setLineWidth NOTIFY lineWidthChanged)
     Q_PROPERTY(float traverseLineStippleLength READ traverseLineStippleLength WRITE setTraverseLineStippleLength NOTIFY traverseLineStippleLengthChanged)
 
 public:
@@ -62,6 +63,7 @@ public:
     QColor activeColor() const;
     QVector3D minimumExtents() const;
     QVector3D maximumExtents() const;
+    float lineWidth() const;
     float traverseLineStippleLength() const;
 
 public slots:
@@ -76,6 +78,7 @@ public slots:
     void setBackplotStraightFeedColor(QColor arg);
     void setBackplotTraverseColor(QColor arg);
     void setActiveColor(QColor arg);
+    void setLineWidth(float arg);
     void setTraverseLineStippleLength(float arg);
 
 private:
@@ -172,6 +175,7 @@ private:
     QColor m_backplotTraverseColor;
     QColor m_selectedColor;
     QColor m_activeColor;
+    float m_lineWidth;
     float m_traverseLineStippleLength;
 
     Offsets m_activeOffsets;
@@ -227,6 +231,7 @@ signals:
     void backplotArcFeedColorChanged(QColor arg);
     void backplotStraightFeedColorChanged(QColor arg);
     void backplotTraverseColorChanged(QColor arg);
+    void lineWidthChanged(float lineWidth);
     void traverseLineStippleLengthChanged(float traverseLineStippleLength);
 }; // class GLPathItem
 }; // namespace qtquickvcp

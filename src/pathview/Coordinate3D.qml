@@ -27,6 +27,7 @@ Canvas3D {
     property int axes: 3
     property real axesLength: 5.0
     property real textSize: 1.0
+    property real lineWidth: 1.0
     property color xAxisColor: "red"
     property color yAxisColor: "green"
     property color zAxisColor: "blue"
@@ -38,6 +39,7 @@ Canvas3D {
     onPaint: {
         context.prepare(this);
         context.reset();
+        context.lineWidth(root.lineWidth)
         context.beginUnion();
 
         context.color(root.xAxisColor);
