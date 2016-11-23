@@ -8,18 +8,14 @@ import Machinekit.Service 1.0
 Item {
     property bool autoSelectInstance: false
     property var instances: []
-    property var serviceDiscovery: {"lookupMode": ServiceDiscovery.MulticastDNS}
+    property var serviceDiscovery: { "lookupMode": ServiceDiscovery.MulticastDNS }
 
     signal nameServersChanged()
     signal instanceSelected(string uuid)
 
-    function _evaluateAutoSelection() {
-        if (visible && (autoSelectInstance === true) && (instances.length > 0))
-        {
-            var uuid = instances[0].uuid;
-            if (uuid !== "") {
-                instanceSelected(uuid);
-            }
+    onInstancesChanged: {
+        if (!d.evaluateAutoSelection()) {
+            d.assignInstances();
         }
     }
 
@@ -27,10 +23,43 @@ Item {
     width: 1000
     height: 800
 
+    QtObject {
+        id: d
+        property var localInstances: []
+
+        function evaluateAutoSelection() {
+            if (visible && (autoSelectInstance === true) && (instances.length > 0))
+            {
+                var uuid = instances[0].uuid;
+                if (uuid !== "") {
+                    autoSelectionTimer.stop();
+                    autoSelectionTimer.uuid = uuid;
+                    autoSelectionTimer.start();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function assignInstances() {
+            d.localInstances = root.instances;
+        }
+
+    }
+
+    Timer {
+        property string uuid: ""
+        id: autoSelectionTimer
+        interval: 10
+        repeat: false
+        onTriggered: instanceSelected(uuid)
+    }
+
     Button {
         id: dummyButton
         visible: false
     }
+
     Label {
         id: dummyText
         visible: false
@@ -40,10 +69,11 @@ Item {
         id: instanceListView
 
         ListView {
+            id: listView
             spacing: Screen.pixelDensity
             clip: true
 
-            model: root.instances
+            model: d.localInstances
             delegate: Button {
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -78,12 +108,10 @@ Item {
                 onClicked: instanceSelected(root.instances[index].uuid)
             }
 
-            onCountChanged: _evaluateAutoSelection()
-
             BusyIndicator {
                 anchors.centerIn: parent
                 running: true
-                visible: instances.length === 0
+                visible: d.localInstances.length === 0
                 height: Math.min(root.width, root.height) * 0.15
                 width: height
             }

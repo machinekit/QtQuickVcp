@@ -473,7 +473,7 @@ Rectangle {
         anchors.fill: parent
 
         autoSelectInstance: mainWindow.autoSelectInstance
-        instances: d.instanceSelected ? [] : launcherService.items
+        instances: launcherService.items
         serviceDiscovery: serviceDiscovery
 
         onInstanceSelected: mainWindow.selectInstance(uuid)
