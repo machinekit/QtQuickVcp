@@ -61,13 +61,24 @@ Item {
     function checkFile() {
         var remoteFile = "file://" + status.task.file;
         var remotePath = "file://" + status.config.remotePath;
-        if ((remotePath !== "file://")
-                && (remoteFile !== "file://")
-                && (remoteFile.indexOf(remotePath) === 0)
-                && (file.remoteFilePath !== remoteFile))
-        {
+
+        if (file.remoteFilePath === remoteFile) {
+            return; // file did not change
+        }
+
+        if (remotePath === "file://") {
+            return; // remote path is invalid
+        }
+
+        if (remoteFile === "file://") {
+            file.remoteFilePath = remoteFile; // unload program
+        }
+        else if (remoteFile.indexOf(remotePath) === 0) {
             file.remoteFilePath = remoteFile;
-            file.startDownload();
+            file.startDownload(); // only start download when program is open
+        }
+        else {
+            return; // remoteFilePaths stays unchanged (subprogram)
         }
     }
 
