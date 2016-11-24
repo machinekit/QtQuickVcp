@@ -247,7 +247,10 @@ Rectangle {
     function selectApplication(index)
     {
         if (mode === "local") {
-            d.applicationSource = applications[index].mainFile;
+            var application = applications[index];
+            applicationTranslator.localName = application.name;
+                        applicationTranslator.localPath = application.translationsPath;
+            d.applicationSource = application.mainFile;
         }
         else {
             applicationConfig.selectConfig(applicationConfig.configs[index].name);
@@ -566,9 +569,12 @@ Rectangle {
     }
 
     ApplicationTranslator {
+        property string localName: ""
+        property string localPath: ""
+
         id: applicationTranslator
-        applicationName: applicationConfig.selectedConfig.name
-        translationsPath: applicationConfig.selectedConfig.translationsPath
+        applicationName: mainWindow.mode === "local" ? localName : applicationConfig.selectedConfig.name
+        translationsPath: mainWindow.mode === "local" ? localPath : applicationConfig.selectedConfig.translationsPath
 
         onApplicationNameChanged: console.log(applicationName)
         onTranslationsPathChanged: console.log(translationsPath)

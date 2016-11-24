@@ -15,12 +15,28 @@ ApplicationTranslator::ApplicationTranslator(QObject *parent) :
 
 void ApplicationTranslator::updateTranslation()
 {
-    const QString &localPath = m_translationsPath.toLocalFile();
+    QString path;
+    QString name;
 
-    if (!localPath.isEmpty()) {
+    if (m_translationsPath.isLocalFile())
+    {
+        path = m_translationsPath.toLocalFile();
+    }
+    else
+    {
+        path = m_translationsPath.toString();
+        if (path.indexOf("qrc") == 0) {
+            path = path.mid(6);
+            path.prepend(":");
+        }
+    }
+
+    name = m_applicationName.toLower();
+    name.replace(' ', "");
+
+    if (!path.isEmpty()) {
         QCoreApplication::removeTranslator(&m_translator);
-        if (m_translator.load(QLocale(), m_applicationName.toLower(),
-            QLatin1String("_"), localPath))
+        if (m_translator.load(QLocale(), name, QLatin1String("_"), path))
         {
              QCoreApplication::installTranslator(&m_translator);
         }
