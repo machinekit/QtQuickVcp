@@ -41,7 +41,7 @@ RowLayout {
         id: mdiTextField
         Layout.fillWidth: true
 
-        placeholderText: "MDI"
+        placeholderText: qsTr("MDI")
 
         onAccepted: {
             if (text !== "") {
