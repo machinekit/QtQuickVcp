@@ -78,7 +78,9 @@ void MachinekitControlsPlugin::initializeEngine(QQmlEngine *engine, const char *
 
     if (m_translator.load(QLocale(), QLatin1String("machinekitcontrols"),
                           QLatin1String("_"), QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
-    QCoreApplication::installTranslator(&m_translator);
+    {
+        QCoreApplication::installTranslator(&m_translator);
+    }
 }
 
 QString MachinekitControlsPlugin::fileLocation() const

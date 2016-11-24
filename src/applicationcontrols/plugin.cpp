@@ -120,7 +120,9 @@ void MachinekitApplicationControlsPlugin::initializeEngine(QQmlEngine *engine, c
 
     if (m_translator.load(QLocale(), QLatin1String("machinekitapplicationcontrols"),
                           QLatin1String("_"), QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
-    QCoreApplication::installTranslator(&m_translator);
+    {
+        QCoreApplication::installTranslator(&m_translator);
+    }
 }
 
 QString MachinekitApplicationControlsPlugin::fileLocation() const
