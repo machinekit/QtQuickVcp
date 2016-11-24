@@ -310,6 +310,7 @@ void ApplicationConfig::applicationDetailReceived(const Container &rx)
 
             m_selectedConfig->setFiles(fileList);
             m_selectedConfig->setMainFile(applicationDescription.mainFile());
+            m_selectedConfig->setTranslationsPath(applicationDescription.translationsPath());
             m_selectedConfig->setLoaded(true);
             m_selectedConfig->setLoading(false);
         }
@@ -351,6 +352,7 @@ void ApplicationConfig::unselectConfig()
     m_selectedConfig->setDescription("");
     m_selectedConfig->setFiles(QStringList());
     m_selectedConfig->setMainFile(QUrl(""));
+    m_selectedConfig->setTranslationsPath(QUrl(""));
     m_selectedConfig->setLoaded(false);
     m_selectedConfig->setLoading(false);
 }
