@@ -7,5 +7,8 @@
         <file>MachinekitClient.ServiceDisplay/description.ini</file>
         <file>images/logo_text.png</file>
         <file>images/background.png</file>
+        <file>MachinekitClient.ServiceDisplay/translations/servicedisplay_de.qm</file>
+        <file>MachinekitClient.ServiceDisplay/translations/servicedisplay_en.qm</file>
+        <file>MachinekitClient.ServiceDisplay/translations/servicedisplay_ru.qm</file>
     </qresource>
 </RCC>

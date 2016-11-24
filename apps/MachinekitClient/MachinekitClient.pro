@@ -1,5 +1,4 @@
 TEMPLATE = app
-
 TARGET = machinekit-client
 
 # CONFIG += console
@@ -9,6 +8,10 @@ QT += qml quick widgets
 SOURCES += main.cpp
 
 RESOURCES += qml.qrc
+
+QML_FILES = $$PWD/*.qml \
+    $$PWD/MachinekitClient.ServiceDisplay/*.qml
+OTHER_FILES += $$QML_FILES
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -49,6 +52,11 @@ OTHER_FILES += \
     Info.plist \
     mac_Info.plist \
     misc/*.*
+
+NAME = ServiceDisplay
+TRANSLATIONS_PATH = $$PWD/translations
+TRANSLATIONS_OUT_PATH = $$PWD/MachinekitClient.$${NAME}/translations
+include(translation.pri)
 
 linux: !android: {
 target.path = /usr/bin
