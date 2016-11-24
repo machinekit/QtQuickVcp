@@ -565,6 +565,15 @@ Rectangle {
         }
     }
 
+    ApplicationTranslator {
+        id: applicationTranslator
+        applicationName: applicationConfig.selectedConfig.name
+        translationsPath: applicationConfig.selectedConfig.translationsPath
+
+        onApplicationNameChanged: console.log(applicationName)
+        onTranslationsPathChanged: console.log(translationsPath)
+    }
+
     ApplicationLauncher {
         id: applicationLauncher
         ready: ((mainWindow.state === "launcher") || (mainWindow.state === "launcher-selected"))
