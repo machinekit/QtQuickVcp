@@ -41,6 +41,10 @@
         <source>Downloading file %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>%1% - %2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ApplicationRemoteFileDialog</name>
@@ -146,6 +150,17 @@
     </message>
     <message>
         <source>Turn spindle slower [%1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DigitalReadOut</name>
+    <message>
+        <source>Vel:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DTG:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -349,6 +364,13 @@
     </message>
     <message>
         <source>Execute MDI command [%1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MdiCommandEdit</name>
+    <message>
+        <source>MDI</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
