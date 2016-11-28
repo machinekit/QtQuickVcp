@@ -5,36 +5,36 @@
     <name>HalApplicationWindow</name>
     <message>
         <source>Waiting for services to appear...</source>
-        <translation type="unfinished"></translation>
+        <translation>Warte auf das Erscheinen von Diensten...</translation>
     </message>
     <message>
         <source>Connecting...</source>
-        <translation type="unfinished"></translation>
+        <translation>Verbinde...</translation>
     </message>
     <message>
         <source>%1 service</source>
         <comment>Required service</comment>
-        <translation type="unfinished"></translation>
+        <translation>%1 Dienst</translation>
     </message>
     <message>
         <source>Bind rejected error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Signatur abgelehnt Fehler:</translation>
     </message>
     <message>
         <source>Pin change rejected error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pin aktualisierung abgelehnt Fehler: </translation>
     </message>
     <message>
         <source>Command error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kommando Fehler:</translation>
     </message>
     <message>
         <source>Socket error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Socket Fehler:</translation>
     </message>
     <message>
         <source>No error</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Fehler</translation>
     </message>
 </context>
 </TS>

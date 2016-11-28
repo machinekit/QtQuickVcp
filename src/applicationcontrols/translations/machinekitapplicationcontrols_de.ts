@@ -17,92 +17,96 @@
     <name>ApplicationFileDialog</name>
     <message>
         <source>Please choose a file</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei auswählen</translation>
     </message>
     <message>
         <source>All machinable files (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle verarbeitbaren Dateien (%1)</translation>
     </message>
     <message>
         <source>rs274ngc files (*.ngc)</source>
-        <translation type="unfinished"></translation>
+        <translation>rs274ngc Dateien (*.ngc)</translation>
     </message>
     <message>
         <source>All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle Dateien (*)</translation>
     </message>
 </context>
 <context>
     <name>ApplicationProgressBar</name>
     <message>
         <source>Uploading file %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Lade Datei %1 hoch</translation>
     </message>
     <message>
         <source>Downloading file %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Lade Datei %1 herunter</translation>
+    </message>
+    <message>
+        <source>%1% - %2</source>
+        <translation>%1% - %2</translation>
     </message>
 </context>
 <context>
     <name>ApplicationRemoteFileDialog</name>
     <message>
         <source>Remote files</source>
-        <translation type="unfinished"></translation>
+        <translation>Netzwerkdateien</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Name</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Größe</translation>
     </message>
     <message>
         <source>Last Modified</source>
-        <translation type="unfinished"></translation>
+        <translation>Zuletzt Modifiziert</translation>
     </message>
     <message>
         <source>Remove file</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei entfernen</translation>
     </message>
     <message>
         <source>Open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei öffnen</translation>
     </message>
     <message>
         <source>Upload file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei hochladen...</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualisieren</translation>
     </message>
     <message>
         <source>Upload...</source>
-        <translation type="unfinished"></translation>
+        <translation>Hochladen...</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Entfernen</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Schließen</translation>
     </message>
 </context>
 <context>
     <name>BlockDeleteAction</name>
     <message>
         <source>Block Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Block Löschen</translation>
     </message>
     <message>
         <source>Enable block delete [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Block Löschen aktivieren [%1]</translation>
     </message>
 </context>
 <context>
@@ -124,115 +128,126 @@
     <name>ConnectionWindow</name>
     <message>
         <source>Instance Error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Instanzfehler:</translation>
     </message>
     <message>
         <source>Check uri and uuid</source>
-        <translation type="unfinished"></translation>
+        <translation>URI und UUID überprüfen</translation>
     </message>
     <message>
         <source>Application Config Error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Application Config Fehler:</translation>
     </message>
     <message>
         <source>Application Launcher Error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Application Launcher Error:</translation>
     </message>
 </context>
 <context>
     <name>DecreaseSpindleSpeedAction</name>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Turn spindle slower [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Spindelgeschwindkeit reduzieren [%1]</translation>
+    </message>
+</context>
+<context>
+    <name>DigitalReadOut</name>
+    <message>
+        <source>Vel:</source>
+        <translation>Geschw:</translation>
+    </message>
+    <message>
+        <source>DTG:</source>
+        <translation>DTG:</translation>
     </message>
 </context>
 <context>
     <name>EstopAction</name>
     <message>
         <source>Estop</source>
-        <translation type="unfinished"></translation>
+        <translation>Notaus</translation>
     </message>
     <message>
         <source>Toggle Emergency Stop [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Notaus umschalten [%1]</translation>
     </message>
 </context>
 <context>
     <name>EstopPowerAction</name>
     <message>
         <source>Power</source>
-        <translation type="unfinished"></translation>
+        <translation>Strom</translation>
     </message>
     <message>
         <source>Reset Machine [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Maschine zurücksetzen [%1]</translation>
     </message>
 </context>
 <context>
     <name>FeedHoldAction</name>
     <message>
         <source>Feed Hold</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorschub anhalten</translation>
     </message>
     <message>
         <source>Enable feed hold [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorschub anhalten aktivieren [%1]</translation>
     </message>
 </context>
 <context>
     <name>FeedOverrideAction</name>
     <message>
         <source>Feed Override</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorschub überschreiben</translation>
     </message>
     <message>
         <source>Enable feed override [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorschub überschreiben aktivieren [%1]</translation>
     </message>
 </context>
 <context>
     <name>FloodAction</name>
     <message>
         <source>Flood</source>
-        <translation type="unfinished"></translation>
+        <translation>Überspülen</translation>
     </message>
     <message>
         <source>Enable flood [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Überspülen aktivieren [%1]</translation>
     </message>
 </context>
 <context>
     <name>HomeAxisAction</name>
     <message>
         <source>Home</source>
-        <translation type="unfinished"></translation>
+        <translation>Heimen</translation>
     </message>
     <message>
         <source>Home All</source>
-        <translation type="unfinished"></translation>
+        <translation>Heime Alle</translation>
     </message>
     <message>
         <source>Home axis %1 [%2]</source>
-        <translation type="unfinished"></translation>
+        <translation>Heime Achse %1 [%2]</translation>
     </message>
     <message>
         <source>Home all axes [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Heime alle achsen [%1]</translation>
     </message>
 </context>
 <context>
     <name>IncreaseSpindleSpeedAction</name>
     <message>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <source>Turn spindle faster [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Spindelgschwindigkeit erhöhen [%1]</translation>
     </message>
 </context>
 <context>
@@ -266,201 +281,208 @@
     <name>JogAction</name>
     <message>
         <source>Jog Axis %1 [%2]</source>
-        <translation type="unfinished"></translation>
+        <translation>Achse %1 bewegen [%2]</translation>
     </message>
 </context>
 <context>
     <name>JogDistanceHandler</name>
     <message>
         <source>Continuous</source>
-        <translation type="unfinished"></translation>
+        <translation>Kontinuierlich</translation>
     </message>
 </context>
 <context>
     <name>LauncherPage</name>
     <message>
         <source>System Shutdown</source>
-        <translation type="unfinished"></translation>
+        <translation>System Herunterfahren</translation>
     </message>
     <message>
         <source>Do you really want to shutdown the Machinekit system?</source>
-        <translation type="unfinished"></translation>
+        <translation>Wollen Sie das Machinekit System wirklich beenden?</translation>
     </message>
     <message>
         <source>Available Launchers:</source>
-        <translation type="unfinished"></translation>
+        <translation>Verfügbare Starter:</translation>
     </message>
     <message>
         <source>List</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste</translation>
     </message>
     <message>
         <source>Small</source>
-        <translation type="unfinished"></translation>
+        <translation>Klein</translation>
     </message>
     <message>
         <source>Big</source>
-        <translation type="unfinished"></translation>
+        <translation>Groß</translation>
     </message>
     <message>
         <source>Shutdown</source>
-        <translation type="unfinished"></translation>
+        <translation>Herunterfahren</translation>
     </message>
     <message>
         <source>Back</source>
-        <translation type="unfinished">Zurück</translation>
+        <translation>Zurück</translation>
     </message>
     <message>
         <source>Terminating...</source>
-        <translation type="unfinished"></translation>
+        <translation>Beende...</translation>
     </message>
     <message>
         <source>Running...</source>
-        <translation type="unfinished"></translation>
+        <translation>Läuft...</translation>
     </message>
     <message>
         <source>Kill</source>
-        <translation type="unfinished"></translation>
+        <translation>Abschießen</translation>
     </message>
     <message>
         <source>Terminate</source>
-        <translation type="unfinished"></translation>
+        <translation>Beenden</translation>
     </message>
 </context>
 <context>
     <name>LoadingPage</name>
     <message>
         <source>Back</source>
-        <translation type="unfinished">Zurück</translation>
+        <translation>Zurück</translation>
     </message>
     <message>
         <source>Loading %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>Lade %1...</translation>
     </message>
     <message>
         <source>user interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzeroberfläche</translation>
     </message>
 </context>
 <context>
     <name>MdiCommandAction</name>
     <message>
         <source>Go</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausführen</translation>
     </message>
     <message>
         <source>Execute MDI command [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>MDI Kommando ausführen [%1]</translation>
+    </message>
+</context>
+<context>
+    <name>MdiCommandEdit</name>
+    <message>
+        <source>MDI</source>
+        <translation>MDI</translation>
     </message>
 </context>
 <context>
     <name>MdiHistoryTable</name>
     <message>
         <source>Clear list</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste leeren</translation>
     </message>
 </context>
 <context>
     <name>MistAction</name>
     <message>
         <source>Mist</source>
-        <translation type="unfinished"></translation>
+        <translation>Nebel</translation>
     </message>
     <message>
         <source>Enable mist [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Nebel einschalten [%1]</translation>
     </message>
 </context>
 <context>
     <name>NetworkPage</name>
     <message>
         <source>Warning!&lt;br&gt;No network connection found, service discovery unavailable. Please check your network connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Warnung!&lt;br&gt;Keine Netzwerkverbindung gefunden. Dienstsuche nicht verfügbar. Bitte prüfen Sie Ihre Netzwerkverbindung.</translation>
     </message>
 </context>
 <context>
     <name>OpenAction</name>
     <message>
         <source>Open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei öffnen</translation>
     </message>
     <message>
         <source>Open G-Code file [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>GCode Datei öffen [%1]</translation>
     </message>
 </context>
 <context>
     <name>OptionalStopAction</name>
     <message>
         <source>Optional stop (M1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Optionaler Stop (M1)</translation>
     </message>
     <message>
         <source>Optional stop [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Optionaler Stop [%1]</translation>
     </message>
 </context>
 <context>
     <name>OverrideLimitsAction</name>
     <message>
         <source>Override Limits</source>
-        <translation type="unfinished"></translation>
+        <translation>Maschinenlimits überschreiben</translation>
     </message>
     <message>
         <source>Override the machine limits [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Maschinenlimits überschreiben [%1]</translation>
     </message>
 </context>
 <context>
     <name>PauseResumeProgramAction</name>
     <message>
         <source>Resume</source>
-        <translation type="unfinished"></translation>
+        <translation>Fortsetzen</translation>
     </message>
     <message>
         <source>Pause</source>
-        <translation type="unfinished"></translation>
+        <translation>Pausieren</translation>
     </message>
     <message>
         <source>Pause execution [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausführen pausieren [%1]</translation>
     </message>
     <message>
         <source>Resume execution [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausführung fortsetzen [%1]</translation>
     </message>
 </context>
 <context>
     <name>PowerAction</name>
     <message>
         <source>Power</source>
-        <translation type="unfinished"></translation>
+        <translation>Power</translation>
     </message>
     <message>
         <source>Toggle Machine power [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Maschinen Power schalten [%1]</translation>
     </message>
 </context>
 <context>
     <name>ReopenAction</name>
     <message>
         <source>Reopen file</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei wieder öffnen</translation>
     </message>
     <message>
         <source>Reopen current file [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Datei wieder öffnen [%1]</translation>
     </message>
 </context>
 <context>
     <name>RunProgramAction</name>
     <message>
         <source>Run</source>
-        <translation type="unfinished"></translation>
+        <translation>Starten</translation>
     </message>
     <message>
         <source>Begin executing current file [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausführen der aktuellen Datei starten [%1]</translation>
     </message>
 </context>
 <context>
@@ -516,114 +538,114 @@
     <name>SpindleCcwAction</name>
     <message>
         <source>CCW</source>
-        <translation type="unfinished"></translation>
+        <translation>CCW</translation>
     </message>
     <message>
         <source>Turn spindle counterclockwise [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Spindle gegen Uhrzeigersinn drehen [%1]</translation>
     </message>
 </context>
 <context>
     <name>SpindleCwAction</name>
     <message>
         <source>CW</source>
-        <translation type="unfinished"></translation>
+        <translation>CW</translation>
     </message>
     <message>
         <source>Turn spindle clockwise [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Spindel im Uhrzeigersinn drehen [%1]</translation>
     </message>
 </context>
 <context>
     <name>SpindleOverrideAction</name>
     <message>
         <source>Spindle Override</source>
-        <translation type="unfinished"></translation>
+        <translation>Spindelgeschwindigkeit überschreiben</translation>
     </message>
     <message>
         <source>Enable spindle override [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Spindelgeschwindigkeit überschreiben aktivieren [%1]</translation>
     </message>
 </context>
 <context>
     <name>StepProgramAction</name>
     <message>
         <source>Step</source>
-        <translation type="unfinished"></translation>
+        <translation>Schritt</translation>
     </message>
     <message>
         <source>Execute next line [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Nächste Zeile ausführen [%1]</translation>
     </message>
 </context>
 <context>
     <name>StopProgramAction</name>
     <message>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Anhalten</translation>
     </message>
     <message>
         <source>Stop program execution [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Programausführung anhalten [%1]</translation>
     </message>
 </context>
 <context>
     <name>StopSpindleAction</name>
     <message>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Anhalten</translation>
     </message>
     <message>
         <source>Stop spindle [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Spindel anhalten [%1]</translation>
     </message>
 </context>
 <context>
     <name>TeleopAction</name>
     <message>
         <source>Teleop mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Teleop Modus</translation>
     </message>
     <message>
         <source>Enable teleop mode [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Teleop Modus aktivieren [%1]</translation>
     </message>
 </context>
 <context>
     <name>TouchOffAction</name>
     <message>
         <source>Touch Off</source>
-        <translation type="unfinished"></translation>
+        <translation> Abweichung setzen</translation>
     </message>
     <message>
         <source>Set G5x offset for active axis [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Setze G5x Abweichung für die aktive Achse [%1]</translation>
     </message>
 </context>
 <context>
     <name>TouchOffDialog</name>
     <message>
         <source>Touch Off</source>
-        <translation type="unfinished"></translation>
+        <translation>Abweichung setzen </translation>
     </message>
     <message>
         <source>Enter %1 coordinate relative to workpiece:</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Koordinate relative zum Arbeitsstück eingeben:</translation>
     </message>
     <message>
         <source>Coordinate system:</source>
-        <translation type="unfinished"></translation>
+        <translation>Koordinatensystem:</translation>
     </message>
 </context>
 <context>
     <name>UnhomeAxisAction</name>
     <message>
         <source>Unhome</source>
-        <translation type="unfinished"></translation>
+        <translation>Unheimen</translation>
     </message>
     <message>
         <source>Unhome axis %1 [%2]</source>
-        <translation type="unfinished"></translation>
+        <translation>Achse unheimen %1 [%2]</translation>
     </message>
 </context>
 </TS>
