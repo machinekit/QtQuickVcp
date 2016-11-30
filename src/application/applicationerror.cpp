@@ -23,13 +23,7 @@
 #include "applicationerror.h"
 #include "debughelper.h"
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
+using namespace machinetalk;
 
 namespace qtquickvcp {
 
@@ -40,7 +34,7 @@ ApplicationError::ApplicationError(QObject *parent) :
 {
 }
 
-void ApplicationError::errorMessageReceived(const pb::Container rx)
+void ApplicationError::errorMessageReceived(const Container rx)
 {
     for (int i = 0; i < rx.note_size(); ++i)
     {
@@ -48,37 +42,37 @@ void ApplicationError::errorMessageReceived(const pb::Container rx)
     }
 }
 
-void ApplicationError::emcNmlErrorReceived(const QByteArray &topic, const pb::Container &rx)
+void ApplicationError::emcNmlErrorReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcNmlTextReceived(const QByteArray &topic, const pb::Container &rx)
+void ApplicationError::emcNmlTextReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcNmlDisplayReceived(const QByteArray &topic, const pb::Container &rx)
+void ApplicationError::emcNmlDisplayReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcOperatorTextReceived(const QByteArray &topic, const pb::Container &rx)
+void ApplicationError::emcOperatorTextReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcOperatorErrorReceived(const QByteArray &topic, const pb::Container &rx)
+void ApplicationError::emcOperatorErrorReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcOperatorDisplayReceived(const QByteArray &topic, const pb::Container &rx)
+void ApplicationError::emcOperatorDisplayReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);

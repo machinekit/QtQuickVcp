@@ -4,17 +4,17 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef STATUS_SUBSCRIBE_H
-#define STATUS_SUBSCRIBE_H
+#ifndef RPC_CLIENT_H
+#define RPC_CLIENT_H
 #include <QObject>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 #include <google/protobuf/text_format.h>
 
 namespace machinetalk {
-namespace application {
+namespace common {
 
-class StatusSubscribe : public QObject
+class RpcClient : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
@@ -26,8 +26,8 @@ class StatusSubscribe : public QObject
     Q_ENUMS(State)
 
 public:
-    explicit StatusSubscribe(QObject *parent = 0);
-    ~StatusSubscribe();
+    explicit RpcClient(QObject *parent = 0);
+    ~RpcClient();
 
     enum State {
         Down = 0,
@@ -112,9 +112,8 @@ public slots:
         }
     }
 
-    void addSocketTopic(const QString &name);
-    void removeSocketTopic(const QString &name);
-    void clearSocketTopics();
+
+    void sendSocketMessage(ContainerType type, Container &tx);
 
 protected:
     void start(); // start trigger
@@ -124,7 +123,6 @@ private:
     bool m_ready;
     QString m_debugName;
 
-    QSet<QString> m_socketTopics;   // the topics we are interested in
     QString m_socketUri;
     nzmqt::PollingZMQContext *m_context;
     nzmqt::ZMQSocket *m_socket;
@@ -139,6 +137,7 @@ private:
     int         m_heartbeatResetLiveness;
     // more efficient to reuse a protobuf Messages
     Container m_socketRx;
+    Container m_socketTx;
 
 private slots:
 
@@ -154,42 +153,51 @@ private slots:
     void processSocketMessage(const QList<QByteArray> &messageList);
     void socketError(int errorNum, const QString& errorMsg);
 
+    void sendPing();
 
     void fsmDown();
-    void fsmDownConnectEvent();
+    void fsmDownStartEvent();
     void fsmTrying();
-    void fsmTryingConnectedEvent();
-    void fsmTryingDisconnectEvent();
+    void fsmTryingAnyMsgReceivedEvent();
+    void fsmTryingHeartbeatTimeoutEvent();
+    void fsmTryingHeartbeatTickEvent();
+    void fsmTryingAnyMsgSentEvent();
+    void fsmTryingStopEvent();
     void fsmUp();
-    void fsmUpTimeoutEvent();
-    void fsmUpTickEvent();
-    void fsmUpMessageReceivedEvent();
-    void fsmUpDisconnectEvent();
+    void fsmUpHeartbeatTimeoutEvent();
+    void fsmUpHeartbeatTickEvent();
+    void fsmUpAnyMsgReceivedEvent();
+    void fsmUpAnyMsgSentEvent();
+    void fsmUpStopEvent();
 
 
 signals:
     void socketUriChanged(QString uri);
-    void socketMessageReceived(const QByteArray &topic, const Container &rx);
+    void socketMessageReceived(const Container &rx);
     void debugNameChanged(QString debugName);
-    void stateChanged(StatusSubscribe::State state);
+    void stateChanged(RpcClient::State state);
     void errorStringChanged(QString errorString);
     void heartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
     void fsmDownEntered(QPrivateSignal);
     void fsmDownExited(QPrivateSignal);
-    void fsmDownConnect(QPrivateSignal);
+    void fsmDownStart(QPrivateSignal);
     void fsmTryingEntered(QPrivateSignal);
     void fsmTryingExited(QPrivateSignal);
-    void fsmTryingConnected(QPrivateSignal);
-    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmTryingAnyMsgReceived(QPrivateSignal);
+    void fsmTryingHeartbeatTimeout(QPrivateSignal);
+    void fsmTryingHeartbeatTick(QPrivateSignal);
+    void fsmTryingAnyMsgSent(QPrivateSignal);
+    void fsmTryingStop(QPrivateSignal);
     void fsmUpEntered(QPrivateSignal);
     void fsmUpExited(QPrivateSignal);
-    void fsmUpTimeout(QPrivateSignal);
-    void fsmUpTick(QPrivateSignal);
-    void fsmUpMessageReceived(QPrivateSignal);
-    void fsmUpDisconnect(QPrivateSignal);
+    void fsmUpHeartbeatTimeout(QPrivateSignal);
+    void fsmUpHeartbeatTick(QPrivateSignal);
+    void fsmUpAnyMsgReceived(QPrivateSignal);
+    void fsmUpAnyMsgSent(QPrivateSignal);
+    void fsmUpStop(QPrivateSignal);
 };
-} // namespace application
+} // namespace common
 } // namespace machinetalk
-#endif //STATUS_SUBSCRIBE_H
+#endif //RPC_CLIENT_H

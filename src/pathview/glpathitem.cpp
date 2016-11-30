@@ -24,6 +24,8 @@
 #include <QtCore/qmath.h>
 #include "debughelper.h"
 
+using namespace machinetalk;
+
 namespace qtquickvcp {
 
 GLPathItem::GLPathItem(QQuickItem *parent) :
@@ -463,36 +465,36 @@ void GLPathItem::releaseExtents()
     emit maximumExtentsChanged(m_maximumExtents);
 }
 
-void GLPathItem::processPreview(const pb::Preview &preview)
+void GLPathItem::processPreview(const Preview &preview)
 {
     switch (preview.type())
     {
-    case pb::PV_STRAIGHT_PROBE:  /*nothing*/ return;
-    case pb::PV_RIGID_TAP:  /*nothing*/ return;
-    case pb::PV_STRAIGHT_FEED: processStraightMove(preview, FeedMove); return;
-    case pb::PV_ARC_FEED: processArcFeed(preview); return;
-    case pb::PV_STRAIGHT_TRAVERSE: processStraightMove(preview, TraverseMove); return;
-    case pb::PV_SET_G5X_OFFSET: processSetG5xOffset(preview); return;
-    case pb::PV_SET_G92_OFFSET: processSetG92Offset(preview); return;
-    case pb::PV_SET_XY_ROTATION: /*nothing*/ return;
-    case pb::PV_SELECT_PLANE: processSelectPlane(preview); return;
-    case pb::PV_SET_TRAVERSE_RATE: /*nothing*/ return;
-    case pb::PV_SET_FEED_RATE: /*nothing*/ return;
-    case pb::PV_CHANGE_TOOL: /*nothing*/ return;
-    case pb::PV_CHANGE_TOOL_NUMBER: /*nothing*/ return;
-    case pb::PV_DWELL: /*nothing*/ return;
-    case pb::PV_MESSAGE: /*nothing*/ return;
-    case pb::PV_COMMENT: /*nothing*/ return;
-    case pb::PV_USE_TOOL_OFFSET: processUseToolOffset(preview); return;
-    case pb::PV_SET_PARAMS: /*nothing*/ return;
-    case pb::PV_SET_FEED_MODE: /*nothing*/ return;
-    case pb::PV_SOURCE_CONTEXT: /*nothing*/ return;
-    case pb::PV_PREVIEW_START: /*nothing*/ return;
-    case pb::PV_PREVIEW_END: /*nothing*/ return;
+    case PV_STRAIGHT_PROBE:  /*nothing*/ return;
+    case PV_RIGID_TAP:  /*nothing*/ return;
+    case PV_STRAIGHT_FEED: processStraightMove(preview, FeedMove); return;
+    case PV_ARC_FEED: processArcFeed(preview); return;
+    case PV_STRAIGHT_TRAVERSE: processStraightMove(preview, TraverseMove); return;
+    case PV_SET_G5X_OFFSET: processSetG5xOffset(preview); return;
+    case PV_SET_G92_OFFSET: processSetG92Offset(preview); return;
+    case PV_SET_XY_ROTATION: /*nothing*/ return;
+    case PV_SELECT_PLANE: processSelectPlane(preview); return;
+    case PV_SET_TRAVERSE_RATE: /*nothing*/ return;
+    case PV_SET_FEED_RATE: /*nothing*/ return;
+    case PV_CHANGE_TOOL: /*nothing*/ return;
+    case PV_CHANGE_TOOL_NUMBER: /*nothing*/ return;
+    case PV_DWELL: /*nothing*/ return;
+    case PV_MESSAGE: /*nothing*/ return;
+    case PV_COMMENT: /*nothing*/ return;
+    case PV_USE_TOOL_OFFSET: processUseToolOffset(preview); return;
+    case PV_SET_PARAMS: /*nothing*/ return;
+    case PV_SET_FEED_MODE: /*nothing*/ return;
+    case PV_SOURCE_CONTEXT: /*nothing*/ return;
+    case PV_PREVIEW_START: /*nothing*/ return;
+    case PV_PREVIEW_END: /*nothing*/ return;
     }
 }
 
-void GLPathItem::processStraightMove(const pb::Preview &preview, MovementType movementType)
+void GLPathItem::processStraightMove(const Preview &preview, MovementType movementType)
 {
 #ifdef QT_DEBUG
     if (movementType == FeedMove)
@@ -528,7 +530,7 @@ void GLPathItem::processStraightMove(const pb::Preview &preview, MovementType mo
     updateExtents(newVector);
 }
 
-void GLPathItem::processArcFeed(const pb::Preview &preview)
+void GLPathItem::processArcFeed(const Preview &preview)
 {
 #ifdef QT_DEBUG
     qDebug() << "arc feed";
@@ -744,7 +746,7 @@ void GLPathItem::processArcFeed(const pb::Preview &preview)
     m_relativePosition = preview.pos();
 }
 
-void GLPathItem::processSetG5xOffset(const pb::Preview &preview)
+void GLPathItem::processSetG5xOffset(const Preview &preview)
 {
     if (preview.has_pos() && preview.has_g5_index()) {
         m_activeOffsets.g5xOffsetIndex = preview.g5_index();
@@ -753,7 +755,7 @@ void GLPathItem::processSetG5xOffset(const pb::Preview &preview)
     }
 }
 
-void GLPathItem::processSetG92Offset(const pb::Preview &preview)
+void GLPathItem::processSetG92Offset(const Preview &preview)
 {
     if (preview.has_pos()) {
         m_activeOffsets.g92Offset = previewPositionToPosition(preview.pos());
@@ -761,7 +763,7 @@ void GLPathItem::processSetG92Offset(const pb::Preview &preview)
     }
 }
 
-void GLPathItem::processUseToolOffset(const pb::Preview &preview)
+void GLPathItem::processUseToolOffset(const Preview &preview)
 {
     if (preview.has_pos()) {
         m_activeOffsets.toolOffset = previewPositionToPosition(preview.pos());
@@ -769,7 +771,7 @@ void GLPathItem::processUseToolOffset(const pb::Preview &preview)
     }
 }
 
-void GLPathItem::processSelectPlane(const pb::Preview &preview)
+void GLPathItem::processSelectPlane(const Preview &preview)
 {
     if (preview.has_plane())
     {
@@ -786,7 +788,7 @@ void GLPathItem::processSelectPlane(const pb::Preview &preview)
     }
 }
 
-GLPathItem::Position GLPathItem::previewPositionToPosition(const pb::Position &position) const
+GLPathItem::Position GLPathItem::previewPositionToPosition(const machinetalk::Position &position) const
 {
     Position newPosition;
     newPosition.x = 0.0;
@@ -830,7 +832,7 @@ GLPathItem::Position GLPathItem::previewPositionToPosition(const pb::Position &p
     return newPosition;
 }
 
-GLPathItem::Position GLPathItem::calculateNewPosition(const pb::Position &newPosition) const
+GLPathItem::Position GLPathItem::calculateNewPosition(const machinetalk::Position &newPosition) const
 {
     Position position = m_currentPosition;
 

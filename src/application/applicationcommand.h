@@ -35,7 +35,7 @@
 
 namespace qtquickvcp {
 
-class ApplicationCommand : public application::CommandBase
+class ApplicationCommand : public machinetalk::application::CommandBase
 {
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
@@ -65,22 +65,22 @@ public:
     };
 
     enum TaskState {
-        TaskStateEstop = pb::EMC_TASK_STATE_ESTOP,
-        TaskStateEstopReset = pb::EMC_TASK_STATE_ESTOP_RESET,
-        TaskStateOff = pb::EMC_TASK_STATE_OFF,
-        TaskStateOn = pb::EMC_TASK_STATE_ON
+        TaskStateEstop = machinetalk::EMC_TASK_STATE_ESTOP,
+        TaskStateEstopReset = machinetalk::EMC_TASK_STATE_ESTOP_RESET,
+        TaskStateOff = machinetalk::EMC_TASK_STATE_OFF,
+        TaskStateOn = machinetalk::EMC_TASK_STATE_ON
     };
 
     enum TaskMode {
-        TaskModeManual = pb::EMC_TASK_MODE_MANUAL,
-        TaskModeAuto = pb::EMC_TASK_MODE_AUTO,
-        TaskModeMdi = pb::EMC_TASK_MODE_MDI
+        TaskModeManual = machinetalk::EMC_TASK_MODE_MANUAL,
+        TaskModeAuto = machinetalk::EMC_TASK_MODE_AUTO,
+        TaskModeMdi = machinetalk::EMC_TASK_MODE_MDI
     };
 
     enum TrajectoryMode {
-        FreeMode = pb::EMC_TRAJ_MODE_FREE,
-        CoordinatedMode = pb::EMC_TRAJ_MODE_COORD,
-        TeleopMode = pb::EMC_TRAJ_MODE_TELEOP
+        FreeMode = machinetalk::EMC_TRAJ_MODE_FREE,
+        CoordinatedMode = machinetalk::EMC_TRAJ_MODE_COORD,
+        TeleopMode = machinetalk::EMC_TRAJ_MODE_TELEOP
     };
 
     bool isConnected() const
@@ -137,11 +137,13 @@ private:
     bool m_connected;
 
     // more efficient to reuse a protobuf Message
-    pb::Container   m_tx;
+    machinetalk::Container   m_tx;
 
 private slots:
     void setConnected();
     void clearConnected();
+    void emccmdExecutedReceived(const machinetalk::Container &rx);
+    void emccmdCompletedReceived(const machinetalk::Container &rx);
 
 signals:
     void connectedChanged(bool arg);

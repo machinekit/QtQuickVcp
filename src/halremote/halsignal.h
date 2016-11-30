@@ -44,10 +44,10 @@ public:
     explicit HalSignal(QObject *parent = 0);
 
     enum ValueType {
-        Bit = pb::HAL_BIT,
-        Float = pb::HAL_FLOAT,
-        S32 = pb::HAL_S32,
-        U32 = pb::HAL_U32
+        Bit = machinetalk::HAL_BIT,
+        Float = machinetalk::HAL_FLOAT,
+        S32 = machinetalk::HAL_S32,
+        U32 = machinetalk::HAL_U32
     };
 
     QString name() const

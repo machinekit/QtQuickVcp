@@ -34,7 +34,7 @@
 
 namespace qtquickvcp {
 
-class ApplicationStatus : public application::StatusBase
+class ApplicationStatus : public machinetalk::application::StatusBase
 {
     Q_OBJECT
     Q_PROPERTY(QJsonObject config READ config NOTIFY configChanged)
@@ -55,113 +55,113 @@ public:
     explicit ApplicationStatus(QObject *parent = 0);
 
     enum OriginIndex {
-        OriginG54 = pb::ORIGIN_G54,
-        OriginG55 = pb::ORIGIN_G55,
-        OriginG56 = pb::ORIGIN_G56,
-        OriginG57 = pb::ORIGIN_G57,
-        OriginG58 = pb::ORIGIN_G58,
-        OriginG59 = pb::ORIGIN_G59,
-        OriginG59_1 = pb::ORIGIN_G59_1,
-        OriginG59_2 = pb::ORIGIN_G59_2,
-        OriginG59_3 = pb::ORIGIN_G59_3
+        OriginG54 = machinetalk::ORIGIN_G54,
+        OriginG55 = machinetalk::ORIGIN_G55,
+        OriginG56 = machinetalk::ORIGIN_G56,
+        OriginG57 = machinetalk::ORIGIN_G57,
+        OriginG58 = machinetalk::ORIGIN_G58,
+        OriginG59 = machinetalk::ORIGIN_G59,
+        OriginG59_1 = machinetalk::ORIGIN_G59_1,
+        OriginG59_2 = machinetalk::ORIGIN_G59_2,
+        OriginG59_3 = machinetalk::ORIGIN_G59_3
     };
 
     enum TrajectoryMode {
-        FreeMode = pb::EMC_TRAJ_MODE_FREE,
-        CoordinatedMode = pb::EMC_TRAJ_MODE_COORD,
-        TeleopMode = pb::EMC_TRAJ_MODE_TELEOP
+        FreeMode = machinetalk::EMC_TRAJ_MODE_FREE,
+        CoordinatedMode = machinetalk::EMC_TRAJ_MODE_COORD,
+        TeleopMode = machinetalk::EMC_TRAJ_MODE_TELEOP
     };
 
     enum MotionStatus {
-        MotionUninitialized = pb::UNINITIALIZED_STATUS,
-        MotionDone = pb::RCS_DONE,
-        MotionExec = pb::RCS_EXEC,
-        MotionError = pb::RCS_ERROR,
-        MotionReceived = pb::RCS_RECEIVED
+        MotionUninitialized = machinetalk::UNINITIALIZED_STATUS,
+        MotionDone = machinetalk::RCS_DONE,
+        MotionExec = machinetalk::RCS_EXEC,
+        MotionError = machinetalk::RCS_ERROR,
+        MotionReceived = machinetalk::RCS_RECEIVED
     };
 
     enum MotionType {
-        NoneType = pb::_EMC_MOTION_TYPE_NONE,
-        TraverseType = pb::_EMC_MOTION_TYPE_TRAVERSE,
-        FeedType = pb::_EMC_MOTION_TYPE_FEED,
-        ArcType = pb::_EMC_MOTION_TYPE_ARC,
-        ToolchangeType = pb::_EMC_MOTION_TYPE_TOOLCHANGE,
-        ProbingType = pb::_EMC_MOTION_TYPE_PROBING,
-        IndexRotaryType = pb::_EMC_MOTION_TYPE_INDEXROTARY
+        NoneType = machinetalk::_EMC_MOTION_TYPE_NONE,
+        TraverseType = machinetalk::_EMC_MOTION_TYPE_TRAVERSE,
+        FeedType = machinetalk::_EMC_MOTION_TYPE_FEED,
+        ArcType = machinetalk::_EMC_MOTION_TYPE_ARC,
+        ToolchangeType = machinetalk::_EMC_MOTION_TYPE_TOOLCHANGE,
+        ProbingType = machinetalk::_EMC_MOTION_TYPE_PROBING,
+        IndexRotaryType = machinetalk::_EMC_MOTION_TYPE_INDEXROTARY
     };
 
     enum AxisType {
-        LinearAxis = pb::EMC_AXIS_LINEAR,
-        AngularAxis = pb::EMC_AXIS_ANGULAR
+        LinearAxis = machinetalk::EMC_AXIS_LINEAR,
+        AngularAxis = machinetalk::EMC_AXIS_ANGULAR
     };
 
     enum KinematicsType {
-        IdentityKinematics = pb::KINEMATICS_IDENTITY,
-        ForwardOnlyKinematics = pb::KINEMATICS_FORWARD_ONLY,
-        InverseOnlyKinematics = pb::KINEMATICS_INVERSE_ONLY,
-        BothKinematics = pb::KINEMATICS_BOTH
+        IdentityKinematics = machinetalk::KINEMATICS_IDENTITY,
+        ForwardOnlyKinematics = machinetalk::KINEMATICS_FORWARD_ONLY,
+        InverseOnlyKinematics = machinetalk::KINEMATICS_INVERSE_ONLY,
+        BothKinematics = machinetalk::KINEMATICS_BOTH
     };
 
     enum CanonUnits {
-        CanonUnitsInch = pb::CANON_UNITS_INCH,
-        CanonUnitsMm = pb::CANON_UNITS_MM,
-        CanonUnitsCm = pb::CANON_UNITS_CM
+        CanonUnitsInch = machinetalk::CANON_UNITS_INCH,
+        CanonUnitsMm = machinetalk::CANON_UNITS_MM,
+        CanonUnitsCm = machinetalk::CANON_UNITS_CM
     };
 
     enum TimeUnits {
-        TimeUnitsMinute = pb::TIME_UNITS_MINUTE,
-        TimeUnitsSecond = pb::TIME_UNITS_SECOND
+        TimeUnitsMinute = machinetalk::TIME_UNITS_MINUTE,
+        TimeUnitsSecond = machinetalk::TIME_UNITS_SECOND
     };
 
     enum TaskExecState {
-        TaskError = pb::EMC_TASK_EXEC_ERROR,
-        TaskDone = pb::EMC_TASK_EXEC_DONE,
-        TaskWaitingForMotion = pb::EMC_TASK_EXEC_WAITING_FOR_MOTION,
-        TaskWaitingForMotionQueue = pb::EMC_TASK_EXEC_WAITING_FOR_MOTION_QUEUE,
-        TaskWaitingForIo = pb::EMC_TASK_EXEC_WAITING_FOR_IO,
-        TaskWaitingForMotionAndIo = pb::EMC_TASK_EXEC_WAITING_FOR_MOTION_AND_IO,
-        TaskWaitingForDelay = pb::EMC_TASK_EXEC_WAITING_FOR_DELAY,
-        TaskWaitingForSystemCmd = pb::EMC_TASK_EXEC_WAITING_FOR_SYSTEM_CMD,
-        TaskWaitingForSpindleOriented = pb::EMC_TASK_EXEC_WAITING_FOR_SPINDLE_ORIENTED
+        TaskError = machinetalk::EMC_TASK_EXEC_ERROR,
+        TaskDone = machinetalk::EMC_TASK_EXEC_DONE,
+        TaskWaitingForMotion = machinetalk::EMC_TASK_EXEC_WAITING_FOR_MOTION,
+        TaskWaitingForMotionQueue = machinetalk::EMC_TASK_EXEC_WAITING_FOR_MOTION_QUEUE,
+        TaskWaitingForIo = machinetalk::EMC_TASK_EXEC_WAITING_FOR_IO,
+        TaskWaitingForMotionAndIo = machinetalk::EMC_TASK_EXEC_WAITING_FOR_MOTION_AND_IO,
+        TaskWaitingForDelay = machinetalk::EMC_TASK_EXEC_WAITING_FOR_DELAY,
+        TaskWaitingForSystemCmd = machinetalk::EMC_TASK_EXEC_WAITING_FOR_SYSTEM_CMD,
+        TaskWaitingForSpindleOriented = machinetalk::EMC_TASK_EXEC_WAITING_FOR_SPINDLE_ORIENTED
     };
 
     enum TaskMode {
-        TaskModeManual = pb::EMC_TASK_MODE_MANUAL,
-        TaskModeAuto = pb::EMC_TASK_MODE_AUTO,
-        TaskModeMdi = pb::EMC_TASK_MODE_MDI
+        TaskModeManual = machinetalk::EMC_TASK_MODE_MANUAL,
+        TaskModeAuto = machinetalk::EMC_TASK_MODE_AUTO,
+        TaskModeMdi = machinetalk::EMC_TASK_MODE_MDI
     };
 
     enum TaskState {
-        TaskStateEstop = pb::EMC_TASK_STATE_ESTOP,
-        TaskStateEstopReset = pb::EMC_TASK_STATE_ESTOP_RESET,
-        TaskStateOff = pb::EMC_TASK_STATE_OFF,
-        TaskStateOn = pb::EMC_TASK_STATE_ON
+        TaskStateEstop = machinetalk::EMC_TASK_STATE_ESTOP,
+        TaskStateEstopReset = machinetalk::EMC_TASK_STATE_ESTOP_RESET,
+        TaskStateOff = machinetalk::EMC_TASK_STATE_OFF,
+        TaskStateOn = machinetalk::EMC_TASK_STATE_ON
     };
 
     enum InterpreterState {
-        InterpreterIdle = pb::EMC_TASK_INTERP_IDLE,
-        InterpreterReading = pb::EMC_TASK_INTERP_READING,
-        InterpreterPaused = pb::EMC_TASK_INTERP_PAUSED,
-        InterpreterWaiting = pb::EMC_TASK_INTERP_WAITING
+        InterpreterIdle = machinetalk::EMC_TASK_INTERP_IDLE,
+        InterpreterReading = machinetalk::EMC_TASK_INTERP_READING,
+        InterpreterPaused = machinetalk::EMC_TASK_INTERP_PAUSED,
+        InterpreterWaiting = machinetalk::EMC_TASK_INTERP_WAITING
     };
 
     enum InterpreterExitCode {
-        InterpreterExitOk = pb::EMC_INTERP_EXIT_OK,
-        InterpreterExitExit = pb::EMC_INTERP_EXIT_EXIT,
-        InterpreterExitExecuteFinish = pb::EMC_INTERP_EXIT_EXECUTE_FINISH,
-        InterpreterExitEndfile = pb::EMC_INTERP_EXIT_ENDFILE,
-        InterpreterExitFileNotOpen = pb::EMC_INTERP_EXIT_FILE_NOT_OPEN,
-        InterpreterExitError = pb::EMC_INTERP_EXIT_ERROR
+        InterpreterExitOk = machinetalk::EMC_INTERP_EXIT_OK,
+        InterpreterExitExit = machinetalk::EMC_INTERP_EXIT_EXIT,
+        InterpreterExitExecuteFinish = machinetalk::EMC_INTERP_EXIT_EXECUTE_FINISH,
+        InterpreterExitEndfile = machinetalk::EMC_INTERP_EXIT_ENDFILE,
+        InterpreterExitFileNotOpen = machinetalk::EMC_INTERP_EXIT_FILE_NOT_OPEN,
+        InterpreterExitError = machinetalk::EMC_INTERP_EXIT_ERROR
     };
 
     enum PositionOffset {
-        RelativePositionOffset = pb::EMC_CONFIG_RELATIVE_OFFSET,
-        MachinePositionOffset = pb::EMC_CONFIG_MACHINE_OFFSET
+        RelativePositionOffset = machinetalk::EMC_CONFIG_RELATIVE_OFFSET,
+        MachinePositionOffset = machinetalk::EMC_CONFIG_MACHINE_OFFSET
     };
 
     enum PositionFeedback {
-        ActualPositionFeedback = pb::EMC_CONFIG_ACTUAL_FEEDBACK,
-        CommandedPositionFeedback = pb::EMC_CONFIG_COMMANDED_FEEDBACK
+        ActualPositionFeedback = machinetalk::EMC_CONFIG_ACTUAL_FEEDBACK,
+        CommandedPositionFeedback = machinetalk::EMC_CONFIG_COMMANDED_FEEDBACK
     };
 
     enum StatusChannel {
@@ -236,19 +236,19 @@ private:
     StatusChannels  m_channels;
     QHash<QByteArray, StatusChannel> m_channelMap;
 
-    void emcstatUpdateReceived(StatusChannel channel, const pb::Container &rx);
+    void emcstatUpdateReceived(StatusChannel channel, const machinetalk::Container &rx);
     void updateSync(StatusChannel channel);
-    void updateMotionObject(const pb::EmcStatusMotion &motion);
-    void updateConfigObject(const pb::EmcStatusConfig &config);
-    void updateIoObject(const pb::EmcStatusIo &io);
-    void updateTaskObject(const pb::EmcStatusTask &task);
-    void updateInterpObject(const pb::EmcStatusInterp &interp);
+    void updateMotionObject(const machinetalk::EmcStatusMotion &motion);
+    void updateConfigObject(const machinetalk::EmcStatusConfig &config);
+    void updateIoObject(const machinetalk::EmcStatusIo &io);
+    void updateTaskObject(const machinetalk::EmcStatusTask &task);
+    void updateInterpObject(const machinetalk::EmcStatusInterp &interp);
     void initializeObject(StatusChannel channel);
 
 
 private slots:
-    void emcstatFullUpdateReceived(const QByteArray &topic, const pb::Container &rx);
-    void emcstatIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx);
+    void emcstatFullUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void emcstatIncrementalUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
     void syncStatus();
     void unsyncStatus();
     void updateTopics();

@@ -38,7 +38,7 @@ public:
     class PreviewItem {
     public:
         QModelIndex modelIndex;
-        pb::Preview previewItem;
+        machinetalk::Preview previewItem;
     };
 
     enum GCodeProgramRoles {
@@ -67,7 +67,7 @@ public slots:
     void prepareFile(const QString &fileName, int lineCount);
     void removeFile(const QString &fileName);
     void addLine(const QString &fileName);
-    void addPreviewItem(const QModelIndex &index, const pb::Preview &previewItem);
+    void addPreviewItem(const QModelIndex &index, const machinetalk::Preview &previewItem);
     QVariant data(const QString &fileName, int lineNumber, int role) const;
     bool setData(const QString &fileName, int lineNumber, const QVariant &value, int role);
     void clear();

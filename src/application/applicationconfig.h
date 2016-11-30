@@ -36,7 +36,7 @@
 
 namespace qtquickvcp {
 
-class ApplicationConfig : public application::ConfigBase
+class ApplicationConfig : public machinetalk::application::ConfigBase
 {
     Q_OBJECT
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
@@ -105,13 +105,13 @@ private:
     ApplicationConfigFilter *m_filter;
 
     // more efficient to reuse a protobuf Message
-    pb::Container m_tx;
+    machinetalk::Container m_tx;
 
     void cleanupFiles();
 
 private slots:
-    void describeApplicationReceived(const pb::Container &rx);
-    void applicationDetailReceived(const pb::Container &rx);
+    void describeApplicationReceived(const machinetalk::Container &rx);
+    void applicationDetailReceived(const machinetalk::Container &rx);
     void syncConfig();
     void unsyncConfig();
 

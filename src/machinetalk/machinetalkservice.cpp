@@ -76,7 +76,7 @@ void MachinetalkService::recurseDescriptor(const gpb::Descriptor *descriptor, QJ
         case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
             QJsonObject jsonObject;
 
-            if (field->message_type() == pb::Position::descriptor())  // add indexes to position messages
+            if (field->message_type() == machinetalk::Position::descriptor())  // add indexes to position messages
             {
                 for (int i = 0; i < 9; ++i)
                 {
@@ -121,14 +121,14 @@ int MachinetalkService::recurseMessage(const gpb::Message &message, QJsonObject 
     gpb::vector< const gpb::FieldDescriptor * > output;
     reflection->ListFields(message, &output);
 
-    if (message.GetDescriptor() == pb::File::descriptor())  // handle files with binary data
+    if (message.GetDescriptor() == machinetalk::File::descriptor())  // handle files with binary data
     {
-        pb::File file;
+        machinetalk::File file;
         file.MergeFrom(message);
         fileToJson(file, object, tempDir);
         return output.size();
     }
-    else if (message.GetDescriptor() == pb::Position::descriptor()) // handle position vecotors
+    else if (message.GetDescriptor() == machinetalk::Position::descriptor()) // handle position vecotors
     {
         isPosition = true;
     }
@@ -265,7 +265,7 @@ void MachinetalkService::updateValue(const gpb::Message &message, QJsonValue *va
 /** Converts a protobuf File object to a json file descriptor
  *  stores the data to a temporary directory
  **/
-void MachinetalkService::fileToJson(const pb::File &file, QJsonObject *object, const QString tempDir)
+void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject *object, const QString tempDir)
 {
     QDir dir;
     QString fileName;
@@ -299,13 +299,13 @@ void MachinetalkService::fileToJson(const pb::File &file, QJsonObject *object, c
 
     data = QByteArray(file.blob().data(), file.blob().size());
 
-    if (file.encoding() == pb::ZLIB)
+    if (file.encoding() == machinetalk::ZLIB)
     {
         quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
         qWarning() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
         data = qUncompress(data);
     }
-    else if (file.encoding() != pb::CLEARTEXT)
+    else if (file.encoding() != machinetalk::CLEARTEXT)
     {
         qWarning() << "unknown encoding";
         localFile.close();

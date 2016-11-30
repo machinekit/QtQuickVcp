@@ -31,7 +31,7 @@
 
 namespace qtquickvcp {
 
-class PreviewClient : public pathview::PreviewClientBase
+class PreviewClient : public machinetalk::pathview::PreviewClientBase
 {
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
@@ -43,19 +43,19 @@ public:
     explicit PreviewClient(QObject *parent = 0);
 
     enum InterpreterState {
-        InterpreterIdle = pb::INTERP_IDLE,
-        InterpreterRunning = pb::INTERP_RUNNING,
-        InterpreterPaused = pb::INTERP_PAUSED,
-        InterpreterQueueWait = pb::INTERP_QUEUE_WAIT,
-        InterpreterSyncWait = pb::INTERP_SYNC_WAIT,
-        InterpreterAbortWait = pb::INTERP_ABORT_WAIT,
-        InterpreterStateUnset = pb::INTERP_STATE_UNSET
+        InterpreterIdle = machinetalk::INTERP_IDLE,
+        InterpreterRunning = machinetalk::INTERP_RUNNING,
+        InterpreterPaused = machinetalk::INTERP_PAUSED,
+        InterpreterQueueWait = machinetalk::INTERP_QUEUE_WAIT,
+        InterpreterSyncWait = machinetalk::INTERP_SYNC_WAIT,
+        InterpreterAbortWait = machinetalk::INTERP_ABORT_WAIT,
+        InterpreterStateUnset = machinetalk::INTERP_STATE_UNSET
     };
 
     enum CanonUnits {
-        CanonUnitsInch = pb::CANON_UNITS_INCH,
-        CanonUnitsMm = pb::CANON_UNITS_MM,
-        CanonUnitsCm = pb::CANON_UNITS_CM
+        CanonUnitsInch = machinetalk::CANON_UNITS_INCH,
+        CanonUnitsMm = machinetalk::CANON_UNITS_MM,
+        CanonUnitsCm = machinetalk::CANON_UNITS_CM
     };
 
     GCodeProgramModel * model() const
@@ -101,8 +101,8 @@ private:
     PreviewStatus m_previewStatus;
     bool m_previewUpdated;
 
-    void previewReceived(const QByteArray &topic, const pb::Container &rx);
-    void interpStatReceived(const QByteArray &topic, const pb::Container &rx);
+    void previewReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void interpStatReceived(const QByteArray &topic, const machinetalk::Container &rx);
     void setConnected();
     void clearConnected();
 

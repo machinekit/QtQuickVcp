@@ -29,7 +29,7 @@
 
 namespace qtquickvcp {
 
-class ApplicationError : public application::ErrorBase
+class ApplicationError : public machinetalk::application::ErrorBase
 {
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
@@ -41,12 +41,12 @@ public:
     explicit ApplicationError(QObject *parent = 0);
 
     enum ErrorType {
-        NmlError = pb::MT_EMC_NML_ERROR,
-        NmlText = pb::MT_EMC_NML_TEXT,
-        NmlDisplay = pb::MT_EMC_NML_DISPLAY,
-        OperatorError = pb::MT_EMC_OPERATOR_ERROR,
-        OperatorText = pb::MT_EMC_OPERATOR_TEXT,
-        OperatorDisplay = pb::MT_EMC_OPERATOR_DISPLAY
+        NmlError = machinetalk::MT_EMC_NML_ERROR,
+        NmlText = machinetalk::MT_EMC_NML_TEXT,
+        NmlDisplay = machinetalk::MT_EMC_NML_DISPLAY,
+        OperatorError = machinetalk::MT_EMC_OPERATOR_ERROR,
+        OperatorText = machinetalk::MT_EMC_OPERATOR_TEXT,
+        OperatorDisplay = machinetalk::MT_EMC_OPERATOR_DISPLAY
     };
 
     enum ErrorChannelEnum {
@@ -81,15 +81,15 @@ private:
     bool            m_connected;
     ErrorChannels   m_channels;
 
-    void errorMessageReceived(const pb::Container rx);
+    void errorMessageReceived(const machinetalk::Container rx);
 
 private slots:
-    void emcNmlErrorReceived(const QByteArray &topic, const pb::Container &rx);
-    void emcNmlTextReceived(const QByteArray &topic, const pb::Container &rx);
-    void emcNmlDisplayReceived(const QByteArray &topic, const pb::Container &rx);
-    void emcOperatorTextReceived(const QByteArray &topic, const pb::Container &rx);
-    void emcOperatorErrorReceived(const QByteArray &topic, const pb::Container &rx);
-    void emcOperatorDisplayReceived(const QByteArray &topic, const pb::Container &rx);
+    void emcNmlErrorReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void emcNmlTextReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void emcNmlDisplayReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void emcOperatorTextReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void emcOperatorErrorReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void emcOperatorDisplayReceived(const QByteArray &topic, const machinetalk::Container &rx);
     void updateTopics();
     void setConnected();
     void clearConnected();

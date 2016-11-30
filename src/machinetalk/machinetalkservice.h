@@ -63,7 +63,7 @@ public:
                             QJsonValue *value,
                             const QString &field,
                             const QString &tempDir = QString("json"));
-    static void fileToJson(const pb::File &file,
+    static void fileToJson(const machinetalk::File &file,
                            QJsonObject *object,
                            const QString tempDir);
 };

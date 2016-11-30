@@ -4,17 +4,17 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef STATUS_SUBSCRIBE_H
-#define STATUS_SUBSCRIBE_H
+#ifndef SUBSCRIBE_H
+#define SUBSCRIBE_H
 #include <QObject>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 #include <google/protobuf/text_format.h>
 
 namespace machinetalk {
-namespace application {
+namespace common {
 
-class StatusSubscribe : public QObject
+class Subscribe : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
@@ -26,8 +26,8 @@ class StatusSubscribe : public QObject
     Q_ENUMS(State)
 
 public:
-    explicit StatusSubscribe(QObject *parent = 0);
-    ~StatusSubscribe();
+    explicit Subscribe(QObject *parent = 0);
+    ~Subscribe();
 
     enum State {
         Down = 0,
@@ -156,40 +156,40 @@ private slots:
 
 
     void fsmDown();
-    void fsmDownConnectEvent();
+    void fsmDownStartEvent();
     void fsmTrying();
-    void fsmTryingConnectedEvent();
-    void fsmTryingDisconnectEvent();
+    void fsmTryingFullUpdateReceivedEvent();
+    void fsmTryingStopEvent();
     void fsmUp();
-    void fsmUpTimeoutEvent();
-    void fsmUpTickEvent();
-    void fsmUpMessageReceivedEvent();
-    void fsmUpDisconnectEvent();
+    void fsmUpHeartbeatTimeoutEvent();
+    void fsmUpHeartbeatTickEvent();
+    void fsmUpAnyMsgReceivedEvent();
+    void fsmUpStopEvent();
 
 
 signals:
     void socketUriChanged(QString uri);
     void socketMessageReceived(const QByteArray &topic, const Container &rx);
     void debugNameChanged(QString debugName);
-    void stateChanged(StatusSubscribe::State state);
+    void stateChanged(Subscribe::State state);
     void errorStringChanged(QString errorString);
     void heartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm
     void fsmDownEntered(QPrivateSignal);
     void fsmDownExited(QPrivateSignal);
-    void fsmDownConnect(QPrivateSignal);
+    void fsmDownStart(QPrivateSignal);
     void fsmTryingEntered(QPrivateSignal);
     void fsmTryingExited(QPrivateSignal);
-    void fsmTryingConnected(QPrivateSignal);
-    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmTryingFullUpdateReceived(QPrivateSignal);
+    void fsmTryingStop(QPrivateSignal);
     void fsmUpEntered(QPrivateSignal);
     void fsmUpExited(QPrivateSignal);
-    void fsmUpTimeout(QPrivateSignal);
-    void fsmUpTick(QPrivateSignal);
-    void fsmUpMessageReceived(QPrivateSignal);
-    void fsmUpDisconnect(QPrivateSignal);
+    void fsmUpHeartbeatTimeout(QPrivateSignal);
+    void fsmUpHeartbeatTick(QPrivateSignal);
+    void fsmUpAnyMsgReceived(QPrivateSignal);
+    void fsmUpStop(QPrivateSignal);
 };
-} // namespace application
+} // namespace common
 } // namespace machinetalk
-#endif //STATUS_SUBSCRIBE_H
+#endif //SUBSCRIBE_H

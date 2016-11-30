@@ -23,13 +23,7 @@
 #include "previewclient.h"
 #include "debughelper.h"
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
+using namespace machinetalk;
 
 namespace qtquickvcp {
 
@@ -48,7 +42,7 @@ PreviewClient::PreviewClient(QObject *parent) :
     addPreviewstatusTopic("status");
 }
 
-void PreviewClient::previewReceived(const QByteArray &topic, const pb::Container &rx)
+void PreviewClient::previewReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
 
@@ -59,7 +53,7 @@ void PreviewClient::previewReceived(const QByteArray &topic, const pb::Container
 
     for (int i = 0; i < rx.preview_size(); ++i)
     {
-        pb::Preview preview;
+        Preview preview;
         QModelIndex index;
 
         preview = rx.preview(i);
@@ -74,7 +68,7 @@ void PreviewClient::previewReceived(const QByteArray &topic, const pb::Container
             m_previewStatus.fileName = QString::fromStdString(preview.filename());
         }
 
-        if (preview.type() == pb::PV_PREVIEW_START)
+        if (preview.type() == PV_PREVIEW_START)
         {
             m_previewUpdated = false;
             m_model->beginUpdate();
@@ -82,7 +76,7 @@ void PreviewClient::previewReceived(const QByteArray &topic, const pb::Container
             continue;
         }
 
-        if (preview.type() == pb::PV_PREVIEW_END)
+        if (preview.type() == PV_PREVIEW_END)
         {
             m_model->endUpdate();
             continue;
@@ -95,7 +89,7 @@ void PreviewClient::previewReceived(const QByteArray &topic, const pb::Container
     }
 }
 
-void PreviewClient::interpStatReceived(const QByteArray &topic, const pb::Container &rx)
+void PreviewClient::interpStatReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     QStringList notes;

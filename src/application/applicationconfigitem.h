@@ -48,9 +48,9 @@ public:
     explicit ApplicationConfigItem(QObject *parent = 0);
 
     enum ApplicationType {
-        Qt5QmlApplication = pb::QT5_QML,
-        GladeVcpApplication = pb::GLADEVCP,
-        JavaScriptApplication = pb::JAVASCRIPT
+        Qt5QmlApplication = machinetalk::QT5_QML,
+        GladeVcpApplication = machinetalk::GLADEVCP,
+        JavaScriptApplication = machinetalk::JAVASCRIPT
     };
 
     QString name() const

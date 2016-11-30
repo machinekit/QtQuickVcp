@@ -15,8 +15,8 @@ TEMPLATE = lib
 
 DEFINES += MACHINETALK_LIBRARY
 
-SOURCES += $$PWD/machinetalk/rpcclient.cpp \
-           $$PWD/machinetalk/subscribe.cpp \
+SOURCES += $$PWD/common/rpcclient.cpp \
+           $$PWD/common/subscribe.cpp \
            $$PWD/halremote/remotecomponentbase.cpp \
            $$PWD/halremote/halrcompsubscribe.cpp \
            $$PWD/application/launchersubscribe.cpp \
@@ -31,8 +31,8 @@ SOURCES += $$PWD/machinetalk/rpcclient.cpp \
            $$PWD/pathview/previewsubscribe.cpp \
            $$PWD/machinetalkservice.cpp
 
-HEADERS += $$PWD/machinetalk/rpcclient.h \
-           $$PWD/machinetalk/subscribe.h \
+HEADERS += $$PWD/common/rpcclient.h \
+           $$PWD/common/subscribe.h \
            $$PWD/halremote/remotecomponentbase.h \
            $$PWD/halremote/halrcompsubscribe.h \
            $$PWD/application/launchersubscribe.h \

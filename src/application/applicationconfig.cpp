@@ -22,13 +22,7 @@
 #include "applicationconfig.h"
 #include "machinetalkservice.h"
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
+using namespace machinetalk;
 
 namespace qtquickvcp {
 
@@ -191,11 +185,11 @@ void ApplicationConfig::cleanupFiles()
     }
 }
 
-void ApplicationConfig::describeApplicationReceived(const pb::Container &rx)
+void ApplicationConfig::describeApplicationReceived(const Container &rx)
 {
     for (int i = 0; i < rx.app_size(); ++i)
     {
-        pb::Application app;
+        Application app;
 
         app = rx.app(i);
 
@@ -223,11 +217,11 @@ void ApplicationConfig::describeApplicationReceived(const pb::Container &rx)
     }
 }
 
-void ApplicationConfig::applicationDetailReceived(const pb::Container &rx)
+void ApplicationConfig::applicationDetailReceived(const Container &rx)
 {
     for (int i = 0; i < rx.app_size(); ++i)
     {
-        pb::Application app;
+        Application app;
 
         app = rx.app(i);
 
@@ -262,7 +256,7 @@ void ApplicationConfig::applicationDetailReceived(const pb::Container &rx)
 
             for (int j = 0; j < app.file_size(); ++j)
             {
-                pb::File file;
+                File file;
                 QString filePath;
                 QByteArray data;
 
@@ -284,13 +278,13 @@ void ApplicationConfig::applicationDetailReceived(const pb::Container &rx)
 
                 data = QByteArray(file.blob().data(), file.blob().size());
 
-                if (file.encoding() == pb::ZLIB)
+                if (file.encoding() == ZLIB)
                 {
                     quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
                     qDebug() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
                     data = qUncompress(data);
                 }
-                else if (file.encoding() != pb::CLEARTEXT)
+                else if (file.encoding() != CLEARTEXT)
                 {
                     qDebug() << "unknown encoding";
                     localFile.close();
@@ -341,7 +335,7 @@ void ApplicationConfig::selectConfig(QString name)
     m_selectedConfig->setLoading(true);
     m_selectedConfig->setName(name);
 
-    pb::Application *app = m_tx.add_app();
+    Application *app = m_tx.add_app();
 
     app->set_name(name.toStdString());
     sendRetrieveApplication(m_tx);

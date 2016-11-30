@@ -30,7 +30,7 @@
 
 namespace qtquickvcp {
 
-class ApplicationLauncher : public application::LauncherBase
+class ApplicationLauncher : public machinetalk::application::LauncherBase
 {
     Q_OBJECT
     Q_PROPERTY(QJsonValue launchers READ launchers NOTIFY launchersChanged)
@@ -63,13 +63,13 @@ private:
     bool m_synced;
 
     // more efficient to reuse a protobuf Message
-    pb::Container   m_tx;
+    machinetalk::Container   m_tx;
 
     void initializeObject();
 
 private slots:
-    void launcherFullUpdateReceived(const QByteArray &topic, const pb::Container &rx);
-    void launcherIncrementalUpdateReceived(const QByteArray &topic, const pb::Container &rx);
+    void launcherFullUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void launcherIncrementalUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
     void syncStatus();
     void unsyncStatus();
 
