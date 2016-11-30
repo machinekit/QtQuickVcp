@@ -178,7 +178,13 @@ namespace nzmqt
             OPT_RECONNECT_IVL_MAX = ZMQ_RECONNECT_IVL_MAX,
             OPT_BACKLOG = ZMQ_BACKLOG,
             OPT_SNDHWM = ZMQ_SNDHWM,
-            OPT_RCVHWM = ZMQ_RCVHWM
+            OPT_RCVHWM = ZMQ_RCVHWM,
+
+            // Security
+            OPT_CURVE_SERVER = ZMQ_CURVE_SERVER,
+            OPT_CURVE_SECRETKEY = ZMQ_CURVE_SECRETKEY,
+            OPT_CURVE_PUBLICKEY = ZMQ_CURVE_PUBLICKEY,
+            OPT_CURVE_SERVERKEY = ZMQ_CURVE_SERVERKEY
         };
 
         ~ZMQSocket();
@@ -254,6 +260,34 @@ namespace nzmqt
         void setLinger(int msec_);
 
         qint32 linger() const;
+
+        void setCurveServer(bool isServer_);
+
+        bool curveServer() const;
+
+        void setCurveSecretKey(const char* nameStr_);
+
+        void setCurveSecretKey(const QString& name_);
+
+        void setCurveSecretKey(const QByteArray& name_);
+
+        QByteArray curveSecretKey() const;
+
+        void setCurveServerKey(const char* nameStr_);
+
+        void setCurveServerKey(const QString& name_);
+
+        void setCurveServerKey(const QByteArray& name_);
+
+        QByteArray curveServerKey() const;
+
+        void setCurvePublicKey(const char* nameStr_);
+
+        void setCurvePublicKey(const QString& name_);
+
+        void setCurvePublicKey(const QByteArray& name_);
+
+        QByteArray curvePublicKey() const;
 
         void subscribeTo(const char* filterStr_);
 
