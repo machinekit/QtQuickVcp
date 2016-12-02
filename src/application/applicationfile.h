@@ -234,9 +234,9 @@ private:
     void stop() {}
     void updateState(TransferState state);
     void updateError(TransferError error, const QString &errorString);
-    QString generateTempPath();
+    QString generateTempPath() const;
     void cleanupTempPath();
-    QString applicationFilePath(const QString &remoteFilePath, const QString &serverDirectory);
+    QString applicationFilePath(const QString &fileName, const QString &serverDirectory) const;
     void initializeFtp();
     void cleanupFtp();
     void cleanupFile();

@@ -299,7 +299,7 @@ void ApplicationFile::updateError(ApplicationFile::TransferError error, const QS
     }
 }
 
-QString ApplicationFile::generateTempPath()
+QString ApplicationFile::generateTempPath() const
 {
     return QUrl::fromLocalFile(QString("%1/machinekit-%2").arg(QDir::tempPath())
             .arg(QCoreApplication::applicationPid())).toString();
@@ -312,7 +312,7 @@ void ApplicationFile::cleanupTempPath()
     dir.removeRecursively();
 }
 
-QString ApplicationFile::applicationFilePath(const QString &fileName, const QString &serverDirectory)
+QString ApplicationFile::applicationFilePath(const QString &fileName, const QString &serverDirectory) const
 {
     return QDir(QUrl(m_localPath).toLocalFile() + "/" + serverDirectory).filePath(fileName);
 }
