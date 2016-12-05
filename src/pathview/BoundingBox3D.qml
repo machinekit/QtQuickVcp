@@ -30,47 +30,50 @@ Canvas3D {
     readonly property vector3d size: maximum.minus(minimum)
     readonly property vector3d center: minimum.plus(maximum).times(0.5)
     property color color: "red"
+    property real lineWidth: 1.0
     property bool lineStipple: true
     property real lineStippleLength: (size.length()  / 20.0)
 
     id: root
 
     onPaint: {
-        var size = Qt.vector3d(maximum.x - minimum.x, maximum.y - minimum.y, maximum.z - minimum.z)
-        context.prepare(this)
-        context.reset()
-        context.lineStipple(root.lineStipple, root.lineStippleLength)
-        context.color(root.color)
-        context.translate(minimum)
-        context.beginUnion()
-        context.lineTo(size.x, 0.0, 0.0)
-        context.lineTo(size.x, size.y, 0.0)
-        context.lineTo(0.0, size.y, 0.0)
-        context.lineTo(0.0, 0.0, 0.0)
+        var size = Qt.vector3d(maximum.x - minimum.x, maximum.y - minimum.y, maximum.z - minimum.z);
+        context.prepare(this);
+        context.reset();
+        context.lineStipple(root.lineStipple, root.lineStippleLength);
+        context.lineWidth(root.lineWidth);
+        context.color(root.color);
+        context.translate(minimum);
+        context.beginUnion();
+        context.lineTo(size.x, 0.0, 0.0);
+        context.lineTo(size.x, size.y, 0.0);
+        context.lineTo(0.0, size.y, 0.0);
+        context.lineTo(0.0, 0.0, 0.0);
         if (axes > 2) {
-            context.lineTo(0.0, 0.0, size.z)
-            context.lineTo(size.x, 0.0, size.z)
-            context.lineTo(size.x, size.y, size.z)
-            context.lineTo(0.0, size.y, size.z)
-            context.lineTo(0.0, 0.0, size.z)
-            context.resetTransformations()
+            context.lineTo(0.0, 0.0, size.z);
+            context.lineTo(size.x, 0.0, size.z);
+            context.lineTo(size.x, size.y, size.z);
+            context.lineTo(0.0, size.y, size.z);
+            context.lineTo(0.0, 0.0, size.z);
+            context.resetTransformations();
             context.lineFromTo(0.0, size.y, 0.0,
-                               0.0, size.y, size.z)
+                               0.0, size.y, size.z);
             context.lineFromTo(size.x, size.y, 0.0,
-                               size.x, size.y, size.z)
+                               size.x, size.y, size.z);
             context.lineFromTo(size.x, 0.0, 0.0,
-                               size.x, 0.0, size.z)
+                               size.x, 0.0, size.z);
         }
-        context.endUnion()
-        context.update()
+        context.endUnion();
+        context.update();
     }
 
     Component.onCompleted: {
-        onAxesChanged.connect(needsUpdate)
-        onMinimumChanged.connect(needsUpdate)
-        onMaximumChanged.connect(needsUpdate)
-        onColorChanged.connect(needsUpdate)
-        onLineStippleChanged.connect(needsUpdate)
-        onLineStippleLengthChanged.connect(needsUpdate)
+        onAxesChanged.connect(needsUpdate);
+        onMinimumChanged.connect(needsUpdate);
+        onMaximumChanged.connect(needsUpdate);
+        onColorChanged.connect(needsUpdate);
+        onLineStippleChanged.connect(needsUpdate);
+        onLineStippleLengthChanged.connect(needsUpdate);
+        onLineWidthChanged.connect(needsUpdate);
     }
 }

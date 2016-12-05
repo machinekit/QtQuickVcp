@@ -32,9 +32,10 @@ ApplicationAction {
     shortcut: ""
     tooltip: qsTr("Enable feed hold [%1]").arg(shortcut)
     onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
-        command.setFeedHoldEnabled(checked)
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
+        }
+        command.setFeedHoldEnabled(checked);
     }
 
     checkable: true

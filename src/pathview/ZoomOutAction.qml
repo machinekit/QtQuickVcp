@@ -30,12 +30,12 @@ Action {
 
     id: root
     shortcut: "+"
-    enabled: view != null
+    enabled: view !== null
     text: qsTr("Zoom Out")
     tooltip: qsTr("Zoom Out")
     iconSource: "qrc:Machinekit/PathView/icons/zoom-out"
 
     onTriggered: {
-        view.cameraZoom = view.cameraZoom * factor - subtrahend
+        view.cameraZoom = view.cameraZoom * factor - subtrahend;
     }
 }

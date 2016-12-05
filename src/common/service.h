@@ -59,7 +59,7 @@ public:
     static QString enumNameToCamelCase(const QString &name);
     static void recurseDescriptor(const gpb::Descriptor *descriptor,
                                   QJsonObject *object);
-    static void recurseMessage(const gpb::Message &message,
+    static int recurseMessage(const gpb::Message &message,
                                QJsonObject *object,
                                const QString &fieldFilter = QString(),
                                const QString &tempDir = QString("json"));

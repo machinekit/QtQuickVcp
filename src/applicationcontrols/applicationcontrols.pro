@@ -70,7 +70,9 @@ CONTROLS_QML_FILES = \
     FeedHoldAction.qml \
     FeedOverrideAction.qml \
     SpindleOverrideAction.qml \
-    EstopPowerAction.qml
+    EstopPowerAction.qml \
+    RapidrateHandler.qml \
+    RapidrateSlider.qml
 
 QML_FILES += $$CONTROLS_QML_FILES
 

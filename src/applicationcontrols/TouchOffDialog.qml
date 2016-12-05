@@ -45,25 +45,25 @@ Dialog {
 
     onVisibleChanged: {
         if (visible) {
-            _done = false
-            coordinateSpin.value = 0.0
-            coordinateSystemCombo.currentIndex = status.motion.g5xIndex - 1
+            _done = false;
+            coordinateSpin.value = 0.0;
+            coordinateSystemCombo.currentIndex = status.motion.g5xIndex - 1;
         }
     }
 
     onAccepted: {
         if (_ready && !_done) {
             if (status.task.taskMode !== ApplicationStatus.TaskModeMdi) {
-                command.setTaskMode('execute', ApplicationCommand.TaskModeMdi)
+                command.setTaskMode('execute', ApplicationCommand.TaskModeMdi);
             }
-            var axisName = _axisNames[axis]
-            var position = status.motion.position[axisName] - status.motion.g92Offset[axisName] - status.io.toolOffset[axisName]
-            var newOffset = (position - coordinateSpin.value)
-            var mdi = "G10 L2 P" + (coordinateSystemCombo.currentIndex + 1) + " " + axisNames[axis] + newOffset.toFixed(6)
-            command.executeMdi('execute', mdi)
+            var axisName = _axisNames[axis];
+            var position = status.motion.position[axisName] - status.motion.g92Offset[axisName] - status.io.toolOffset[axisName];
+            var newOffset = (position - coordinateSpin.value);
+            var mdi = "G10 L2 P" + (coordinateSystemCombo.currentIndex + 1) + " " + axisNames[axis] + newOffset.toFixed(6);
+            command.executeMdi('execute', mdi);
         }
 
-        _done = true
+        _done = true;
     }
 
     ColumnLayout {

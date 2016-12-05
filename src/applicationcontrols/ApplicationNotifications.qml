@@ -37,7 +37,7 @@ ListView {
 
     function addNotification (type, text)
     {
-        notificationModel.append({"type": type, "text": text})
+        notificationModel.append({ "type": type, "text": text });
     }
 
     SystemPalette {
@@ -81,18 +81,18 @@ ListView {
                     switch (model.type) {
                     case ApplicationError.NmlError:
                     case ApplicationError.OperatorError:
-                        return "qrc:Machinekit/Application/Controls/icons/dialog-error"
+                        return "qrc:Machinekit/Application/Controls/icons/dialog-error";
                     case ApplicationError.NmlDisplay:
                     case ApplicationError.OperatorDisplay:
-                        return "qrc:Machinekit/Application/Controls/icons/dialog-warning"
+                        return "qrc:Machinekit/Application/Controls/icons/dialog-warning";
                     case ApplicationError.NmlText:
                     case ApplicationError.OperatorText:
-                        return "qrc:Machinekit/Application/Controls/icons/dialog-information"
+                        return "qrc:Machinekit/Application/Controls/icons/dialog-information";
                     default:
-                        return ""
+                        return "";
                     }
                 }
-                visible: source != ""
+                visible: source !== ""
             }
 
             MouseArea {

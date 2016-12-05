@@ -41,14 +41,14 @@ ApplicationObject {
     id: object
 
     function getIncrements() {
-        var axisIncrements = undefined
+        var axisIncrements = undefined;
         if ((object.axis >= 0) && (object.axis < object.status.config.axes)) {
-            axisIncrements = object.status.config.axis[object.axis].increments
+            axisIncrements = object.status.config.axis[object.axis].increments;
         }
         if ((axisIncrements === undefined) || (axisIncrements === "")) {
-            axisIncrements =  object.status.config.increments
+            axisIncrements =  object.status.config.increments;
         }
-        return axisIncrements.split(" ").sort(_compareNumbers)
+        return axisIncrements.split(" ").sort(_compareNumbers);
     }
 }
 

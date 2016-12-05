@@ -30,15 +30,15 @@ Action {
     property var command: core === null ? {"connected": false} : core.command
     property var file: core === null ? {"localPath":"", "remotePath":"", "localFilePath":"", "ready":false} : core.file
     property var error: core === null ? {"connected": false} : core.error
-    property var mdiHistory: core == null ? {"model": []} : core.mdiHistory
-    property var homeAllAxesHelper: core == null ? {"running": false} : core.homeAllAxesHelper
+    property var mdiHistory: core === null ? {"model": []} : core.mdiHistory
+    property var homeAllAxesHelper: core === null ? {"running": false} : core.homeAllAxesHelper
 
     Component.onCompleted: {
-        if (core == null)
+        if (core === null)
         {
             try {
-                var x = applicationCore
-                core = Qt.binding(function() {return x})
+                var x = applicationCore;
+                core = Qt.binding(function() { return x; });
             }
             catch (err) {
             }

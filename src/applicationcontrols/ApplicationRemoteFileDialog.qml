@@ -17,36 +17,37 @@ Dialog {
     property bool _ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
 
     function _openFile(row) {
-        if (row < 0)
-            return
-
-        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)
-        if (status.task.file !== "") {
-            command.resetProgram('execute')
+        if (row < 0) {
+            return;
         }
-        var fileName = tableView.model.getName(row)
-        var newPath = file.remotePath + '/' + fileName
-        command.openProgram('execute', newPath)
-        dialog.close()
+
+        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
+            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
+        }
+        command.resetProgram('execute');
+        var fileName = tableView.model.getName(row);
+        var newPath = file.remotePath + '/' + fileName;
+        command.openProgram('execute', newPath);
+        dialog.close();
     }
 
     function _removeFile(row) {
-        if (row < 0)
-            return
+        if (row < 0) {
+            return;
+        }
 
-        var fileName = tableView.model.getName(row)
-        file.removeFile(fileName)
+        var fileName = tableView.model.getName(row);
+        file.removeFile(fileName);
     }
 
     function _uploadFileDialog() {
-        dialog.close()
-        fileDialog.open()
+        dialog.close();
+        fileDialog.open();
     }
 
     function _uploadFile(url) {
-        file.localFilePath = url
-        file.startUpload()
+        file.localFilePath = url;
+        file.startUpload();
     }
 
     SystemPalette { id: systemPalette }
@@ -94,7 +95,7 @@ Dialog {
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton
                 onClicked: {
-                    fileMenu.popup()
+                    fileMenu.popup();
                 }
             }
 
@@ -102,7 +103,7 @@ Dialog {
                 anchors.fill: parent
                 onDropped: {
                     if (drop.hasUrls) {
-                        _uploadFile(drop.urls[0])
+                        _uploadFile(drop.urls[0]);
                     }
                 }
             }
@@ -174,16 +175,17 @@ Dialog {
     }
 
     onVisibleChanged: {
-        if (visible)
-            file.refreshFiles()
+        if (visible) {
+            file.refreshFiles();
+        }
     }
 
     Component.onCompleted: {
-        if (core == null)
+        if (core === null)
         {
             try {
-                var x = applicationCore
-                core = Qt.binding(function() {return x})
+                var x = applicationCore;
+                core = Qt.binding(function() { return x; });
             }
             catch (err) {
             }

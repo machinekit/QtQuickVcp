@@ -325,6 +325,88 @@ NZMQT_INLINE qint32 ZMQSocket::linger() const
     return msec;
 }
 
+NZMQT_INLINE void ZMQSocket::setCurveServer(bool asServer_)
+{
+    setOption(OPT_CURVE_SERVER, static_cast<quint32>(asServer_));
+}
+
+NZMQT_INLINE bool ZMQSocket::curveServer() const
+{
+    quint32 isServer = -1;
+    size_t size = sizeof(isServer);
+    getOption(OPT_CURVE_SERVER, &isServer, &size);
+    return static_cast<bool>(isServer);
+}
+
+NZMQT_INLINE void ZMQSocket::setCurveServerKey(const char* keyStr_)
+{
+    setOption(OPT_CURVE_SERVERKEY, keyStr_);
+}
+
+NZMQT_INLINE void ZMQSocket::setCurveServerKey(const QString& key_)
+{
+    setOption(OPT_CURVE_SERVERKEY, key_.toLocal8Bit());
+}
+
+NZMQT_INLINE void ZMQSocket::setCurveServerKey(const QByteArray& key_)
+{
+    setOption(OPT_CURVE_SERVERKEY, const_cast<char*>(key_.constData()), key_.size());
+}
+
+NZMQT_INLINE QByteArray ZMQSocket::curveServerKey() const
+{
+    char keybuf[256];
+    size_t size = sizeof(keybuf);
+    getOption(OPT_CURVE_SERVERKEY, keybuf, &size);
+    return QByteArray(keybuf, size);
+}
+
+NZMQT_INLINE void ZMQSocket::setCurvePublicKey(const char* keyStr_)
+{
+    setOption(OPT_CURVE_PUBLICKEY, keyStr_);
+}
+
+NZMQT_INLINE void ZMQSocket::setCurvePublicKey(const QString& key_)
+{
+    setOption(OPT_CURVE_PUBLICKEY, key_.toLocal8Bit());
+}
+
+NZMQT_INLINE void ZMQSocket::setCurvePublicKey(const QByteArray& key_)
+{
+    setOption(OPT_CURVE_PUBLICKEY, const_cast<char*>(key_.constData()), key_.size());
+}
+
+NZMQT_INLINE QByteArray ZMQSocket::curvePublicKey() const
+{
+    char keybuf[256];
+    size_t size = sizeof(keybuf);
+    getOption(OPT_CURVE_PUBLICKEY, keybuf, &size);
+    return QByteArray(keybuf, size);
+}
+
+NZMQT_INLINE void ZMQSocket::setCurveSecretKey(const char* keyStr_)
+{
+    setOption(OPT_CURVE_SECRETKEY, keyStr_);
+}
+
+NZMQT_INLINE void ZMQSocket::setCurveSecretKey(const QString& key_)
+{
+    setOption(OPT_CURVE_SECRETKEY, key_.toLocal8Bit());
+}
+
+NZMQT_INLINE void ZMQSocket::setCurveSecretKey(const QByteArray& key_)
+{
+    setOption(OPT_CURVE_SECRETKEY, const_cast<char*>(key_.constData()), key_.size());
+}
+
+NZMQT_INLINE QByteArray ZMQSocket::curveSecretKey() const
+{
+    char keybuf[256];
+    size_t size = sizeof(keybuf);
+    getOption(OPT_CURVE_SECRETKEY, keybuf, &size);
+    return QByteArray(keybuf, size);
+}
+
 NZMQT_INLINE void ZMQSocket::subscribeTo(const char* filterStr_)
 {
     setOption(OPT_SUBSCRIBE, filterStr_);

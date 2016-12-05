@@ -65,6 +65,7 @@ Item {
         anchors.right: parent.right
         color: systemPalette.light
     }
+
     Label {
         id: dummyLabel
         text: "0"
@@ -128,55 +129,63 @@ Item {
             model: object.gcodeProgramModel
             delegate:
                 Item {
-                property bool lineActive: active
+                    property bool lineActive: Boolean(active)
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: dummyLabel.height
+                    anchors.left: parent ? parent.left : undefined
+                    anchors.right: parent ? parent.right : undefined
+                    height: dummyLabel.height
 
-                /*onLineActiveChanged: {
+                    /*onLineActiveChanged: {
                         if (lineActive) {
                             listView.positionViewAtIndex(index, ListView.Center)
                         }
                     }*/
 
-                Item {
-                    id: lineNumberRect
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    width: lineNumberBackground.width
+                    Item {
+                        id: lineNumberRect
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        width: lineNumberBackground.width
 
-                    Label {
-                        anchors.fill: parent
-                        anchors.rightMargin: 5
-                        text: lineNumber
-                        horizontalAlignment: Text.AlignRight
-                        color: selected ? "white" : label.color
-                        font: dummyLabel.font
+                        Label {
+                            anchors.fill: parent
+                            anchors.rightMargin: 5
+                            verticalAlignment: Text.AlignVCenter
+                            wrapMode: Text.NoWrap
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
+                            horizontalAlignment: Text.AlignRight
+                            color: selected ? "white" : label.color
+                            font: dummyLabel.font
+                            text: String(lineNumber)
+                        }
                     }
-                }
 
-                Rectangle {
-                    color: selected ? root.selectedColor : (active ? root.activeColor : (executed ? root.executedColor : "transparent"))
-                    anchors.left: lineNumberRect.right
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
+                    Rectangle {
+                        color: selected ? root.selectedColor : (active ? root.activeColor : (executed ? root.executedColor : "transparent"))
+                        anchors.left: lineNumberRect.right
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
 
 
-                    Label {
-                        id: label
-                        anchors.fill: parent
-                        anchors.leftMargin: 5
-                        text: gcode
-                        font: dummyLabel.font
+                        Label {
+                            id: label
+                            anchors.fill: parent
+                            anchors.leftMargin: 5
+                            verticalAlignment: Text.AlignVCenter
+                            wrapMode: Text.NoWrap
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
+                            font: dummyLabel.font
+                            text: String(gcode).trim()
+                        }
                     }
-                }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: selected = !selected
-                }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: selected = !selected
+                    }
             }
         }
     }

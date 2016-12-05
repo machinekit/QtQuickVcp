@@ -44,7 +44,7 @@ Rectangle {
     anchors.fill: parent
     color: systemPalette.window
     opacity: 0
-    enabled: opacity != 0
+    enabled: opacity !== 0
 
     SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
 

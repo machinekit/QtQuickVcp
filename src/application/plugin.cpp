@@ -20,19 +20,21 @@
 **
 ****************************************************************************/
 #include "plugin.h"
-#include "qapplicationconfig.h"
-#include "qapplicationconfigitem.h"
-#include "qapplicationconfigfilter.h"
-#include "qapplicationdescription.h"
-#include "qapplicationstatus.h"
-#include "qapplicationcommand.h"
-#include "qapplicationerror.h"
-#include "qapplicationfile.h"
-#include "qapplicationfilemodel.h"
-#include "qapplicationlauncher.h"
-#include "qapplicationplugins.h"
-#include "qapplicationpluginitem.h"
-#include "qlocalsettings.h"
+#include "applicationconfig.h"
+#include "applicationconfigitem.h"
+#include "applicationconfigfilter.h"
+#include "applicationdescription.h"
+#include "applicationstatus.h"
+#include "applicationcommand.h"
+#include "applicationerror.h"
+#include "applicationfile.h"
+#include "applicationfilemodel.h"
+#include "applicationlauncher.h"
+#include "applicationplugins.h"
+#include "applicationpluginitem.h"
+#include "localsettings.h"
+#include "fileio.h"
+#include "revisionsingleton.h"
 
 static void initResources()
 {
@@ -63,19 +65,21 @@ void MachinekitApplicationPlugin::registerTypes(const char *uri)
 
     // @uri Machinekit.Application
     Q_ASSERT(uri == QLatin1String("Machinekit.Application"));
-    qmlRegisterType<QApplicationConfig>(uri, 1, 0, "ApplicationConfig");
-    qmlRegisterType<QApplicationConfigItem>(uri, 1, 0, "ApplicationConfigItem");
-    qmlRegisterType<QApplicationConfigFilter>(uri, 1, 0, "ApplicationConfigFilter");
-    qmlRegisterType<QApplicationDescription>(uri, 1, 0, "ApplicationDescription");
-    qmlRegisterType<QApplicationStatus>(uri, 1, 0, "ApplicationStatus");
-    qmlRegisterType<QApplicationCommand>(uri, 1, 0, "ApplicationCommand");
-    qmlRegisterType<QApplicationError>(uri, 1, 0, "ApplicationError");
-    qmlRegisterType<QApplicationFile>(uri, 1, 0, "ApplicationFile");
-    qmlRegisterType<QApplicationFileModel>(uri, 1, 0, "ApplicationFileModel");
-    qmlRegisterType<QApplicationLauncher>(uri, 1, 0, "ApplicationLauncher");
-    qmlRegisterType<QLocalSettings>(uri, 1, 0, "LocalSettings");
-    qmlRegisterType<QApplicationPlugins>(uri, 1, 0, "ApplicationPlugins");
-    qmlRegisterType<QApplicationPluginItem>(uri, 1, 0, "ApplicationPluginItem");
+    qmlRegisterType<qtquickvcp::ApplicationConfig>(uri, 1, 0, "ApplicationConfig");
+    qmlRegisterType<qtquickvcp::ApplicationConfigItem>(uri, 1, 0, "ApplicationConfigItem");
+    qmlRegisterType<qtquickvcp::ApplicationConfigFilter>(uri, 1, 0, "ApplicationConfigFilter");
+    qmlRegisterType<qtquickvcp::ApplicationDescription>(uri, 1, 0, "ApplicationDescription");
+    qmlRegisterType<qtquickvcp::ApplicationStatus>(uri, 1, 0, "ApplicationStatus");
+    qmlRegisterType<qtquickvcp::ApplicationCommand>(uri, 1, 0, "ApplicationCommand");
+    qmlRegisterType<qtquickvcp::ApplicationError>(uri, 1, 0, "ApplicationError");
+    qmlRegisterType<qtquickvcp::ApplicationFile>(uri, 1, 0, "ApplicationFile");
+    qmlRegisterType<qtquickvcp::ApplicationFileModel>(uri, 1, 0, "ApplicationFileModel");
+    qmlRegisterType<qtquickvcp::ApplicationLauncher>(uri, 1, 0, "ApplicationLauncher");
+    qmlRegisterType<qtquickvcp::LocalSettings>(uri, 1, 0, "LocalSettings");
+    qmlRegisterType<qtquickvcp::ApplicationPlugins>(uri, 1, 0, "ApplicationPlugins");
+    qmlRegisterType<qtquickvcp::ApplicationPluginItem>(uri, 1, 0, "ApplicationPluginItem");
+    qmlRegisterType<qtquickvcp::FileIO>(uri, 1, 0, "FileIO");
+    qmlRegisterSingletonType<qtquickvcp::RevisionSingleton>(uri, 1, 0, "Revision", &qtquickvcp::RevisionSingleton::qmlInstance);
 
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {

@@ -76,62 +76,74 @@ Rectangle {
     */
     property MenuBar menuBar
 
+    /*!
+        \qmlproperty Item background
+
+        This property holds the background \l Item.
+
+        The background item is shown when service discovery is in progress.
+
+        By default, this value references the default loading screen. When you set
+        the background item it will be reparented to the ServiceWindow automatically.
+    */
+    property Item background: discoveryPage
+
     /*! \internal */
     property var _requiredServices: {
-        var required = []
-        var newReady = true
+        var required = [];
+        var newReady = true;
         for (var i = 0; i < services.length; ++i) {
             if (services[i].required) {
-                required.push(services[i])
-                newReady = newReady && services[i].ready
-                services[i].onReadyChanged.connect(_evaluateReady)
+                required.push(services[i]);
+                newReady = newReady && services[i].ready;
+                services[i].onReadyChanged.connect(_evaluateReady);
             }
         }
 
-        ready = newReady  // if no required service we are ready
+        ready = newReady;  // if no required service we are ready
 
-        return required
+        return required;
     }
 
     /*!
         Updates the services of this window.
     */
     function updateServices() {
-        var list = [] //main.services
-        var nestedList = _recurseObjects(main.data, "Service")
+        var list = []; //main.services
+        var nestedList = _recurseObjects(main.data, "Service");
         if (nestedList.length > 0) {
-            list = list.concat(nestedList)
+            list = list.concat(nestedList);
         }
-        main.services = list
+        main.services = list;
     }
 
     /*! \internal */
     function _evaluateReady() {
         for (var i = 0; i < _requiredServices.length; ++i) {
             if (!_requiredServices[i].ready) {
-                ready = false
-                return
+                ready = false;
+                return;
             }
         }
 
-        ready = true
-        return
+        ready = true;
+        return;
     }
 
     /*! \internal */
     function _recurseObjects(objects, name)
     {
-        var list = []
+        var list = [];
 
         if (objects !== undefined) {
             for (var i = 0; i < objects.length; ++i)
             {
                 if (objects[i].objectName === name) {
-                    list.push(objects[i])
+                    list.push(objects[i]);
                 }
-                var nestedList = _recurseObjects(objects[i].data, name)
+                var nestedList = _recurseObjects(objects[i].data, name);
                 if (nestedList.length > 0) {
-                    list = list.concat(nestedList)
+                    list = list.concat(nestedList);
                 }
             }
         }
@@ -146,11 +158,18 @@ Rectangle {
     signal disconnect()
 
     Component.onCompleted: {
-       updateServices()
+       updateServices();
     }
 
     id: main
     color: systemPalette.window
+
+    onBackgroundChanged: {
+        if (background !== discoveryPage) {
+            background.parent = main;
+            background.z = 1000;
+        }
+    }
 
     SystemPalette {
         id: systemPalette;
@@ -161,65 +180,85 @@ Rectangle {
         id: dummyText
     }
 
-    Rectangle {
+    /* loads the default discovery page if necessary */
+    Loader {
         id: discoveryPage
-
         anchors.fill: parent
         visible: false
         z: 100
-        color: systemPalette.window
+        sourceComponent: defaultDiscoveryPage
+        active: background === discoveryPage
 
-        Button {
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: Screen.pixelDensity
-            text: qsTr("Back")
-            onClicked: main.disconnect()
+        Behavior on opacity {
+            enabled: opacity === 1.0
+            PropertyAnimation {
+                duration: 500;
+                properties: "opacity";
+                easing.type: Easing.InCubic;
+            }
         }
 
-        Label {
-            id: connectingLabel
-
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: connectingIndicator.top
-            anchors.bottomMargin: Screen.pixelDensity
-            font.pointSize: dummyText.font.pointSize * 1.3
-            text: qsTr("Waiting for services to appear...")
-        }
-
-        BusyIndicator {
-            id: connectingIndicator
-
-            anchors.centerIn: parent
-            running: true
-            height: Math.min(main.width, main.height) * 0.15
-            width: height
-        }
-
-        Column {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: connectingIndicator.bottom
-            anchors.topMargin: Screen.pixelDensity
-
-            Repeater {
-                model: main._requiredServices.length
-
-                CheckBox {
-                    id: checkBox
-                    text: qsTr("%1 service").arg(_requiredServices[index].type)
-                    checked: _requiredServices[index].ready
-                }
+        /* This timer is a workaround to make the discoveryPage invisible in QML designer */
+        Timer {
+            interval: 10
+            repeat: false
+            running: discoveryPage.active
+            onTriggered: {
+                discoveryPage.visible = true;
             }
         }
     }
 
-    /* This timer is a workaround to make the discoveryPage invisible in QML designer */
-    Timer {
-        interval: 10
-        repeat: false
-        running: true
-        onTriggered: {
-            discoveryPage.visible = true
+    /* the default discovery page, overlays the window as long as Machinetalk is not ready */
+    Component {
+        id: defaultDiscoveryPage
+
+        Rectangle {
+            id: discoveryPage
+            color: systemPalette.window
+
+            Button {
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: Screen.pixelDensity
+                text: qsTr("Back")
+                onClicked: main.disconnect()
+            }
+
+            Label {
+                id: connectingLabel
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: connectingIndicator.top
+                anchors.bottomMargin: Screen.pixelDensity
+                font.pointSize: dummyText.font.pointSize * 1.3
+                text: qsTr("Waiting for services to appear...")
+            }
+
+            BusyIndicator {
+                id: connectingIndicator
+
+                anchors.centerIn: parent
+                running: true
+                height: Math.min(main.width, main.height) * 0.15
+                width: height
+            }
+
+            Column {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: connectingIndicator.bottom
+                anchors.topMargin: Screen.pixelDensity
+
+                Repeater {
+                    model: main._requiredServices.length
+
+                    CheckBox {
+                        id: checkBox
+                        text: qsTr("%1 service").arg(_requiredServices[index].type)
+                        checked: _requiredServices[index].ready
+                    }
+                }
+            }
         }
     }
 
@@ -228,16 +267,12 @@ Rectangle {
     states: [
         State {
             name: "disconnected"
-            PropertyChanges { target: discoveryPage; opacity: 1.0; enabled: true }
+            PropertyChanges { target: background; opacity: 1.0; enabled: true }
         },
         State {
             name: "connected"
-            PropertyChanges { target: discoveryPage; opacity: 0.0; enabled: false }
+            PropertyChanges { target: background; opacity: 0.0; enabled: false }
             PropertyChanges { target: main; enabled: true }
         }
     ]
-
-    transitions: Transition {
-            PropertyAnimation { duration: 500; properties: "opacity"; easing.type: Easing.InCubic}
-        }
 }

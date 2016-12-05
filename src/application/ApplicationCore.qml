@@ -39,78 +39,91 @@ Item {
     id: applicationCore
 
     Component.onCompleted: {
-        status.onTaskChanged.connect(statusTaskChanged)
-        status.onConfigChanged.connect(statusConfigChanged)
-        file.onUploadFinished.connect(fileUploadFinished)
-        error.onMessageReceived.connect(errorMessageReceived)
-        file.onErrorChanged.connect(fileError)
-        status.onErrorChanged.connect(statusError)
-        command.onErrorChanged.connect(commandError)
-        error.onErrorChanged.connect(errorError)
+        status.onTaskChanged.connect(statusTaskChanged);
+        status.onConfigChanged.connect(statusConfigChanged);
+        file.onUploadFinished.connect(fileUploadFinished);
+        error.onMessageReceived.connect(errorMessageReceived);
+        file.onErrorChanged.connect(fileError);
+        status.onErrorChanged.connect(statusError);
+        command.onErrorChanged.connect(commandError);
+        error.onErrorChanged.connect(errorError);
     }
 
     function statusTaskChanged() {
-        checkFile()
+        checkFile();
     }
 
     function statusConfigChanged() {
-        applicationFile.remotePath = "file://" + status.config.remotePath
-        checkFile()
+        applicationFile.remotePath = "file://" + status.config.remotePath;
+        checkFile();
     }
 
     function checkFile() {
-        var remoteFile = "file://" + status.task.file
-        var remotePath = "file://" + status.config.remotePath
-        if ((remotePath !== "file://")
-                && (remoteFile !== "file://")
-                && (remoteFile.indexOf(remotePath) === 0)
-                && (file.remoteFilePath !== remoteFile))
-        {
-            file.remoteFilePath = remoteFile
-            file.startDownload()
+        var remoteFile = "file://" + status.task.file;
+        var remotePath = "file://" + status.config.remotePath;
+
+        if (file.remoteFilePath === remoteFile) {
+            return; // file did not change
+        }
+
+        if (remotePath === "file://") {
+            return; // remote path is invalid
+        }
+
+        if (remoteFile === "file://") {
+            file.remoteFilePath = remoteFile; // unload program
+        }
+        else if (remoteFile.indexOf(remotePath) === 0) {
+            file.remoteFilePath = remoteFile;
+            file.startDownload(); // only start download when program is open
+        }
+        else {
+            return; // remoteFilePaths stays unchanged (subprogram)
         }
     }
 
     function fileUploadFinished() {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto)
-        if (status.task.file !== "") {
-            command.resetProgram('execute')
+        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
+            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
         }
-        var fileName = file.localFilePath.split('/').reverse()[0]
-        var newPath = file.remotePath + '/' + fileName
-        file.remoteFilePath = newPath
-        command.openProgram('execute', newPath)
+        if (status.task.file !== "") {
+            command.resetProgram('execute');
+        }
+        var fileName = file.localFilePath.split('/').reverse()[0];
+        var newPath = file.remotePath + '/' + fileName;
+        file.remoteFilePath = newPath;
+        command.resetProgram('execute');
+        command.openProgram('execute', newPath);
     }
 
     function errorMessageReceived(type, text) {
-        if (notifications != null) {
-            notifications.addNotification(type, text)
+        if (notifications !== null) {
+            notifications.addNotification(type, text);
         }
     }
 
     function fileError() {
-        if (file.error != ApplicationFile.NoError) {
-            console.log("file error: " + file.errorString)
-            file.clearError()  // ignore errors from FTP
+        if (file.error !== ApplicationFile.NoError) {
+            console.log("file error: " + file.errorString);
+            file.clearError();  // ignore errors from FTP
         }
     }
 
     function statusError() {
-        if (status.error != ApplicationStatus.NoError) {
-            console.log("status error: " + status.errorString)
+        if (status.error !== ApplicationStatus.NoError) {
+            console.log("status error: " + status.errorString);
         }
     }
 
     function commandError() {
-        if (command.error != ApplicationCommand.NoError) {
-            console.log("command error: " + command.errorString)
+        if (command.error !== ApplicationCommand.NoError) {
+            console.log("command error: " + command.errorString);
         }
     }
 
     function errorError() {
-        if (error.error != ApplicationError.NoError) {
-            console.log("error error: " + error.errorString)
+        if (error.error !== ApplicationError.NoError) {
+            console.log("error error: " + error.errorString);
         }
     }
 

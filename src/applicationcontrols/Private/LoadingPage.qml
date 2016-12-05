@@ -33,7 +33,7 @@ Item {
         anchors.bottom: connectingIndicator.top
         anchors.bottomMargin: Screen.pixelDensity
         font.pointSize: dummyText.font.pointSize * 1.3
-        text: qsTr("Loading %1...").arg(root.loadingName != "" ? root.loadingName : qsTr("user interface"))
+        text: qsTr("Loading %1...").arg(root.loadingName !== "" ? root.loadingName : qsTr("user interface"))
     }
 
     BusyIndicator {

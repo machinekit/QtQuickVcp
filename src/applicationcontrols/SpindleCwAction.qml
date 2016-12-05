@@ -33,9 +33,9 @@ ApplicationAction {
     tooltip: qsTr("Turn spindle clockwise [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
         }
-        command.setSpindle(ApplicationCommand.SpindleForward, status.config.defaultSpindleSpeed)
+        command.setSpindle(ApplicationCommand.SpindleForward, status.config.defaultSpindleSpeed);
     }
 
     checkable: true

@@ -32,37 +32,40 @@ QtObject {
 
     on_ReadyChanged: {
         if (_ready) {
-            _update()
-            settings.onValuesChanged.connect(_update)
+            _update();
+            settings.onValuesChanged.connect(_update);
         }
         else {
-            settings.onValuesChanged.disconnect(_update)
+            settings.onValuesChanged.disconnect(_update);
         }
     }
 
     function _update() {
-        model = settings.value("mdi.history")
-        if (model == null) {
-            model = []
+        model = settings.value("mdi.history");
+        if (model === null) {
+            model = [];
         }
     }
 
     function add(command) {
-        var tmpModel = model
-        tmpModel.push({"command": command})
-        settings.setValue("mdi.history", tmpModel)
+        var lastCommand = (model.length > 0) ? model[model.length - 1].command : ""
+        if (command !== lastCommand) {
+            var tmpModel = JSON.parse(JSON.stringify(model)); // copy array
+            tmpModel.push({ "command": command });
+            settings.setValue("mdi.history", tmpModel);
+        }
     }
 
     function remove(index) {
-        var tmpModel = model
-        model.splice(index, 1)
-        settings.setValue("mdi.history", tmpModel)
+        var tmpModel = JSON.parse(JSON.stringify(model)); // copy array
+        tmpModel.splice(index, 1);
+        settings.setValue("mdi.history", tmpModel);
     }
 
     function insert(index, command) {
-        var tmpModel = model
-        tmpModel.splice(index, 0, command)
-        settings.setValue("mdi.history", tmpModel)
+        var tmpModel = JSON.parse(JSON.stringify(model)); // copy array
+        tmpModel.splice(index, 0, command);
+        settings.setValue("mdi.history", tmpModel);
     }
 
     function clear() {

@@ -43,49 +43,49 @@ ApplicationObject {
 
     onValueChanged: {
         if (_ready && !_remoteUpdate) {
-            var maxVelocity = value
+            var maxVelocity = value;
             if (proportional) {
-                maxVelocity /= 100.0
-                maxVelocity *= maximumValue
+                maxVelocity /= 100.0;
+                maxVelocity *= maximumValue;
             }
-            command.setMaximumVelocity(maxVelocity)
-            synced = false
+            command.setMaximumVelocity(maxVelocity);
+            synced = false;
         }
     }
 
     on_ReadyChanged: {
         if (_ready) {
             _update()
-            status.onMotionChanged.connect(_update)
-            status.onConfigChanged.connect(_update)
+            status.onMotionChanged.connect(_update);
+            status.onConfigChanged.connect(_update);
         }
         else {
-            status.onMotionChanged.disconnect(_update)
-            status.onConfigChanged.disconnect(_update)
-            synced = false
+            status.onMotionChanged.disconnect(_update);
+            status.onConfigChanged.disconnect(_update);
+            synced = false;
         }
     }
 
     function _update() {
-        _remoteUpdate = true                    // set remote
-        minimumValue = status.config.minVelocity
-        maximumValue = status.config.maxVelocity
-        minimumProportion = (minimumValue / maximumValue) * 100.0
+        _remoteUpdate = true;                    // set remote
+        minimumValue = status.config.minVelocity;
+        maximumValue = status.config.maxVelocity;
+        minimumProportion = (minimumValue / maximumValue) * 100.0;
 
-        var maxVelocity = status.motion.maxVelocity
-        maxVelocity = Math.max(Math.min(maxVelocity, maximumValue), minimumValue)
+        var maxVelocity = status.motion.maxVelocity;
+        maxVelocity = Math.max(Math.min(maxVelocity, maximumValue), minimumValue);
         if (proportional) {
-            maxVelocity /= maximumValue
-            maxVelocity *= 100.0
+            maxVelocity /= maximumValue;
+            maxVelocity *= 100.0;
         }
 
         if (value !== maxVelocity) {
-            value = maxVelocity   // triggers update
+            value = maxVelocity;   // triggers update
         }
         else
         {
-            synced = true
+            synced = true;
         }
-        _remoteUpdate = false                   // clear remote
+        _remoteUpdate = false;                   // clear remote
     }
 }

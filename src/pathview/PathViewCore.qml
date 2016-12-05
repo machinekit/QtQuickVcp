@@ -28,6 +28,7 @@ import Machinekit.Application 1.0
 ApplicationItem {
     property alias gcodeProgramModel: gcodeProgramModel
     property alias gcodeProgramLoader: gcodeProgramLoader
+    property alias previewClient: previewClient
     property bool  gcodeEditMode: file === null ? false : file.editMode
 
     property bool _ready: file === null ? false : file.ready
@@ -37,8 +38,12 @@ ApplicationItem {
 
     on_ReadyChanged: {
         if (_ready) {
-            file.onUploadFinished.connect(fileUploadFinished)
-            file.onDownloadFinished.connect(fileDownloadFinished)
+            file.onUploadFinished.connect(fileUploadFinished);
+            file.onDownloadFinished.connect(fileDownloadFinished);
+        }
+        else {
+            file.onUploadFinished.disconnect(fileUploadFinished);
+            file.onDownloadFinished.disconnect(fileDownloadFinished);
         }
     }
 
@@ -48,18 +53,18 @@ ApplicationItem {
     }
 
     function fileUploadFinished() {
-        gcodeProgramModel.clear()
-        gcodeProgramLoader.load()
+        gcodeProgramModel.clear();
+        gcodeProgramLoader.load();
         if (_previewEnabled) {
-            executePreview()
+            _executePreview();
         }
     }
 
     function fileDownloadFinished() {
-        gcodeProgramModel.clear()
-        gcodeProgramLoader.load()
+        gcodeProgramModel.clear();
+        gcodeProgramLoader.load();
         if (_previewEnabled) {
-            executePreview()
+            _executePreview();
         }
     }
 
@@ -69,17 +74,26 @@ ApplicationItem {
             && (file.localFilePath !== "")
             && (file.transferState === ApplicationFile.NoTransfer))
         {
-            gcodeProgramModel.clear()
-            gcodeProgramLoader.load()
-            executePreview()
+            gcodeProgramModel.clearPreview();
+            _executePreview();
         }
     }
 
-    function executePreview() {
+    function _executePreview() {
         if (file.remoteFilePath.split('.').pop() === 'ngc') {   // only open ngc files
-            command.openProgram('preview', file.remoteFilePath)
-            command.runProgram('preview', 0)
+            command.openProgram('preview', file.remoteFilePath);
+            command.runProgram('preview', 0);
         }
+    }
+
+    function updatePreview() {
+        if (file.remoteFilePath !== "") {
+            _executePreview();
+        }
+    }
+
+    function clearPreview() {
+        gcodeProgramModel.clearPreview();
     }
 
     Service {
@@ -99,7 +113,6 @@ ApplicationItem {
         previewUri: previewService.uri
         ready: ((previewService.ready && previewStatusService.ready) || _connected)
         model: gcodeProgramModel
-        units: status.synced ? status.config.linearUnits : PreviewClient.CanonUnitsInch
 
         onConnectedChanged: delayTimer.running = true
     }

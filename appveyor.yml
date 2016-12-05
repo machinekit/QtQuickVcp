@@ -1,0 +1,166 @@
+# AppVeyor build configuration
+# http://www.appveyor.com/docs/build-configuration
+version: build{build}
+
+platform:
+  - Win64
+
+environment:
+  matrix:
+   - QTDIR: C:\Qt\5.7\msvc2015_64
+     VSVER: 14.0
+     ARCH: x64
+   - QTDIR: C:\Qt\5.7\msvc2015
+     VSVER: 14.0
+     ARCH: x86
+
+configuration:
+  - release
+
+install:
+  - '%QTDIR%\bin\qtenv2.bat'
+  - '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %ARCH%'
+  - qmake -v
+
+build_script:
+  - CALL %APPVEYOR_BUILD_FOLDER%/build/appveyor/appveyor.bat
+
+artifacts:
+  - path: 'build.release\MachinekitClient*x86.zip'
+    name: MachinekitClient-x86-archive
+  - path: 'build.release\QtQuickVcp*x86.zip'
+    name: QtQuickVcp-x86-archive
+  - path: 'build.release\MachinekitClient*x64.zip'
+    name: MachinekitClient-x64-archive
+  - path: 'build.release\QtQuickVcp*x64.zip'
+    name: QtQuickVcp-x64-archive
+
+deploy:
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: QtQuickVcp-Development
+  package: QtQuickVcp_Development-Windows-master-x64
+  publish: true
+  override: true
+  explode: false
+  artifact: QtQuickVcp-x64-archive
+  version: $(appveyor_build_version)
+  on:
+    branch: master
+    appveyor_repo_tag: false
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: MachinekitClient-Development
+  package: MachinekitClient_Development-Windows-master-x64
+  publish: true
+  override: true
+  explode: false
+  artifact: MachinekitClient-x64-archive
+  version: $(appveyor_build_version)
+  on:
+    branch: master
+    appveyor_repo_tag: false
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: QtQuickVcp
+  package: QtQuickVcp-Windows-x64
+  publish: true
+  override: true
+  explode: false
+  artifact: QtQuickVcp-x64-archive
+  version: $(appveyor_build_version)
+  on:
+    appveyor_repo_tag: true
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: MachinekitClient
+  package: MachinekitClient-Windows-x64
+  publish: true
+  override: true
+  explode: false
+  artifact: MachinekitClient-x64-archive
+  version: $(appveyor_build_version)
+  on:
+    appveyor_repo_tag: true
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: QtQuickVcp-Development
+  package: QtQuickVcp_Development-Windows-master-x86
+  publish: true
+  override: true
+  explode: false
+  artifact: QtQuickVcp-x86-archive
+  version: $(appveyor_build_version)
+  on:
+    branch: master
+    appveyor_repo_tag: false
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: MachinekitClient-Development
+  package: MachinekitClient_Development-Windows-master-x86
+  publish: true
+  override: true
+  explode: false
+  artifact: MachinekitClient-x86-archive
+  version: $(appveyor_build_version)
+  on:
+    branch: master
+    appveyor_repo_tag: false
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: QtQuickVcp
+  package: QtQuickVcp-Windows-x86
+  publish: true
+  override: true
+  explode: false
+  artifact: QtQuickVcp-x86-archive
+  version: $(appveyor_build_version)
+  on:
+    appveyor_repo_tag: true
+
+- provider: BinTray
+  username: machinekoder
+  api_key:
+    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
+  subject: machinekoder
+  repo: MachinekitClient
+  package: MachinekitClient-Windows-x86
+  publish: true
+  override: true
+  explode: false
+  artifact: MachinekitClient-x86-archive
+  version: $(appveyor_build_version)
+  on:
+    appveyor_repo_tag: true
+
+notifications:
+  on_build_success: false
+  on_build_failure: false
+  on_build_status_changed: false

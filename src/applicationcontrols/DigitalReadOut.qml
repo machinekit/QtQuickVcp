@@ -29,7 +29,7 @@ import Machinekit.Application 1.0
 ApplicationItem {
     property alias textColor: dummyLabel.color
     property alias font: dummyLabel.font
-    property int decimals: (_distanceUnits == "mm") ? 4 : 3
+    property int decimals: (_distanceUnits === "mm") ? 3 : 4
     property string prefix: ""
     property string suffix: ""
     property int axes: axisNames.length
@@ -67,23 +67,23 @@ ApplicationItem {
     }
 
     function getPosition() {
-        var basePosition
+        var basePosition;
         if (_ready) {
-            basePosition = (positionFeedback == ApplicationStatus.ActualPositionFeedback) ? status.motion.actualPosition : status.motion.position
+            basePosition = (positionFeedback === ApplicationStatus.ActualPositionFeedback) ? status.motion.actualPosition : status.motion.position;
             basePosition = scalePosition(basePosition);
         }
         else {
-            basePosition = {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
+            basePosition = { "x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0 };
         }
 
-        if (positionOffset == ApplicationStatus.RelativePositionOffset) {
+        if (positionOffset === ApplicationStatus.RelativePositionOffset) {
             for (var i = 0; i < axes; ++i) {
-                var axisName = _axisNames[i]
-                basePosition[axisName] -= g5xOffset[axisName] + g92Offset[axisName] + toolOffset[axisName]
+                var axisName = _axisNames[i];
+                basePosition[axisName] -= g5xOffset[axisName] + g92Offset[axisName] + toolOffset[axisName];
             }
         }
 
-        return basePosition
+        return basePosition;
     }
 
     id: droRect
@@ -129,9 +129,9 @@ ApplicationItem {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: height
                     onLoaded: {
-                        item.color = Qt.binding(function(){return dummyLabel.color})
+                        item.color = Qt.binding(function(){ return dummyLabel.color; });
                     }
-                    active: type == ""
+                    active: type === ""
                     visible: root.homed
                 }
             }
@@ -164,58 +164,58 @@ ApplicationItem {
             height: 100
             onPaint: {
                 var ctx = canvas.getContext("2d");
-                var radius = Math.ceil(canvas.width/2 * 0.6)
-                var size = canvas.width/2
+                var radius = Math.ceil(canvas.width/2 * 0.6);
+                var size = canvas.width/2;
 
                 ctx.save();
                 ctx.clearRect(0,0,canvas.width, canvas.height);
-                ctx.strokeStyle = color
-                ctx.lineWidth = 1
-                ctx.fillStyle = color
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.fillStyle = color;
 
                 ctx.beginPath();
-                ctx.moveTo(size-radius,size)
-                ctx.arcTo(size-radius,size-radius,size,size-radius,radius)
+                ctx.moveTo(size-radius,size);
+                ctx.arcTo(size-radius,size-radius,size,size-radius,radius);
                 ctx.lineTo(canvas.width/2,canvas.height/2);    // right side
-                ctx.closePath()
-                ctx.stroke()
+                ctx.closePath();
+                ctx.stroke();
 
                 ctx.beginPath();
-                ctx.moveTo(size+radius,size)
-                ctx.arcTo(size+radius,size+radius,size,size+radius,radius)
+                ctx.moveTo(size+radius,size);
+                ctx.arcTo(size+radius,size+radius,size,size+radius,radius);
                 ctx.lineTo(canvas.width/2,canvas.height/2);    // right side
-                ctx.closePath()
-                ctx.stroke()
+                ctx.closePath();
+                ctx.stroke();
 
                 ctx.beginPath();
-                ctx.moveTo(size,size-radius)
-                ctx.arcTo(size+radius,size-radius,size+radius,size,radius)
+                ctx.moveTo(size,size-radius);
+                ctx.arcTo(size+radius,size-radius,size+radius,size,radius);
                 ctx.lineTo(canvas.width/2,canvas.height/2);    // right side
-                ctx.closePath()
-                ctx.stroke()
-                ctx.fill()
+                ctx.closePath();
+                ctx.stroke();
+                ctx.fill();
 
                 ctx.beginPath();
-                ctx.moveTo(size,size+radius)
-                ctx.arcTo(size-radius,size+radius,size-radius,size,radius)
+                ctx.moveTo(size,size+radius);
+                ctx.arcTo(size-radius,size+radius,size-radius,size,radius);
                 ctx.lineTo(canvas.width/2,canvas.height/2);    // right side
-                ctx.closePath()
-                ctx.stroke()
-                ctx.fill()
+                ctx.closePath();
+                ctx.stroke();
+                ctx.fill();
 
                 ctx.beginPath();
-                ctx.moveTo(size, 0)
-                ctx.lineTo(size, size*2)
-                ctx.closePath()
-                ctx.stroke()
+                ctx.moveTo(size, 0);
+                ctx.lineTo(size, size*2);
+                ctx.closePath();
+                ctx.stroke();
 
                 ctx.beginPath();
-                ctx.moveTo(0,size)
-                ctx.lineTo(size*2, size)
-                ctx.closePath()
-                ctx.stroke()
+                ctx.moveTo(0,size);
+                ctx.lineTo(size*2, size);
+                ctx.closePath();
+                ctx.stroke();
 
-                ctx.restore()
+                ctx.restore();
             }
             onColorChanged: requestPaint()
         }
@@ -233,10 +233,10 @@ ApplicationItem {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){return (droRect.axisNames[index] + ":"); })
-                    item.type = ""
-                    item.value = Qt.binding(function(){return Number(droRect.position[droRect._axisNames[index]])})
-                    item.homed = Qt.binding(function(){return ((index < droRect.axisHomed.length) && droRect.axisHomed[index].homed)})
+                    item.title = Qt.binding(function(){ return (droRect.axisNames[index] + ":"); });
+                    item.type = "";
+                    item.value = Qt.binding(function(){ return Number(droRect.position[droRect._axisNames[index]]); });
+                    item.homed = Qt.binding(function(){ return ((index < droRect.axisHomed.length) && droRect.axisHomed[index].homed); });
                 }
             }
         }
@@ -254,10 +254,10 @@ ApplicationItem {
         Loader {
             sourceComponent: textLine
             onLoaded: {
-                item.title = "Vel:"
-                item.type = ""
-                item.homed = false
-                item.value = Qt.binding(function(){return droRect.velocity})
+                item.title = "Vel:";
+                item.type = "";
+                item.homed = false;
+                item.value = Qt.binding(function(){ return droRect.velocity; });
             }
             active: true
             visible: !droRect.offsetsVisible && velocityVisible
@@ -266,10 +266,10 @@ ApplicationItem {
         Loader {
             sourceComponent: textLine
             onLoaded: {
-                item.title = "DTG:"
-                item.type = ""
-                item.homed = false
-                item.value = Qt.binding(function(){return droRect.distanceToGo})
+                item.title = "DTG:";
+                item.type = "";
+                item.homed = false;
+                item.value = Qt.binding(function(){ return droRect.distanceToGo; });
             }
             active: true
             visible: !droRect.offsetsVisible && distanceToGoVisible
@@ -290,9 +290,9 @@ ApplicationItem {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){return droRect.axisNames[index]})
-                    item.type = "DTG"
-                    item.value = Qt.binding(function(){return Number(droRect.dtg[droRect._axisNames[index]])})
+                    item.title = Qt.binding(function(){ return droRect.axisNames[index]; });
+                    item.type = "DTG";
+                    item.value = Qt.binding(function(){ return Number(droRect.dtg[droRect._axisNames[index]]); });
                 }
             }
         }
@@ -312,9 +312,9 @@ ApplicationItem {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){return droRect.axisNames[index]})
-                    item.type = Qt.binding(function(){return droRect.g5xNames[droRect.g5xIndex-1]})
-                    item.value = Qt.binding(function(){return Number(droRect.g5xOffset[droRect._axisNames[index]])})
+                    item.title = Qt.binding(function(){ return droRect.axisNames[index]; });
+                    item.type = Qt.binding(function(){ return droRect.g5xNames[droRect.g5xIndex-1]; });
+                    item.value = Qt.binding(function(){ return Number(droRect.g5xOffset[droRect._axisNames[index]]); });
                 }
             }
         }
@@ -334,9 +334,9 @@ ApplicationItem {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){return droRect.axisNames[index]})
-                    item.type = "G92"
-                    item.value = Qt.binding(function(){return Number(droRect.g92Offset[droRect._axisNames[index]])})
+                    item.title = Qt.binding(function(){ return droRect.axisNames[index]; });
+                    item.type = "G92";
+                    item.value = Qt.binding(function(){ return Number(droRect.g92Offset[droRect._axisNames[index]]); });
                 }
             }
         }
@@ -356,9 +356,9 @@ ApplicationItem {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){return droRect.axisNames[index]})
-                    item.type = "TLO"
-                    item.value = Qt.binding(function(){return Number(droRect.toolOffset[droRect._axisNames[index]])})
+                    item.title = Qt.binding(function(){ return droRect.axisNames[index]});
+                    item.type = "TLO";
+                    item.value = Qt.binding(function(){ return Number(droRect.toolOffset[droRect._axisNames[index]]); });
                 }
             }
         }

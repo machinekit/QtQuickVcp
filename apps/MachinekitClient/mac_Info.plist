@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundleDisplayName</key>
+        <string>Machinekit</string>
+        <key>CFBundleExecutable</key>
+        <string>machinekit-client</string>
+        <key>CFBundleGetInfoString</key>
+        <string>Created by Qt/QMake</string>
+        <key>CFBundleIconFile</key>
+        <string>machinekit.icns</string>
+        <key>CFBundleIdentifier</key>
+        <string>io.machinekit.appdiscover</string>
+        <key>NSHumanReadableCopyright</key>
+        <string>The Machinekit Project 2014</string>
+        <key>UIRequiredDeviceCapabilities</key>
+        <array>
+                <string>wifi</string>
+        </array>
+    </dict>
+</plist>

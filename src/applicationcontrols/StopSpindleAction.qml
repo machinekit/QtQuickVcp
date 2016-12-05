@@ -33,9 +33,9 @@ ApplicationAction {
     tooltip: qsTr("Stop spindle [%1]").arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
         }
-        command.setSpindle(ApplicationCommand.SpindleOff)
+        command.setSpindle(ApplicationCommand.SpindleOff);
     }
 
     checkable: true

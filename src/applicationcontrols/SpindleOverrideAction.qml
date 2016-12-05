@@ -32,9 +32,10 @@ ApplicationAction {
     shortcut: ""
     tooltip: qsTr("Enable spindle override [%1]").arg(shortcut)
     onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeManual)
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
-        command.setSpindleOverrideEnabled(checked)
+        if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
+        }
+        command.setSpindleOverrideEnabled(checked);
     }
 
     checkable: true

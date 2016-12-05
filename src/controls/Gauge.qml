@@ -241,8 +241,8 @@ Item {
     id: main
     width: implicitWidth
     height: implicitHeight
-    implicitHeight: (orientation == Qt.Horizontal) ? valueLabel.implicitHeight * 1.25 : progressBar.implicitWidth
-    implicitWidth: (orientation == Qt.Horizontal) ? progressBar.implicitWidth : valueLabel.implicitHeight * 1.25
+    implicitHeight: (orientation === Qt.Horizontal) ? valueLabel.implicitHeight * 1.25 : progressBar.implicitWidth
+    implicitWidth: (orientation === Qt.Horizontal) ? progressBar.implicitWidth : valueLabel.implicitHeight * 1.25
 
     SystemPalette {
         id: systemPalette;
@@ -301,7 +301,7 @@ Item {
 
     Item {
         id: rotationItem
-        rotation:       ((main.orientation == Qt.Horizontal) ?  ((main.invert == false) ? 0 : 180) : ((main.invert == false) ? 270 : 90))
+        rotation:       ((main.orientation === Qt.Horizontal) ?  ((main.invert === false) ? 0 : 180) : ((main.invert === false) ? 270 : 90))
         width:          ((rotation === 90) || (rotation === 270)) ? main.height : main.width
         height:         ((rotation === 90) || (rotation === 270)) ? main.width : main.height
         anchors.centerIn: parent
@@ -350,12 +350,12 @@ Item {
         id: minimumValueLabel
 
         anchors.fill: parent
-        anchors.rightMargin: ((main.orientation == Qt.Horizontal) && (main.invert != false)) ? Screen.pixelDensity*1 : 0
-        anchors.leftMargin: ((main.orientation == Qt.Horizontal) && (main.invert == false)) ? Screen.pixelDensity*1 : 0
-        anchors.topMargin:   (main.orientation == Qt.Horizontal) ? 0 : ((main.invert != false) ? Screen.pixelDensity*1 : 0)
-        anchors.bottomMargin: (main.orientation == Qt.Horizontal) ? 0 : ((main.invert == false) ? Screen.pixelDensity*1 : 0)
-        horizontalAlignment: (main.orientation == Qt.Horizontal) ? ((main.invert != false) ? Text.AlignRight : Text.AlignLeft) : Text.AlignHCenter
-        verticalAlignment: (main.orientation == Qt.Horizontal) ? Text.AlignVCenter : ((main.invert != false) ? Text.AlignTop : Text.AlignBottom)
+        anchors.rightMargin: ((main.orientation === Qt.Horizontal) && (main.invert !== false)) ? Screen.pixelDensity*1 : 0
+        anchors.leftMargin: ((main.orientation === Qt.Horizontal) && (main.invert === false)) ? Screen.pixelDensity*1 : 0
+        anchors.topMargin:   (main.orientation === Qt.Horizontal) ? 0 : ((main.invert !== false) ? Screen.pixelDensity*1 : 0)
+        anchors.bottomMargin: (main.orientation === Qt.Horizontal) ? 0 : ((main.invert === false) ? Screen.pixelDensity*1 : 0)
+        horizontalAlignment: (main.orientation === Qt.Horizontal) ? ((main.invert !== false) ? Text.AlignRight : Text.AlignLeft) : Text.AlignHCenter
+        verticalAlignment: (main.orientation === Qt.Horizontal) ? Text.AlignVCenter : ((main.invert !== false) ? Text.AlignTop : Text.AlignBottom)
         text: main.prefix + main.minimumValue.toFixed(decimals) + main.suffix
         color: main.textColor
         visible: true
@@ -365,12 +365,12 @@ Item {
         id: maximumValueLabel
 
         anchors.fill: parent
-        anchors.rightMargin: ((main.orientation == Qt.Horizontal) && (main.invert == false)) ? Screen.pixelDensity*1 : 0
-        anchors.leftMargin: ((main.orientation == Qt.Horizontal) && (main.invert != false)) ? Screen.pixelDensity*1 : 0
-        anchors.topMargin:   (main.orientation == Qt.Horizontal) ? 0 : ((main.invert == false) ? Screen.pixelDensity*1 : 0)
-        anchors.bottomMargin: (main.orientation == Qt.Horizontal) ? 0 : ((main.invert != false) ? Screen.pixelDensity*1 : 0)
-        horizontalAlignment: (main.orientation == Qt.Horizontal) ? ((main.invert == false) ? Text.AlignRight : Text.AlignLeft) : Text.AlignHCenter
-        verticalAlignment: (main.orientation == Qt.Horizontal) ? Text.AlignVCenter : ((main.invert == false) ? Text.AlignTop : Text.AlignBottom)
+        anchors.rightMargin: ((main.orientation === Qt.Horizontal) && (main.invert === false)) ? Screen.pixelDensity*1 : 0
+        anchors.leftMargin: ((main.orientation === Qt.Horizontal) && (main.invert !== false)) ? Screen.pixelDensity*1 : 0
+        anchors.topMargin:   (main.orientation === Qt.Horizontal) ? 0 : ((main.invert === false) ? Screen.pixelDensity*1 : 0)
+        anchors.bottomMargin: (main.orientation === Qt.Horizontal) ? 0 : ((main.invert !== false) ? Screen.pixelDensity*1 : 0)
+        horizontalAlignment: (main.orientation === Qt.Horizontal) ? ((main.invert === false) ? Text.AlignRight : Text.AlignLeft) : Text.AlignHCenter
+        verticalAlignment: (main.orientation === Qt.Horizontal) ? Text.AlignVCenter : ((main.invert === false) ? Text.AlignTop : Text.AlignBottom)
         text: main.prefix + main.maximumValue.toFixed(decimals) + main.suffix
         color: main.textColor
         visible: true

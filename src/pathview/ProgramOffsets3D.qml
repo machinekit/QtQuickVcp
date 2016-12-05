@@ -26,10 +26,11 @@ import Machinekit.PathView 1.0
 Canvas3D {
     property real textSize: 14
     property color color: "cyan"
+    property real lineWidth: 2.0
     property var g5xNames: ["G54", "G55", "G56", "G57", "G58", "G59", "G59.1", "G59.2", "G59.3"]
     property int g5xIndex: 1
-    property var g5xOffset: {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
-    property var g92Offset: {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
+    property var g5xOffset: { "x": 0.12345, "y": 0.234, "z": 123.12, "a": 324.3 }
+    property var g92Offset: { "x": 0.12345, "y": 0.234, "z": 123.12, "a": 324.3 }
     property string viewMode: "Perspective"
 
     id: programOffsets
@@ -39,7 +40,7 @@ Canvas3D {
         context.reset();
 
         context.color(color);
-        context.lineWidth(2.0);
+        context.lineWidth(lineWidth);
         context.beginUnion();
 
         var textRotated = (viewMode === "Top") || (viewMode === "RotatedTop");

@@ -105,7 +105,7 @@ void Service::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *
     }
 }
 
-void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter, const QString &tempDir)
+int Service::recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter, const QString &tempDir)
 {
     bool filterEnabled = !fieldFilter.isEmpty();
     bool isPosition = false;
@@ -118,7 +118,7 @@ void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, c
         pb::File file;
         file.MergeFrom(message);
         fileToJson(file, object, tempDir);
-        return;
+        return output.size();
     }
     else if (message.GetDescriptor() == pb::Position::descriptor()) // handle position vecotors
     {
@@ -186,6 +186,7 @@ void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, c
             if (field->cpp_type() == gpb::FieldDescriptor::CPPTYPE_MESSAGE)
             {
                 QJsonArray jsonArray = object->value(name).toArray();
+                QList<int> removeList; // store index of items to remove
                 for (int j = 0; j < reflection->FieldSize(message, field); ++j)
                 {
                     QJsonObject jsonObject;
@@ -201,26 +202,48 @@ void Service::recurseMessage(const gpb::Message &message, QJsonObject *object, c
                         jsonArray.append(QJsonValue());
                     }
 
-                    if (subDescriptor->field_count() == 2)  // index and value field
+                    if (subDescriptor->field_count() != 2) // not only index and value field
                     {
-                        recurseMessage(subMessage, &jsonObject, QString(), tempDir);
-                        jsonObject.remove("index");
-                        jsonValue = jsonObject.value(jsonObject.keys().at(0));
-                    }
-                    else
-                    {
-                        jsonObject = jsonArray.at(index).toObject(QJsonObject());
-                        recurseMessage(subMessage, &jsonObject, QString(), tempDir);
-                        jsonObject.remove("index");
-                        jsonValue = jsonObject;
+                        jsonObject = jsonArray.at(index).toObject(QJsonObject()); // use existing object values
                     }
 
-                    jsonArray.replace(index, jsonValue);
+                    if (recurseMessage(subMessage, &jsonObject, QString(), tempDir) > 1)
+                    {
+                        jsonObject.remove("index");
+
+                        if (subDescriptor->field_count() != 2)
+                        {
+                            jsonValue = jsonObject; // use JSON object
+                        }
+                        else // index and value field
+                        {
+                            jsonValue = jsonObject.value(jsonObject.keys().at(0)); // use JSON value directly
+                        }
+
+                        jsonArray.replace(index, jsonValue);
+                    }
+                    else  // only index -> remove object
+                    {
+                        removeList.append(index);
+                    }
                 }
+
+                // remove marked items
+                if (removeList.length() > 0)
+                {
+                    qSort(removeList.begin(), removeList.end());
+                    for (int k = (removeList.length() - 1); k >= 0; k--)
+                    {
+                        jsonArray.removeAt(removeList[k]);
+                    }
+                }
+
                 object->insert(name, QJsonValue(jsonArray));
             }
         }
     }
+
+    return output.size();
 }
 
 void Service::updateValue(const gpb::Message &message, QJsonValue *value, const QString &field, const QString &tempDir)

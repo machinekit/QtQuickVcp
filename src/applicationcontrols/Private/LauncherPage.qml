@@ -1,6 +1,7 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
+import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.0
 
 Item {
@@ -13,6 +14,7 @@ Item {
 
     signal launcherSelected(int index)
     signal goBack()
+    signal systemShutdown()
 
     id: root
     width: 600
@@ -26,6 +28,21 @@ Item {
     Button {
         id: dummyButton
         visible: false
+    }
+
+    Dialog {
+        id: shutdownDialog
+        title: qsTr("System Shutdown")
+        standardButtons: StandardButton.Yes | StandardButton.No
+
+        onYes: {
+            systemShutdown();
+            goBack();
+        }
+
+        Label {
+            text: qsTr("Do you really want to shutdown the Machinekit system?")
+        }
     }
 
     ColumnLayout {
@@ -52,7 +69,7 @@ Item {
                     text: qsTr("List")
                     checkable: true
                     onClicked: root.viewMode = "list"
-                    Binding { target: listButton; property: "checked"; value: root.viewMode == "list" }
+                    Binding { target: listButton; property: "checked"; value: root.viewMode === "list" }
                 }
                 Button {
                     id: smallButton
@@ -60,16 +77,20 @@ Item {
                     checkable: true
                     visible: !root.hasSmallScreen
                     onClicked: root.viewMode = "small"
-                    Binding { target: smallButton; property: "checked"; value: root.viewMode == "small" }
+                    Binding { target: smallButton; property: "checked"; value: root.viewMode === "small" }
                 }
                 Button {
                     id: bigButton
                     text: qsTr("Big")
                     checkable: true
                     onClicked: root.viewMode = "big"
-                    Binding { target: bigButton; property: "checked"; value: root.viewMode == "big" }
+                    Binding { target: bigButton; property: "checked"; value: root.viewMode === "big" }
                 }
                 Item { Layout.fillWidth: true }
+                Button {
+                    text: qsTr("Shutdown")
+                    onClicked: shutdownDialog.visible = true
+                }
                 Button {
                     text: qsTr("Back")
                     onClicked: goBack()
@@ -120,10 +141,10 @@ Item {
 
                                 onClicked: {
                                     if (item.terminating) {
-                                       applicationLauncher.kill(item.index)
+                                       applicationLauncher.kill(item.index);
                                     }
                                     else {
-                                       applicationLauncher.terminate(item.index)
+                                       applicationLauncher.terminate(item.index);
                                     }
                                 }
                             }
@@ -142,10 +163,10 @@ Item {
 
                     onClicked: {
                         if (!item.running) {
-                            applicationLauncher.start(item.index)
+                            applicationLauncher.start(item.index);
                         }
-                        selectedLauncher = item.index
-                        launcherSelected(index)
+                        selectedLauncher = item.index;
+                        launcherSelected(index);
                     }
                 }
             }
@@ -156,33 +177,33 @@ Item {
             Layout.fillWidth: true
             GridView {
                 property var launchers: {
-                    var items = applicationLauncher.launchers
-                    var running = false
+                    var items = applicationLauncher.launchers;
+                    var running = false;
 
                     for (var i = 0; i < items.length; ++i) {
-                        items[i].index = i  // store the original index
+                        items[i].index = i;  // store the original index
                         if (items[i].running) {
-                            running = true
-                            var item = items[i]  // move the running items to the front
-                            items.splice(i, 1)
-                            items.unshift(item)
+                            running = true;
+                            var item = items[i];  // move the running items to the front
+                            items.splice(i, 1);
+                            items.unshift(item);
                         }
                     }
 
                     // create a new launcher element if a configserver is running
                     // but none of our launchers is running
                     if (configService.ready && !running) {
-                        var launcher = {}
-                        launcher.name = configService.name
-                        launcher.running = true
-                        launcher.terminating = false
-                        launcher.local = true
-                        launcher.index = -1
+                        var launcher = {};
+                        launcher.name = configService.name;
+                        launcher.running = true;
+                        launcher.terminating = false;
+                        launcher.local = true;
+                        launcher.index = -1;
 
-                        items.unshift(launcher)
+                        items.unshift(launcher);
                     }
 
-                    return items
+                    return items;
                 }
 
                 id: launcherListView

@@ -13,38 +13,42 @@ include(../common/common.pri)
 # Input
 SOURCES += \
     plugin.cpp \
-    qapplicationconfig.cpp \
-    qapplicationconfigitem.cpp \
-    qapplicationconfigfilter.cpp \
-    qapplicationdescription.cpp \
-    qapplicationcommand.cpp \
-    qapplicationerror.cpp \
-    qapplicationstatus.cpp \
-    qapplicationfile.cpp \
-    qapplicationlauncher.cpp \
-    qlocalsettings.cpp \
-    qapplicationfilemodel.cpp \
-    qapplicationfileitem.cpp \
-    qapplicationplugins.cpp \
-    qapplicationpluginitem.cpp
+    fileio.cpp \
+    applicationcommand.cpp \
+    applicationconfig.cpp \
+    applicationconfigfilter.cpp \
+    applicationconfigitem.cpp \
+    applicationdescription.cpp \
+    applicationerror.cpp \
+    applicationfile.cpp \
+    applicationfileitem.cpp \
+    applicationfilemodel.cpp \
+    applicationlauncher.cpp \
+    applicationpluginitem.cpp \
+    applicationplugins.cpp \
+    applicationstatus.cpp \
+    localsettings.cpp
 
 HEADERS += \
     plugin.h \
-    qapplicationconfig.h \
-    qapplicationconfigitem.h \
-    qapplicationconfigfilter.h \
     debughelper.h \
-    qapplicationdescription.h \
-    qapplicationcommand.h \
-    qapplicationerror.h \
-    qapplicationstatus.h \
-    qapplicationfile.h \
-    qapplicationlauncher.h \
-    qlocalsettings.h \
-    qapplicationfilemodel.h \
-    qapplicationfileitem.h \
-    qapplicationplugins.h \
-    qapplicationpluginitem.h
+    fileio.h \
+    revisionsingleton.h \
+    revision.h \
+    applicationcommand.h \
+    applicationconfig.h \
+    applicationconfigfilter.h \
+    applicationconfigitem.h \
+    applicationdescription.h \
+    applicationerror.h \
+    applicationfile.h \
+    applicationfileitem.h \
+    applicationfilemodel.h \
+    applicationlauncher.h \
+    applicationpluginitem.h \
+    applicationplugins.h \
+    applicationstatus.h \
+    localsettings.h
 
 RESOURCES += \
     application.qrc

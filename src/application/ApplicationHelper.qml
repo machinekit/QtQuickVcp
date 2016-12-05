@@ -20,15 +20,15 @@ import QtQuick 2.0
 import Machinekit.Application 1.0
 
 Item {
-    property var status: {"synced": false}
+    property var status: { "synced": false }
     property bool ready: true
 
     property var axisNamesUpper: getUpperAxisNames(axisNames)
     property var axisNames: getAxisNames()
     property string timeUnits: getTimeUnits()
     property string distanceUnits: getDistanceUnits()
-    property double timeFactor: (timeUnits == "min") ? 60 : 1
-    property double distanceFactor: (distanceUnits == "mm") ? 1.0 : ((distanceUnits == "in") ? 0.03937 : 0.1)
+    property double timeFactor: (timeUnits === "min") ? 60 : 1
+    property double distanceFactor: (distanceUnits === "mm") ? 1.0 : ((distanceUnits === "in") ? 0.03937 : 0.1)
 
     function getTimeUnits() {
         if (status.synced) {

@@ -37,17 +37,17 @@ ApplicationAction {
     tooltip: qsTr("Jog Axis %1 [%2]").arg(axis).arg(shortcut)
     onTriggered: {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
-            command.setTaskMode('execute', ApplicationCommand.TaskModeManual)
+            command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
         }
         if (velocity !== 0.0) {
-            if (distance == 0.0) {
-                command.jog(ApplicationCommand.ContinuousJog, axis, velocity)
+            if (distance === 0.0) {
+                command.jog(ApplicationCommand.ContinuousJog, axis, velocity);
             }
             else {
-                command.jog(ApplicationCommand.IncrementJog, axis, velocity, distance)
+                command.jog(ApplicationCommand.IncrementJog, axis, velocity, distance);
             }
         } else {
-            command.jog(ApplicationCommand.StopJog, axis)
+            command.jog(ApplicationCommand.StopJog, axis);
         }
     }
 

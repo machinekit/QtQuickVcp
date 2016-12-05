@@ -1,4 +1,3 @@
 TEMPLATE = subdirs
 
-SUBDIRS += qmltests \
-    auto
+SUBDIRS += qmltests

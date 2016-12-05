@@ -222,7 +222,7 @@ Item {
     property bool __horizontal: orientation === Qt.Horizontal
 
     /*! \internal */
-    property bool __inverted: textInverted == true
+    property bool __inverted: textInverted === true
 
 
     id: main

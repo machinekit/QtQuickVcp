@@ -70,3 +70,5 @@ FeedHoldAction 1.0 FeedHoldAction.qml
 FeedOverrideAction 1.0 FeedOverrideAction.qml
 SpindleOverrideAction 1.0 SpindleOverrideAction.qml
 EstopPowerAction 1.0 EstopPowerAction.qml
+RapidrateHandler 1.0 RapidrateHandler.qml
+RapidrateSlider 1.0 RapidrateSlider.qml

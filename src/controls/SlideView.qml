@@ -89,28 +89,32 @@ Item {
 
     /*! \internal */
     function _updateItems() {
-        var items = root.children
-        var filteredItems = []
-        var i
+        var items = root.children;
+        var filteredItems = [];
+        var i;
 
         for (i = items.length-1; i >= 0; --i) {
-            if (items[i] === menuView )
-                continue
+            if (items[i] === menuView) {
+                continue;
+            }
 
-            if (items[i] === mouseArea )
-                continue
+            if (items[i] === mouseArea) {
+                continue;
+            }
 
-            if (items[i] === normalView )
-                continue
+            if (items[i] === normalView) {
+                continue;
+            }
 
-            if (items[i] === menuButton)
-                continue
+            if (items[i] === menuButton) {
+                continue;
+            }
 
-            filteredItems.push(items[i])
+            filteredItems.push(items[i]);
         }
 
         for (i = filteredItems.length-1; i >= 0; --i) {
-            filteredItems[i].parent = normalView
+            filteredItems[i].parent = normalView;
         }
     }
 
@@ -129,10 +133,12 @@ Item {
             startX = mouseX
         }
         onReleased: {
-            if (dragX > dragThreshold)
-                menuVisible = true
-            else
-                menuVisible = false
+            if (dragX > dragThreshold) {
+                menuVisible = true;
+            }
+            else {
+                menuVisible = false;
+            }
         }
         transform: Translate {
                     id: mouseAreaTranslate
@@ -149,7 +155,7 @@ Item {
        color: systemPalette.base
 
        opacity: viewTranslate.x/width
-       enabled: opacity != 0
+       enabled: opacity !== 0
 
        Rectangle {
            id: shadow1
@@ -217,7 +223,7 @@ Item {
                            opacity: menuList.model[index].opacity
 
                            onPaint: {
-                               getContext("2d")
+                               getContext("2d");
                                context.reset();
 
                                context.fillStyle = menuList.model[index].color
@@ -245,9 +251,10 @@ Item {
                            anchors.fill: parent
                            hoverEnabled: false
                            onClicked: {
-                               if (root.autoHideMenu)
-                                   menuVisible = false
-                               menuList.currentIndex = index
+                               if (root.autoHideMenu) {
+                                   menuVisible = false;
+                               }
+                               menuList.currentIndex = index;
                            }
                        }
                }
