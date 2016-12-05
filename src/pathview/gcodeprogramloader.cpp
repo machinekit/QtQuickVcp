@@ -33,13 +33,13 @@ GCodeProgramLoader::GCodeProgramLoader(QObject *parent) :
 {
 }
 
-void QGCodeProgramLoader::save(const QString &text)
+void GCodeProgramLoader::save(const QString &text)
 {
     QString localFilePath = QUrl(m_localFilePath).toLocalFile();
     saveAs(localFilePath, text);
 }
 
-void QGCodeProgramLoader::saveAs(const QString &localFilePath, const QString &text)
+void GCodeProgramLoader::saveAs(const QString &localFilePath, const QString &text)
 {
     QFile f(localFilePath);
     if (!f.open(QFile::WriteOnly | QFile::Truncate | QFile::Text)) {
