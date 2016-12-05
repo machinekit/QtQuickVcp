@@ -6,9 +6,18 @@ FileIO::FileIO(QObject *parent) :
     QObject(parent),
     m_fileUrl(""),
     m_text(""),
-    m_working(false)
+    m_working(false),
+    m_temporaryDir(nullptr)
 {
 
+}
+
+FileIO::~FileIO()
+{
+    if (m_temporaryDir != nullptr)
+    {
+        m_temporaryDir->remove();
+    }
 }
 
 /* Write text to file */
@@ -64,4 +73,20 @@ void FileIO::read()
     emit textChanged(m_text);
     emit readingCompleted();
 }
+
+QUrl FileIO::createTempFile(const QString &fileName)
+{
+    if (m_temporaryDir == nullptr)
+    {
+        m_temporaryDir = new QTemporaryDir();
+    }
+
+    if (!m_temporaryDir->isValid())
+    {
+        return QString();
+    }
+
+    return QUrl::fromLocalFile(m_temporaryDir->path() + "/" + fileName);
+}
+
 }; // namespace qtquickvcp
