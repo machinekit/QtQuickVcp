@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QFile>
+#include <QDir>
+#include <QTemporaryDir>
 #include <QTextStream>
 #include <QUrl>
 
@@ -17,6 +19,7 @@ class FileIO : public QObject
 
 public:
     explicit FileIO(QObject *parent = 0);
+    ~FileIO();
 
     QUrl fileUrl() const
     {
@@ -55,6 +58,8 @@ public slots:
         emit textChanged(text);
     }
 
+    QUrl createTempFile(const QString &fileName);
+
 signals:
     void writingCompleted();
     void readingCompleted();
@@ -67,6 +72,7 @@ private:
     QUrl m_fileUrl;
     QString m_text;
     bool m_working;
+    QTemporaryDir *m_temporaryDir;
 
     void setWorking(bool working)
     {
@@ -76,6 +82,7 @@ private:
         m_working = working;
         emit workingChanged(working);
     }
+
 }; // class FileIO
 }; // namespace qtquickvcp
 
