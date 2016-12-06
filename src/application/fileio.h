@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QUrl>
+#include <QTemporaryDir>
 
 namespace qtquickvcp {
 
