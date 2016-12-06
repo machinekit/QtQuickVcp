@@ -9,7 +9,6 @@
 #include <QObject>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
-#include <google/protobuf/text_format.h>
 
 namespace machinetalk {
 namespace application {

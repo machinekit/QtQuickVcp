@@ -10,7 +10,6 @@
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
-#include <google/protobuf/text_format.h>
 #include <application/statussubscribe.h>
 
 namespace machinetalk {

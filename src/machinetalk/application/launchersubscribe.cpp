@@ -5,6 +5,7 @@
 **
 ****************************************************************************/
 #include "launchersubscribe.h"
+#include <google/protobuf/text_format.h>
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
@@ -30,7 +31,7 @@ LauncherSubscribe::LauncherSubscribe(QObject *parent) :
     m_previousState(Down),
     m_errorString("")
     ,m_heartbeatTimer(new QTimer(this)),
-    m_heartbeatInterval(0),
+    m_heartbeatInterval(2500),
     m_heartbeatLiveness(0),
     m_heartbeatResetLiveness(2)
 {

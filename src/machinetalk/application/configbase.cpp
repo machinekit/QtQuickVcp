@@ -5,6 +5,7 @@
 **
 ****************************************************************************/
 #include "configbase.h"
+#include <google/protobuf/text_format.h>
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
