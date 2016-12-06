@@ -22,13 +22,9 @@
 #ifndef APPLICATIONCONFIG_H
 #define APPLICATIONCONFIG_H
 
-#include <QQuickItem>
+#include <QObject>
 #include <QQmlListProperty>
-#include <QCoreApplication>
-#include <QDir>
-#include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/message.pb.h>
-#include <machinetalk/protobuf/types.pb.h>
 #include <application/configbase.h>
 #include "applicationconfigitem.h"
 #include "applicationconfigfilter.h"
@@ -45,7 +41,7 @@ class ApplicationConfig : public machinetalk::application::ConfigBase
     Q_PROPERTY(ApplicationConfigFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
 
 public:
-    explicit ApplicationConfig(QQuickItem *parent = 0);
+    explicit ApplicationConfig(QObject *parent = 0);
     ~ApplicationConfig();
 
     bool isSynced() const

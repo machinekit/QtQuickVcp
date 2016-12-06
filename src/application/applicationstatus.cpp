@@ -21,6 +21,8 @@
 ****************************************************************************/
 
 #include "applicationstatus.h"
+#include <google/protobuf/text_format.h>
+#include <machinetalkservice.h>
 #include "debughelper.h"
 
 using namespace machinetalk;

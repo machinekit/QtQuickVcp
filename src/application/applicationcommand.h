@@ -23,15 +23,10 @@
 #ifndef APPLICATIONCOMMAND_H
 #define APPLICATIONCOMMAND_H
 
-#include <QUrl>
-#include <QCoreApplication>
-#include <QHostInfo>
-#include <google/protobuf/text_format.h>
+#include <QObject>
+#include <QJsonArray>
 #include <machinetalk/protobuf/message.pb.h>
-#include <machinetalk/protobuf/status.pb.h>
-#include <machinetalk/protobuf/emcclass.pb.h>
 #include <application/commandbase.h>
-#include "applicationstatus.h"
 
 namespace qtquickvcp {
 

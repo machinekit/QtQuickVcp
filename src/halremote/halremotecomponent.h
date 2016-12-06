@@ -24,10 +24,8 @@
 #define HALREMOTECOMPONENT_H
 
 #include <QObject>
-#include <QQuickItem>
 #include <QQmlListProperty>
 #include <machinetalk/protobuf/message.pb.h>
-#include <google/protobuf/text_format.h>
 #include <halremote/remotecomponentbase.h>
 #include "halpin.h"
 

@@ -22,14 +22,10 @@
 #ifndef APPLICATIONSTATUS_H
 #define APPLICATIONSTATUS_H
 
-#include <QStringList>
-#include <QHash>
-#include <google/protobuf/text_format.h>
-#include <google/protobuf/message.h>
-#include <google/protobuf/descriptor.h>
+#include <QObject>
+#include <QJsonObject>
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/status.pb.h>
-#include <machinetalkservice.h>
 #include <application/statusbase.h>
 
 namespace qtquickvcp {

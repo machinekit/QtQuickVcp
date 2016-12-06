@@ -23,12 +23,8 @@
 #define APPLICATIONFILE_H
 
 #include <QObject>
-#include <QCoreApplication>
 #include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QFileInfo>
-#include <QDir>
+#include <QFile>
 #include "qftp.h"
 #include "applicationfilemodel.h"
 

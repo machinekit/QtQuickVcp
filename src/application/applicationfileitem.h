@@ -22,7 +22,6 @@
 #ifndef APPLICATIONFILEITEM_H
 #define APPLICATIONFILEITEM_H
 
-#include <QVariant>
 #include <QDateTime>
 
 namespace qtquickvcp {

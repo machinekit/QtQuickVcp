@@ -24,8 +24,6 @@
 
 #include <QObject>
 #include <QUrl>
-#include <QDir>
-#include <QSettings>
 
 namespace qtquickvcp {
 

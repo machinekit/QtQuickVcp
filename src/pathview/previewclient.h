@@ -24,7 +24,6 @@
 #define PREVIEWCLIENT_H
 
 #include <QObject>
-#include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/message.pb.h>
 #include <pathview/previewclientbase.h>
 #include "gcodeprogrammodel.h"

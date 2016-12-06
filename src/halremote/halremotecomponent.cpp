@@ -1,5 +1,12 @@
 #include "halremotecomponent.h"
+#include <google/protobuf/text_format.h>
 #include "debughelper.h"
+
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
 
 using namespace machinetalk;
 
@@ -331,7 +338,7 @@ void HalRemoteComponent::bindPins()
 
 #ifdef QT_DEBUG
     std::string s;
-    gTextFormat::PrintToString(m_tx, &s);
+    gpb::TextFormat::PrintToString(m_tx, &s);
     DEBUG_TAG(1, m_name, "bind");
     DEBUG_TAG(3, m_name, QString::fromStdString(s));
 #endif

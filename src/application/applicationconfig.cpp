@@ -20,6 +20,8 @@
 **
 ****************************************************************************/
 #include "applicationconfig.h"
+#include <google/protobuf/text_format.h>
+#include <machinetalk/protobuf/types.pb.h>
 #include "machinetalkservice.h"
 
 using namespace machinetalk;
@@ -162,7 +164,7 @@ namespace qtquickvcp {
 
     Unselects the configuration with the given name and updates \l{selectedConfig}.
 */
-ApplicationConfig::ApplicationConfig(QQuickItem *parent) :
+ApplicationConfig::ApplicationConfig(QObject *parent) :
     application::ConfigBase(parent),
      m_synced(false),
      m_selectedConfig(new ApplicationConfigItem(this)),

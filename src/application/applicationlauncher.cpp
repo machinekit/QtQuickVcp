@@ -1,4 +1,5 @@
 #include "applicationlauncher.h"
+#include <machinetalkservice.h>
 #include "debughelper.h"
 
 using namespace machinetalk;

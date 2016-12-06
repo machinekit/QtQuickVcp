@@ -23,16 +23,11 @@
 #define MJPEGSTREAMER2_H
 
 #include <QQuickPaintedItem>
-#include <QPainter>
-#include <QNetworkAccessManager>
-#include <QTimer>
-#include <QNetworkReply>
-#include <QElapsedTimer>
-#include <QQueue>
 #include <QTime>
+#include <QQueue>
+#include <QImage>
 #include <nzmqt/nzmqt.hpp>
 #include "package.pb.h"
-#include <google/protobuf/text_format.h>
 
 namespace qtquickvcp {
 

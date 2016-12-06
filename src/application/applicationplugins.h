@@ -22,23 +22,21 @@
 #ifndef APPLICATIONPLUGINS_H
 #define APPLICATIONPLUGINS_H
 
-#include <QQuickItem>
+#include <QObject>
 #include <QQmlListProperty>
-#include <QDir>
-#include <QDirIterator>
-#include <QSettings>
+
 #include "applicationpluginitem.h"
 
 namespace qtquickvcp {
 
-class ApplicationPlugins : public QQuickItem
+class ApplicationPlugins : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<qtquickvcp::ApplicationPluginItem> plugins READ plugins NOTIFY pluginsChanged)
     Q_PROPERTY(QStringList searchPaths READ searchPaths WRITE setSearchPaths NOTIFY searchPathsChanged)
 
 public:
-    ApplicationPlugins(QQuickItem *parent = 0);
+    ApplicationPlugins(QObject *parent = 0);
 
     QQmlListProperty<ApplicationPluginItem> plugins();
     int pluginCount() const;

@@ -21,6 +21,7 @@
 ****************************************************************************/
 
 #include "previewclient.h"
+#include <google/protobuf/text_format.h>
 #include "debughelper.h"
 
 using namespace machinetalk;

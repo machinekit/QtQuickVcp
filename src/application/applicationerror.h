@@ -22,8 +22,7 @@
 #ifndef APPLICATIONERROR_H
 #define APPLICATIONERROR_H
 
-#include <QStringList>
-#include <google/protobuf/text_format.h>
+#include <QObject>
 #include <machinetalk/protobuf/message.pb.h>
 #include <application/errorbase.h>
 

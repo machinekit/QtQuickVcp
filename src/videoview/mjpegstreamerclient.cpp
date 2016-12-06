@@ -20,6 +20,12 @@
 **
 ****************************************************************************/
 #include "mjpegstreamerclient.h"
+#include <QPainter>
+#include <QNetworkAccessManager>
+#include <QTimer>
+#include <QNetworkReply>
+#include <QElapsedTimer>
+#include <google/protobuf/text_format.h>
 
 using namespace nzmqt;
 

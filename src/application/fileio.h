@@ -2,10 +2,6 @@
 #define FILEIO_H
 
 #include <QObject>
-#include <QFile>
-#include <QDir>
-#include <QTemporaryDir>
-#include <QTextStream>
 #include <QUrl>
 
 namespace qtquickvcp {

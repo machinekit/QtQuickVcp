@@ -21,6 +21,11 @@
 ****************************************************************************/
 
 #include "applicationfile.h"
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QCoreApplication>
+#include <QFileInfo>
+#include <QDir>
 
 namespace qtquickvcp {
 

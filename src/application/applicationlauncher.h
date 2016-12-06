@@ -26,7 +26,6 @@
 #include <QJsonValue>
 #include <machinetalk/protobuf/message.pb.h>
 #include <application/launcherbase.h>
-#include <machinetalkservice.h>
 
 namespace qtquickvcp {
 

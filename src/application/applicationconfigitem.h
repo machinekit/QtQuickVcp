@@ -25,8 +25,6 @@
 #include <QObject>
 #include <QUrl>
 #include <QStringList>
-#include <machinetalk/protobuf/message.pb.h>
-#include <machinetalk/protobuf/types.pb.h>
 #include <machinetalk/protobuf/config.pb.h>
 
 namespace qtquickvcp {

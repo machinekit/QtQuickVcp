@@ -55,13 +55,13 @@ Rectangle {
     */
     property alias name: remoteComponent.name
 
-    /*! \qmlproperty int heartbeadPeriod
+    /*! \qmlproperty int heartbeatInterval
 
-        This property holds the period time of the heartbeat timer in ms.
+        This property holds the interval time of the heartbeat timer in ms.
 
-        The default value is \c{3000}.
+        The default value is \c{2500}.
     */
-    property alias heartbeatPeriod: remoteComponent.heartbeatPeriod
+    property alias heartbeatInterval: remoteComponent.halrcmdHeartbeatInterval
 
     /*! \qmlproperty string halrcmdUri
 
@@ -299,7 +299,6 @@ Rectangle {
         name: main.name
         halrcmdUri: halrcmdService.uri
         halrcompUri: halrcompService.uri
-        heartbeatPeriod: 3000
         ready: (halrcompService.ready && halrcmdService.ready) || remoteComponent.connected
         containerItem: parent
     }

@@ -21,6 +21,11 @@
 ****************************************************************************/
 
 #include "applicationcommand.h"
+#include <QUrl>
+#include <QJsonObject>
+#include <google/protobuf/text_format.h>
+#include <machinetalk/protobuf/status.pb.h>
+#include <machinetalk/protobuf/emcclass.pb.h>
 #include "debughelper.h"
 
 using namespace machinetalk;
