@@ -151,6 +151,6 @@ private:
     float m_rotationAngle;
     QVector3D m_rotationAxis;
 }; // class GLItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GLITEM_H

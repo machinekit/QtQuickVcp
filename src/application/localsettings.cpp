@@ -21,6 +21,12 @@
 ****************************************************************************/
 
 #include "localsettings.h"
+#include <QJsonArray>
+#include <QJsonValueRef>
+#include <QJsonDocument>
+#include <QFileInfo>
+#include <QDir>
+#include <QStandardPaths>
 
 namespace qtquickvcp {
 

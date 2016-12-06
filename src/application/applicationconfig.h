@@ -22,119 +22,101 @@
 #ifndef APPLICATIONCONFIG_H
 #define APPLICATIONCONFIG_H
 
-#include <QQuickItem>
+#include <QObject>
 #include <QQmlListProperty>
-#include <QTimer>
-#include <QCoreApplication>
-#include <QDir>
-#include <nzmqt/nzmqt.hpp>
-#include <google/protobuf/text_format.h>
+#include <machinetalk/protobuf/message.pb.h>
+#include <application/configbase.h>
 #include "applicationconfigitem.h"
 #include "applicationconfigfilter.h"
 #include "applicationdescription.h"
-#include <machinetalk/protobuf/message.pb.h>
-#include <machinetalk/protobuf/types.pb.h>
 
 namespace qtquickvcp {
 
-class ApplicationConfig : public QQuickItem
+class ApplicationConfig : public machinetalk::application::ConfigBase
 {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(QString configUri READ configUri WRITE setConfigUri NOTIFY configUriChanged)
-    Q_PROPERTY(bool ready READ isReady WRITE setReady NOTIFY readyChanged)
-    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
-    Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
-    Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
-    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
+    Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
     Q_PROPERTY(ApplicationConfigItem *selectedConfig READ selectedConfig NOTIFY selectedConfigChanged)
     Q_PROPERTY(QQmlListProperty<qtquickvcp::ApplicationConfigItem> configs READ configs NOTIFY configsChanged)
     Q_PROPERTY(ApplicationConfigFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
-    Q_ENUMS(State)
-    Q_ENUMS(ConnectionError)
+
 public:
-    explicit ApplicationConfig(QQuickItem *parent = 0);
+    explicit ApplicationConfig(QObject *parent = 0);
     ~ApplicationConfig();
 
-    enum State {
-        Disconnected = 0,
-        Connected = 1,
-        Error = 2
-    };
+    bool isSynced() const
+    {
+        return m_synced;
+    }
 
-    enum ConnectionError {
-        NoError = 0,
-        SocketError = 1
-    };
+    ApplicationConfigItem *selectedConfig() const
+    {
+        return m_selectedConfig;
+    }
 
-    virtual void componentComplete();
+    ApplicationConfigFilter *filter() const
+    {
+        return m_filter;
+    }
 
-    QString configUri() const;
-    bool isReady() const;
-    bool isConnected() const;
-    ApplicationConfigItem *selectedConfig() const;
-    ApplicationConfigFilter *filter() const;
-    State connectionState() const;
-    ConnectionError error() const;
-    QString errorString() const;
-    QQmlListProperty<ApplicationConfigItem> configs();
-    int appConfigCount() const;
-    ApplicationConfigItem *appConfig(int index) const;
+    QQmlListProperty<ApplicationConfigItem> configs()
+    {
+        return QQmlListProperty<ApplicationConfigItem>(this, m_configs);
+    }
+    int appConfigCount() const
+    {
+        return m_configs.count();
+    }
+    ApplicationConfigItem *appConfig(int index) const
+    {
+        return m_configs.at(index);
+    }
 
 public slots:
+    void setSelectedConfig(ApplicationConfigItem * arg)
+    {
+        if (m_selectedConfig != arg) {
+            m_selectedConfig = arg;
+            emit selectedConfigChanged(arg);
+        }
+    }
+
+    void setFilter(ApplicationConfigFilter * arg)
+    {
+        if (m_filter == arg)
+            return;
+
+        m_filter = arg;
+        emit filterChanged(arg);
+    }
 
     void selectConfig(QString name);
     void unselectConfig();
-    void setConfigUri(QString arg);
-    void setReady(bool arg);
-    void setSelectedConfig(ApplicationConfigItem * arg);
-    void setFilter(ApplicationConfigFilter * arg);
 
 private:
-    bool    m_componentCompleted;
-    QString m_configUri;
-    bool    m_ready;
-    bool    m_connected;
-    State   m_connectionState;
-    ConnectionError m_error;
-    QString m_errorString;
+    bool m_synced;
 
     ApplicationConfigItem *m_selectedConfig;
     QList<ApplicationConfigItem*> m_configs;
     ApplicationConfigFilter *m_filter;
 
-    nzmqt::PollingZMQContext *m_context;
-    nzmqt::ZMQSocket *m_configSocket;
     // more efficient to reuse a protobuf Message
-    pb::Container m_rx;
-    pb::Container m_tx;
+    machinetalk::Container m_tx;
 
-    void start();
-    void stop();
-    void updateState(State state);
-    void updateError(ConnectionError error, QString errorString);
-    void sendConfigMessage(const QByteArray &data);
     void cleanupFiles();
 
 private slots:
-    bool connectSocket();
-    void disconnectSocket();
-    void configMessageReceived(const QList<QByteArray> &messageList);
-    void pollError(int errorNum, const QString &errorMsg);
-    void request(pb::ContainerType type);
+    void describeApplicationReceived(const machinetalk::Container &rx);
+    void applicationDetailReceived(const machinetalk::Container &rx);
+    void syncConfig();
+    void unsyncConfig();
 
 signals:
-    void configUriChanged(QString arg);
-    void readyChanged(bool arg);
     void selectedConfigChanged(ApplicationConfigItem * arg);
     void configsChanged(QQmlListProperty<ApplicationConfigItem> arg);
     void filterChanged(ApplicationConfigFilter * arg);
-    void connectionStateChanged(State arg);
-    void errorChanged(ConnectionError arg);
-    void errorStringChanged(QString arg);
-    void connectedChanged(bool arg);
-
+    void syncedChanged(bool synced);
 }; // class ApplicationConfig
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONCONFIG_H

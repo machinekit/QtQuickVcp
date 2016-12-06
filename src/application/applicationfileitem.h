@@ -22,7 +22,6 @@
 #ifndef APPLICATIONFILEITEM_H
 #define APPLICATIONFILEITEM_H
 
-#include <QVariant>
 #include <QDateTime>
 
 namespace qtquickvcp {
@@ -58,6 +57,6 @@ private:
     QDateTime m_lastModified;
     bool m_dir;
 }; // class ApplicationFileItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONFILEITEM_H

@@ -101,6 +101,6 @@ signals:
     void itemsChanged(QQmlListProperty<ServiceDiscoveryItem> arg);
     void filterChanged(ServiceDiscoveryFilter * filter);
 }; // class ServiceDiscoveryQuery
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // SERVICEDISCOVERYQUERY_H

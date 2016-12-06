@@ -9,6 +9,7 @@ include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)
 include(../../3rdparty/qftp/qftp.pri)
 
 include(../common/common.pri)
+include(../machinetalk/machinetalk.pri)
 
 # Input
 SOURCES += \
@@ -31,7 +32,6 @@ SOURCES += \
 
 HEADERS += \
     plugin.h \
-    debughelper.h \
     fileio.h \
     revisionsingleton.h \
     revision.h \

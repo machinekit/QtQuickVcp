@@ -24,12 +24,6 @@
 
 #include <QObject>
 #include <QJsonObject>
-#include <QJsonArray>
-#include <QJsonValueRef>
-#include <QJsonDocument>
-#include <QFileInfo>
-#include <QDir>
-#include <QStandardPaths>
 
 namespace qtquickvcp {
 
@@ -92,6 +86,6 @@ private:
     void saveSettings();
     void updateFilePath();
 }; // class LocalSettings
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // LOCALSETTINGS_H

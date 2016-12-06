@@ -22,23 +22,21 @@
 #ifndef APPLICATIONPLUGINS_H
 #define APPLICATIONPLUGINS_H
 
-#include <QQuickItem>
+#include <QObject>
 #include <QQmlListProperty>
-#include <QDir>
-#include <QDirIterator>
-#include <QSettings>
+
 #include "applicationpluginitem.h"
 
 namespace qtquickvcp {
 
-class ApplicationPlugins : public QQuickItem
+class ApplicationPlugins : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<qtquickvcp::ApplicationPluginItem> plugins READ plugins NOTIFY pluginsChanged)
     Q_PROPERTY(QStringList searchPaths READ searchPaths WRITE setSearchPaths NOTIFY searchPathsChanged)
 
 public:
-    ApplicationPlugins(QQuickItem *parent = 0);
+    ApplicationPlugins(QObject *parent = 0);
 
     QQmlListProperty<ApplicationPluginItem> plugins();
     int pluginCount() const;
@@ -53,7 +51,7 @@ public slots:
     void updatePlugins();
     void clearPlugins();
 
-    void setSearchPaths(QStringList searchPaths)
+    void setSearchPaths(const QStringList &searchPaths)
     {
         if (m_searchPaths == searchPaths)
             return;
@@ -69,9 +67,9 @@ private:
     void readPluginFile(QString filePath);
 
 signals:
-    void searchPathsChanged(QStringList searchPaths);
+    void searchPathsChanged(const QStringList &searchPaths);
     void pluginsChanged(QQmlListProperty<ApplicationPluginItem> arg);
 }; // class ApplicationPlugin
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONPLUGINS_H

@@ -246,6 +246,6 @@ signals:
     void versionChanged(int arg);
     void updatedChanged(bool arg);
 }; // class ServiceDiscoveryItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // SERVICEDISCOVERYITEM_H

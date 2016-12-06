@@ -179,7 +179,7 @@ private:
     float m_traverseLineStippleLength;
 
     Offsets m_activeOffsets;
-    pb::Position m_relativePosition; // current relative position (without offsets)
+    machinetalk::Position m_relativePosition; // current relative position (without offsets)
     Position m_currentPosition;  // current absolute position (with offsets)
     Plane m_activePlane;
     QList<PathItem*> m_previewPathItems;
@@ -202,15 +202,15 @@ private:
     void resetExtents();
     void updateExtents(const QVector3D &vector);
     void releaseExtents();
-    void processPreview(const pb::Preview &preview);
-    void processStraightMove(const pb::Preview &preview, MovementType movementType);
-    void processArcFeed(const pb::Preview &preview);
-    void processSetG5xOffset(const pb::Preview &preview);
-    void processSetG92Offset(const pb::Preview &preview);
-    void processUseToolOffset(const pb::Preview &preview);
-    void processSelectPlane(const pb::Preview &preview);
-    Position previewPositionToPosition(const pb::Position &position) const;
-    Position calculateNewPosition(const pb::Position &newPosition) const;
+    void processPreview(const machinetalk::Preview &preview);
+    void processStraightMove(const machinetalk::Preview &preview, MovementType movementType);
+    void processArcFeed(const machinetalk::Preview &preview);
+    void processSetG5xOffset(const machinetalk::Preview &preview);
+    void processSetG92Offset(const machinetalk::Preview &preview);
+    void processUseToolOffset(const machinetalk::Preview &preview);
+    void processSelectPlane(const machinetalk::Preview &preview);
+    Position previewPositionToPosition(const machinetalk::Position &position) const;
+    Position calculateNewPosition(const machinetalk::Position &newPosition) const;
     QVector3D positionToVector3D(const Position &position) const;
 
 private slots:
@@ -234,6 +234,6 @@ signals:
     void lineWidthChanged(float lineWidth);
     void traverseLineStippleLengthChanged(float traverseLineStippleLength);
 }; // class GLPathItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GLPATHITEM_H

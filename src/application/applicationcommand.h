@@ -23,53 +23,21 @@
 #ifndef APPLICATIONCOMMAND_H
 #define APPLICATIONCOMMAND_H
 
-#include <abstractserviceimplementation.h>
-#include <QTimer>
-#include <QUrl>
-#include <QCoreApplication>
-#include <QHostInfo>
-#include <nzmqt/nzmqt.hpp>
-#include <google/protobuf/text_format.h>
+#include <QObject>
+#include <QJsonArray>
 #include <machinetalk/protobuf/message.pb.h>
-#include <machinetalk/protobuf/status.pb.h>
-#include <machinetalk/protobuf/emcclass.pb.h>
-#include "applicationstatus.h"
+#include <application/commandbase.h>
 
 namespace qtquickvcp {
 
-class ApplicationCommand : public AbstractServiceImplementation
+class ApplicationCommand : public machinetalk::application::CommandBase
 {
     Q_OBJECT
-    Q_PROPERTY(QString commandUri READ commandUri WRITE setCommandUri NOTIFY commandUriChanged)
-    Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
-    Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
-    Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
-    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_ENUMS(State ConnectionError SpindleBrake JogType TaskState TaskMode SpindleMode TrajectoryMode)
+    Q_ENUMS(SpindleBrake JogType TaskState TaskMode SpindleMode TrajectoryMode)
 
 public:
     explicit ApplicationCommand(QObject *parent = 0);
-
-    enum SocketState {
-        Down = 1,
-        Trying = 2,
-        Up = 3
-    };
-
-    enum State {
-        Disconnected = 0,
-        Connecting = 1,
-        Connected = 2,
-        Timeout = 3,
-        Error = 4
-    };
-
-    enum ConnectionError {
-        NoError = 0,
-        ServiceError = 1,
-        SocketError = 2
-    };
 
     enum SpindleBrake {
         ReleaseBrake,
@@ -92,48 +60,23 @@ public:
     };
 
     enum TaskState {
-        TaskStateEstop = pb::EMC_TASK_STATE_ESTOP,
-        TaskStateEstopReset = pb::EMC_TASK_STATE_ESTOP_RESET,
-        TaskStateOff = pb::EMC_TASK_STATE_OFF,
-        TaskStateOn = pb::EMC_TASK_STATE_ON
+        TaskStateEstop = machinetalk::EMC_TASK_STATE_ESTOP,
+        TaskStateEstopReset = machinetalk::EMC_TASK_STATE_ESTOP_RESET,
+        TaskStateOff = machinetalk::EMC_TASK_STATE_OFF,
+        TaskStateOn = machinetalk::EMC_TASK_STATE_ON
     };
 
     enum TaskMode {
-        TaskModeManual = pb::EMC_TASK_MODE_MANUAL,
-        TaskModeAuto = pb::EMC_TASK_MODE_AUTO,
-        TaskModeMdi = pb::EMC_TASK_MODE_MDI
+        TaskModeManual = machinetalk::EMC_TASK_MODE_MANUAL,
+        TaskModeAuto = machinetalk::EMC_TASK_MODE_AUTO,
+        TaskModeMdi = machinetalk::EMC_TASK_MODE_MDI
     };
 
     enum TrajectoryMode {
-        FreeMode = pb::EMC_TRAJ_MODE_FREE,
-        CoordinatedMode = pb::EMC_TRAJ_MODE_COORD,
-        TeleopMode = pb::EMC_TRAJ_MODE_TELEOP
+        FreeMode = machinetalk::EMC_TRAJ_MODE_FREE,
+        CoordinatedMode = machinetalk::EMC_TRAJ_MODE_COORD,
+        TeleopMode = machinetalk::EMC_TRAJ_MODE_TELEOP
     };
-
-    QString commandUri() const
-    {
-        return m_commandUri;
-    }
-
-    State connectionState() const
-    {
-        return m_connectionState;
-    }
-
-    ConnectionError error() const
-    {
-        return m_error;
-    }
-
-    QString errorString() const
-    {
-        return m_errorString;
-    }
-
-    int heartbeatPeriod() const
-    {
-        return m_heartbeatPeriod;
-    }
 
     bool isConnected() const
     {
@@ -141,25 +84,6 @@ public:
     }
 
 public slots:
-
-    void setCommandUri(QString arg)
-    {
-        if (m_commandUri == arg)
-            return;
-
-        m_commandUri = arg;
-        emit commandUriChanged(arg);
-    }
-
-    void heartbeatPeriod(int arg)
-    {
-        if (m_heartbeatPeriod == arg)
-            return;
-
-        m_heartbeatPeriod = arg;
-        emit heartbeatPeriodChanged(arg);
-    }
-
     void abort(const QString &interpreter);
     void runProgram(const QString &interpreter, int lineNumber);
     void pauseProgram(const QString &interpreter);
@@ -203,53 +127,23 @@ public slots:
     void setTrajectoryMode(TrajectoryMode mode);
     void unhomeAxis(int index);
     void shutdown();
+
 private:
+    bool m_connected;
 
-    QString         m_commandUri;
-    int             m_heartbeatPeriod;
-    bool            m_connected;
-    SocketState     m_commandSocketState;
-    State           m_connectionState;
-    ConnectionError m_error;
-    QString         m_errorString;
-
-    nzmqt::PollingZMQContext *m_context;
-    nzmqt::ZMQSocket *m_commandSocket;
-    QTimer      *m_commandHeartbeatTimer;
-    int         m_commandPingErrorCount;
-    int         m_commandPingErrorThreshold;
-    QUuid       m_uuid;
     // more efficient to reuse a protobuf Message
-    pb::Container   m_rx;
-    pb::Container   m_tx;
-
-    void start();
-    void stop();
-    void cleanup();
-    void startCommandHeartbeat();
-    void stopCommandHeartbeat();
-    void updateState(State state);
-    void updateState(State state, ConnectionError error, const QString &errorString);
-    void updateError(ConnectionError error, const QString &errorString);
-    void sendCommandMessage(pb::ContainerType type);
+    machinetalk::Container   m_tx;
 
 private slots:
-    void commandMessageReceived(const QList<QByteArray> &messageList);
-    void pollError(int errorNum, const QString &errorMsg);
-    void commandHeartbeatTimerTick();
-
-    bool connectSockets();
-    void disconnectSockets();
+    void setConnected();
+    void clearConnected();
+    void emccmdExecutedReceived(const machinetalk::Container &rx);
+    void emccmdCompletedReceived(const machinetalk::Container &rx);
 
 signals:
-    void commandUriChanged(QString arg);
-    void connectionStateChanged(State arg);
-    void errorChanged(ConnectionError arg);
-    void errorStringChanged(QString arg);
-    void heartbeatPeriodChanged(int arg);
     void connectedChanged(bool arg);
 
 }; // class ApplicationCommand
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONCOMMAND_H

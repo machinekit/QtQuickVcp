@@ -15,13 +15,9 @@
 #include <machinetalk/protobuf/config.pb.h>
 #include <machinetalk/protobuf/preview.pb.h>
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
+namespace qtquickvcp {
 
-class Service : public QObject
+class MachinetalkService : public QObject
 {
     Q_OBJECT
     Q_ENUMS(SocketState)
@@ -29,7 +25,7 @@ class Service : public QObject
     Q_ENUMS(ConnectionError)
 
 public:
-    explicit Service(QObject *parent = 0);
+    explicit MachinetalkService(QObject *parent = 0);
 
     enum SocketState {
         Down = 1,
@@ -57,19 +53,20 @@ public:
     static QString applicationTempPath(const QString &name);
     static bool removeTempPath(const QString &name);
     static QString enumNameToCamelCase(const QString &name);
-    static void recurseDescriptor(const gpb::Descriptor *descriptor,
+    static void recurseDescriptor(const google::protobuf::Descriptor *descriptor,
                                   QJsonObject *object);
-    static int recurseMessage(const gpb::Message &message,
+    static int recurseMessage(const google::protobuf::Message &message,
                                QJsonObject *object,
                                const QString &fieldFilter = QString(),
                                const QString &tempDir = QString("json"));
-    static void updateValue(const gpb::Message &message,
+    static void updateValue(const google::protobuf::Message &message,
                             QJsonValue *value,
                             const QString &field,
                             const QString &tempDir = QString("json"));
-    static void fileToJson(const pb::File &file,
+    static void fileToJson(const machinetalk::File &file,
                            QJsonObject *object,
                            const QString tempDir);
 };
+} // namespace qtquickvcp
 
 #endif // SERVICE_H

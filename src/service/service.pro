@@ -23,7 +23,6 @@ SOURCES += \
 
 HEADERS += \
     plugin.h \
-    debughelper.h \
     nameserver.h \
     service.h \
     servicediscovery.h \

@@ -1,25 +1,33 @@
-#include "service.h"
+#include "machinetalkservice.h"
 #include <QDebug>
 
-Service::Service(QObject *parent) : QObject(parent)
+#if defined(Q_OS_IOS)
+namespace gpb = google_public::protobuf;
+#else
+namespace gpb = google::protobuf;
+#endif
+
+namespace qtquickvcp {
+
+MachinetalkService::MachinetalkService(QObject *parent) : QObject(parent)
 {
 
 }
 
-QString Service::applicationTempPath(const QString &name)
+QString MachinetalkService::applicationTempPath(const QString &name)
 {
     return QString("%1/machinekit-%2/%3/").arg(QDir::tempPath())
             .arg(QCoreApplication::applicationPid())
             .arg(name);
 }
 
-bool Service::removeTempPath(const QString &name)
+bool MachinetalkService::removeTempPath(const QString &name)
 {
     QDir dir(applicationTempPath(name));
     return dir.removeRecursively();
 }
 
-QString Service::enumNameToCamelCase(const QString &name)
+QString MachinetalkService::enumNameToCamelCase(const QString &name)
 {
     QStringList partList;
 
@@ -33,7 +41,7 @@ QString Service::enumNameToCamelCase(const QString &name)
     return partList.join("");
 }
 
-void Service::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *object)
+void MachinetalkService::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *object)
 {
     for (int i = 0; i < descriptor->field_count(); ++i)
     {
@@ -68,7 +76,7 @@ void Service::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *
         case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
             QJsonObject jsonObject;
 
-            if (field->message_type() == pb::Position::descriptor())  // add indexes to position messages
+            if (field->message_type() == machinetalk::Position::descriptor())  // add indexes to position messages
             {
                 for (int i = 0; i < 9; ++i)
                 {
@@ -105,7 +113,7 @@ void Service::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *
     }
 }
 
-int Service::recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter, const QString &tempDir)
+int MachinetalkService::recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter, const QString &tempDir)
 {
     bool filterEnabled = !fieldFilter.isEmpty();
     bool isPosition = false;
@@ -113,14 +121,14 @@ int Service::recurseMessage(const gpb::Message &message, QJsonObject *object, co
     gpb::vector< const gpb::FieldDescriptor * > output;
     reflection->ListFields(message, &output);
 
-    if (message.GetDescriptor() == pb::File::descriptor())  // handle files with binary data
+    if (message.GetDescriptor() == machinetalk::File::descriptor())  // handle files with binary data
     {
-        pb::File file;
+        machinetalk::File file;
         file.MergeFrom(message);
         fileToJson(file, object, tempDir);
         return output.size();
     }
-    else if (message.GetDescriptor() == pb::Position::descriptor()) // handle position vecotors
+    else if (message.GetDescriptor() == machinetalk::Position::descriptor()) // handle position vecotors
     {
         isPosition = true;
     }
@@ -246,7 +254,7 @@ int Service::recurseMessage(const gpb::Message &message, QJsonObject *object, co
     return output.size();
 }
 
-void Service::updateValue(const gpb::Message &message, QJsonValue *value, const QString &field, const QString &tempDir)
+void MachinetalkService::updateValue(const gpb::Message &message, QJsonValue *value, const QString &field, const QString &tempDir)
 {
     QJsonObject object;
     object.insert(field, *value);
@@ -257,7 +265,7 @@ void Service::updateValue(const gpb::Message &message, QJsonValue *value, const 
 /** Converts a protobuf File object to a json file descriptor
  *  stores the data to a temporary directory
  **/
-void Service::fileToJson(const pb::File &file, QJsonObject *object, const QString tempDir)
+void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject *object, const QString tempDir)
 {
     QDir dir;
     QString fileName;
@@ -291,13 +299,13 @@ void Service::fileToJson(const pb::File &file, QJsonObject *object, const QStrin
 
     data = QByteArray(file.blob().data(), file.blob().size());
 
-    if (file.encoding() == pb::ZLIB)
+    if (file.encoding() == machinetalk::ZLIB)
     {
         quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
         qWarning() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
         data = qUncompress(data);
     }
-    else if (file.encoding() != pb::CLEARTEXT)
+    else if (file.encoding() != machinetalk::CLEARTEXT)
     {
         qWarning() << "unknown encoding";
         localFile.close();
@@ -309,3 +317,4 @@ void Service::fileToJson(const pb::File &file, QJsonObject *object, const QStrin
 
     object->insert("url", QUrl::fromLocalFile(filePath).toString());
 }
+}; // namespace qtquickvcp

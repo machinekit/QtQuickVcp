@@ -19,8 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
 #include "applicationdescription.h"
+#include <QSettings>
+#include <QDir>
 
 namespace qtquickvcp {
 

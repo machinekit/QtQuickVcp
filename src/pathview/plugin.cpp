@@ -88,10 +88,6 @@ void MachinekitPathViewPlugin::initializeEngine(QQmlEngine *engine, const char *
 
     if (isLoadedFromResource())
         engine->addImportPath(QStringLiteral("qrc:/"));
-
-    const char *private_uri = "Machinekit.PathView.Private";
-    qmlRegisterUncreatableType<AbstractServiceImplementation>(private_uri, 1, 0, "AnstractServiceImplementation",
-                                                              QLatin1String("Do not create objects of type AbstractServiceImplementation"));
 }
 
 QString MachinekitPathViewPlugin::fileLocation() const

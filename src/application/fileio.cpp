@@ -1,4 +1,6 @@
 #include "fileio.h"
+#include <QFile>
+#include <QTextStream>
 
 namespace qtquickvcp {
 
