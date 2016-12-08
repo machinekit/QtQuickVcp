@@ -1,5 +1,5 @@
 TEMPLATE = lib
-QT += qml quick network
+QT += qml quick network concurrent
 
 uri = Machinekit.Application
 include(../plugin.pri)

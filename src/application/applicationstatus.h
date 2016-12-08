@@ -33,6 +33,16 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/status.pb.h>
 
+#include <QDateTime>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <QThread>
+#include <QtConcurrentRun>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QEventLoop>
+
 namespace qtquickvcp {
 
 class ApplicationStatus : public AbstractServiceImplementation
@@ -325,6 +335,8 @@ private:
     void updateTask(const pb::EmcStatusTask &task);
     void updateInterp(const pb::EmcStatusInterp &interp);
     void initializeObject(StatusChannel channel);
+    QFuture<void> future;
+    void run_thread(const pb::EmcStatusMotion &motion);
 
 private slots:
     void statusMessageReceived(const QList<QByteArray> &messageList);

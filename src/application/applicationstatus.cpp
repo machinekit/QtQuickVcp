@@ -225,6 +225,17 @@ void ApplicationStatus::updateInterp(const pb::EmcStatusInterp &interp)
     emit interpChanged(m_interp);
 }
 
+void ApplicationStatus::run_thread(const pb::EmcStatusMotion &motion)
+{
+    future = QtConcurrent::run(this, &ApplicationStatus::updateMotion, motion);
+    while (future.isRunning())
+    {   // precess events for 10ms, then flush all pending events
+        // in order to prevent RPi3 from sluggish
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+        QCoreApplication::flush();
+    }
+}
+
 void ApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
@@ -242,10 +253,17 @@ void ApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageLi
         || (m_rx.type() == pb::MT_EMCSTAT_INCREMENTAL_UPDATE))
     {
         if ((topic == "motion") && m_rx.has_emc_status_motion()) {
-            updateMotion(m_rx.emc_status_motion());
+#ifdef QT_DEBUG
+            quint64 diffTime1 = QDateTime::currentMSecsSinceEpoch();
+#endif
+            run_thread(m_rx.emc_status_motion());
             if (m_rx.type() == pb::MT_EMCSTAT_FULL_UPDATE) {
                 updateSync(MotionChannel);
             }
+#ifdef QT_DEBUG
+            diffTime1 = QDateTime::currentMSecsSinceEpoch() - diffTime1;
+            qDebug() << "updateMotion: " << diffTime1;
+#endif
         }
 
         if ((topic == "config") && m_rx.has_emc_status_config()) {
