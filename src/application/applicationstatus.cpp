@@ -229,38 +229,32 @@ void ApplicationStatus::updateInterp(const pb::EmcStatusInterp &interp)
 
 void ApplicationStatus::run_thread(const pb::EmcStatusMotion &motion)
 {
-    future = QtConcurrent::run(this, &ApplicationStatus::updateMotion, motion);
-    while (future.isRunning())
-    {   // precess events for 10ms, then flush all pending events
-        // in order to prevent RPi3 from sluggish
+    // obtain load from /proc/loadavg
+    float load = 0;
+    m_loadavgFile.clear();
+    m_loadavgFile.seekg(0);
+    if(m_loadavgFile.good())
+    {
+        std::string loadStr;
+        m_loadavgFile >> loadStr;
+        load = std::stof(loadStr);
+    }
 
-
-        // obtain load from /proc/loadavg
-        float load = 0;
-        m_loadavgFile.clear();
-        m_loadavgFile.seekg(0);
-        if(m_loadavgFile.good())
-        {
-            std::string loadStr;
-            m_loadavgFile >> loadStr;
-            load = std::stof(loadStr);
+    // throttle updateMotion() to prevent RPi3 from sluggish
+    quint64 diffTime = QDateTime::currentMSecsSinceEpoch() - m_updateMotionTimeStamp;
+    if ((load < 0.75) || (diffTime > 250))
+    {
+        m_updateMotionTimeStamp = QDateTime::currentMSecsSinceEpoch();
+        future = QtConcurrent::run(this, &ApplicationStatus::updateMotion, motion);
+        while (future.isRunning())
+        {   
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
         }
-
-        quint64 diffTime = QDateTime::currentMSecsSinceEpoch() - m_updateMotionTimeStamp;
-        if ((load < 0.75) || (diffTime > 250)) {
-            // throttle processEvents() to prevent RPi3 from sluggish
-            QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
-            m_updateMotionTimeStamp = QDateTime::currentMSecsSinceEpoch();
-        } else {
-            QCoreApplication::flush();
-        }
-
+    }
 #ifdef QT_DEBUG
-        quint64 diffTime1 = QDateTime::currentMSecsSinceEpoch() - baseTime;
-        qDebug() << "updateMotion: load " << load << "," << diffTime << "," << diffTime1;
+    qDebug() << "run_thread: load " << load << "," << diffTime;
 #endif
 
-    }
 }
 
 void ApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageList)
