@@ -315,6 +315,8 @@ private:
     nzmqt::ZMQSocket *m_statusSocket;
     QStringList  m_subscriptions;
     QTimer      *m_statusHeartbeatTimer;
+    quint64         m_updateMotionTimeStamp;
+    std::ifstream   m_loadavgFile;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
 

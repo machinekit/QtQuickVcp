@@ -46,7 +46,9 @@ ApplicationStatus::ApplicationStatus(QObject *parent) :
     m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel),
     m_context(nullptr),
     m_statusSocket(nullptr),
-    m_statusHeartbeatTimer(new QTimer(this))
+    m_statusHeartbeatTimer(new QTimer(this)),
+    m_updateMotionTimeStamp(QDateTime::currentMSecsSinceEpoch()),
+    m_loadavgFile("/proc/loadavg")
 {
     connect(m_statusHeartbeatTimer, &QTimer::timeout,
             this, &ApplicationStatus::statusHeartbeatTimerTick);
@@ -231,8 +233,33 @@ void ApplicationStatus::run_thread(const pb::EmcStatusMotion &motion)
     while (future.isRunning())
     {   // precess events for 10ms, then flush all pending events
         // in order to prevent RPi3 from sluggish
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
-        QCoreApplication::flush();
+
+
+        // obtain load from /proc/loadavg
+        float load = 0;
+        m_loadavgFile.clear();
+        m_loadavgFile.seekg(0);
+        if(m_loadavgFile.good())
+        {
+            std::string loadStr;
+            m_loadavgFile >> loadStr;
+            load = std::stof(loadStr);
+        }
+
+        quint64 diffTime = QDateTime::currentMSecsSinceEpoch() - m_updateMotionTimeStamp;
+        if ((load < 0.75) || (diffTime > 250)) {
+            // throttle processEvents() to prevent RPi3 from sluggish
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+            m_updateMotionTimeStamp = QDateTime::currentMSecsSinceEpoch();
+        } else {
+            QCoreApplication::flush();
+        }
+
+#ifdef QT_DEBUG
+        quint64 diffTime1 = QDateTime::currentMSecsSinceEpoch() - baseTime;
+        qDebug() << "updateMotion: load " << load << "," << diffTime << "," << diffTime1;
+#endif
+
     }
 }
 
