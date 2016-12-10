@@ -33,7 +33,7 @@ ApplicationItem {
     property string prefix: ""
     property string suffix: ""
     property int axes: axisNames.length
-    property var axisHomed: _ready ? status.motion.axis : [{"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}]
+    property var axisHomed: _ready ? status.motion.axis : [{"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}]
     property var axisNames: helper.ready ? helper.axisNamesUpper : ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
     property var g5xNames: ["G54", "G55", "G56", "G57", "G58", "G59", "G59.1", "G59.2", "G59.3"]
     property int g5xIndex: _ready ? status.motion.g5xIndex : 1
