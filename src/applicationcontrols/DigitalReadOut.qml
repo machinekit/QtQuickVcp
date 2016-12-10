@@ -312,7 +312,6 @@ ApplicationItem {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    console.log("g5xLayout index:", index, " g5xIndex:", droRect.g5xIndex)
                     item.title = Qt.binding(function(){ return droRect.axisNames[index]; });
                     item.type = Qt.binding(function(){ return droRect.g5xNames[droRect.g5xIndex-1]; });
                     item.value = Qt.binding(function(){ return Number(droRect.g5xOffset[droRect._axisNames[index]]); });
