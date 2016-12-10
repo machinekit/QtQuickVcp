@@ -34,7 +34,7 @@ ApplicationItem {
     property string suffix: ""
     property int axes: axisNames.length
     property var axisHomed: _ready ? status.motion.axis : [{"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}]
-    property var axisNames: helper.ready ? helper.axisNamesUpper : ["X", "Y", "Z", "A"]
+    property var axisNames: helper.ready ? helper.axisNamesUpper : ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
     property var g5xNames: ["G54", "G55", "G56", "G57", "G58", "G59", "G59.1", "G59.2", "G59.3"]
     property int g5xIndex: _ready ? status.motion.g5xIndex : 1
     property var position: getPosition()
@@ -51,7 +51,7 @@ ApplicationItem {
     property int positionOffset: _ready ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
 
     property bool _ready: status.synced
-    property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z", "a"]
+    property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
     property double _timeFactor: helper.ready ? helper.timeFactor : 1
     property double _distanceFactor: helper.ready ? helper.distanceFactor : 1
     property string _distanceUnits: helper.ready ? helper.distanceUnits: "mm"
@@ -312,6 +312,7 @@ ApplicationItem {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
+                    console.log("g5xLayout index:", index, " g5xIndex:", droRect.g5xIndex)
                     item.title = Qt.binding(function(){ return droRect.axisNames[index]; });
                     item.type = Qt.binding(function(){ return droRect.g5xNames[droRect.g5xIndex-1]; });
                     item.value = Qt.binding(function(){ return Number(droRect.g5xOffset[droRect._axisNames[index]]); });
