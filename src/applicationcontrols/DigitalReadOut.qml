@@ -70,19 +70,26 @@ ApplicationItem {
         var basePosition;
         if (_ready) {
             basePosition = (positionFeedback === ApplicationStatus.ActualPositionFeedback) ? status.motion.actualPosition : status.motion.position;
-            basePosition = scalePosition(basePosition);
+            if (status.config.positionOffset === ApplicationStatus.RelativePositionOffset) {
+                // merge relative offset calculation with scalePosition()
+                var g5x;
+                var g92;
+                var tool;
+                g5x = status.motion.g5xOffset;
+                g92 = status.motion.g92Offset;
+                tool = status.io.toolOffset;
+                for (var i = 0; i < axes; ++i) {
+                    var axisName = _axisNames[i];
+                    basePosition[axisName] -= g5x[axisName] + g92[axisName] + tool[axisName];
+                    basePosition[axisName] *= helper.distanceFactor;
+                }
+            } else {
+                basePosition = scalePosition(basePosition);
+            }
         }
         else {
             basePosition = { "x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0 };
         }
-
-        if (positionOffset === ApplicationStatus.RelativePositionOffset) {
-            for (var i = 0; i < axes; ++i) {
-                var axisName = _axisNames[i];
-                basePosition[axisName] -= g5xOffset[axisName] + g92Offset[axisName] + toolOffset[axisName];
-            }
-        }
-
         return basePosition;
     }
 
