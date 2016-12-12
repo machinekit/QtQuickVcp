@@ -303,6 +303,7 @@ private:
     QString         m_errorString;
     QJsonObject     m_config;
     QJsonObject     m_motion;
+    QJsonObject     m_motion_buf;
     QJsonObject     m_io;
     QJsonObject     m_task;
     QJsonObject     m_interp;

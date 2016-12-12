@@ -199,8 +199,30 @@ void ApplicationStatus::clearSync()
 
 void ApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
 {
-    Service::recurseMessage(motion, &m_motion);
+    Service::recurseMessage(motion, &m_motion_buf);
+    m_motion = m_motion_buf;
+#if 1
     emit motionChanged(m_motion);
+#else
+    // obtain load from /proc/loadavg
+    float load = 0;
+    m_loadavgFile.clear();
+    m_loadavgFile.seekg(0);
+    if(m_loadavgFile.good())
+    {
+        std::string loadStr;
+        m_loadavgFile >> loadStr;
+        load = std::stof(loadStr);
+    }
+
+    TODO: throttle 會造成 PLAY/STOP 按鈕狀態異常
+    // throttle motionChanged() signal to prevent RPi3 from sluggish
+    quint64 diffTime = QDateTime::currentMSecsSinceEpoch() - m_updateMotionTimeStamp;
+    if ((load < 0.75) || (diffTime > 250)) {
+        m_updateMotionTimeStamp = QDateTime::currentMSecsSinceEpoch();
+        emit motionChanged(m_motion);
+    }
+#endif
 }
 
 void ApplicationStatus::updateConfig(const pb::EmcStatusConfig &config)
@@ -229,32 +251,14 @@ void ApplicationStatus::updateInterp(const pb::EmcStatusInterp &interp)
 
 void ApplicationStatus::run_thread(const pb::EmcStatusMotion &motion)
 {
-    // obtain load from /proc/loadavg
-    float load = 0;
-    m_loadavgFile.clear();
-    m_loadavgFile.seekg(0);
-    if(m_loadavgFile.good())
+    future = QtConcurrent::run(this, &ApplicationStatus::updateMotion, motion);
+    while (future.isRunning())
     {
-        std::string loadStr;
-        m_loadavgFile >> loadStr;
-        load = std::stof(loadStr);
-    }
-
-    // throttle updateMotion() to prevent RPi3 from sluggish
-    quint64 diffTime = QDateTime::currentMSecsSinceEpoch() - m_updateMotionTimeStamp;
-    if ((load < 0.75) || (diffTime > 250))
-    {
-        m_updateMotionTimeStamp = QDateTime::currentMSecsSinceEpoch();
-        future = QtConcurrent::run(this, &ApplicationStatus::updateMotion, motion);
-        while (future.isRunning())
-        {   
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-        }
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
 #ifdef QT_DEBUG
     qDebug() << "run_thread: load " << load << "," << diffTime;
 #endif
-
 }
 
 void ApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageList)
@@ -503,6 +507,7 @@ void ApplicationStatus::initializeObject(ApplicationStatus::StatusChannel channe
     {
     case MotionChannel:
         m_motion = QJsonObject();
+        m_motion_buf = QJsonObject();
         Service::recurseDescriptor(pb::EmcStatusMotion::descriptor(), &m_motion);
         emit motionChanged(m_motion);
         return;
