@@ -42,6 +42,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QEventLoop>
+#include <QAtomicInt>
 
 namespace qtquickvcp {
 
@@ -303,6 +304,7 @@ private:
     QString         m_errorString;
     QJsonObject     m_config;
     QJsonObject     m_motion;
+    QJsonObject     m_motion_buf;
     QJsonObject     m_io;
     QJsonObject     m_task;
     QJsonObject     m_interp;
@@ -313,12 +315,14 @@ private:
 
     nzmqt::PollingZMQContext *m_context;
     nzmqt::ZMQSocket *m_statusSocket;
-    QStringList  m_subscriptions;
-    QTimer      *m_statusHeartbeatTimer;
+    QStringList     m_subscriptions;
+    QTimer          *m_statusHeartbeatTimer;
     quint64         m_updateMotionTimeStamp;
     std::ifstream   m_loadavgFile;
     // more efficient to reuse a protobuf Message
     pb::Container   m_rx;
+
+    QAtomicInt      m_atomicInt;
 
     void start();
     void stop();
@@ -338,7 +342,7 @@ private:
     void updateInterp(const pb::EmcStatusInterp &interp);
     void initializeObject(StatusChannel channel);
     QFuture<void> future;
-    void run_thread(const QJsonObject &m_motion);
+    void run_thread(const pb::EmcStatusMotion &motion);
 
 private slots:
     void statusMessageReceived(const QList<QByteArray> &messageList);
