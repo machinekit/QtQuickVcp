@@ -197,30 +197,22 @@ void ApplicationStatus::clearSync()
     emit syncedChanged(m_synced);
 }
 
+
+void ApplicationStatus::run_thread(const QJsonObject &m_motion)
+{
+    emit motionChanged(m_motion);
+}
+
 void ApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
 {
-    Service::recurseMessage(motion, &m_motion_buf);
-    m_motion = m_motion_buf;
-#if 1
+    Service::recurseMessage(motion, &m_motion);
+#if 0
     emit motionChanged(m_motion);
 #else
-    // obtain load from /proc/loadavg
-    float load = 0;
-    m_loadavgFile.clear();
-    m_loadavgFile.seekg(0);
-    if(m_loadavgFile.good())
+    future = QtConcurrent::run(this, &ApplicationStatus::run_thread, m_motion);
+    while (future.isRunning())
     {
-        std::string loadStr;
-        m_loadavgFile >> loadStr;
-        load = std::stof(loadStr);
-    }
-
-    TODO: throttle 會造成 PLAY/STOP 按鈕狀態異常
-    // throttle motionChanged() signal to prevent RPi3 from sluggish
-    quint64 diffTime = QDateTime::currentMSecsSinceEpoch() - m_updateMotionTimeStamp;
-    if ((load < 0.75) || (diffTime > 250)) {
-        m_updateMotionTimeStamp = QDateTime::currentMSecsSinceEpoch();
-        emit motionChanged(m_motion);
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
 #endif
 }
@@ -249,18 +241,6 @@ void ApplicationStatus::updateInterp(const pb::EmcStatusInterp &interp)
     emit interpChanged(m_interp);
 }
 
-void ApplicationStatus::run_thread(const pb::EmcStatusMotion &motion)
-{
-    future = QtConcurrent::run(this, &ApplicationStatus::updateMotion, motion);
-    while (future.isRunning())
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
-#ifdef QT_DEBUG
-    qDebug() << "run_thread: load " << load << "," << diffTime;
-#endif
-}
-
 void ApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageList)
 {
     QByteArray topic;
@@ -278,17 +258,10 @@ void ApplicationStatus::statusMessageReceived(const QList<QByteArray> &messageLi
         || (m_rx.type() == pb::MT_EMCSTAT_INCREMENTAL_UPDATE))
     {
         if ((topic == "motion") && m_rx.has_emc_status_motion()) {
-#ifdef QT_DEBUG
-            quint64 diffTime1 = QDateTime::currentMSecsSinceEpoch();
-#endif
-            run_thread(m_rx.emc_status_motion());
+            updateMotion(m_rx.emc_status_motion());
             if (m_rx.type() == pb::MT_EMCSTAT_FULL_UPDATE) {
                 updateSync(MotionChannel);
             }
-#ifdef QT_DEBUG
-            diffTime1 = QDateTime::currentMSecsSinceEpoch() - diffTime1;
-            qDebug() << "updateMotion: " << diffTime1;
-#endif
         }
 
         if ((topic == "config") && m_rx.has_emc_status_config()) {
@@ -507,7 +480,6 @@ void ApplicationStatus::initializeObject(ApplicationStatus::StatusChannel channe
     {
     case MotionChannel:
         m_motion = QJsonObject();
-        m_motion_buf = QJsonObject();
         Service::recurseDescriptor(pb::EmcStatusMotion::descriptor(), &m_motion);
         emit motionChanged(m_motion);
         return;
