@@ -28,6 +28,8 @@
 #include <QtCore/qmath.h>
 #include <QDateTime>
 
+const float PI_F = 3.14159265358979f;
+
 namespace qtquickvcp {
 
 GLView::GLView(QQuickItem *parent)
@@ -1394,36 +1396,44 @@ void *GLView::endPath()
 
 void *GLView::arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset)
 {
-    qreal currentX;
-    qreal currentY;
-    qreal currentZ;
-    qreal startX;
-    qreal startY;
-    int arcPrecision = 16;  // 16 segments per revolution
+    float currentX;
+    float currentY;
+    float currentZ;
+    float startX = 0.0f;
+    float startY = 0.0f;
+    const float arcPrecision = 16.0f;  // 16 segments per revolution
     int nSegments;
-    qreal totalAngle;
-    qreal segmentAngle;
-    qreal segmentZ;
+    float totalAngle;
+    float segmentAngle;
+    float segmentZ;
     bool inPath;
 
-    totalAngle = qAbs(endAngle - startAngle);
+    if (anticlockwise && (startAngle > endAngle)) {
+        totalAngle = std::fabs(endAngle - (startAngle - 2.0f * PI_F));
+    }
+    else if (!anticlockwise && (startAngle < endAngle)) {
+        totalAngle = std::fabs(endAngle - (startAngle + 2.0f * PI_F));
+    }
+    else {
+        totalAngle = std::fabs(endAngle - startAngle);
+    }
 
-    nSegments = qCeil(qAbs(totalAngle) * (qreal)arcPrecision / (2.0*M_PI));
-    segmentAngle = totalAngle / (qreal)nSegments;
+    nSegments = static_cast<int>(std::ceil(totalAngle * arcPrecision / (2.0f * PI_F)));
+    segmentAngle = totalAngle / static_cast<float>(nSegments);
     if (!anticlockwise) {
         segmentAngle *= -1.0;
     }
-    segmentZ = helixOffset / (qreal)nSegments;
+    segmentZ = helixOffset / static_cast<float>(nSegments);
 
     inPath = m_pathEnabled;
     beginPath();
     for (int i = 0; i < (nSegments + 1); ++i)
     {
-        currentX = qCos(startAngle + segmentAngle * (qreal)i) * radius + x;
-        currentY = qSin(startAngle + segmentAngle * (qreal)i) * radius + y;
-        currentZ = (qreal)i * segmentZ;
+        currentX = std::cos(startAngle + segmentAngle * static_cast<float>(i)) * radius + x;
+        currentY = std::sin(startAngle + segmentAngle * static_cast<float>(i)) * radius + y;
+        currentZ = static_cast<float>(i) * segmentZ;
         if (i > 0) {
-            lineTo(currentX-startX, currentY-startY, currentZ);
+            lineTo(currentX - startX, currentY - startY, currentZ);
         }
         else {
             startX = currentX;

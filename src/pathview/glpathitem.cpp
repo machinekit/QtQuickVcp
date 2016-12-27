@@ -22,7 +22,11 @@
 
 #include "glpathitem.h"
 #include <QtCore/qmath.h>
+#include <cmath>
 #include "debughelper.h"
+
+const float PI_F = 3.14159265358979f;
+const float PI_2_F = 1.57079632679489f;
 
 using namespace machinetalk;
 
@@ -520,7 +524,7 @@ void GLPathItem::processStraightMove(const Preview &preview, MovementType moveme
     linePathItem->position = currentVector;
     linePathItem->lineVector = newVector - currentVector;
     linePathItem->movementType = movementType;
-    linePathItem->modelIndex = m_currentModelIndex,
+    linePathItem->modelIndex = m_currentModelIndex;
     m_previewPathItems.append(linePathItem);
     m_modelPathMap.insert(m_currentModelIndex, linePathItem);   // mapping model index to the item
 
@@ -544,11 +548,11 @@ void GLPathItem::processArcFeed(const Preview &preview)
     QVector2D centerPoint;
     QVector2D startVector;
     QVector2D endVector;
-    double startAngle;
-    double endAngle;
-    double helixOffset;
+    float startAngle;
+    float endAngle;
+    float helixOffset;
     bool anticlockwise;
-    double radius;
+    float radius;
     ArcPathItem *arcPathItem;
 
     currentVector = positionToVector3D(m_currentPosition);
@@ -598,63 +602,42 @@ void GLPathItem::processArcFeed(const Preview &preview)
         return; // not supported
     }
 
-    endPoint.setX(preview.first_end());
-    endPoint.setY(preview.second_end());
-    centerPoint.setX(preview.first_axis());
-    centerPoint.setY(preview.second_axis());
+    endPoint.setX(static_cast<float>(preview.first_end()));
+    endPoint.setY(static_cast<float>(preview.second_end()));
+    centerPoint.setX(static_cast<float>(preview.first_axis()));
+    centerPoint.setY(static_cast<float>(preview.second_axis()));
     startVector = startPoint - centerPoint;
     endVector = endPoint - centerPoint;
 
-    startAngle = qAtan2(startVector.y(), startVector.x());
-    if (startAngle < 0) {
-        startAngle += 2 * M_PI;
-    }
-    endAngle = qAtan2(endVector.y(), endVector.x());
-    if (endAngle < 0) {
-        endAngle += 2 * M_PI;
-    }
+    startAngle = std::atan2(startVector.y(), startVector.x());
+    endAngle = std::atan2(endVector.y(), endVector.x());
     anticlockwise = preview.rotation() >= 0;
     if (anticlockwise) {
-        startAngle += 2.0 * M_PI * (qAbs((double)preview.rotation())-1.0);  // for rotation > 1 increase the endAngle
+        startAngle += 2.0f * PI_F * (std::fabs(static_cast<float>(preview.rotation())) - 1.0f);  // for rotation > 1 increase the endAngle
     }
     else {
-        endAngle -= 2.0 * M_PI * (qAbs((double)preview.rotation())-1.0);  // for rotation > 1 decrease the startAngle
+        endAngle -= 2.0f * PI_F * (std::fabs(static_cast<float>(preview.rotation())) - 1.0f);  // for rotation > 1 decrease the startAngle
     }
 
     radius = centerPoint.distanceToPoint(startPoint);
 
     // calculate the extents of the arc
-    double firstAngle;
-    double secondAngle;
     // when viewed on the unit-circle
     bool point1 = false;    // phi=0        right
     bool point2 = false;    // phi=pi/2     top
     bool point3 = false;    // phi=pi       left
     bool point4 = false;    // phi=3pi/2    bottom
 
-    if (anticlockwise) {
-        firstAngle = endAngle;
-        secondAngle = startAngle;
-    }
-    else {
-        firstAngle = startAngle;
-        secondAngle = endAngle;
-    }
-
-    if (secondAngle > firstAngle) {
-        secondAngle = 2.0 * M_PI - secondAngle;
-    }
-
-    if ((firstAngle > 0.0) && (secondAngle < 0.0)) {
+    if ((startAngle > 0.0f) && (endAngle < 0.0f)) {
         point1 = true;
     }
-    if (((firstAngle > M_PI_2) && (secondAngle < M_PI_2)) || (secondAngle < -3.0*M_PI_2)) {
+    if (((startAngle > PI_2_F) && (endAngle < PI_2_F)) || (endAngle < -3.0f * PI_2_F)) {
         point2 = true;
     }
-    if (((firstAngle > M_PI) && (secondAngle < M_PI)) || (secondAngle < -M_PI)) {
+    if (((startAngle > PI_F) && (endAngle < PI_F)) || (endAngle < -PI_F)) {
         point3 = true;
     }
-    if (((firstAngle > 3.0*M_PI_2) && (secondAngle < 3.0*M_PI_2)) || (secondAngle < -M_PI_2)) {
+    if (((startAngle > 3.0f * PI_2_F) && (endAngle < 3.0f * PI_2_F)) || (endAngle < -PI_2_F)) {
         point4 = true;
     }
 
@@ -738,7 +721,7 @@ void GLPathItem::processArcFeed(const Preview &preview)
     arcPathItem->endAngle = endAngle;
     arcPathItem->anticlockwise = anticlockwise;
     arcPathItem->movementType = FeedMove;
-    arcPathItem->modelIndex = m_currentModelIndex,
+    arcPathItem->modelIndex = m_currentModelIndex;
     m_previewPathItems.append(arcPathItem);
     m_modelPathMap.insertMulti(m_currentModelIndex, arcPathItem);   // mapping model index to the item
 
