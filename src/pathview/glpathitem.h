@@ -158,10 +158,10 @@ private:
         }
 
         QVector2D center;
-        double helixOffset;     // offset from the rotation axis
-        double radius;
-        double startAngle;
-        double endAngle;
+        float helixOffset;     // offset from the rotation axis
+        float radius;
+        float startAngle;
+        float endAngle;
         bool anticlockwise;
         Plane rotationPlane;
     };
