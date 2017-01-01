@@ -205,7 +205,7 @@ void ApplicationStatus::run_thread(const pb::EmcStatusMotion &motion)
 
     while (m_atomicInt.testAndSetAcquire(0, 1) == false) {};
     m_motion = m_motion_buf;
-    m_atomicInt.testAndSetAcquire(1, 0);
+    m_atomicInt = 0;
 
     emit motionChanged(m_motion);
 }
@@ -221,8 +221,8 @@ void ApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
     {
         if (m_atomicInt.testAndSetAcquire(0, 2))
         {
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-            m_atomicInt.testAndSetAcquire(2, 0);
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+            m_atomicInt = 0;
         }
     }
 #endif
