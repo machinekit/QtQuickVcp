@@ -38,6 +38,7 @@ class ApplicationFile : public AbstractServiceImplementation
 {
     Q_OBJECT
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
+    Q_PROPERTY(QString fileName READ fileName WRITE setFileName NOTIFY fileNameChanged)
     Q_PROPERTY(QString remoteFilePath READ remoteFilePath WRITE setRemoteFilePath NOTIFY remoteFilePathChanged)
     Q_PROPERTY(QString localFilePath READ localFilePath WRITE setLocalFilePath NOTIFY localFilePathChanged)
     Q_PROPERTY(QString remotePath READ remotePath WRITE setRemotePath NOTIFY remotePathChanged)
@@ -90,6 +91,11 @@ public:
     QString errorString() const
     {
         return m_errorString;
+    }
+
+    QString fileName() const
+    {
+        return m_fileName;
     }
 
     QString localFilePath() const
@@ -154,6 +160,15 @@ public slots:
         emit uriChanged(arg);
     }
 
+    void setFileName(QString arg)
+    {
+        if (m_fileName == arg)
+            return;
+
+        m_fileName = arg;
+        emit fileNameChanged(arg);
+    }
+
     void setLocalFilePath(QString arg)
     {
         if (m_localFilePath == arg)
@@ -161,6 +176,13 @@ public slots:
 
         m_localFilePath = arg;
         emit localFilePathChanged(arg);
+
+        QFileInfo fi(arg);
+        QString fname = fi.fileName();
+        if (m_fileName != fname) {
+            m_fileName = fname;
+            emit fileNameChanged(m_fileName);
+        }
     }
 
     void setRemoteFilePath(QString arg)
@@ -207,10 +229,12 @@ public slots:
     void createDirectory(const QString &name);
     void abort();
     void clearError();
+    bool isFileExist(QString fileName);
 
 private:
     bool            m_editMode;
     QString         m_uri;
+    QString         m_fileName;
     QString         m_localFilePath;
     QString         m_remoteFilePath;
     QString         m_localPath;
@@ -250,6 +274,7 @@ signals:
     void uriChanged(QString arg);
     void errorChanged(TransferError arg);
     void errorStringChanged(QString arg);
+    void fileNameChanged(QString arg);
     void localFilePathChanged(QString arg);
     void remoteFilePathChanged(QString arg);
     void localPathChanged(QString arg);

@@ -6,6 +6,8 @@
         <file>ProgramExtents3D.qml</file>
         <file>PathView3D.qml</file>
         <file>SourceView.qml</file>
+        <file>SourceEdit.qml</file>
+        <file>FontIcon.qml</file>
         <file>GCodeSync.qml</file>
         <file>PathViewCore.qml</file>
         <file>PathViewObject.qml</file>

@@ -27,6 +27,7 @@ import Machinekit.Application 1.0
 
 ApplicationAction {
     property bool _ready: status.synced && command.connected && (file.localFilePath !== "")
+    property var editor
 
     id: root
     text: qsTr("Edit")
@@ -37,8 +38,10 @@ ApplicationAction {
     checkable: true
     onTriggered: {
         file.editMode = !file.editMode
+        editor.visible = file.editMode
     }
 
     checked: _ready && file.editMode
     enabled: _ready
+             && !status.running
 }

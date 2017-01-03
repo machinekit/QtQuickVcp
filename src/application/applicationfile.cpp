@@ -66,6 +66,17 @@ ApplicationFile::~ApplicationFile()
     m_model->deleteLater();
 }
 
+bool ApplicationFile::isFileExist(QString fileName)
+{
+    if (fileName.isEmpty()) return false;
+
+    QString localFilePath = applicationFilePath(fileName, m_serverDirectory);
+    QFileInfo fileInfo(localFilePath);
+    qDebug("%s(%s:%d) localFilePath(%s)", __FILE__, __FUNCTION__, __LINE__, localFilePath.toLatin1().constData());
+    return fileInfo.exists();
+}
+
+
 void ApplicationFile::startUpload()
 {
     QUrl url;
@@ -137,6 +148,8 @@ void ApplicationFile::startDownload()
         emit serverDirectoryChanged(m_serverDirectory);
         fileName = fileName.mid(i + 1);
     }
+    m_fileName = fileName;
+    emit fileNameChanged(m_fileName);
 
     url.setUrl(m_uri);
 

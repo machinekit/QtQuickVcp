@@ -97,6 +97,7 @@ public slots:
             m_localFilePath = arg;
             emit localFilePathChanged(arg);
         }
+        // qDebug("%s(%s:%d) m_localFilePath(%s)", __FILE__, __FUNCTION__, __LINE__, m_localFilePath.toLatin1().constData());
     }
 
     void setLocalPath(QString arg)
