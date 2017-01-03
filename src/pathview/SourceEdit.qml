@@ -30,7 +30,7 @@ import QtQuick.Dialogs 1.2
 import Machinekit.Controls 1.0
 import Machinekit.Application.Controls 1.0
 
-ApplicationWindow {
+Item {
     property alias model: object.gcodeProgramModel
     property color selectedColor: "lightblue"
     property color activeColor: "lightcoral"
