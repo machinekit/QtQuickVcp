@@ -58,7 +58,7 @@ void ApplicationStatus::updateSync(ApplicationStatus::StatusChannel channel)
 {
     m_syncedChannels |= channel;
 
-    if (m_syncedChannels == m_channels and !m_synced) {
+    if (m_syncedChannels == m_channels && !m_synced) {
         channelsSynced();
     }
 }

@@ -44,7 +44,7 @@ mv android-publish /usr/bin/
  cd ..
 
 # download Qt
-mkdir -p qt5 && wget -q -O qt5.tar.bz2 http://buildbot.roessler.systems/files/qt-bin/Qt-5.7-Android-armv7.tar.bz2
+mkdir -p qt5 && wget -q -O qt5.tar.bz2 http://ci.roessler.systems/files/qt-bin/Qt-5.7-Android-armv7.tar.bz2
 tar xjf qt5.tar.bz2 -C qt5
 rm qt5.tar.bz2
 
@@ -60,7 +60,7 @@ cd ..
 #mkdir -p android-sdk && wget -q -O android-sdk.tgz https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
 #tar xfz android-sdk.tgz -C android-sdk
 #rm android-sdk.tgz
-mkdir -p android-sdk && wget -q -O android-sdk.tar.bz2 http://buildbot.roessler.systems/files/qt-bin/android-sdk.tar.bz2
+mkdir -p android-sdk && wget -q -O android-sdk.tar.bz2 http://ci.roessler.systems/files/qt-bin/android-sdk.tar.bz2
 tar xjf android-sdk.tar.bz2 -C android-sdk
 cd android-sdk
 mv */* .
