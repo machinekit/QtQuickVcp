@@ -28,7 +28,8 @@ SOURCES += \
     applicationpluginitem.cpp \
     applicationplugins.cpp \
     applicationstatus.cpp \
-    localsettings.cpp
+    localsettings.cpp \
+    applicationtranslator.cpp
 
 HEADERS += \
     plugin.h \
@@ -48,7 +49,8 @@ HEADERS += \
     applicationpluginitem.h \
     applicationplugins.h \
     applicationstatus.h \
-    localsettings.h
+    localsettings.h \
+    applicationtranslator.h
 
 RESOURCES += \
     application.qrc

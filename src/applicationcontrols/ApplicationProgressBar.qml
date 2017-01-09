@@ -62,7 +62,7 @@ Gauge {
             return qsTr("Downloading file %1").arg(file.remoteFilePath.split('/').reverse()[0]);
         }
         else if (_mode === "running") {
-            return (value * 100).toFixed(2) + "% - " + _fileName;
+            return qsTr("%1% - %2").arg((value * 100).toFixed(2)).arg(_fileName);
         }
         else {
             return _fileName;

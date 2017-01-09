@@ -32,6 +32,7 @@ class ApplicationDescription : public QObject
     Q_OBJECT
     Q_PROPERTY(QUrl sourceDir READ sourceDir WRITE setSourceDir NOTIFY sourceDirChanged)
     Q_PROPERTY(QUrl mainFile READ mainFile NOTIFY mainFileChanged)
+    Q_PROPERTY(QUrl translationsPath READ translationsPath NOTIFY translationsPathChanged)
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(QString description READ description  NOTIFY descriptionChanged)
     Q_PROPERTY(bool valid READ isValid NOTIFY validChanged)
@@ -47,6 +48,11 @@ public:
     QUrl mainFile() const
     {
         return m_mainFile;
+    }
+
+    QUrl translationsPath() const
+    {
+        return m_translationsPath;
     }
 
     QString name() const
@@ -77,17 +83,20 @@ public slots:
 private:
     bool m_componentCompleted;
     QUrl m_sourceDir;
+    QUrl m_translationsPath;
     QUrl m_mainFile;
     QString m_name;
     QString m_description;
     bool m_valid;
 
     bool refresh();
-    QString getMainFile(QStringList fileList, QString baseFilePath, QString applicationName);
+    QString getMainFile(const QStringList &fileList, const QString &baseFilePath, const QString &applicationName) const;
+    QString getTranslationsPath(const QString &baseFilePath) const;
 
 signals:
     void sourceDirChanged(const QUrl &arg);
     void mainFileChanged(const QUrl &arg);
+    void translationsPathChanged(QUrl translationsPath);
     void nameChanged(const QString &arg);
     void descriptionChanged(const QString &arg);
     void validChanged(bool arg);

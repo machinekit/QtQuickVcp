@@ -40,6 +40,7 @@ class ApplicationConfigItem : public QObject
     Q_PROPERTY(bool loading READ isLoading WRITE setLoading NOTIFY loadingChanged)
     Q_PROPERTY(QStringList files READ files WRITE setFiles NOTIFY filesChanged)
     Q_PROPERTY(QUrl mainFile READ mainFile WRITE setMainFile NOTIFY mainFileChanged)
+    Q_PROPERTY(QUrl translationsPath READ translationsPath WRITE setTranslationsPath NOTIFY translationsPathChanged)
     Q_ENUMS(ApplicationType)
 
 public:
@@ -89,6 +90,11 @@ public:
     bool isLoading() const
     {
         return m_loading;
+    }
+
+    QUrl translationsPath() const
+    {
+        return m_translationsPath;
     }
 
 public slots:
@@ -152,6 +158,15 @@ public slots:
         emit loadingChanged(arg);
     }
 
+    void setTranslationsPath(QUrl translationsPath)
+    {
+        if (m_translationsPath == translationsPath)
+            return;
+
+        m_translationsPath = translationsPath;
+        emit translationsPathChanged(translationsPath);
+    }
+
 private:
     QString m_name;
     QString m_description;
@@ -161,6 +176,7 @@ private:
     bool m_loading;
     QStringList m_files;
     QUrl m_mainFile;
+    QUrl m_translationsPath;
 
 signals:
 
@@ -172,6 +188,8 @@ signals:
     void filesChanged(const QStringList &arg);
     void mainFileChanged(const QUrl &arg);
     void loadingChanged(bool arg);
+    void translationsPathChanged(QUrl translationsPath);
+
 }; // class ApplicationConfigItem
 } // namespace qtquickvcp
 

@@ -254,7 +254,7 @@ ApplicationItem {
         Loader {
             sourceComponent: textLine
             onLoaded: {
-                item.title = "Vel:";
+                item.title = qsTr("Vel:");
                 item.type = "";
                 item.homed = false;
                 item.value = Qt.binding(function(){ return droRect.velocity; });
@@ -266,7 +266,7 @@ ApplicationItem {
         Loader {
             sourceComponent: textLine
             onLoaded: {
-                item.title = "DTG:";
+                item.title = qsTr("DTG:");
                 item.type = "";
                 item.homed = false;
                 item.value = Qt.binding(function(){ return droRect.distanceToGo; });

@@ -117,6 +117,12 @@ void MachinekitApplicationControlsPlugin::initializeEngine(QQmlEngine *engine, c
         qmlRegisterType(QUrl(filesLocation + "/Private/" + qmldirprivate[i].type + ".qml"), private_uri,
                         qmldirprivate[i].major, qmldirprivate[i].minor, qmldirprivate[i].type);
     }
+
+    if (m_translator.load(QLocale(), QLatin1String("machinekitapplicationcontrols"),
+                          QLatin1String("_"), QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+    {
+        QCoreApplication::installTranslator(&m_translator);
+    }
 }
 
 QString MachinekitApplicationControlsPlugin::fileLocation() const
