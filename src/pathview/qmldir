@@ -23,6 +23,8 @@ PathViewObject 1.0 PathViewObject.qml
 ProgramExtents3D 1.0 ProgramExtents3D.qml
 ProgramOffsets3D 1.0 ProgramOffsets3D.qml
 SourceView 1.0 SourceView.qml
+SourceEdit 1.0 SourceEdit.qml
+FontIcon 1.0 FontIcon.qml
 ViewModeAction 1.0 ViewModeAction.qml
 ZoomInAction 1.0 ZoomInAction.qml
 ZoomOutAction 1.0 ZoomOutAction.qml

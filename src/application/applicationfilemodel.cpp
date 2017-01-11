@@ -80,9 +80,7 @@ QHash<int, QByteArray> ApplicationFileModel::roleNames() const
 
 void ApplicationFileModel::addItem(ApplicationFileItem *item)
 {
-    beginUpdate();
     m_items.append(item);
-    endUpdate();
 }
 
 QString ApplicationFileModel::getName(int row)

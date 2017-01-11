@@ -33,8 +33,8 @@ ApplicationItem {
     property string prefix: ""
     property string suffix: ""
     property int axes: axisNames.length
-    property var axisHomed: _ready ? status.motion.axis : [{"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}]
-    property var axisNames: helper.ready ? helper.axisNamesUpper : ["X", "Y", "Z", "A"]
+    property var axisHomed: _ready ? status.motion.axis : [{"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}, {"homed":false}]
+    property var axisNames: helper.ready ? helper.axisNamesUpper : ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
     property var g5xNames: ["G54", "G55", "G56", "G57", "G58", "G59", "G59.1", "G59.2", "G59.3"]
     property int g5xIndex: _ready ? status.motion.g5xIndex : 1
     property var position: getPosition()
@@ -51,7 +51,7 @@ ApplicationItem {
     property int positionOffset: _ready ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
 
     property bool _ready: status.synced
-    property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z", "a"]
+    property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
     property double _timeFactor: helper.ready ? helper.timeFactor : 1
     property double _distanceFactor: helper.ready ? helper.distanceFactor : 1
     property string _distanceUnits: helper.ready ? helper.distanceUnits: "mm"
@@ -70,19 +70,26 @@ ApplicationItem {
         var basePosition;
         if (_ready) {
             basePosition = (positionFeedback === ApplicationStatus.ActualPositionFeedback) ? status.motion.actualPosition : status.motion.position;
-            basePosition = scalePosition(basePosition);
+            if (status.config.positionOffset === ApplicationStatus.RelativePositionOffset) {
+                // merge relative offset calculation with scalePosition()
+                var g5x;
+                var g92;
+                var tool;
+                g5x = status.motion.g5xOffset;
+                g92 = status.motion.g92Offset;
+                tool = status.io.toolOffset;
+                for (var i = 0; i < axes; ++i) {
+                    var axisName = _axisNames[i];
+                    basePosition[axisName] -= g5x[axisName] + g92[axisName] + tool[axisName];
+                    basePosition[axisName] *= helper.distanceFactor;
+                }
+            } else {
+                basePosition = scalePosition(basePosition);
+            }
         }
         else {
             basePosition = { "x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0 };
         }
-
-        if (positionOffset === ApplicationStatus.RelativePositionOffset) {
-            for (var i = 0; i < axes; ++i) {
-                var axisName = _axisNames[i];
-                basePosition[axisName] -= g5xOffset[axisName] + g92Offset[axisName] + toolOffset[axisName];
-            }
-        }
-
         return basePosition;
     }
 

@@ -57,6 +57,8 @@ QML_FILES = \
     ProgramExtents3D.qml \
     ProgramOffsets3D.qml \
     SourceView.qml \
+    SourceEdit.qml \
+    FontIcon.qml \
     ViewModeAction.qml \
     ZoomInAction.qml \
     ZoomOutAction.qml \

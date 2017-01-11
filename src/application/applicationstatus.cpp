@@ -46,7 +46,10 @@ ApplicationStatus::ApplicationStatus(QObject *parent) :
     m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel),
     m_context(nullptr),
     m_statusSocket(nullptr),
-    m_statusHeartbeatTimer(new QTimer(this))
+    m_statusHeartbeatTimer(new QTimer(this)),
+    m_updateMotionTimeStamp(QDateTime::currentMSecsSinceEpoch()),
+    m_loadavgFile("/proc/loadavg"),
+    m_atomicInt(0)
 {
     connect(m_statusHeartbeatTimer, &QTimer::timeout,
             this, &ApplicationStatus::statusHeartbeatTimerTick);
@@ -195,10 +198,34 @@ void ApplicationStatus::clearSync()
     emit syncedChanged(m_synced);
 }
 
+
+void ApplicationStatus::run_thread(const pb::EmcStatusMotion &motion)
+{
+    Service::recurseMessage(motion, &m_motion_buf);
+
+    while (m_atomicInt.testAndSetAcquire(0, 1) == false) {};
+    m_motion = m_motion_buf;
+    m_atomicInt = 0;
+
+    emit motionChanged(m_motion);
+}
+
 void ApplicationStatus::updateMotion(const pb::EmcStatusMotion &motion)
 {
+#if 0
     Service::recurseMessage(motion, &m_motion);
     emit motionChanged(m_motion);
+#else
+    future = QtConcurrent::run(this, &ApplicationStatus::run_thread, motion);
+    while (future.isRunning())
+    {
+        if (m_atomicInt.testAndSetAcquire(0, 2))
+        {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+            m_atomicInt = 0;
+        }
+    }
+#endif
 }
 
 void ApplicationStatus::updateConfig(const pb::EmcStatusConfig &config)
@@ -464,6 +491,7 @@ void ApplicationStatus::initializeObject(ApplicationStatus::StatusChannel channe
     {
     case MotionChannel:
         m_motion = QJsonObject();
+        m_motion_buf = QJsonObject();
         Service::recurseDescriptor(pb::EmcStatusMotion::descriptor(), &m_motion);
         emit motionChanged(m_motion);
         return;

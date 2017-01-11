@@ -56,7 +56,7 @@ isEmpty(QMLPLUGINDUMP): QMLPLUGINDUMP = 1
 equals(QMLPLUGINDUMP, 1): !ios: !android: release: {
     dumppluginqmltypes.CONFIG = no_files no_path
     dumppluginqmltypes.commands = $$dirname(QMAKE_QMAKE)/qmlplugindump -nonrelocatable "$$uri $$PLUGIN_VERSION $$shell_path($$OUT_PWD/../../imports/) > $$shell_path($$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes)"
-    INSTALLS += dumppluginqmltypes
+    # INSTALLS += dumppluginqmltypes
 
     copypluginqmltypes.CONFIG = no_files no_path
 # make sure the directory exists
@@ -65,7 +65,7 @@ equals(QMLPLUGINDUMP, 1): !ios: !android: release: {
 # ignore any errors on Windows
     win32: copypluginqmltypes.commands = xcopy $$shell_path($$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes) $$shell_path($$[QT_INSTALL_QML]/$$TARGETPATH/plugins.qmltypes) /C /E /Q /Y $$escape_expand(\n\t)
     win32: copypluginqmltypes.commands = exit 0
-    INSTALLS += copypluginqmltypes
+    # INSTALLS += copypluginqmltypes
 }
 
 copyqmlinfra_install.files = $$QML_INFRA_FILES

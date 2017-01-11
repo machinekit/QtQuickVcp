@@ -28,6 +28,7 @@
 #include <QUrl>
 #include <QCoreApplication>
 #include <QHostInfo>
+#include <QProcess>
 #include <nzmqt/nzmqt.hpp>
 #include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/message.pb.h>
