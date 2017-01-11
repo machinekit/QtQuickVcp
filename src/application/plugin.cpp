@@ -32,6 +32,7 @@
 #include "applicationlauncher.h"
 #include "applicationplugins.h"
 #include "applicationpluginitem.h"
+#include "applicationtranslator.h"
 #include "localsettings.h"
 #include "fileio.h"
 #include "revisionsingleton.h"
@@ -78,6 +79,7 @@ void MachinekitApplicationPlugin::registerTypes(const char *uri)
     qmlRegisterType<qtquickvcp::LocalSettings>(uri, 1, 0, "LocalSettings");
     qmlRegisterType<qtquickvcp::ApplicationPlugins>(uri, 1, 0, "ApplicationPlugins");
     qmlRegisterType<qtquickvcp::ApplicationPluginItem>(uri, 1, 0, "ApplicationPluginItem");
+    qmlRegisterType<qtquickvcp::ApplicationTranslator>(uri, 1, 0, "ApplicationTranslator");
     qmlRegisterType<qtquickvcp::FileIO>(uri, 1, 0, "FileIO");
     qmlRegisterSingletonType<qtquickvcp::RevisionSingleton>(uri, 1, 0, "Revision", &qtquickvcp::RevisionSingleton::qmlInstance);
 
@@ -93,10 +95,6 @@ void MachinekitApplicationPlugin::initializeEngine(QQmlEngine *engine, const cha
 
     if (isLoadedFromResource())
         engine->addImportPath(QStringLiteral("qrc:/"));
-
-    const char *private_uri = "Machinekit.Application.Private";
-    qmlRegisterUncreatableType<AbstractServiceImplementation>(private_uri, 1, 0, "AnstractServiceImplementation",
-                                                              QLatin1String("Do not create objects of type AbstractServiceImplementation"));
 }
 
 QString MachinekitApplicationPlugin::fileLocation() const

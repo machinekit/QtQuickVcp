@@ -1,6 +1,4 @@
-HEADERS += $$PWD/abstractserviceimplementation.h \
-    $$PWD/service.h
-SOURCES += $$PWD/abstractserviceimplementation.cpp \
-    $$PWD/service.cpp
+HEADERS += \
+    $$PWD/debughelper.h
 
 INCLUDEPATH += $$PWD

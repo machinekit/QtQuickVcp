@@ -15,64 +15,68 @@ RESOURCES += \
     applicationcontrols.qrc
 
 CONTROLS_QML_FILES = \
-    EstopAction.qml \
-    PowerAction.qml \
-    OpenAction.qml \
-    ReopenAction.qml \
-    EditProgramAction.qml \
-    RunProgramAction.qml \
-    StepProgramAction.qml \
-    StopProgramAction.qml \
-    PauseResumeProgramAction.qml \
-    ApplicationNotifications.qml \
-    ApplicationProgressBar.qml \
-    ApplicationFileDialog.qml \
-    JogStick.qml \
-    DigitalReadOut.qml \
-    FeedrateSlider.qml \
-    SpindlerateSlider.qml \
-    MdiCommandAction.qml \
-    JogAction.qml \
-    JogButton.qml \
-    JogDistanceComboBox.qml \
-    JogDistanceHandler.qml \
-    SpindleCwAction.qml \
-    SpindleCcwAction.qml \
-    StopSpindleAction.qml \
-    IncreaseSpindleSpeedAction.qml \
-    DecreaseSpindleSpeedAction.qml \
-    HomeAxisAction.qml \
-    MistAction.qml \
-    FloodAction.qml \
-    MaximumVelocitySlider.qml \
-    MaximumVelocityHandler.qml \
-    TouchOffAction.qml \
-    TouchOffDialog.qml \
-    GCodeLabel.qml \
-    ConnectionWindow.qml \
-    ServiceWindow.qml \
-    JogVelocitySlider.qml \
-    JogVelocityHandler.qml \
-    SpindlerateHandler.qml \
-    FeedrateHandler.qml \
-    UnhomeAxisAction.qml \
-    MdiHistoryTable.qml \
-    MdiCommandEdit.qml \
-    AxisRadioGroup.qml \
-    AxisComboBox.qml \
-    TeleopAction.qml \
-    ShutdownAction.qml \
-    UserCommandAction.qml \
-    ApplicationRemoteFileDialog.qml \
-    OverrideLimitsAction.qml \
-    OptionalStopAction.qml \
-    BlockDeleteAction.qml \
-    FeedHoldAction.qml \
-    FeedOverrideAction.qml \
-    SpindleOverrideAction.qml \
-    EstopPowerAction.qml \
-    RapidrateHandler.qml \
-    RapidrateSlider.qml
+    $$PWD/EditProgramAction.qml \
+    $$PWD/EstopAction.qml \
+    $$PWD/PowerAction.qml \
+    $$PWD/OpenAction.qml \
+    $$PWD/ReopenAction.qml \
+    $$PWD/RunProgramAction.qml \
+    $$PWD/StepProgramAction.qml \
+    $$PWD/StopProgramAction.qml \
+    $$PWD/PauseResumeProgramAction.qml \
+    $$PWD/ApplicationNotifications.qml \
+    $$PWD/ApplicationProgressBar.qml \
+    $$PWD/ApplicationFileDialog.qml \
+    $$PWD/JogStick.qml \
+    $$PWD/DigitalReadOut.qml \
+    $$PWD/FeedrateSlider.qml \
+    $$PWD/SpindlerateSlider.qml \
+    $$PWD/MdiCommandAction.qml \
+    $$PWD/JogAction.qml \
+    $$PWD/JogButton.qml \
+    $$PWD/JogDistanceComboBox.qml \
+    $$PWD/JogDistanceHandler.qml \
+    $$PWD/SpindleCwAction.qml \
+    $$PWD/SpindleCcwAction.qml \
+    $$PWD/StopSpindleAction.qml \
+    $$PWD/IncreaseSpindleSpeedAction.qml \
+    $$PWD/DecreaseSpindleSpeedAction.qml \
+    $$PWD/HomeAxisAction.qml \
+    $$PWD/MistAction.qml \
+    $$PWD/FloodAction.qml \
+    $$PWD/MaximumVelocitySlider.qml \
+    $$PWD/MaximumVelocityHandler.qml \
+    $$PWD/TouchOffAction.qml \
+    $$PWD/TouchOffDialog.qml \
+    $$PWD/GCodeLabel.qml \
+    $$PWD/ConnectionWindow.qml \
+    $$PWD/ServiceWindow.qml \
+    $$PWD/JogVelocitySlider.qml \
+    $$PWD/JogVelocityHandler.qml \
+    $$PWD/SpindlerateHandler.qml \
+    $$PWD/FeedrateHandler.qml \
+    $$PWD/UnhomeAxisAction.qml \
+    $$PWD/MdiHistoryTable.qml \
+    $$PWD/MdiCommandEdit.qml \
+    $$PWD/AxisRadioGroup.qml \
+    $$PWD/AxisComboBox.qml \
+    $$PWD/TeleopAction.qml \
+    $$PWD/ShutdownAction.qml \
+    $$PWD/UserCommandAction.qml \
+    $$PWD/ApplicationRemoteFileDialog.qml \
+    $$PWD/OverrideLimitsAction.qml \
+    $$PWD/OptionalStopAction.qml \
+    $$PWD/BlockDeleteAction.qml \
+    $$PWD/FeedHoldAction.qml \
+    $$PWD/FeedOverrideAction.qml \
+    $$PWD/SpindleOverrideAction.qml \
+    $$PWD/EstopPowerAction.qml \
+    $$PWD/RapidrateHandler.qml \
+    $$PWD/RapidrateSlider.qml
+
+lupdate_only {
+    SOURCES = $$CONTROLS_QML_FILES
+}
 
 QML_FILES += $$CONTROLS_QML_FILES
 
@@ -88,3 +92,6 @@ QML_DESIGNER_FILES = \
 QML_PROPERTY_EDITOR_FILES = 
 
 include(../deployment.pri)
+
+TRANSLATIONS_PATH = $$PWD/translations
+include(../translation.pri)

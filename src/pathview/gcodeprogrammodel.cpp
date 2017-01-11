@@ -23,6 +23,8 @@
 #include "gcodeprogrammodel.h"
 #include <QDebug>
 
+using namespace machinetalk;
+
 namespace qtquickvcp {
 
 GCodeProgramModel::GCodeProgramModel(QObject *parent) :
@@ -220,7 +222,7 @@ void GCodeProgramModel::addLine(const QString &fileName)
     m_fileIndices.insert(fileName, fileIndex);
 }
 
-void GCodeProgramModel::addPreviewItem(const QModelIndex &index, const pb::Preview &previewItem)
+void GCodeProgramModel::addPreviewItem(const QModelIndex &index, const Preview &previewItem)
 {
     PreviewItem item;
     item.modelIndex = index;

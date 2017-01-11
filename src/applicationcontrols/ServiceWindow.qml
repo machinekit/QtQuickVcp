@@ -254,8 +254,12 @@ Rectangle {
 
                     CheckBox {
                         id: checkBox
-                        text: qsTr("%1 service").arg(_requiredServices[index].type)
+                        text: qsTr("%1 service").arg(capitalizeFirstLetter(_requiredServices[index].type))
                         checked: _requiredServices[index].ready
+
+                        function capitalizeFirstLetter(string) {
+                            return string.charAt(0).toUpperCase() + string.slice(1);
+                        }
                     }
                 }
             }

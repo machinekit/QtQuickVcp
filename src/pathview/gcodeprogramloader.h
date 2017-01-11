@@ -133,6 +133,6 @@ private:
     GCodeProgramModel * m_model;
     QString m_text;
 }; // class GCodeProgramLoader
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GCODEPROGRAMLOADER_H

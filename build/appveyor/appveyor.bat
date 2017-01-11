@@ -6,7 +6,7 @@ mkdir -p tmp
 cd tmp
 
 :: get version label
-appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/UnxUtils.zip -Filename UnxUtils.zip
+appveyor DownloadFile http://ci.roessler.systems/files/qt-bin/UnxUtils.zip -Filename UnxUtils.zip
 7z x UnxUtils.zip
 cp usr\local\wbin\date.exe .
 
@@ -37,7 +37,7 @@ appveyor UpdateBuild -Version "%version%-%ARCH%"
 
 
 cd tmp
-appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/protobuf-win-%ARCH%.7z -Filename protolibs.7z
+appveyor DownloadFile http://ci.roessler.systems/files/qt-bin/protobuf-win-%ARCH%.7z -Filename protolibs.7z
 7z x protolibs.7z
 cd protolibs
 if %ARCH% == x64 (
@@ -60,7 +60,7 @@ SET PROTODIR=%HOMEDRIVE%%HOMEPATH%\bin\protobuf\
 cp -r src %PROTODIR%
 cd ..
 
-appveyor DownloadFile http://buildbot.roessler.systems/files/qt-bin/zeromq-win-%ARCH%.7z -Filename zmqlibs.7z
+appveyor DownloadFile http://ci.roessler.systems/files/qt-bin/zeromq-win-%ARCH%.7z -Filename zmqlibs.7z
 7z x zmqlibs.7z
 cd zmqlibs
 if %ARCH% == x64 (

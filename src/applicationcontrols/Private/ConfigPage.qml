@@ -117,7 +117,7 @@ Item {
                 BusyIndicator {
                     anchors.centerIn: parent
                     running: true
-                    visible: (root.mode === "remote") && !applicationConfig.connected
+                    visible: (root.mode === "remote") && !applicationConfig.synced
                     height: Math.min(root.width, root.height) * 0.15
                     width: height
                 }

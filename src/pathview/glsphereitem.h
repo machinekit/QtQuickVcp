@@ -84,6 +84,6 @@ private:
     QColor m_color;
     bool m_selected;
 }; // class GLSphereItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GLSPHEREITEM_H

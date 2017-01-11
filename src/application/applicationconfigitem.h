@@ -25,8 +25,6 @@
 #include <QObject>
 #include <QUrl>
 #include <QStringList>
-#include <machinetalk/protobuf/message.pb.h>
-#include <machinetalk/protobuf/types.pb.h>
 #include <machinetalk/protobuf/config.pb.h>
 
 namespace qtquickvcp {
@@ -42,15 +40,16 @@ class ApplicationConfigItem : public QObject
     Q_PROPERTY(bool loading READ isLoading WRITE setLoading NOTIFY loadingChanged)
     Q_PROPERTY(QStringList files READ files WRITE setFiles NOTIFY filesChanged)
     Q_PROPERTY(QUrl mainFile READ mainFile WRITE setMainFile NOTIFY mainFileChanged)
+    Q_PROPERTY(QUrl translationsPath READ translationsPath WRITE setTranslationsPath NOTIFY translationsPathChanged)
     Q_ENUMS(ApplicationType)
 
 public:
     explicit ApplicationConfigItem(QObject *parent = 0);
 
     enum ApplicationType {
-        Qt5QmlApplication = pb::QT5_QML,
-        GladeVcpApplication = pb::GLADEVCP,
-        JavaScriptApplication = pb::JAVASCRIPT
+        Qt5QmlApplication = machinetalk::QT5_QML,
+        GladeVcpApplication = machinetalk::GLADEVCP,
+        JavaScriptApplication = machinetalk::JAVASCRIPT
     };
 
     QString name() const
@@ -93,16 +92,21 @@ public:
         return m_loading;
     }
 
+    QUrl translationsPath() const
+    {
+        return m_translationsPath;
+    }
+
 public slots:
 
-    void setName(QString arg)
+    void setName(const QString &arg)
     {
         if (m_name != arg) {
             m_name = arg;
             emit nameChanged(arg);
         }
     }
-    void setDescription(QString arg)
+    void setDescription(const QString &arg)
     {
         if (m_description != arg) {
             m_description = arg;
@@ -116,7 +120,7 @@ public slots:
             emit typeChanged(arg);
         }
     }
-    void setWebUri(QUrl arg)
+    void setWebUri(const QUrl &arg)
     {
         if (m_webUri != arg) {
             m_webUri = arg;
@@ -130,14 +134,14 @@ public slots:
             emit loadedChanged(arg);
         }
     }
-    void setFiles(QStringList arg)
+    void setFiles(const QStringList &arg)
     {
         if (m_files != arg) {
             m_files = arg;
             emit filesChanged(arg);
         }
     }
-    void setMainFile(QUrl arg)
+    void setMainFile(const QUrl &arg)
     {
         if (m_mainFile != arg) {
             m_mainFile = arg;
@@ -154,6 +158,15 @@ public slots:
         emit loadingChanged(arg);
     }
 
+    void setTranslationsPath(QUrl translationsPath)
+    {
+        if (m_translationsPath == translationsPath)
+            return;
+
+        m_translationsPath = translationsPath;
+        emit translationsPathChanged(translationsPath);
+    }
+
 private:
     QString m_name;
     QString m_description;
@@ -163,26 +176,21 @@ private:
     bool m_loading;
     QStringList m_files;
     QUrl m_mainFile;
+    QUrl m_translationsPath;
 
 signals:
 
-    void nameChanged(QString arg);
-
-    void descriptionChanged(QString arg);
-
+    void nameChanged(const QString &arg);
+    void descriptionChanged(const QString &arg);
     void typeChanged(ApplicationType arg);
-
-    void webUriChanged(QUrl arg);
-
+    void webUriChanged(const QUrl &arg);
     void loadedChanged(bool arg);
-
-    void filesChanged(QStringList arg);
-
-    void mainFileChanged(QUrl arg);
-
-
+    void filesChanged(const QStringList &arg);
+    void mainFileChanged(const QUrl &arg);
     void loadingChanged(bool arg);
+    void translationsPathChanged(QUrl translationsPath);
+
 }; // class ApplicationConfigItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONCONFIGITEM_H

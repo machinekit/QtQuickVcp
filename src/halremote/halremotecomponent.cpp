@@ -1,25 +1,5 @@
-/****************************************************************************
-**
-** Copyright (C) 2014 Alexander Rössler
-** License: LGPL version 2.1
-**
-** This file is part of QtQuickVcp.
-**
-** All rights reserved. This program and the accompanying materials
-** are made available under the terms of the GNU Lesser General Public License
-** (LGPL) version 2.1 which accompanies this distribution, and is available at
-** http://www.gnu.org/licenses/lgpl-2.1.html
-**
-** This library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-** Lesser General Public License for more details.
-**
-** Contributors:
-** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
-**
-****************************************************************************/
 #include "halremotecomponent.h"
+#include <google/protobuf/text_format.h>
 #include "debughelper.h"
 
 #if defined(Q_OS_IOS)
@@ -28,10 +8,9 @@ namespace gpb = google_public::protobuf;
 namespace gpb = google::protobuf;
 #endif
 
-using namespace nzmqt;
+using namespace machinetalk;
 
 namespace qtquickvcp {
-
 /*!
     \qmltype HalRemoteComponent
     \instantiates QHalRemoteComponent
@@ -97,12 +76,20 @@ namespace qtquickvcp {
     This property holds the name of the remote component.
 */
 
-/*! \qmlproperty int HalRemoteComponent::heartbeadPeriod
+/*! \qmlproperty int HalRemoteComponent::halrcmdHeartbeatInterval
 
     This property holds the period time of the heartbeat timer in ms.
     Set this property to \c{0} to disable the hearbeat.
 
     The default value is \c{3000}.
+*/
+
+/*! \qmlproperty int HalRemoteComponent::halrcompHeartbeatInterval
+
+    This property holds the period time of the heartbeat timer in ms.
+    This value is set automatically on the first full update.
+
+    The default value is \c{0}.
 */
 
 /*! \qmlproperty bool HalRemoteComponent::ready
@@ -188,256 +175,15 @@ namespace qtquickvcp {
 
 /** Remote HAL Component implementation for use with C++ and QML */
 HalRemoteComponent::HalRemoteComponent(QObject *parent) :
-    AbstractServiceImplementation(parent),
-    m_halrcmdUri(""),
-    m_halrcompUri(""),
+    halremote::RemoteComponentBase(parent),
     m_name("default"),
-    m_heartbeatPeriod(3000),
     m_connected(false),
-    m_halrcompSocketState(Down),
-    m_halrcmdSocketState(Down),
-    m_connectionState(Disconnected),
     m_error(NoError),
     m_errorString(""),
     m_containerItem(this),
     m_create(true),
-    m_bind(true),
-    m_context(nullptr),
-    m_halrcompSocket(nullptr),
-    m_halrcmdSocket(nullptr),
-    m_halrcmdHeartbeatTimer(new QTimer(this)),
-    m_halrcompHeartbeatTimer(new QTimer(this)),
-    m_halrcmdPingOutstanding(false)
+    m_bind(true)
 {
-    m_uuid = QUuid::createUuid();
-
-    connect(m_halrcmdHeartbeatTimer, &QTimer::timeout,
-            this, &HalRemoteComponent::halrcmdHeartbeatTimerTick);
-    connect(m_halrcompHeartbeatTimer, &QTimer::timeout,
-            this, &HalRemoteComponent::halrcompHeartbeatTimerTick);
-}
-
-/** Scans all children of the container item for pins and adds them to a map */
-void HalRemoteComponent::addPins()
-{
-    QObjectList halObjects;
-
-    if (m_containerItem == nullptr)
-    {
-        return;
-    }
-
-    halObjects = recurseObjects(m_containerItem->children());
-    foreach (QObject *object, halObjects)
-    {
-        HalPin *pin = static_cast<HalPin *>(object);
-        if (pin->name().isEmpty()  || (pin->enabled() == false))    // ignore pins with empty name and disabled pins
-        {
-            continue;
-        }
-        m_pinsByName[pin->name()] = pin;
-        m_pins.append(pin);
-        connect(pin, &HalPin::valueChanged,
-                this, &HalRemoteComponent::pinChange);
-#ifdef QT_DEBUG
-        DEBUG_TAG(1, m_name, "pin added: " << pin->name())
-#endif
-    }
-
-    emit pinsChanged(pins());
-}
-
-/** Removes all previously added pins */
-void HalRemoteComponent::removePins()
-{
-    foreach (HalPin *pin, m_pinsByName)
-    {
-        disconnect(pin, SIGNAL(valueChanged(QVariant)),
-                this, SLOT(pinChange(QVariant)));
-
-        if (pin->parent() == this) // pin was created by this class
-        {
-            pin->deleteLater();
-        }
-    }
-
-    m_pinsByHandle.clear();
-    m_pinsByName.clear();
-    m_pins.clear();
-    emit pinsChanged(pins());
-}
-
-/** Sets synced of all pins to false */
-void HalRemoteComponent::unsyncPins()
-{
-    QMapIterator<QString, HalPin*> i(m_pinsByName);
-    while (i.hasNext()) {
-        i.next();
-        i.value()->setSynced(false);
-    }
-}
-
-/** Connects the 0MQ sockets */
-bool HalRemoteComponent::connectSockets()
-{
-    m_context = new PollingZMQContext(this, 1);
-    connect(m_context, &PollingZMQContext::pollError,
-            this, &HalRemoteComponent::pollError);
-    m_context->start();
-
-    m_halrcmdSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
-    m_halrcmdSocket->setLinger(0);
-    m_halrcmdSocket->setIdentity(QString("%1-%2").arg(m_name).arg(m_uuid.toString()).toLocal8Bit());
-
-
-    m_halrcompSocket = m_context->createSocket(ZMQSocket::TYP_SUB, this);
-    m_halrcompSocket->setLinger(0);
-
-    try {
-        m_halrcmdSocket->connectTo(m_halrcmdUri);
-        m_halrcompSocket->connectTo(m_halrcompUri);
-    }
-    catch (const zmq::error_t &e) {
-        QString errorString;
-        errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateState(Error, SocketError, errorString);
-        return false;
-    }
-
-    connect(m_halrcompSocket, &ZMQSocket::messageReceived,
-            this, &HalRemoteComponent::halrcompMessageReceived);
-    connect(m_halrcmdSocket, &ZMQSocket::messageReceived,
-            this, &HalRemoteComponent::halrcmdMessageReceived);
-
-#ifdef QT_DEBUG
-    DEBUG_TAG(1, m_name, "sockets connected" << m_halrcompUri << m_halrcmdUri)
-#endif
-
-    return true;
-}
-
-/** Disconnects the 0MQ sockets */
-void HalRemoteComponent::disconnectSockets()
-{
-    m_halrcmdSocketState = Down;
-    m_halrcompSocketState = Down;
-
-    if (m_halrcmdSocket != nullptr)
-    {
-        m_halrcmdSocket->close();
-        m_halrcmdSocket->deleteLater();
-        m_halrcmdSocket = nullptr;
-    }
-
-    if (m_halrcompSocket != nullptr)
-    {
-        m_halrcompSocket->close();
-        m_halrcompSocket->deleteLater();
-        m_halrcompSocket = nullptr;
-    }
-
-    if (m_context != nullptr)
-    {
-        m_context->stop();
-        m_context->deleteLater();
-        m_context = nullptr;
-    }
-}
-
-/** Generates a Bind messages and sends it over the suitable 0MQ socket */
-void HalRemoteComponent::bindPins()
-{
-    pb::Component *component;
-
-    component = m_tx.add_comp();
-    component->set_name(m_name.toStdString());
-    component->set_no_create(!m_create);
-    foreach (HalPin *pin, m_pinsByName)
-    {
-        pb::Pin *halPin = component->add_pin();
-        halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());  // pin name is always component.name
-        halPin->set_type(static_cast<pb::ValueType>(pin->type()));
-        halPin->set_dir(static_cast<pb::HalPinDirection>(pin->direction()));
-        if (pin->type() == HalPin::Float)
-        {
-            halPin->set_halfloat(pin->value().toDouble());
-        }
-        else if (pin->type() == HalPin::Bit)
-        {
-            halPin->set_halbit(pin->value().toBool());
-        }
-        else if (pin->type() == HalPin::S32)
-        {
-            halPin->set_hals32(pin->value().toInt());
-        }
-        else if (pin->type() == HalPin::U32)
-        {
-            halPin->set_halu32(pin->value().toUInt());
-        }
-    }
-
-#ifdef QT_DEBUG
-    std::string s;
-    gpb::TextFormat::PrintToString(m_tx, &s);
-    DEBUG_TAG(1, m_name, "bind")
-    DEBUG_TAG(3, m_name, QString::fromStdString(s))
-#endif
-
-    sendHalrcmdMessage(pb::MT_HALRCOMP_BIND);
-}
-
-void HalRemoteComponent::subscribe()
-{
-    m_halrcompSocketState = Trying;
-    m_halrcompSocket->subscribeTo(m_name.toLocal8Bit());
-}
-
-void HalRemoteComponent::unsubscribe()
-{
-    m_halrcompSocketState = Down;
-    m_halrcompSocket->unsubscribeFrom(m_name.toLocal8Bit());
-}
-
-/** Updates a local pin with the value of a remote pin */
-void HalRemoteComponent::pinUpdate(const pb::Pin &remotePin, HalPin *localPin)
-{
-#ifdef QT_DEBUG
-    DEBUG_TAG(2, m_name,  "pin update" << localPin->name() << remotePin.halfloat() << remotePin.halbit() << remotePin.hals32() << remotePin.halu32())
-#endif
-
-    if (remotePin.has_halfloat())
-    {
-        localPin->setValue(QVariant(remotePin.halfloat()), true);
-    }
-    else if (remotePin.has_halbit())
-    {
-        localPin->setValue(QVariant(remotePin.halbit()), true);
-    }
-    else if (remotePin.has_hals32())
-    {
-        localPin->setValue(QVariant(remotePin.hals32()), true);
-    }
-    else if (remotePin.has_halu32())
-    {
-        localPin->setValue(QVariant(remotePin.halu32()), true);
-    }
-}
-
-/** Adds a local pin based on remote pin representation **/
-HalPin *HalRemoteComponent::addLocalPin(const pb::Pin &remotePin)
-{
-    QString name = QString::fromStdString(remotePin.name());
-    name = splitPinFromHalName(name);
-    HalPin *localPin = new HalPin(this);
-    localPin->setName(name);
-    localPin->setType(static_cast<HalPin::HalPinType>(remotePin.type()));
-    localPin->setDirection(static_cast<HalPin::HalPinDirection>(remotePin.dir()));
-    m_pinsByName[name] = localPin;
-    m_pins.append(localPin);
-    connect(localPin, &HalPin::valueChanged,
-            this, &HalRemoteComponent::pinChange);
-
-    return localPin;
 }
 
 /** Updates a remote pin witht the value of a local pin */
@@ -445,9 +191,9 @@ void HalRemoteComponent::pinChange(QVariant value)
 {
     Q_UNUSED(value)
     HalPin *pin;
-    pb::Pin *halPin;
+    Pin *halPin;
 
-    if (m_connectionState != Connected) // only accept pin changes if we are connected
+    if (state() != Synced) // only accept pin changes if we are connected
     {
         return;
     }
@@ -473,7 +219,7 @@ void HalRemoteComponent::pinChange(QVariant value)
     halPin = m_tx.add_pin();
 
     halPin->set_handle(pin->handle());
-    halPin->set_type(static_cast<pb::ValueType>(pin->type()));
+    halPin->set_type((ValueType)pin->type());
     if (pin->type() == HalPin::Float)
     {
         halPin->set_halfloat(pin->value().toDouble());
@@ -491,164 +237,7 @@ void HalRemoteComponent::pinChange(QVariant value)
         halPin->set_halu32(pin->value().toUInt());
     }
 
-    sendHalrcmdMessage(pb::MT_HALRCOMP_SET);
-}
-
-QQmlListProperty<HalPin> HalRemoteComponent::pins()
-{
-    return QQmlListProperty<HalPin>(this, m_pins);
-}
-
-int HalRemoteComponent::pinCount() const
-{
-    return m_pins.count();
-}
-
-HalPin *HalRemoteComponent::pin(int index) const
-{
-    return m_pins.at(index);
-}
-
-void HalRemoteComponent::start()
-{
-#ifdef QT_DEBUG
-   DEBUG_TAG(1, m_name, "start")
-#endif
-    m_halrcmdSocketState = Trying;
-    updateState(Connecting);
-
-    if (connectSockets())
-    {
-        addPins();
-        startHalrcmdHeartbeat();
-        sendHalrcmdMessage(pb::MT_PING);
-    }
-}
-
-void HalRemoteComponent::stop()
-{
-#ifdef QT_DEBUG
-    DEBUG_TAG(1, m_name, "stop")
-#endif
-
-    cleanup();
-
-    updateState(Disconnected);  // clears also the error
-}
-
-void HalRemoteComponent::cleanup()
-{
-    if (m_connected)
-    {
-        unsubscribe();
-    }
-    stopHalrcmdHeartbeat();
-    disconnectSockets();
-    removePins();
-}
-
-void HalRemoteComponent::startHalrcmdHeartbeat()
-{
-    m_halrcmdPingOutstanding = false;
-
-    if (m_heartbeatPeriod > 0)
-    {
-        m_halrcmdHeartbeatTimer->setInterval(m_heartbeatPeriod);
-        m_halrcmdHeartbeatTimer->start();
-    }
-}
-
-void HalRemoteComponent::stopHalrcmdHeartbeat()
-{
-    m_halrcmdHeartbeatTimer->stop();
-}
-
-void HalRemoteComponent::startHalrcompHeartbeat(int interval)
-{
-    m_halrcompHeartbeatTimer->stop();
-
-    if (interval > 0)
-    {
-        m_halrcompHeartbeatTimer->setInterval(interval);
-        m_halrcompHeartbeatTimer->start();
-    }
-}
-
-void HalRemoteComponent::stopHalrcompHeartbeat()
-{
-    m_halrcompHeartbeatTimer->stop();
-}
-
-void HalRemoteComponent::refreshHalrcompHeartbeat()
-{
-    if (m_halrcompHeartbeatTimer->isActive())
-    {
-        m_halrcompHeartbeatTimer->stop();
-        m_halrcompHeartbeatTimer->start();
-    }
-}
-
-void HalRemoteComponent::updateState(HalRemoteComponent::State state)
-{
-    updateState(state, NoError, "");
-}
-
-void HalRemoteComponent::updateState(State state, HalRemoteComponent::ConnectionError error, QString errorString)
-{
-    if (state != m_connectionState)
-    {
-        if (m_connectionState == Connected) // we are not connected anymore
-        {
-            unsyncPins();
-        }
-
-        m_connectionState = state;
-        emit connectionStateChanged(m_connectionState);
-
-        if (m_connectionState == Connected)
-        {
-            if (m_connected != true) {
-                m_connected = true;
-                emit connectedChanged(true);
-            }
-        }
-        else
-        {
-            stopHalrcompHeartbeat();
-            if (m_connected != false) {
-                m_connected = false;
-                emit connectedChanged(false);
-            }
-        }
-    }
-
-    updateError(error, errorString);
-}
-
-void HalRemoteComponent::updateError(HalRemoteComponent::ConnectionError error, QString errorString)
-{
-    if (m_errorString != errorString)
-    {
-        m_errorString = errorString;
-        emit errorStringChanged(m_errorString);
-    }
-
-    if (m_error != error)
-    {
-        if (error != NoError)
-        {
-            cleanup();
-        }
-        m_error = error;
-        emit errorChanged(m_error);
-    }
-}
-
-void HalRemoteComponent::pollError(int errorNum, const QString &errorMsg)
-{
-    QString errorString;
-    errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
-    updateState(Error, SocketError, errorString);
+    sendHalrcompSet(m_tx);
 }
 
 /** Recurses through a list of objects */
@@ -658,8 +247,7 @@ QObjectList HalRemoteComponent::recurseObjects(const QObjectList &list)
 
     foreach (QObject *object, list)
     {
-        HalPin *halPin;
-        halPin = qobject_cast<HalPin *>(object);
+        HalPin *halPin = qobject_cast<HalPin *>(object);
         if (halPin != nullptr)
         {
             halObjects.append(object);
@@ -674,229 +262,88 @@ QObjectList HalRemoteComponent::recurseObjects(const QObjectList &list)
     return halObjects;
 }
 
-/** Processes all message received on the update 0MQ socket */
-void HalRemoteComponent::halrcompMessageReceived(const QList<QByteArray> &messageList)
+/** Updates a local pin with the value of a remote pin */
+void HalRemoteComponent::pinUpdate(const Pin &remotePin, HalPin *localPin)
 {
-    QByteArray topic;
-
-    topic = messageList.at(0);
-    m_rx.ParseFromArray(messageList.at(1).data(), messageList.at(1).size());
-
 #ifdef QT_DEBUG
-    std::string s;
-    gpb::TextFormat::PrintToString(m_rx, &s);
-    DEBUG_TAG(3, m_name, "status update" << topic << QString::fromStdString(s))
+    DEBUG_TAG(2, m_name,  "pin update" << localPin->name() << remotePin.halfloat() << remotePin.halbit() << remotePin.hals32() << remotePin.halu32())
 #endif
 
-    if (m_rx.type() == pb::MT_HALRCOMP_INCREMENTAL_UPDATE) //incremental update
+    if (remotePin.has_halfloat())
     {
-        for (int i = 0; i < m_rx.pin_size(); ++i)
-        {
-            pb::Pin remotePin = m_rx.pin(i);
-            HalPin *localPin = m_pinsByHandle.value(remotePin.handle(), nullptr);
-            if (localPin != nullptr) // in case we received a wrong pin handle
-            {
-                pinUpdate(remotePin, localPin);
-            }
-        }
-
-        refreshHalrcompHeartbeat();
-
-        return;
+        localPin->setValue(QVariant(remotePin.halfloat()), true);
     }
-    else if (m_rx.type() == pb::MT_HALRCOMP_FULL_UPDATE)
+    else if (remotePin.has_halbit())
     {
-        bool pinsAdded = false;
-#ifdef QT_DEBUG
-        DEBUG_TAG(1, m_name, "full update")
-#endif
-        for (int i = 0; i < m_rx.comp_size(); ++i)
-        {
-            pb::Component component = m_rx.comp(i);
-            for (int j = 0; j < component.pin_size(); j++)
-            {
-                pb::Pin remotePin = component.pin(j);
-                QString name = QString::fromStdString(remotePin.name());
-                name = splitPinFromHalName(name);
-
-                HalPin *localPin = m_pinsByName.value(name, nullptr);
-                if (localPin == nullptr)
-                {
-                    localPin = addLocalPin(remotePin);
-                    pinsAdded = true;
-                }
-
-                localPin->setHandle(remotePin.handle());
-                m_pinsByHandle.insert(remotePin.handle(), localPin);
-                pinUpdate(remotePin, localPin);
-            }
-
-            if (m_halrcompSocketState != Up) // will be executed only once
-            {
-                m_halrcompSocketState = Up;
-                updateState(Connected);
-            }
-        }
-
-        if (m_rx.has_pparams())
-        {
-            pb::ProtocolParameters pparams = m_rx.pparams();
-            startHalrcompHeartbeat(pparams.keepalive_timer() * 2);  // wait double the time of the hearbeat interval
-        }
-
-        if (pinsAdded)
-        {
-            emit pinsChanged(pins());
-        }
-
-        return;
+        localPin->setValue(QVariant(remotePin.halbit()), true);
     }
-    else if (m_rx.type() == pb::MT_PING)
+    else if (remotePin.has_hals32())
     {
-        if (m_halrcompSocketState == Up)
-        {
-            refreshHalrcompHeartbeat();
-        }
-        else
-        {
-            updateState(Connecting);
-            unsubscribe();  // clean up previous subscription
-            subscribe();    // trigger a fresh subscribe -> full update
-        }
-
-        return;
+        localPin->setValue(QVariant(remotePin.hals32()), true);
     }
-    else if (m_rx.type() == pb::MT_HALRCOMMAND_ERROR)
+    else if (remotePin.has_halu32())
     {
-        QString errorString;
-
-        for (int i = 0; i < m_rx.note_size(); ++i)
-        {
-            errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
-        }
-
-        m_halrcompSocketState = Down;
-        updateState(Error, CommandError, errorString);
-
-#ifdef QT_DEBUG
-        DEBUG_TAG(1, m_name, "proto error on subscribe" << errorString)
-#endif
-
-        return;
-    }
-
-#ifdef QT_DEBUG
-    gpb::TextFormat::PrintToString(m_rx, &s);
-    DEBUG_TAG(1, m_name, "status_update: unknown message type: " << QString::fromStdString(s))
-#endif
-}
-
-/** Processes all message received on the command 0MQ socket */
-void HalRemoteComponent::halrcmdMessageReceived(const QList<QByteArray> &messageList)
-{
-    m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
-
-#ifdef QT_DEBUG
-    std::string s;
-    gpb::TextFormat::PrintToString(m_rx, &s);
-    DEBUG_TAG(3, m_name, "server message" << QString::fromStdString(s))
-#endif
-
-    if (m_rx.type() == pb::MT_PING_ACKNOWLEDGE)
-    {
-        m_halrcmdPingOutstanding = false;
-
-        if (m_halrcmdSocketState == Trying)
-        {
-            updateState(Connecting);
-
-            if (m_bind)
-            {
-                bindPins();
-            }
-            else
-            {
-#ifdef QT_DEBUG
-                DEBUG_TAG(1, m_name,  "no bind")
-#endif
-                m_halrcmdSocketState = Up;
-                unsubscribe();  // clear previous subscription
-                subscribe();    // trigger full update
-            }
-        }
-
-#ifdef QT_DEBUG
-        DEBUG_TAG(2, m_name, "ping ack")
-#endif
-
-        return;
-    }
-    else if (m_rx.type() == pb::MT_HALRCOMP_BIND_CONFIRM)
-    {
-#ifdef QT_DEBUG
-        DEBUG_TAG(1, m_name,  "bind confirmed")
-#endif
-        m_halrcmdSocketState = Up;
-        unsubscribe();  // clear previous subscription
-        subscribe();    // trigger full update
-
-        return;
-    }
-    else if ((m_rx.type() == pb::MT_HALRCOMP_BIND_REJECT)
-             || (m_rx.type() == pb::MT_HALRCOMP_SET_REJECT))
-    {
-        QString errorString;
-
-        for (int i = 0; i < m_rx.note_size(); ++i)
-        {
-            errorString.append(QString::fromStdString(m_rx.note(i)) + "\n");
-        }
-
-        m_halrcmdSocketState = Down;
-
-        if (m_rx.type() == pb::MT_HALRCOMP_BIND_REJECT)
-        {
-            updateState(Error, BindError, errorString);
-        }
-        else
-        {
-            updateState(Error, PinChangeError, errorString);
-        }
-
-#ifdef QT_DEBUG
-        if (m_rx.type() == pb::MT_HALRCOMP_BIND_REJECT) {
-            DEBUG_TAG(1, m_name, "bind rejected" << errorString)
-        }
-        else {
-            DEBUG_TAG(1, m_name, "pin change rejected" << QString::fromStdString(m_rx.note(0)))
-        }
-#endif
-        return;
-    }
-    else
-    {
-#ifdef QT_DEBUG
-        DEBUG_TAG(1, m_name, "UNKNOWN server message type")
-#endif
+        localPin->setValue(QVariant(remotePin.halu32()), true);
     }
 }
 
-void HalRemoteComponent::sendHalrcmdMessage(pb::ContainerType type)
+/** Adds a local pin based on remote pin representation **/
+HalPin *HalRemoteComponent::addLocalPin(const Pin &remotePin)
 {
-    if (m_halrcmdSocket == nullptr) {  // disallow sending messages when not connected
-        return;
+    QString name = QString::fromStdString(remotePin.name());
+    name = splitPinFromHalName(name);
+    HalPin *localPin = new HalPin(this);
+    localPin->setName(name);
+    localPin->setType(static_cast<HalPin::HalPinType>(remotePin.type()));
+    localPin->setDirection(static_cast<HalPin::HalPinDirection>(remotePin.dir()));
+    m_pinsByName[name] = localPin;
+    m_pins.append(localPin);
+    connect(localPin, &HalPin::valueChanged,
+            this, &HalRemoteComponent::pinChange);
+
+    return localPin;
+}
+
+/** Generates a Bind messages and sends it over the suitable 0MQ socket */
+void HalRemoteComponent::bindPins()
+{
+    Component *component;
+
+    component = m_tx.add_comp();
+    component->set_name(m_name.toStdString());
+    component->set_no_create(!m_create);
+    foreach (HalPin *pin, m_pinsByName)
+    {
+        Pin *halPin = component->add_pin();
+        halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());  // pin name is always component.name
+        halPin->set_type(static_cast<ValueType>(pin->type()));
+        halPin->set_dir(static_cast<HalPinDirection>(pin->direction()));
+        if (pin->type() == HalPin::Float)
+        {
+            halPin->set_halfloat(pin->value().toDouble());
+        }
+        else if (pin->type() == HalPin::Bit)
+        {
+            halPin->set_halbit(pin->value().toBool());
+        }
+        else if (pin->type() == HalPin::S32)
+        {
+            halPin->set_hals32(pin->value().toInt());
+        }
+        else if (pin->type() == HalPin::U32)
+        {
+            halPin->set_halu32(pin->value().toUInt());
+        }
     }
 
-    try {
-        m_tx.set_type(type);
-        m_halrcmdSocket->sendMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
-        m_tx.Clear();
-    }
-    catch (const zmq::error_t &e) {
-        QString errorString;
-        errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateState(Error, SocketError, errorString);
-    }
+#ifdef QT_DEBUG
+    std::string s;
+    gpb::TextFormat::PrintToString(m_tx, &s);
+    DEBUG_TAG(1, m_name, "bind");
+    DEBUG_TAG(3, m_name, QString::fromStdString(s));
+#endif
+
+    sendHalrcompBind(m_tx);
 }
 
 /** splits HAL pin name from full HAL name **/
@@ -915,34 +362,184 @@ QString HalRemoteComponent::splitPinFromHalName(const QString &name)
     return newName;
 }
 
-void HalRemoteComponent::halrcmdHeartbeatTimerTick()
+/** Scans all children of the container item for pins and adds them to a map */
+void HalRemoteComponent::addPins()
 {
-    if (m_halrcmdPingOutstanding)
-    {
-        m_halrcmdSocketState = Trying;
-        updateState(Timeout);
+    QObjectList halObjects;
 
+    if (m_containerItem == nullptr)
+    {
+        return;
+    }
+
+    clearHalrcompTopics();
+    addHalrcompTopic(m_name);
+
+    halObjects = recurseObjects(m_containerItem->children());
+    foreach (QObject *object, halObjects)
+    {
+        HalPin *pin = static_cast<HalPin *>(object);
+        if (pin->name().isEmpty()  || (pin->enabled() == false))    // ignore pins with empty name and disabled pins
+        {
+            continue;
+        }
+        m_pinsByName[pin->name()] = pin;
+        m_pins.append(pin);
+        connect(pin, SIGNAL(valueChanged(QVariant)),
+                this, SLOT(pinChange(QVariant)));
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_name, "halcmd timeout")
+        DEBUG_TAG(1, m_name, "pin added: " << pin->name())
 #endif
     }
 
-    sendHalrcmdMessage(pb::MT_PING);
-
-    m_halrcmdPingOutstanding = true;
-
-#ifdef QT_DEBUG
-    DEBUG_TAG(2, m_name, "ping")
-#endif
+    emit pinsChanged(pins());
 }
 
-void HalRemoteComponent::halrcompHeartbeatTimerTick()
+/** Removes all previously added pins */
+void HalRemoteComponent::removePins()
 {
-    m_halrcompSocketState = Down;
-    updateState(Timeout);
+    foreach (HalPin *pin, m_pinsByName)
+    {
+        disconnect(pin, &HalPin::valueChanged,
+                this, &HalRemoteComponent::pinChange);
 
-#ifdef QT_DEBUG
-    DEBUG_TAG(1, m_name, "halcmd timeout")
-#endif
+        if (pin->parent() == this) // pin was created by this class
+        {
+            pin->deleteLater();
+        }
+    }
+
+    m_pinsByHandle.clear();
+    m_pinsByName.clear();
+    m_pins.clear();
+    emit pinsChanged(pins());
 }
+
+/** Sets synced of all pins to false */
+void HalRemoteComponent::unsyncPins()
+{
+    QMapIterator<QString, HalPin*> i(m_pinsByName);
+    while (i.hasNext()) {
+        i.next();
+        i.value()->setSynced(false);
+    }
+}
+
+void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic,const Container &rx)
+{
+    Q_UNUSED(topic);
+    bool pinsAdded = false;
+
+    if (rx.comp_size() == 0) // empty message
+    {
+        return;
+    }
+
+    Component component = rx.comp(0);  // shouldnt we check the name?
+    for (int i = 0; i < component.pin_size(); ++i)
+    {
+        const Pin &remotePin = component.pin(i);
+        QString name = QString::fromStdString(remotePin.name());
+        name = splitPinFromHalName(name);
+
+        HalPin *localPin = m_pinsByName.value(name, nullptr);
+        if (localPin == nullptr)
+        {
+            localPin = addLocalPin(remotePin);
+            pinsAdded = true;
+        }
+
+        localPin->setHandle(static_cast<int>(remotePin.handle()));
+        m_pinsByHandle.insert(static_cast<int>(remotePin.handle()), localPin);
+        pinUpdate(remotePin, localPin);
+    }
+
+    if (pinsAdded)
+    {
+        emit pinsChanged(pins());
+    }
+
+    pinsSynced(); // accept that pins have been synced
+}
+
+void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &topic, const Container &rx)
+{
+    Q_UNUSED(topic);
+
+    for (int i = 0; i < rx.pin_size(); ++i)
+    {
+        Pin remotePin = rx.pin(i);
+        HalPin *localPin = m_pinsByHandle.value(remotePin.handle(), nullptr);
+        if (localPin != nullptr) // in case we received a wrong pin handle
+        {
+            pinUpdate(remotePin, localPin);
+        }
+    }
+}
+
+void HalRemoteComponent::halrcompErrorReceived(const QByteArray &topic, const Container &rx)
+{
+    Q_UNUSED(topic);
+    QString errorString;
+
+    for (int i = 0; i < rx.note_size(); ++i)
+    {
+        errorString.append(QString::fromStdString(rx.note(i)) + "\n");
+    }
+}
+
+void HalRemoteComponent::bindComponent()
+{
+    if (m_bind)
+    {
+        bindPins();
+    }
+    else
+    {
+       noBind();
+    }
+}
+
+void HalRemoteComponent::setConnected()
+{
+    m_connected = true;
+    emit connectedChanged(m_connected);
+}
+
+void HalRemoteComponent::setError()
+{
+    if (m_connected)
+    {
+        m_connected = false;
+        emit connectedChanged(m_connected);
+    }
+}
+
+void HalRemoteComponent::setDisconnected()
+{
+    if (m_connected)
+    {
+        m_connected = false;
+        emit connectedChanged(m_connected);
+    }
+}
+
+void HalRemoteComponent::setConnecting()
+{
+    if (m_connected)
+    {
+        m_connected = false;
+        emit connectedChanged(m_connected);
+    }
+}
+
+void HalRemoteComponent::setTimeout()
+{
+    if (m_connected)
+    {
+        m_connected = false;
+        emit connectedChanged(m_connected);
+    }
+}
+
 }; // namespace qtquickvcp

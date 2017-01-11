@@ -19,8 +19,9 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-
 #include "applicationdescription.h"
+#include <QSettings>
+#include <QDir>
 
 namespace qtquickvcp {
 
@@ -49,6 +50,11 @@ namespace qtquickvcp {
 /*! \qmlproperty string ApplicationDescription::mainFile
 
     This property holds the main file of the application.
+*/
+
+/*! \qmlproperty string ApplicationDescription::translationsPath
+
+    This property holds the translations path of the application.
 */
 
 /*! \qmlproperty string ApplicationDescription::name
@@ -86,6 +92,7 @@ bool ApplicationDescription::refresh()
     QString name;
     QString description;
     QString mainFile;
+    QString translationsPath;
 
     // for local operation we must convert the url
     if (m_sourceDir.isLocalFile())
@@ -132,6 +139,7 @@ bool ApplicationDescription::refresh()
     name = settings.value("Default/name", QString("")).toString();
     description = settings.value("Default/description", QString("")).toString();
     mainFile = settings.value("Default/mainFile", QString("")).toString();
+    translationsPath = settings.value("Default/translationsPath", QString("")).toString();
 
     if (name.isEmpty() || description.isEmpty())
     {
@@ -143,13 +151,20 @@ bool ApplicationDescription::refresh()
         mainFile = getMainFile(fileList, baseFilePath, name);   // if no main file is specified we try to figure it out
     }
 
+    if (translationsPath.isEmpty())
+    {
+        translationsPath = getTranslationsPath(baseFilePath);
+    }
+
     if (m_sourceDir.isLocalFile())
     {
         m_mainFile = QUrl::fromLocalFile(mainFile);
+        m_translationsPath = QUrl::fromLocalFile(translationsPath);
     }
     else
     {
         m_mainFile = QUrl(m_sourceDir.scheme() + mainFile);
+        m_translationsPath = QUrl(m_sourceDir.scheme() + translationsPath);
     }
 
     m_name = name;
@@ -157,18 +172,19 @@ bool ApplicationDescription::refresh()
     emit nameChanged(name);
     emit descriptionChanged(description);
     emit mainFileChanged(mainFile);
+    emit translationsPathChanged(translationsPath);
 
     return true;
 }
 
-QString ApplicationDescription::getMainFile(QStringList fileList, QString baseFilePath, QString applicationName)
+QString ApplicationDescription::getMainFile(const QStringList &fileList, const QString &baseFilePath, const QString &applicationName) const
 {
     QString mainFileName;
     QString preferredName;
 
-    // Number 1 priority main QML file is name main.qml
+    // Number 1 priority main QML file has name main.qml
     preferredName = baseFilePath + "main.qml";
-    foreach (QString fileName, fileList)
+    foreach (const QString &fileName, fileList)
     {
         if (fileName == preferredName)
         {
@@ -199,4 +215,11 @@ QString ApplicationDescription::getMainFile(QStringList fileList, QString baseFi
 
     return mainFileName;
 }
+
+QString ApplicationDescription::getTranslationsPath(const QString &baseFilePath) const
+{
+    // translations have to be placed in translations dir
+    return baseFilePath + "translations";
+}
+
 }; // namespace qtquickvcp

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2014 Alexander Rössler
+** Copyright (C) 2014-2016 Alexander Rössler
 ** License: LGPL version 2.1
 **
 ** This file is part of QtQuickVcp.
@@ -17,60 +17,34 @@
 **
 ** Contributors:
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
+** Alexander Rössler @ Roessler Systems <mail AT roessler DOT systems>
 **
 ****************************************************************************/
 #ifndef HALREMOTECOMPONENT_H
 #define HALREMOTECOMPONENT_H
 
-#include <abstractserviceimplementation.h>
-#include <QCoreApplication>
-#include <QHash>
-#include <QTimer>
-#include <QUuid>
+#include <QObject>
 #include <QQmlListProperty>
-#include "halpin.h"
-#include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
-#include <google/protobuf/text_format.h>
+#include <halremote/remotecomponentbase.h>
+#include "halpin.h"
 
 namespace qtquickvcp {
 
-class HalRemoteComponent : public AbstractServiceImplementation
+class HalRemoteComponent : public machinetalk::halremote::RemoteComponentBase
 {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(QString halrcmdUri READ halrcmdUri WRITE setHalrcmdUri NOTIFY halrcmdUriChanged)
-    Q_PROPERTY(QString halrcompUri READ halrcompUri WRITE setHalrcompUri NOTIFY halrcompUriChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(int heartbeatPeriod READ heartbeatPeriod WRITE heartbeatPeriod NOTIFY heartbeatPeriodChanged)
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
-    Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
-    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QObject *containerItem READ containerItem WRITE setContainerItem NOTIFY containerItemChanged)
     Q_PROPERTY(bool create READ create WRITE setCreate NOTIFY createChanged)
     Q_PROPERTY(bool bind READ bind WRITE setBind NOTIFY bindChanged)
     Q_PROPERTY(QQmlListProperty<qtquickvcp::HalPin> pins READ pins NOTIFY pinsChanged)
-    Q_ENUMS(SocketState)
-    Q_ENUMS(State)
     Q_ENUMS(ConnectionError)
 
 public:
-    explicit HalRemoteComponent(QObject *parent = 0);
-
-    enum SocketState {
-        Down = 1,
-        Trying = 2,
-        Up = 3
-    };
-
-    enum State {
-        Disconnected = 0,
-        Connecting = 1,
-        Connected = 2,
-        Timeout = 3,
-        Error = 4
-    };
+    explicit HalRemoteComponent(QObject *parent  = 0);
 
     enum ConnectionError {
         NoError = 0,
@@ -80,34 +54,14 @@ public:
         SocketError = 4
     };
 
-    QString halrcmdUri() const
-    {
-        return m_halrcmdUri;
-    }
-
-    QString halrcompUri() const
-    {
-        return m_halrcompUri;
-    }
-
     QString name() const
     {
         return m_name;
     }
 
-    int heartbeatPeriod() const
+    bool isConnected() const
     {
-        return m_heartbeatPeriod;
-    }
-
-    QObject *containerItem() const
-    {
-        return m_containerItem;
-    }
-
-    State connectionState() const
-    {
-        return m_connectionState;
+        return m_connected;
     }
 
     ConnectionError error() const
@@ -120,9 +74,9 @@ public:
         return m_errorString;
     }
 
-    bool isConnected() const
+    QObject *containerItem() const
     {
-        return m_connected;
+        return m_containerItem;
     }
 
     bool create() const
@@ -136,151 +90,110 @@ public:
     }
 
 public slots:
-    void pinChange(QVariant value);
-
-    void setHalrcmdUri(QString arg)
+    void setName(QString name)
     {
-        if (m_halrcmdUri != arg) {
-            m_halrcmdUri = arg;
-            emit halrcmdUriChanged(arg);
-        }
-    }
-
-    void setHalrcompUri(QString arg)
-    {
-        if (m_halrcompUri != arg) {
-            m_halrcompUri = arg;
-            emit halrcompUriChanged(arg);
-        }
-    }
-
-    void setName(QString arg)
-    {
-        if (m_connectionState != Disconnected)
+        if (this->state() != Down) {
             return;
+        }
 
-        if (m_name != arg) {
-            m_name = arg;
-            emit nameChanged(arg);
+        if (m_name != name) {
+            m_name = name;
+            emit nameChanged(name);
         }
     }
 
-    void heartbeatPeriod(int arg)
+    void setContainerItem(QObject * containerItem)
     {
-        if (m_heartbeatPeriod != arg) {
-            m_heartbeatPeriod = arg;
-            emit heartbeatPeriodChanged(arg);
-        }
-    }
-
-    void setContainerItem(QObject *arg)
-    {
-        if (m_containerItem != arg) {
-            m_containerItem = arg;
-            emit containerItemChanged(arg);
-        }
-    }
-
-    void setCreate(bool arg)
-    {
-        if (m_create == arg)
+        if (m_containerItem == containerItem) {
             return;
+        }
 
-        m_create = arg;
-        emit createChanged(arg);
+        m_containerItem = containerItem;
+        emit containerItemChanged(containerItem);
     }
 
-    QQmlListProperty<HalPin> pins();
-    int pinCount() const;
-    HalPin *pin(int index) const;
+    void setCreate(bool create)
+    {
+        if (m_create == create) {
+            return;
+        }
+
+        m_create = create;
+        emit createChanged(create);
+    }
 
     void setBind(bool bind)
     {
-        if (m_bind == bind)
+        if (m_bind == bind) {
             return;
+        }
 
         m_bind = bind;
         emit bindChanged(bind);
     }
 
-private:
-    QString     m_halrcmdUri;
-    QString     m_halrcompUri;
-    QString     m_name;
-    int         m_heartbeatPeriod;
-    bool        m_connected;
-    SocketState m_halrcompSocketState;
-    SocketState m_halrcmdSocketState;
-    State       m_connectionState;
-    ConnectionError       m_error;
-    QString     m_errorString;
-    QObject     *m_containerItem;
-    bool        m_create;
-    bool        m_bind;
+    QQmlListProperty<HalPin> pins()
+    {
+        return QQmlListProperty<HalPin>(this, m_pins);
+    }
+    int pinCount() const
+    {
+        return m_pins.count();
+    }
+    HalPin *pin(int index) const
+    {
+        return m_pins.at(index);
+    }
 
-    nzmqt::PollingZMQContext *m_context;
-    nzmqt::ZMQSocket *m_halrcompSocket;
-    nzmqt::ZMQSocket *m_halrcmdSocket;
-    QTimer     *m_halrcmdHeartbeatTimer;
-    QTimer     *m_halrcompHeartbeatTimer;
-    bool        m_halrcmdPingOutstanding;
-    QUuid       m_uuid;
+    void pinChange(QVariant value);
+
+private:
+    QString         m_name;
+    bool            m_connected;
+    ConnectionError m_error;
+    QString         m_errorString;
+    QObject*        m_containerItem;
+    bool            m_create;
+    bool            m_bind;
+
     // more efficient to reuse a protobuf Message
-    pb::Container   m_rx;
-    pb::Container   m_tx;
+    machinetalk::Container          m_tx;
     QMap<QString, HalPin*> m_pinsByName;
     QHash<int, HalPin*>    m_pinsByHandle;
     QList<HalPin*>         m_pins;
 
     QObjectList recurseObjects(const QObjectList &list);
-    void start();
-    void stop();
-    void cleanup();
-    void startHalrcmdHeartbeat();
-    void stopHalrcmdHeartbeat();
-    void startHalrcompHeartbeat(int interval);
-    void stopHalrcompHeartbeat();
-    void refreshHalrcompHeartbeat();
-    void updateState(State state);
-    void updateState(State state, ConnectionError error, QString errorString);
-    void updateError(ConnectionError error, QString errorString);
-    void sendHalrcmdMessage(pb::ContainerType type);
+    void bindPins();
+    static QString splitPinFromHalName(const QString &name);
 
-    void pinUpdate(const pb::Pin &remotePin, HalPin *localPin);
-    HalPin *addLocalPin(const pb::Pin &remotePin);
+    void pinUpdate(const machinetalk::Pin &remotePin, HalPin *localPin);
+    HalPin *addLocalPin(const machinetalk::Pin &remotePin);
 
+    // RemoteComponentBase interface
+private slots:
     void addPins();
     void removePins();
     void unsyncPins();
-    bool connectSockets();
-    void disconnectSockets();
-    void bindPins();
-    void subscribe();
-    void unsubscribe();
-
-    static QString splitPinFromHalName(const QString &name);
-
-private slots:
-    void halrcompMessageReceived(const QList<QByteArray> &messageList);
-    void halrcmdMessageReceived(const QList<QByteArray> &messageList);
-    void pollError(int errorNum, const QString& errorMsg);
-    void halrcmdHeartbeatTimerTick();
-    void halrcompHeartbeatTimerTick();
+    void halrcompFullUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void halrcompIncrementalUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void halrcompErrorReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void bindComponent();
+    void setConnected();
+    void setError();
+    void setDisconnected();
+    void setConnecting();
+    void setTimeout();
 
 signals:
-    void halrcmdUriChanged(QString arg);
-    void halrcompUriChanged(QString arg);
-    void nameChanged(QString arg);
-    void heartbeatPeriodChanged(int arg);
-    void containerItemChanged(QObject *arg);
-    void connectionStateChanged(State arg);
-    void errorChanged(ConnectionError arg);
-    void errorStringChanged(QString arg);
-    void connectedChanged(bool arg);
-    void createChanged(bool arg);
-    void pinsChanged(QQmlListProperty<HalPin> arg);
+    void nameChanged(QString name);
+    void connectedChanged(bool connected);
+    void errorChanged(ConnectionError error);
+    void errorStringChanged(QString errorString);
+    void containerItemChanged(QObject * containerItem);
+    void createChanged(bool create);
     void bindChanged(bool bind);
+    void pinsChanged(QQmlListProperty<HalPin> arg);
 }; // class HalRemoteComponent
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // HALREMOTECOMPONENT_H

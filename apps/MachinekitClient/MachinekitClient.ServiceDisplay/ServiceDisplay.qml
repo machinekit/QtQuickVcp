@@ -119,9 +119,9 @@ Rectangle {
                     }
                     Label {
                         Layout.fillWidth: true
-                        text: "host name = " + hostName +
-                              "\nhost address = " + hostAddress +
-                              "\nport = " + port
+                        text: qsTr("host name = %1\n" +
+                                   "host address = %2\n" +
+                                   "port = %3").arg(hostName).arg(hostAddress).arg(port)
                         visible: !serviceItem.folded
                     }
                     Label {

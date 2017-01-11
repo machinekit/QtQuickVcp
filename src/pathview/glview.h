@@ -443,6 +443,6 @@ private:
     void setupSphere(int detail);
     void setupStack();
 }; // class GLView
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GLVIEW_H

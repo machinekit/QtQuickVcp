@@ -20,11 +20,14 @@
 **
 ****************************************************************************/
 #include "applicationplugins.h"
+#include <QDir>
+#include <QDirIterator>
+#include <QSettings>
 
 namespace qtquickvcp {
 
-ApplicationPlugins::ApplicationPlugins(QQuickItem *parent) :
-    QQuickItem(parent)
+ApplicationPlugins::ApplicationPlugins(QObject *parent) :
+    QObject(parent)
 {
 
 }

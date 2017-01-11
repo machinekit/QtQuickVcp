@@ -103,6 +103,14 @@ namespace qtquickvcp {
     \sa files
 */
 
+/*! \qmlproperty string ApplicationConfigItem::translationsPath
+
+    This property holds the path where translation files are located.
+
+    This property is empty if the configuration is not \l{loaded} or
+    no translations ship with the configuration.
+*/
+
 ApplicationConfigItem::ApplicationConfigItem(QObject *parent) :
     QObject(parent),
     m_name(""),
@@ -112,7 +120,8 @@ ApplicationConfigItem::ApplicationConfigItem(QObject *parent) :
     m_loaded(false),
     m_loading(false),
     m_files(QStringList()),
-    m_mainFile("")
+    m_mainFile(""),
+    m_translationsPath("")
 {
 
 }

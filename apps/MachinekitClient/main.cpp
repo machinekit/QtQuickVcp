@@ -42,6 +42,5 @@ int main(int argc, char *argv[])
 #else
     engine.addImportPath(QStringLiteral("../../imports")); // for in place execution
 #endif
-
     return app.exec();
 }

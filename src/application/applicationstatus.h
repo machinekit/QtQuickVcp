@@ -22,16 +22,11 @@
 #ifndef APPLICATIONSTATUS_H
 #define APPLICATIONSTATUS_H
 
-#include <abstractserviceimplementation.h>
-#include <service.h>
-#include <QStringList>
-#include <QTimer>
-#include <nzmqt/nzmqt.hpp>
-#include <google/protobuf/text_format.h>
-#include <google/protobuf/message.h>
-#include <google/protobuf/descriptor.h>
+#include <QObject>
+#include <QJsonObject>
 #include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/status.pb.h>
+#include <application/statusbase.h>
 
 #include <QDateTime>
 #include <fstream>
@@ -46,14 +41,9 @@
 
 namespace qtquickvcp {
 
-class ApplicationStatus : public AbstractServiceImplementation
+class ApplicationStatus : public machinetalk::application::StatusBase
 {
     Q_OBJECT
-    Q_PROPERTY(QString statusUri READ statusUri WRITE setStatusUri NOTIFY statusUriChanged)
-    Q_PROPERTY(State connectionState READ connectionState NOTIFY connectionStateChanged)
-    Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
-    Q_PROPERTY(ConnectionError error READ error NOTIFY errorChanged)
-    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(QJsonObject config READ config NOTIFY configChanged)
     Q_PROPERTY(QJsonObject motion READ motion NOTIFY motionChanged)
     Q_PROPERTY(QJsonObject io READ io NOTIFY ioChanged)
@@ -62,7 +52,7 @@ class ApplicationStatus : public AbstractServiceImplementation
     Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
     Q_PROPERTY(StatusChannels channels READ channels WRITE setChannels NOTIFY channelsChanged)
-    Q_ENUMS(State ConnectionError OriginIndex TrajectoryMode MotionStatus
+    Q_ENUMS(OriginIndex TrajectoryMode MotionStatus
             AxisType KinematicsType CanonUnits TaskExecState TaskState
             TaskMode InterpreterState InterpreterExitCode PositionOffset
             PositionFeedback TimeUnits MotionType)
@@ -71,137 +61,118 @@ class ApplicationStatus : public AbstractServiceImplementation
 public:
     explicit ApplicationStatus(QObject *parent = 0);
 
-    enum SocketState {
-        Down = 1,
-        Trying = 2,
-        Up = 3
-    };
-
-    enum State {
-        Disconnected = 0,
-        Connecting = 1,
-        Connected = 2,
-        Timeout = 3,
-        Error = 4
-    };
-
-    enum ConnectionError {
-        NoError = 0,
-        ServiceError = 1,
-        SocketError = 2
-    };
-
     enum OriginIndex {
-        OriginG54 = pb::ORIGIN_G54,
-        OriginG55 = pb::ORIGIN_G55,
-        OriginG56 = pb::ORIGIN_G56,
-        OriginG57 = pb::ORIGIN_G57,
-        OriginG58 = pb::ORIGIN_G58,
-        OriginG59 = pb::ORIGIN_G59,
-        OriginG59_1 = pb::ORIGIN_G59_1,
-        OriginG59_2 = pb::ORIGIN_G59_2,
-        OriginG59_3 = pb::ORIGIN_G59_3
+        OriginG54 = machinetalk::ORIGIN_G54,
+        OriginG55 = machinetalk::ORIGIN_G55,
+        OriginG56 = machinetalk::ORIGIN_G56,
+        OriginG57 = machinetalk::ORIGIN_G57,
+        OriginG58 = machinetalk::ORIGIN_G58,
+        OriginG59 = machinetalk::ORIGIN_G59,
+        OriginG59_1 = machinetalk::ORIGIN_G59_1,
+        OriginG59_2 = machinetalk::ORIGIN_G59_2,
+        OriginG59_3 = machinetalk::ORIGIN_G59_3
     };
 
     enum TrajectoryMode {
-        FreeMode = pb::EMC_TRAJ_MODE_FREE,
-        CoordinatedMode = pb::EMC_TRAJ_MODE_COORD,
-        TeleopMode = pb::EMC_TRAJ_MODE_TELEOP
+        FreeMode = machinetalk::EMC_TRAJ_MODE_FREE,
+        CoordinatedMode = machinetalk::EMC_TRAJ_MODE_COORD,
+        TeleopMode = machinetalk::EMC_TRAJ_MODE_TELEOP
     };
 
     enum MotionStatus {
-        MotionUninitialized = pb::UNINITIALIZED_STATUS,
-        MotionDone = pb::RCS_DONE,
-        MotionExec = pb::RCS_EXEC,
-        MotionError = pb::RCS_ERROR,
-        MotionReceived = pb::RCS_RECEIVED
+        MotionUninitialized = machinetalk::UNINITIALIZED_STATUS,
+        MotionDone = machinetalk::RCS_DONE,
+        MotionExec = machinetalk::RCS_EXEC,
+        MotionError = machinetalk::RCS_ERROR,
+        MotionReceived = machinetalk::RCS_RECEIVED
     };
 
     enum MotionType {
-        NoneType = pb::_EMC_MOTION_TYPE_NONE,
-        TraverseType = pb::_EMC_MOTION_TYPE_TRAVERSE,
-        FeedType = pb::_EMC_MOTION_TYPE_FEED,
-        ArcType = pb::_EMC_MOTION_TYPE_ARC,
-        ToolchangeType = pb::_EMC_MOTION_TYPE_TOOLCHANGE,
-        ProbingType = pb::_EMC_MOTION_TYPE_PROBING,
-        IndexRotaryType = pb::_EMC_MOTION_TYPE_INDEXROTARY
+        NoneType = machinetalk::_EMC_MOTION_TYPE_NONE,
+        TraverseType = machinetalk::_EMC_MOTION_TYPE_TRAVERSE,
+        FeedType = machinetalk::_EMC_MOTION_TYPE_FEED,
+        ArcType = machinetalk::_EMC_MOTION_TYPE_ARC,
+        ToolchangeType = machinetalk::_EMC_MOTION_TYPE_TOOLCHANGE,
+        ProbingType = machinetalk::_EMC_MOTION_TYPE_PROBING,
+        IndexRotaryType = machinetalk::_EMC_MOTION_TYPE_INDEXROTARY
     };
 
     enum AxisType {
-        LinearAxis = pb::EMC_AXIS_LINEAR,
-        AngularAxis = pb::EMC_AXIS_ANGULAR
+        LinearAxis = machinetalk::EMC_AXIS_LINEAR,
+        AngularAxis = machinetalk::EMC_AXIS_ANGULAR
     };
 
     enum KinematicsType {
-        IdentityKinematics = pb::KINEMATICS_IDENTITY,
-        ForwardOnlyKinematics = pb::KINEMATICS_FORWARD_ONLY,
-        InverseOnlyKinematics = pb::KINEMATICS_INVERSE_ONLY,
-        BothKinematics = pb::KINEMATICS_BOTH
+        IdentityKinematics = machinetalk::KINEMATICS_IDENTITY,
+        ForwardOnlyKinematics = machinetalk::KINEMATICS_FORWARD_ONLY,
+        InverseOnlyKinematics = machinetalk::KINEMATICS_INVERSE_ONLY,
+        BothKinematics = machinetalk::KINEMATICS_BOTH
     };
 
     enum CanonUnits {
-        CanonUnitsInch = pb::CANON_UNITS_INCH,
-        CanonUnitsMm = pb::CANON_UNITS_MM,
-        CanonUnitsCm = pb::CANON_UNITS_CM
+        CanonUnitsInch = machinetalk::CANON_UNITS_INCH,
+        CanonUnitsMm = machinetalk::CANON_UNITS_MM,
+        CanonUnitsCm = machinetalk::CANON_UNITS_CM
     };
 
     enum TimeUnits {
-        TimeUnitsMinute = pb::TIME_UNITS_MINUTE,
-        TimeUnitsSecond = pb::TIME_UNITS_SECOND
+        TimeUnitsMinute = machinetalk::TIME_UNITS_MINUTE,
+        TimeUnitsSecond = machinetalk::TIME_UNITS_SECOND
     };
 
     enum TaskExecState {
-        TaskError = pb::EMC_TASK_EXEC_ERROR,
-        TaskDone = pb::EMC_TASK_EXEC_DONE,
-        TaskWaitingForMotion = pb::EMC_TASK_EXEC_WAITING_FOR_MOTION,
-        TaskWaitingForMotionQueue = pb::EMC_TASK_EXEC_WAITING_FOR_MOTION_QUEUE,
-        TaskWaitingForIo = pb::EMC_TASK_EXEC_WAITING_FOR_IO,
-        TaskWaitingForMotionAndIo = pb::EMC_TASK_EXEC_WAITING_FOR_MOTION_AND_IO,
-        TaskWaitingForDelay = pb::EMC_TASK_EXEC_WAITING_FOR_DELAY,
-        TaskWaitingForSystemCmd = pb::EMC_TASK_EXEC_WAITING_FOR_SYSTEM_CMD,
-        TaskWaitingForSpindleOriented = pb::EMC_TASK_EXEC_WAITING_FOR_SPINDLE_ORIENTED
+        TaskError = machinetalk::EMC_TASK_EXEC_ERROR,
+        TaskDone = machinetalk::EMC_TASK_EXEC_DONE,
+        TaskWaitingForMotion = machinetalk::EMC_TASK_EXEC_WAITING_FOR_MOTION,
+        TaskWaitingForMotionQueue = machinetalk::EMC_TASK_EXEC_WAITING_FOR_MOTION_QUEUE,
+        TaskWaitingForIo = machinetalk::EMC_TASK_EXEC_WAITING_FOR_IO,
+        TaskWaitingForMotionAndIo = machinetalk::EMC_TASK_EXEC_WAITING_FOR_MOTION_AND_IO,
+        TaskWaitingForDelay = machinetalk::EMC_TASK_EXEC_WAITING_FOR_DELAY,
+        TaskWaitingForSystemCmd = machinetalk::EMC_TASK_EXEC_WAITING_FOR_SYSTEM_CMD,
+        TaskWaitingForSpindleOriented = machinetalk::EMC_TASK_EXEC_WAITING_FOR_SPINDLE_ORIENTED
     };
 
     enum TaskMode {
-        TaskModeManual = pb::EMC_TASK_MODE_MANUAL,
-        TaskModeAuto = pb::EMC_TASK_MODE_AUTO,
-        TaskModeMdi = pb::EMC_TASK_MODE_MDI
+        TaskModeManual = machinetalk::EMC_TASK_MODE_MANUAL,
+        TaskModeAuto = machinetalk::EMC_TASK_MODE_AUTO,
+        TaskModeMdi = machinetalk::EMC_TASK_MODE_MDI
     };
 
     enum TaskState {
-        TaskStateEstop = pb::EMC_TASK_STATE_ESTOP,
-        TaskStateEstopReset = pb::EMC_TASK_STATE_ESTOP_RESET,
-        TaskStateOff = pb::EMC_TASK_STATE_OFF,
-        TaskStateOn = pb::EMC_TASK_STATE_ON
+        TaskStateEstop = machinetalk::EMC_TASK_STATE_ESTOP,
+        TaskStateEstopReset = machinetalk::EMC_TASK_STATE_ESTOP_RESET,
+        TaskStateOff = machinetalk::EMC_TASK_STATE_OFF,
+        TaskStateOn = machinetalk::EMC_TASK_STATE_ON
     };
 
     enum InterpreterState {
-        InterpreterIdle = pb::EMC_TASK_INTERP_IDLE,
-        InterpreterReading = pb::EMC_TASK_INTERP_READING,
-        InterpreterPaused = pb::EMC_TASK_INTERP_PAUSED,
-        InterpreterWaiting = pb::EMC_TASK_INTERP_WAITING
+        InterpreterIdle = machinetalk::EMC_TASK_INTERP_IDLE,
+        InterpreterReading = machinetalk::EMC_TASK_INTERP_READING,
+        InterpreterPaused = machinetalk::EMC_TASK_INTERP_PAUSED,
+        InterpreterWaiting = machinetalk::EMC_TASK_INTERP_WAITING
     };
 
     enum InterpreterExitCode {
-        InterpreterExitOk = pb::EMC_INTERP_EXIT_OK,
-        InterpreterExitExit = pb::EMC_INTERP_EXIT_EXIT,
-        InterpreterExitExecuteFinish = pb::EMC_INTERP_EXIT_EXECUTE_FINISH,
-        InterpreterExitEndfile = pb::EMC_INTERP_EXIT_ENDFILE,
-        InterpreterExitFileNotOpen = pb::EMC_INTERP_EXIT_FILE_NOT_OPEN,
-        InterpreterExitError = pb::EMC_INTERP_EXIT_ERROR
+        InterpreterExitOk = machinetalk::EMC_INTERP_EXIT_OK,
+        InterpreterExitExit = machinetalk::EMC_INTERP_EXIT_EXIT,
+        InterpreterExitExecuteFinish = machinetalk::EMC_INTERP_EXIT_EXECUTE_FINISH,
+        InterpreterExitEndfile = machinetalk::EMC_INTERP_EXIT_ENDFILE,
+        InterpreterExitFileNotOpen = machinetalk::EMC_INTERP_EXIT_FILE_NOT_OPEN,
+        InterpreterExitError = machinetalk::EMC_INTERP_EXIT_ERROR
     };
 
     enum PositionOffset {
-        RelativePositionOffset = pb::EMC_CONFIG_RELATIVE_OFFSET,
-        MachinePositionOffset = pb::EMC_CONFIG_MACHINE_OFFSET
+        RelativePositionOffset = machinetalk::EMC_CONFIG_RELATIVE_OFFSET,
+        MachinePositionOffset = machinetalk::EMC_CONFIG_MACHINE_OFFSET
     };
 
     enum PositionFeedback {
-        ActualPositionFeedback = pb::EMC_CONFIG_ACTUAL_FEEDBACK,
-        CommandedPositionFeedback = pb::EMC_CONFIG_COMMANDED_FEEDBACK
+        ActualPositionFeedback = machinetalk::EMC_CONFIG_ACTUAL_FEEDBACK,
+        CommandedPositionFeedback = machinetalk::EMC_CONFIG_COMMANDED_FEEDBACK
     };
 
     enum StatusChannel {
+        NoChannel = 0x0,
         MotionChannel = 0x1,
         ConfigChannel = 0x2,
         IoChannel     = 0x4,
@@ -209,26 +180,6 @@ public:
         InterpChannel = 0x10
     };
     Q_DECLARE_FLAGS(StatusChannels, StatusChannel)
-
-    QString statusUri() const
-    {
-        return m_statusUri;
-    }
-
-    State connectionState() const
-    {
-        return m_connectionState;
-    }
-
-    ConnectionError error() const
-    {
-        return m_error;
-    }
-
-    QString errorString() const
-    {
-        return m_errorString;
-    }
 
     QJsonObject config() const
     {
@@ -270,22 +221,7 @@ public:
         return m_synced;
     }
 
-    bool isConnected() const
-    {
-        return m_connected;
-    }
-
 public slots:
-
-    void setStatusUri(QString arg)
-    {
-        if (m_statusUri == arg)
-            return;
-
-        m_statusUri = arg;
-        emit statusUriChanged(arg);
-    }
-
     void setChannels(StatusChannels arg)
     {
         if (m_channels == arg)
@@ -296,12 +232,6 @@ public slots:
     }
 
 private:
-    QString         m_statusUri;
-    SocketState     m_statusSocketState;
-    bool            m_connected;
-    State           m_connectionState;
-    ConnectionError m_error;
-    QString         m_errorString;
     QJsonObject     m_config;
     QJsonObject     m_motion;
     QJsonObject     m_motion_buf;
@@ -312,65 +242,40 @@ private:
     bool            m_synced;
     StatusChannels  m_syncedChannels;
     StatusChannels  m_channels;
-
-    nzmqt::PollingZMQContext *m_context;
-    nzmqt::ZMQSocket *m_statusSocket;
-    QStringList     m_subscriptions;
-    QTimer          *m_statusHeartbeatTimer;
-    quint64         m_updateMotionTimeStamp;
-    std::ifstream   m_loadavgFile;
-    // more efficient to reuse a protobuf Message
-    pb::Container   m_rx;
-
+    QHash<QByteArray, StatusChannel> m_channelMap;
     QAtomicInt      m_atomicInt;
 
-    void start();
-    void stop();
-    void cleanup();
-    void startStatusHeartbeat(int interval);
-    void stopStatusHeartbeat();
-    void refreshStatusHeartbeat();
-    void updateState(State state);
-    void updateState(State state, ConnectionError error, const QString &errorString);
-    void updateError(ConnectionError error, const QString &errorString);
+    void emcstatUpdateReceived(StatusChannel channel, const machinetalk::Container &rx);
     void updateSync(StatusChannel channel);
-    void clearSync();
-    void updateMotion(const pb::EmcStatusMotion &motion);
-    void updateConfig(const pb::EmcStatusConfig &config);
-    void updateIo(const pb::EmcStatusIo &io);
-    void updateTask(const pb::EmcStatusTask &task);
-    void updateInterp(const pb::EmcStatusInterp &interp);
+    void updateMotionObject(const machinetalk::EmcStatusMotion &motion);
+    void updateConfigObject(const machinetalk::EmcStatusConfig &config);
+    void updateIoObject(const machinetalk::EmcStatusIo &io);
+    void updateTaskObject(const machinetalk::EmcStatusTask &task);
+    void updateInterpObject(const machinetalk::EmcStatusInterp &interp);
     void initializeObject(StatusChannel channel);
     QFuture<void> future;
-    void run_thread(const pb::EmcStatusMotion &motion);
+    void run_thread(const machinetalk::EmcStatusMotion &motion);
+
 
 private slots:
-    void statusMessageReceived(const QList<QByteArray> &messageList);
-    void pollError(int errorNum, const QString &errorMsg);
-    void statusHeartbeatTimerTick();
-
-    bool connectSockets();
-    void disconnectSockets();
-    void subscribe();
-    void unsubscribe();
+    void emcstatFullUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void emcstatIncrementalUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void syncStatus();
+    void unsyncStatus();
+    void updateTopics();
 
     void updateRunning(const QJsonObject &object);
 
 signals:
-    void statusUriChanged(QString arg);
-    void connectionStateChanged(State arg);
-    void errorChanged(ConnectionError arg);
-    void errorStringChanged(QString arg);
-    void configChanged(QJsonObject arg);
-    void motionChanged(QJsonObject arg);
-    void ioChanged(QJsonObject arg);
-    void taskChanged(QJsonObject arg);
-    void interpChanged(QJsonObject arg);
+    void configChanged(const QJsonObject &arg);
+    void motionChanged(const QJsonObject &arg);
+    void ioChanged(const QJsonObject &arg);
+    void taskChanged(const QJsonObject &arg);
+    void interpChanged(const QJsonObject &arg);
     void channelsChanged(StatusChannels arg);
     void runningChanged(bool arg);
     void syncedChanged(bool arg);
-    void connectedChanged(bool arg);
 }; // class ApplicationStatus
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONSTATUS_H

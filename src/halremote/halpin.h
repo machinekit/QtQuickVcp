@@ -45,16 +45,16 @@ public:
     explicit HalPin(QObject *parent = 0);
 
     enum HalPinType {
-        Bit = pb::HAL_BIT,
-        Float = pb::HAL_FLOAT,
-        S32 = pb::HAL_S32,
-        U32 = pb::HAL_U32
+        Bit = machinetalk::HAL_BIT,
+        Float = machinetalk::HAL_FLOAT,
+        S32 = machinetalk::HAL_S32,
+        U32 = machinetalk::HAL_U32
     };
 
     enum HalPinDirection {
-      In = pb::HAL_IN,
-      Out = pb::HAL_OUT,
-      IO = pb::HAL_IO
+      In = machinetalk::HAL_IN,
+      Out = machinetalk::HAL_OUT,
+      IO = machinetalk::HAL_IO
     };
 
     QString name() const
@@ -122,6 +122,6 @@ private:
     bool            m_enabled;
     bool            m_synced;
 }; // class HalPin
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // HALPIN_H

@@ -9,6 +9,7 @@ include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)
 include(../../3rdparty/qftp/qftp.pri)
 
 include(../common/common.pri)
+include(../machinetalk/machinetalk.pri)
 
 # Input
 SOURCES += \
@@ -27,11 +28,11 @@ SOURCES += \
     applicationpluginitem.cpp \
     applicationplugins.cpp \
     applicationstatus.cpp \
-    localsettings.cpp
+    localsettings.cpp \
+    applicationtranslator.cpp
 
 HEADERS += \
     plugin.h \
-    debughelper.h \
     fileio.h \
     revisionsingleton.h \
     revision.h \
@@ -48,7 +49,8 @@ HEADERS += \
     applicationpluginitem.h \
     applicationplugins.h \
     applicationstatus.h \
-    localsettings.h
+    localsettings.h \
+    applicationtranslator.h
 
 RESOURCES += \
     application.qrc

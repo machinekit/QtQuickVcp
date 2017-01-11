@@ -20,12 +20,12 @@
 **
 ****************************************************************************/
 #include "mjpegstreamerclient.h"
-
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
+#include <QPainter>
+#include <QNetworkAccessManager>
+#include <QTimer>
+#include <QNetworkReply>
+#include <QElapsedTimer>
+#include <google/protobuf/text_format.h>
 
 using namespace nzmqt;
 

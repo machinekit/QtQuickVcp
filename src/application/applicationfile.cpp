@@ -21,11 +21,16 @@
 ****************************************************************************/
 
 #include "applicationfile.h"
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QCoreApplication>
+#include <QFileInfo>
+#include <QDir>
 
 namespace qtquickvcp {
 
 ApplicationFile::ApplicationFile(QObject *parent) :
-    AbstractServiceImplementation(parent),
+    QObject(parent),
     m_editMode(false),
     m_uri(""),
     m_localFilePath(""),
@@ -39,6 +44,7 @@ ApplicationFile::ApplicationFile(QObject *parent) :
     m_progress(0.0),
     m_networkReady(false),
     m_model(nullptr),
+    m_ready(false),
     m_networkManager(nullptr),
     m_file(nullptr),
     m_ftp(nullptr)
@@ -312,7 +318,7 @@ void ApplicationFile::updateError(ApplicationFile::TransferError error, const QS
     }
 }
 
-QString ApplicationFile::generateTempPath()
+QString ApplicationFile::generateTempPath() const
 {
     return QUrl::fromLocalFile(QString("%1/machinekit-%2").arg(QDir::tempPath())
             .arg(QCoreApplication::applicationPid())).toString();
@@ -325,7 +331,7 @@ void ApplicationFile::cleanupTempPath()
     dir.removeRecursively();
 }
 
-QString ApplicationFile::applicationFilePath(const QString &fileName, const QString &serverDirectory)
+QString ApplicationFile::applicationFilePath(const QString &fileName, const QString &serverDirectory) const
 {
     return QDir(QUrl(m_localPath).toLocalFile() + "/" + serverDirectory).filePath(fileName);
 }

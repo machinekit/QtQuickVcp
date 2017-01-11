@@ -22,7 +22,6 @@
 #include "plugin.h"
 #include "halpin.h"
 #include "halsignal.h"
-#include "halgroup.h"
 #include "halremotecomponent.h"
 
 void MachinekitHalRemotePlugin::registerTypes(const char *uri)
@@ -35,7 +34,6 @@ void MachinekitHalRemotePlugin::registerTypes(const char *uri)
     Q_ASSERT(uri == QLatin1String("Machinekit.HalRemote"));
     qmlRegisterType<qtquickvcp::HalRemoteComponent>(uri, 1, 0, "HalRemoteComponent");
     qmlRegisterType<qtquickvcp::HalPin>(uri, 1, 0, "HalPin");
-    qmlRegisterType<qtquickvcp::HalGroup>(uri, 1, 0, "HalGroup");
     qmlRegisterType<qtquickvcp::HalSignal>(uri, 1, 0, "HalSignal");
 }
 
@@ -43,10 +41,6 @@ void MachinekitHalRemotePlugin::initializeEngine(QQmlEngine *engine, const char 
 {
     Q_UNUSED(uri);
     Q_UNUSED(engine);
-
-    const char *private_uri = "Machinekit.HalRemote.Private";
-    qmlRegisterUncreatableType<AbstractServiceImplementation>(private_uri, 1, 0, "AnstractServiceImplementation",
-                                                              QLatin1String("Do not create objects of type AbstractServiceImplementation"));
 }
 
 

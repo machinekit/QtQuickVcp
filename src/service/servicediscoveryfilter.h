@@ -71,6 +71,6 @@ signals:
     void nameChanged(QString arg);
     void txtRecordsChanged(QStringList arg);
 }; // class ServiceDiscoveryFilter
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // SERVICEDISCOVERYFILTER_H

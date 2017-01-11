@@ -19,7 +19,8 @@
 ** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
 **
 ****************************************************************************/
-#pragma once
+#ifndef DEBUGHELPER_H
+#define DEBUGHELPER_H
 
 #ifdef QT_DEBUG
 #include <QDebug>
@@ -32,3 +33,5 @@ const int debugLevel = 3;
 #define WARNING_TAG(l, tag, x) if (debugLevel >= l) qWarning() << "[" << tag << "]" << x;
 
 #endif
+
+#endif // DEBUGHELPER_H

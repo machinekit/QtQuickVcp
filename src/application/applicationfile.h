@@ -22,19 +22,16 @@
 #ifndef APPLICATIONFILE_H
 #define APPLICATIONFILE_H
 
-#include <abstractserviceimplementation.h>
-#include <QCoreApplication>
+#include <QObject>
 #include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
+#include <QFile>
 #include <QFileInfo>
-#include <QDir>
 #include "qftp.h"
 #include "applicationfilemodel.h"
 
 namespace qtquickvcp {
 
-class ApplicationFile : public AbstractServiceImplementation
+class ApplicationFile : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
@@ -51,6 +48,7 @@ class ApplicationFile : public AbstractServiceImplementation
     Q_PROPERTY(bool networkReady READ networkReady NOTIFY networkReadyChanged)
     Q_PROPERTY(bool editMode READ editMode WRITE setEditMode NOTIFY editModeChanged)
     Q_PROPERTY(ApplicationFileModel *model READ model NOTIFY modelChanged)
+    Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_ENUMS(TransferState TransferError)
 
 public:
@@ -143,6 +141,11 @@ public:
         return m_serverDirectory;
     }
 
+    bool ready() const
+    {
+        return m_ready;
+    }
+
 public slots:
     void setEditMode(const bool &a) {
         if (a != m_editMode) {
@@ -151,7 +154,7 @@ public slots:
         }
     }
 
-    void setUri(QString arg)
+    void setUri(const QString &arg)
     {
         if (m_uri == arg)
             return;
@@ -160,7 +163,7 @@ public slots:
         emit uriChanged(arg);
     }
 
-    void setFileName(QString arg)
+    void setFileName(const QString &arg)
     {
         if (m_fileName == arg)
             return;
@@ -169,7 +172,7 @@ public slots:
         emit fileNameChanged(arg);
     }
 
-    void setLocalFilePath(QString arg)
+    void setLocalFilePath(const QString &arg)
     {
         if (m_localFilePath == arg)
             return;
@@ -185,7 +188,7 @@ public slots:
         }
     }
 
-    void setRemoteFilePath(QString arg)
+    void setRemoteFilePath(const QString &arg)
     {
         if (m_remoteFilePath == arg)
             return;
@@ -194,7 +197,7 @@ public slots:
         emit remoteFilePathChanged(arg);
     }
 
-    void setLocalPath(QString arg)
+    void setLocalPath(const QString &arg)
     {
         if (m_localPath == arg)
             return;
@@ -203,7 +206,7 @@ public slots:
         emit localPathChanged(arg);
     }
 
-    void setRemotePath(QString arg)
+    void setRemotePath(const QString &arg)
     {
         if (m_remotePath == arg)
             return;
@@ -212,13 +215,22 @@ public slots:
         emit remotePathChanged(arg);
     }
 
-    void setServerDirectory(QString serverDirectory)
+    void setServerDirectory(const QString &serverDirectory)
     {
         if (m_serverDirectory == serverDirectory)
             return;
 
         m_serverDirectory = serverDirectory;
         emit serverDirectoryChanged(serverDirectory);
+    }
+
+    void setReady(bool ready)
+    {
+        if (m_ready == ready)
+            return;
+
+        m_ready = ready;
+        emit readyChanged(ready);
     }
 
     void startUpload();
@@ -246,6 +258,7 @@ private:
     double          m_progress;
     bool            m_networkReady;
     ApplicationFileModel * m_model;
+    bool m_ready;
 
     QNetworkAccessManager   *m_networkManager;
     QFile                   *m_file;
@@ -255,9 +268,9 @@ private:
     void stop() {}
     void updateState(TransferState state);
     void updateError(TransferError error, const QString &errorString);
-    QString generateTempPath();
+    QString generateTempPath() const;
     void cleanupTempPath();
-    QString applicationFilePath(const QString &remoteFilePath, const QString &serverDirectory);
+    QString applicationFilePath(const QString &fileName, const QString &serverDirectory) const;
     void initializeFtp();
     void cleanupFtp();
     void cleanupFile();
@@ -271,15 +284,15 @@ private slots:
 
 signals:
     void editModeChanged();
-    void uriChanged(QString arg);
+    void fileNameChanged(const QString &arg);
+    void uriChanged(const QString &arg);
     void errorChanged(TransferError arg);
-    void errorStringChanged(QString arg);
-    void fileNameChanged(QString arg);
-    void localFilePathChanged(QString arg);
-    void remoteFilePathChanged(QString arg);
-    void localPathChanged(QString arg);
-    void remotePathChanged(QString arg);
-    void serverDirectoryChanged(QString serverDirectory);
+    void errorStringChanged(const QString &arg);
+    void localFilePathChanged(const QString &arg);
+    void remoteFilePathChanged(const QString &arg);
+    void localPathChanged(const QString &arg);
+    void remotePathChanged(const QString &arg);
+    void serverDirectoryChanged(const QString &serverDirectory);
     void progressChanged(double arg);
     void transferStateChanged(TransferState arg);
     void uploadFinished();
@@ -290,7 +303,8 @@ signals:
     void createDirectoryFinished();
     void networkReadyChanged(bool networkReady);
     void modelChanged(ApplicationFileModel * model);
+    void readyChanged(bool ready);
 }; // class ApplicationFile
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // APPLICATIONFILE_H

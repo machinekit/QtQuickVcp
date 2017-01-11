@@ -116,6 +116,6 @@ private:
     bool m_cone;
     bool m_selected;
 }; // class GLCylinderItem
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // GLCYLINDERITEM_H

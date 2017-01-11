@@ -32,8 +32,8 @@ public:
     }
 
 signals:
-    void nameChanged(QString name);
+    void nameChanged(const QString &name);
 }; // class RevisionSingleton
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
 
 #endif // REVISIONSINGLETON_H

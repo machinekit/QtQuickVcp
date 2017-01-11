@@ -20,15 +20,11 @@
 **
 ****************************************************************************/
 #include "applicationconfig.h"
-#include "service.h"
+#include <google/protobuf/text_format.h>
+#include <machinetalk/protobuf/types.pb.h>
+#include "machinetalkservice.h"
 
-#if defined(Q_OS_IOS)
-namespace gpb = google_public::protobuf;
-#else
-namespace gpb = google::protobuf;
-#endif
-
-using namespace nzmqt;
+using namespace machinetalk;
 
 namespace qtquickvcp {
 
@@ -168,432 +164,172 @@ namespace qtquickvcp {
 
     Unselects the configuration with the given name and updates \l{selectedConfig}.
 */
-ApplicationConfig::ApplicationConfig(QQuickItem *parent) :
-    QQuickItem(parent),
-     m_componentCompleted(false),
-     m_configUri(""),
-     m_ready(false),
-     m_connected(false),
-     m_connectionState(Disconnected),
-     m_error(NoError),
-     m_errorString(""),
+ApplicationConfig::ApplicationConfig(QObject *parent) :
+    application::ConfigBase(parent),
+     m_synced(false),
      m_selectedConfig(new ApplicationConfigItem(this)),
-     m_filter(new ApplicationConfigFilter(this)),
-     m_context(nullptr),
-     m_configSocket(nullptr)
+     m_filter(new ApplicationConfigFilter(this))
 {
 }
 
 ApplicationConfig::~ApplicationConfig()
 {
-    disconnectSocket();
     cleanupFiles();
-}
-
-/** componentComplete is executed when the QML component is fully loaded */
-void ApplicationConfig::componentComplete()
-{
-    m_componentCompleted = true;
-
-    if (m_ready == true)    // the component was set to ready before it was completed
-    {
-        start();
-    }
-    QQuickItem::componentComplete();
-}
-
-QString ApplicationConfig::configUri() const
-{
-    return m_configUri;
-}
-
-bool ApplicationConfig::isReady() const
-{
-    return m_ready;
-}
-
-bool ApplicationConfig::isConnected() const
-{
-    return m_connected;
-}
-
-ApplicationConfigItem *ApplicationConfig::selectedConfig() const
-{
-    return m_selectedConfig;
-}
-
-ApplicationConfigFilter *ApplicationConfig::filter() const
-{
-    return m_filter;
-}
-
-ApplicationConfig::State ApplicationConfig::connectionState() const
-{
-    return m_connectionState;
-}
-
-ApplicationConfig::ConnectionError ApplicationConfig::error() const
-{
-    return m_error;
-}
-
-QString ApplicationConfig::errorString() const
-{
-    return m_errorString;
-}
-
-QQmlListProperty<ApplicationConfigItem> ApplicationConfig::configs()
-{
-    return QQmlListProperty<ApplicationConfigItem>(this, m_configs);
-}
-
-int ApplicationConfig::appConfigCount() const
-{
-    return m_configs.count();
-}
-
-ApplicationConfigItem *ApplicationConfig::appConfig(int index) const
-{
-    return m_configs.at(index);
-}
-
-/** If the ready property has a rising edge we try to connect
- *  if it is has a falling edge we disconnect and cleanup
- */
-void ApplicationConfig::setReady(bool arg)
-{
-    if (m_ready != arg) {
-        m_ready = arg;
-        emit readyChanged(arg);
-
-        if (m_componentCompleted == false)
-        {
-            return;
-        }
-
-        if (m_ready)
-        {
-            start();
-        }
-        else
-        {
-            stop();
-        }
-    }
-}
-
-void ApplicationConfig::setSelectedConfig(ApplicationConfigItem *arg)
-{
-    if (m_selectedConfig != arg) {
-        m_selectedConfig = arg;
-        emit selectedConfigChanged(arg);
-    }
-}
-
-void ApplicationConfig::setFilter(ApplicationConfigFilter *arg)
-{
-    if (m_filter == arg)
-        return;
-
-    m_filter = arg;
-    emit filterChanged(arg);
-}
-
-void ApplicationConfig::start()
-{
-#ifdef QT_DEBUG
-    qDebug() << "app config uri:" << m_configUri;
-    qDebug() << "filter:" << m_filter->type();
-#endif
-
-    m_configs.clear();
-    emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
-
-    if (connectSocket())
-    {
-        request(pb::MT_LIST_APPLICATIONS);
-    }
-}
-
-void ApplicationConfig::stop()
-{
-    // cleanup here
-    disconnectSocket();
-
-    updateState(Disconnected);
-    updateError(NoError, "");   // clear the error here
-}
-
-void ApplicationConfig::updateState(ApplicationConfig::State state)
-{
-    if (state != m_connectionState)
-    {
-        m_connectionState = state;
-        emit connectionStateChanged(m_connectionState);
-
-        if (m_connectionState == Connected)
-        {
-            if (m_connected != true) {
-                m_connected = true;
-                emit connectedChanged(true);
-            }
-        }
-        else if (m_connected != false)
-        {
-            m_connected = false;
-            emit connectedChanged(false);
-        }
-    }
-}
-
-void ApplicationConfig::updateError(ApplicationConfig::ConnectionError error, QString errorString)
-{
-    if (m_errorString != errorString)
-    {
-        m_errorString = errorString;
-        emit errorStringChanged(m_errorString);
-    }
-
-    if (m_error != error)
-    {
-        m_error = error;
-        emit errorChanged(m_error);
-    }
-}
-
-void ApplicationConfig::pollError(int errorNum, const QString &errorMsg)
-{
-    QString errorString;
-    errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
-    updateError(SocketError, errorString);
-    updateState(Error);
-}
-
-bool ApplicationConfig::connectSocket()
-{
-    m_context = new PollingZMQContext(this, 1);
-    connect(m_context, &PollingZMQContext::pollError,
-            this, &ApplicationConfig::pollError);
-    m_context->start();
-
-    m_configSocket = m_context->createSocket(ZMQSocket::TYP_DEALER, this);
-    m_configSocket->setLinger(0);
-    m_configSocket->setIdentity(QString("%1-%2").arg("appconfig").arg(QCoreApplication::applicationPid()).toLocal8Bit());
-
-    try {
-        m_configSocket->connectTo(m_configUri);
-    }
-    catch (const zmq::error_t &e) {
-        QString errorString;
-        errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateError(SocketError, errorString);
-        updateState(Error);
-        return false;
-    }
-
-    connect(m_configSocket, &ZMQSocket::messageReceived,
-            this, &ApplicationConfig::configMessageReceived);
-
-    return true;
-}
-
-void ApplicationConfig::disconnectSocket()
-{
-    if (m_configSocket != nullptr)
-    {
-        m_configSocket->close();
-        m_configSocket->deleteLater();
-        m_configSocket = nullptr;
-    }
-
-    if (m_context != nullptr)
-    {
-        m_context->stop();
-        m_context->deleteLater();
-        m_context = nullptr;
-    }
-}
-
-void ApplicationConfig::configMessageReceived(const QList<QByteArray> &messageList)
-{
-    m_rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
-
-#ifdef QT_DEBUG
-    std::string s;
-    gpb::TextFormat::PrintToString(m_rx, &s);
-    qDebug() << "server message" << QString::fromStdString(s);
-#endif
-
-    if (m_rx.type() == pb::MT_DESCRIBE_APPLICATION) // receive all provided applications
-    {
-        for (int i = 0; i < m_rx.app_size(); ++i)
-        {
-            pb::Application app;
-
-            app = m_rx.app(i);
-
-            ApplicationConfigItem::ApplicationType type;
-            QString name;
-            QString description;
-
-            type = (ApplicationConfigItem::ApplicationType)app.type();
-            name = QString::fromStdString(app.name());
-            description = QString::fromStdString(app.description());
-
-            if ((m_filter->type() == type)
-                 && (m_filter->name().isEmpty() || (name == m_filter->name()))
-                 && (m_filter->description().isEmpty() || description.contains(m_filter->description())))
-            {
-                ApplicationConfigItem *appConfigItem;
-
-                appConfigItem = new ApplicationConfigItem(this);
-                appConfigItem->setName(name);
-                appConfigItem->setDescription(description);
-                appConfigItem->setType(type);
-                m_configs.append(appConfigItem);
-                emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
-            }
-        }
-
-        updateState(Connected); // now we are connected
-    }
-    else if (m_rx.type() == pb::MT_APPLICATION_DETAIL) // receive the details of an application
-    {
-        for (int i = 0; i < m_rx.app_size(); ++i)
-        {
-            pb::Application app;
-
-            app = m_rx.app(i);
-
-            ApplicationConfigItem::ApplicationType type;
-
-            type = (ApplicationConfigItem::ApplicationType)app.type();
-
-            if (m_filter->type() == type)     // detail comes when application was already filtered, so we only check the type to make sure it is compatible
-            {
-                QString baseFilePath;
-                QStringList fileList;
-                QDir dir;
-
-                if (m_selectedConfig == nullptr)
-                {
-                    return;
-                }
-
-                m_selectedConfig->setName(QString::fromStdString(app.name()));
-                m_selectedConfig->setDescription(QString::fromStdString(app.description()));
-                m_selectedConfig->setType(type);
-
-                baseFilePath = Service::applicationTempPath(m_selectedConfig->name());
-                if (!dir.mkpath(baseFilePath))
-                {
-                    qDebug() << "not able to create directory";
-                }
-
-#ifdef QT_DEBUG
-                qDebug() << "base file path:" << baseFilePath;
-#endif
-
-                for (int j = 0; j < app.file_size(); ++j)
-                {
-                    pb::File file;
-                    QString filePath;
-                    QByteArray data;
-
-                    file = app.file(j);
-                    filePath = baseFilePath + QString::fromStdString(file.name());
-
-                    QFileInfo fileInfo(filePath);
-                    if (!dir.mkpath(fileInfo.absolutePath()))
-                    {
-                        qDebug() << "not able to create directory";
-                    }
-
-                    QFile localFile(filePath);
-                    if (!localFile.open(QIODevice::WriteOnly))
-                    {
-                        qDebug() << "not able to create file" << filePath;
-                        continue;
-                    }
-
-                    data = QByteArray(file.blob().data(), file.blob().size());
-
-                    if (file.encoding() == pb::ZLIB)
-                    {
-                        quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
-                        qDebug() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
-                        data = qUncompress(data);
-                    }
-                    else if (file.encoding() != pb::CLEARTEXT)
-                    {
-                        qDebug() << "unknown encoding";
-                        localFile.close();
-                        continue;
-                    }
-
-                    localFile.write(data);
-                    localFile.close();
-
-                    fileList.append(filePath);
-
-#ifdef QT_DEBUG
-                    qDebug() << "created file: " << filePath;
-#endif
-                }
-
-                ApplicationDescription applicationDescription;
-
-                applicationDescription.setSourceDir(QUrl("file:///" + baseFilePath));
-                // TODO check validity
-
-                m_selectedConfig->setFiles(fileList);
-                m_selectedConfig->setMainFile(applicationDescription.mainFile());
-                m_selectedConfig->setLoaded(true);
-                m_selectedConfig->setLoading(false);
-            }
-        }
-    }
-}
-
-void ApplicationConfig::sendConfigMessage(const QByteArray &data)
-{
-    if (m_configSocket == nullptr) {  // disallow sending messages when not connected
-        return;
-    }
-
-    try {
-        m_configSocket->sendMessage(data);
-    }
-    catch (const zmq::error_t &e) {
-        QString errorString;
-        errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        updateError(SocketError, errorString);
-        updateState(Error);
-    }
 }
 
 void ApplicationConfig::cleanupFiles()
 {
     if (!m_selectedConfig->name().isEmpty())
     {
-        QString path = Service::applicationTempPath(m_selectedConfig->name());
+        QString path = MachinetalkService::applicationTempPath(m_selectedConfig->name());
         QDir dir(path);
         dir.removeRecursively();
     }
 }
 
-void ApplicationConfig::request(pb::ContainerType type)
+void ApplicationConfig::describeApplicationReceived(const Container &rx)
 {
-    m_tx.set_type(type);
+    for (int i = 0; i < rx.app_size(); ++i)
+    {
+        Application app;
+
+        app = rx.app(i);
+
+        ApplicationConfigItem::ApplicationType type;
+        QString name;
+        QString description;
+
+        type = static_cast<ApplicationConfigItem::ApplicationType>(app.type());
+        name = QString::fromStdString(app.name());
+        description = QString::fromStdString(app.description());
+
+        if ((m_filter->type() == type)
+             && (m_filter->name().isEmpty() || (name == m_filter->name()))
+             && (m_filter->description().isEmpty() || description.contains(m_filter->description())))
+        {
+            ApplicationConfigItem *appConfigItem;
+
+            appConfigItem = new ApplicationConfigItem(this);
+            appConfigItem->setName(name);
+            appConfigItem->setDescription(description);
+            appConfigItem->setType(type);
+            m_configs.append(appConfigItem);
+            emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
+        }
+    }
+}
+
+void ApplicationConfig::applicationDetailReceived(const Container &rx)
+{
+    for (int i = 0; i < rx.app_size(); ++i)
+    {
+        Application app;
+
+        app = rx.app(i);
+
+        ApplicationConfigItem::ApplicationType type;
+
+        type = (ApplicationConfigItem::ApplicationType)app.type();
+
+        if (m_filter->type() == type)     // detail comes when application was already filtered, so we only check the type to make sure it is compatible
+        {
+            QString baseFilePath;
+            QStringList fileList;
+            QDir dir;
+
+            if (m_selectedConfig == nullptr)
+            {
+                return;
+            }
+
+            m_selectedConfig->setName(QString::fromStdString(app.name()));
+            m_selectedConfig->setDescription(QString::fromStdString(app.description()));
+            m_selectedConfig->setType(type);
+
+            baseFilePath = MachinetalkService::applicationTempPath(m_selectedConfig->name());
+            if (!dir.mkpath(baseFilePath))
+            {
+                qWarning() << "unable to create directory " << baseFilePath;
+            }
 
 #ifdef QT_DEBUG
-    std::string s;
-    gpb::TextFormat::PrintToString(m_tx, &s);
-    qDebug() << "request:" << QString::fromStdString(s);
+            qDebug() << "base file path:" << baseFilePath;
 #endif
 
-    sendConfigMessage(QByteArray(m_tx.SerializeAsString().c_str(), m_tx.ByteSize()));
-    m_tx.Clear();
+            for (int j = 0; j < app.file_size(); ++j)
+            {
+                File file;
+                QString filePath;
+                QByteArray data;
+
+                file = app.file(j);
+                filePath = baseFilePath + QString::fromStdString(file.name());
+
+                QFileInfo fileInfo(filePath);
+                if (!dir.mkpath(fileInfo.absolutePath()))
+                {
+                    qDebug() << "not able to create directory";
+                }
+
+                QFile localFile(filePath);
+                if (!localFile.open(QIODevice::WriteOnly))
+                {
+                    qDebug() << "not able to create file" << filePath;
+                    continue;
+                }
+
+                data = QByteArray(file.blob().data(), file.blob().size());
+
+                if (file.encoding() == ZLIB)
+                {
+                    quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
+                    qDebug() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
+                    data = qUncompress(data);
+                }
+                else if (file.encoding() != CLEARTEXT)
+                {
+                    qDebug() << "unknown encoding";
+                    localFile.close();
+                    continue;
+                }
+
+                localFile.write(data);
+                localFile.close();
+
+                fileList.append(filePath);
+
+#ifdef QT_DEBUG
+                qDebug() << "created file: " << filePath;
+#endif
+            }
+
+            ApplicationDescription applicationDescription;
+
+            applicationDescription.setSourceDir(QUrl("file:///" + baseFilePath));
+            // TODO check validity
+
+            m_selectedConfig->setFiles(fileList);
+            m_selectedConfig->setMainFile(applicationDescription.mainFile());
+            m_selectedConfig->setTranslationsPath(applicationDescription.translationsPath());
+            m_selectedConfig->setLoaded(true);
+            m_selectedConfig->setLoading(false);
+        }
+    }
+}
+
+void ApplicationConfig::syncConfig()
+{
+    m_synced = true;
+    emit syncedChanged(m_synced);
+}
+
+void ApplicationConfig::unsyncConfig()
+{
+    m_synced = false;
+    emit syncedChanged(m_synced);
+
+    m_configs.clear();
+    emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
 }
 
 void ApplicationConfig::selectConfig(QString name)
@@ -602,10 +338,10 @@ void ApplicationConfig::selectConfig(QString name)
     m_selectedConfig->setLoading(true);
     m_selectedConfig->setName(name);
 
-    pb::Application *app = m_tx.add_app();
+    Application *app = m_tx.add_app();
 
     app->set_name(name.toStdString());
-    request(pb::MT_RETRIEVE_APPLICATION);
+    sendRetrieveApplication(m_tx);
 }
 
 void ApplicationConfig::unselectConfig()
@@ -616,16 +352,9 @@ void ApplicationConfig::unselectConfig()
     m_selectedConfig->setDescription("");
     m_selectedConfig->setFiles(QStringList());
     m_selectedConfig->setMainFile(QUrl(""));
+    m_selectedConfig->setTranslationsPath(QUrl(""));
     m_selectedConfig->setLoaded(false);
     m_selectedConfig->setLoading(false);
-}
-
-void ApplicationConfig::setConfigUri(QString arg)
-{
-    if (m_configUri != arg) {
-        m_configUri = arg;
-        emit configUriChanged(arg);
-    }
 }
 
 }; // namespace qtquickvcp
