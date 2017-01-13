@@ -95,7 +95,7 @@ void PreviewClient::interpStatReceived(const QByteArray &topic, const Container 
     Q_UNUSED(topic);
     QStringList notes;
 
-    m_interpreterState = (InterpreterState)rx.interp_state();
+    m_interpreterState = static_cast<InterpreterState>(rx.interp_state());
     for (int i = 0; i< rx.note_size(); ++i)
     {
         notes.append(QString::fromStdString(rx.note(i)));
