@@ -88,14 +88,14 @@ void ApplicationLauncher::launcherFullUpdateReceived(const QByteArray &topic, co
 {
     Q_UNUSED(topic);
     m_launchers = QJsonValue(QJsonArray()); // clear old value
-    MachinetalkService::updateValue(rx, &m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
+    MachinetalkService::updateValue(rx, m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
     emit launchersChanged(m_launchers);
 }
 
 void ApplicationLauncher::launcherIncrementalUpdateReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
-    MachinetalkService::updateValue(rx, &m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
+    MachinetalkService::updateValue(rx, m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
     emit launchersChanged(m_launchers);
 }
 

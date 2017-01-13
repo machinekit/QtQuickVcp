@@ -41,7 +41,7 @@ QString MachinetalkService::enumNameToCamelCase(const QString &name)
     return partList.join("");
 }
 
-void MachinetalkService::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject *object)
+void MachinetalkService::recurseDescriptor(const gpb::Descriptor *descriptor, QJsonObject &object)
 {
     for (int i = 0; i < descriptor->field_count(); ++i)
     {
@@ -71,7 +71,6 @@ void MachinetalkService::recurseDescriptor(const gpb::Descriptor *descriptor, QJ
             break;
         case gpb::FieldDescriptor::CPPTYPE_ENUM:
             jsonValue = field->enum_type()->value(0)->number();
-            //jsonValue = enumNameToCamelCase(QString::fromStdString(field->enum_type()->value(0)->name()));
             break;
         case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
             QJsonObject jsonObject;
@@ -84,7 +83,7 @@ void MachinetalkService::recurseDescriptor(const gpb::Descriptor *descriptor, QJ
                 }
             }
 
-            recurseDescriptor(field->message_type(), &jsonObject);
+            recurseDescriptor(field->message_type(), jsonObject);
             jsonValue = jsonObject;
             break;
         }
@@ -104,18 +103,18 @@ void MachinetalkService::recurseDescriptor(const gpb::Descriptor *descriptor, QJ
                 jsonValue = jsonObject;
             }
             jsonArray.append(jsonValue);
-            object->insert(name, jsonArray);
+            object.insert(name, jsonArray);
         }
         else
         {
-            object->insert(name, jsonValue);
+            object.insert(name, jsonValue);
         }
     }
 }
 
-int MachinetalkService::recurseMessage(const gpb::Message &message, QJsonObject *object, const QString &fieldFilter, const QString &tempDir)
+int MachinetalkService::recurseMessage(const gpb::Message &message, QJsonObject &object, const QString &fieldFilter, const QString &tempDir)
 {
-    bool filterEnabled = !fieldFilter.isEmpty();
+    const bool filterEnabled = !fieldFilter.isEmpty();
     bool isPosition = false;
     const gpb::Reflection *reflection = message.GetReflection();
     gpb::vector< const gpb::FieldDescriptor * > output;
@@ -126,14 +125,14 @@ int MachinetalkService::recurseMessage(const gpb::Message &message, QJsonObject 
         machinetalk::File file;
         file.MergeFrom(message);
         fileToJson(file, object, tempDir);
-        return output.size();
+        return static_cast<int>(output.size());
     }
     else if (message.GetDescriptor() == machinetalk::Position::descriptor()) // handle position vecotors
     {
         isPosition = true;
     }
 
-    for (int i = 0; i < (int)output.size(); ++i)
+    for (int i = 0; i < static_cast<int>(output.size()); ++i)
     {
         QString name;
         QJsonValue jsonValue;
@@ -156,116 +155,112 @@ int MachinetalkService::recurseMessage(const gpb::Message &message, QJsonObject 
             case gpb::FieldDescriptor::CPPTYPE_DOUBLE:
                 jsonValue = reflection->GetDouble(message, field);
                 if (isPosition) {
-                    object->insert(QString::number(field->index()), jsonValue);
+                    object.insert(QString::number(field->index()), jsonValue);
                 }
                 break;
             case gpb::FieldDescriptor::CPPTYPE_FLOAT:
-                jsonValue = (double)reflection->GetFloat(message, field);
+                jsonValue = static_cast<double>(reflection->GetFloat(message, field));
                 break;
             case gpb::FieldDescriptor::CPPTYPE_INT32:
-                jsonValue = (int)reflection->GetInt32(message, field);
+                jsonValue = static_cast<int>(reflection->GetInt32(message, field));
                 break;
             case gpb::FieldDescriptor::CPPTYPE_INT64:
-                jsonValue = (int)reflection->GetInt64(message, field);
+                jsonValue = static_cast<int>(reflection->GetInt64(message, field));
                 break;
             case gpb::FieldDescriptor::CPPTYPE_UINT32:
-                jsonValue = (int)reflection->GetUInt32(message, field);
+                jsonValue = static_cast<int>(reflection->GetUInt32(message, field));
                 break;
             case gpb::FieldDescriptor::CPPTYPE_UINT64:
-                jsonValue = (int)reflection->GetUInt64(message, field);
+                jsonValue = static_cast<int>(reflection->GetUInt64(message, field));
                 break;
             case gpb::FieldDescriptor::CPPTYPE_STRING:
                 jsonValue = QString::fromStdString(reflection->GetString(message, field));
                 break;
             case gpb::FieldDescriptor::CPPTYPE_ENUM:
                 jsonValue = reflection->GetEnum(message, field)->number();
-                //jsonValue = enumNameToCamelCase(QString::fromStdString(reflection->GetEnum(message, field)->name()));
                 break;
             case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
-                QJsonObject jsonObject = object->value(name).toObject();
-                recurseMessage(reflection->GetMessage(message, field), &jsonObject, QString(), tempDir);
+                QJsonObject jsonObject = object.value(name).toObject();
+                recurseMessage(reflection->GetMessage(message, field), jsonObject, QString(), tempDir);
                 jsonValue = jsonObject;
                 break;
             }
-            object->insert(name, jsonValue);
+            object.insert(name, jsonValue);
         }
-        else
+        else if (field->cpp_type() == gpb::FieldDescriptor::CPPTYPE_MESSAGE)
         {
-            if (field->cpp_type() == gpb::FieldDescriptor::CPPTYPE_MESSAGE)
+            QJsonArray jsonArray = object.value(name).toArray();
+            QList<int> removeList; // store index of items to remove
+            for (int j = 0; j < reflection->FieldSize(message, field); ++j)
             {
-                QJsonArray jsonArray = object->value(name).toArray();
-                QList<int> removeList; // store index of items to remove
-                for (int j = 0; j < reflection->FieldSize(message, field); ++j)
+                QJsonObject jsonObject;
+                QJsonValue jsonValue;
+                const gpb::Message &subMessage = reflection->GetRepeatedMessage(message, field, j);
+                const gpb::Descriptor *subDescriptor = subMessage.GetDescriptor();
+                const gpb::FieldDescriptor *subField = subDescriptor->FindFieldByName("index");
+                const gpb::Reflection *subReflection = subMessage.GetReflection();
+                const int index = subReflection->GetInt32(subMessage, subField);
+
+                while (jsonArray.size() < (index + 1))
                 {
-                    QJsonObject jsonObject;
-                    QJsonValue jsonValue;
-                    const gpb::Message &subMessage = reflection->GetRepeatedMessage(message, field, j);
-                    const gpb::Descriptor *subDescriptor = subMessage.GetDescriptor();
-                    const gpb::FieldDescriptor *subField = subDescriptor->FindFieldByName("index");
-                    const gpb::Reflection *subReflection = subMessage.GetReflection();
-                    int index = subReflection->GetInt32(subMessage, subField);
-
-                    while (jsonArray.size() < (index + 1))
-                    {
-                        jsonArray.append(QJsonValue());
-                    }
-
-                    if (subDescriptor->field_count() != 2) // not only index and value field
-                    {
-                        jsonObject = jsonArray.at(index).toObject(QJsonObject()); // use existing object values
-                    }
-
-                    if (recurseMessage(subMessage, &jsonObject, QString(), tempDir) > 1)
-                    {
-                        jsonObject.remove("index");
-
-                        if (subDescriptor->field_count() != 2)
-                        {
-                            jsonValue = jsonObject; // use JSON object
-                        }
-                        else // index and value field
-                        {
-                            jsonValue = jsonObject.value(jsonObject.keys().at(0)); // use JSON value directly
-                        }
-
-                        jsonArray.replace(index, jsonValue);
-                    }
-                    else  // only index -> remove object
-                    {
-                        removeList.append(index);
-                    }
+                    jsonArray.append(QJsonValue());
                 }
 
-                // remove marked items
-                if (removeList.length() > 0)
+                if (subDescriptor->field_count() != 2) // not only index and value field
                 {
-                    qSort(removeList.begin(), removeList.end());
-                    for (int k = (removeList.length() - 1); k >= 0; k--)
-                    {
-                        jsonArray.removeAt(removeList[k]);
-                    }
+                    jsonObject = jsonArray.at(index).toObject(QJsonObject()); // use existing object values
                 }
 
-                object->insert(name, QJsonValue(jsonArray));
+                if (recurseMessage(subMessage, jsonObject, QString(), tempDir) > 1)
+                {
+                    jsonObject.remove("index");
+
+                    if (subDescriptor->field_count() != 2)
+                    {
+                        jsonValue = jsonObject; // use JSON object
+                    }
+                    else // index and value field
+                    {
+                        jsonValue = jsonObject.value(jsonObject.keys().at(0)); // use JSON value directly
+                    }
+
+                    jsonArray.replace(index, jsonValue);
+                }
+                else  // only index -> remove object
+                {
+                    removeList.append(index);
+                }
             }
+
+            // remove marked items
+            if (removeList.length() > 0)
+            {
+                qSort(removeList.begin(), removeList.end());
+                for (int k = (removeList.length() - 1); k >= 0; k--)
+                {
+                    jsonArray.removeAt(removeList[k]);
+                }
+            }
+
+            object.insert(name, QJsonValue(jsonArray));
         }
     }
 
-    return output.size();
+    return static_cast<int>(output.size());
 }
 
-void MachinetalkService::updateValue(const gpb::Message &message, QJsonValue *value, const QString &field, const QString &tempDir)
+void MachinetalkService::updateValue(const gpb::Message &message, QJsonValue &value, const QString &field, const QString &tempDir)
 {
     QJsonObject object;
-    object.insert(field, *value);
-    recurseMessage(message, &object, field, tempDir);
-    *value = object.value(field);
+    object.insert(field, value);
+    recurseMessage(message, object, field, tempDir);
+    value = object.value(field);
 }
 
 /** Converts a protobuf File object to a json file descriptor
  *  stores the data to a temporary directory
  **/
-void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject *object, const QString tempDir)
+void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject &object, const QString tempDir)
 {
     QDir dir;
     QString fileName;
@@ -301,9 +296,8 @@ void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject *
 
     if (file.encoding() == machinetalk::ZLIB)
     {
-        quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
-        qWarning() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
-        data = qUncompress(data);
+        qWarning() << "zlib encoding may not work";
+        data = qUncompress(data); // TODO: zlib uncompress not working correctly
     }
     else if (file.encoding() != machinetalk::CLEARTEXT)
     {
@@ -315,6 +309,6 @@ void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject *
     localFile.write(data);
     localFile.close();
 
-    object->insert("url", QUrl::fromLocalFile(filePath).toString());
+    object.insert("url", QUrl::fromLocalFile(filePath).toString());
 }
 }; // namespace qtquickvcp
