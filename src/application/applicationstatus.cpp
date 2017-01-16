@@ -65,31 +65,31 @@ void ApplicationStatus::updateSync(ApplicationStatus::StatusChannel channel)
 
 void ApplicationStatus::updateMotionObject(const EmcStatusMotion &motion)
 {
-    MachinetalkService::recurseMessage(motion, &m_motion);
+    MachinetalkService::recurseMessage(motion, m_motion);
     emit motionChanged(m_motion);
 }
 
 void ApplicationStatus::updateConfigObject(const EmcStatusConfig &config)
 {
-    MachinetalkService::recurseMessage(config, &m_config);
+    MachinetalkService::recurseMessage(config, m_config);
     emit configChanged(m_config);
 }
 
 void ApplicationStatus::updateIoObject(const EmcStatusIo &io)
 {
-    MachinetalkService::recurseMessage(io, &m_io);
+    MachinetalkService::recurseMessage(io, m_io);
     emit ioChanged(m_io);
 }
 
 void ApplicationStatus::updateTaskObject(const EmcStatusTask &task)
 {
-    MachinetalkService::recurseMessage(task, &m_task);
+    MachinetalkService::recurseMessage(task, m_task);
     emit taskChanged(m_task);
 }
 
 void ApplicationStatus::updateInterpObject(const EmcStatusInterp &interp)
 {
-    MachinetalkService::recurseMessage(interp, &m_interp);
+    MachinetalkService::recurseMessage(interp, m_interp);
     emit interpChanged(m_interp);
 }
 
@@ -190,27 +190,27 @@ void ApplicationStatus::initializeObject(ApplicationStatus::StatusChannel channe
     {
     case MotionChannel:
         m_motion = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusMotion::descriptor(), &m_motion);
+        MachinetalkService::recurseDescriptor(EmcStatusMotion::descriptor(), m_motion);
         emit motionChanged(m_motion);
         break;
     case ConfigChannel:
         m_config = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusConfig::descriptor(), &m_config);
+        MachinetalkService::recurseDescriptor(EmcStatusConfig::descriptor(), m_config);
         emit configChanged(m_config);
         break;
     case IoChannel:
         m_io = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusIo::descriptor(), &m_io);
+        MachinetalkService::recurseDescriptor(EmcStatusIo::descriptor(), m_io);
         emit ioChanged(m_io);
         break;
     case TaskChannel:
         m_task = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusTask::descriptor(), &m_task);
+        MachinetalkService::recurseDescriptor(EmcStatusTask::descriptor(), m_task);
         emit taskChanged(m_task);
         break;
     case InterpChannel:
         m_interp = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusInterp::descriptor(), &m_interp);
+        MachinetalkService::recurseDescriptor(EmcStatusInterp::descriptor(), m_interp);
         emit interpChanged(m_interp);
         break;
     case NoChannel:
