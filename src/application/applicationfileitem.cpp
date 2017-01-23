@@ -94,4 +94,4 @@ void ApplicationFileItem::setDir(bool dir)
 {
     m_dir = dir;
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

@@ -118,4 +118,4 @@ void ApplicationLauncher::initializeObject()
     emit launchersChanged(m_launchers);
 }
 
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

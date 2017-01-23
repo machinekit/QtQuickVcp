@@ -639,4 +639,4 @@ void ApplicationCommand::emccmdCompletedReceived(const Container &rx)
     Q_UNUSED(rx); // message currently unused
 }
 
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

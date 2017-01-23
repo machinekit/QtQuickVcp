@@ -357,4 +357,4 @@ void ApplicationConfig::unselectConfig()
     m_selectedConfig->setLoading(false);
 }
 
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

@@ -81,4 +81,4 @@ Service *ServiceList::service(int index) const
 {
     return m_services.at(index);
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

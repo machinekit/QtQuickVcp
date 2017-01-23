@@ -118,4 +118,4 @@ void PreviewClient::clearConnected()
     emit connectedChanged(m_connected);
 }
 
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

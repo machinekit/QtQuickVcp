@@ -88,4 +88,4 @@ void NameServer::handleServers()
    m_dnsLookup->deleteLater();
    m_dnsLookup = nullptr;
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

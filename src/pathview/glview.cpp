@@ -1640,4 +1640,4 @@ void GLView::reset()
 {
     removeDrawables(m_currentDrawableList);
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

@@ -66,4 +66,4 @@ ServiceDiscoveryFilter::ServiceDiscoveryFilter(QObject *parent) :
     m_name("")
 {
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

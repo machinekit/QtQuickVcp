@@ -93,4 +93,4 @@ void GCodeProgramItem::setExecuted(bool executed)
 {
     m_executed = executed;
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

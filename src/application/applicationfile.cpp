@@ -443,4 +443,4 @@ void ApplicationFile::ftpCommandFinished(int, bool error)
     updateState(NoTransfer);
     refreshFiles();
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

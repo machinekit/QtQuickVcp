@@ -68,4 +68,4 @@ void GLCubeItem::selectDrawable(void *pointer)
         emit selectedChanged(m_selected);
     }
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

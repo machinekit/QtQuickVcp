@@ -29,4 +29,4 @@ ApplicationPluginItem::ApplicationPluginItem(QObject *parent) :
 {
 
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
