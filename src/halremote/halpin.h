@@ -94,10 +94,10 @@ public:
 
 signals:
 
-    void nameChanged(QString arg);
+    void nameChanged(const QString &arg);
     void typeChanged(HalPinType arg);
     void directionChanged(HalPinDirection arg);
-    void valueChanged(QVariant arg);
+    void valueChanged(const QVariant &arg);
     void handleChanged(int arg);
     void enabledChanged(bool arg);
     void syncedChanged(bool arg);
@@ -105,22 +105,23 @@ signals:
 public slots:
 
 void setType(HalPinType arg);
-void setName(QString arg);
+void setName(const QString &arg);
 void setDirection(HalPinDirection arg);
-void setValue(QVariant arg, bool synced = false);
+void setValue(const QVariant &arg, bool synced = false);
 void setHandle(int arg);
 void setEnabled(bool arg);
 void setSynced(bool arg);
 
 private:
     QString         m_name;
-    HalPinType       m_type;
+    HalPinType      m_type;
     HalPinDirection m_direction;
     QVariant        m_value;
     QVariant        m_syncValue;
     int             m_handle;
     bool            m_enabled;
     bool            m_synced;
+
 }; // class HalPin
 } // namespace qtquickvcp
 

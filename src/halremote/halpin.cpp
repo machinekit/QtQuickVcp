@@ -161,7 +161,7 @@ void HalPin::setType(HalPin::HalPinType arg)
     }
 }
 
-void HalPin::setName(QString arg)
+void HalPin::setName(const QString &arg)
 {
     if (m_name != arg) {
         m_name = arg;
@@ -177,7 +177,7 @@ void HalPin::setDirection(HalPin::HalPinDirection arg)
     }
 }
 
-void HalPin::setValue(QVariant arg, bool synced)
+void HalPin::setValue(const QVariant &arg, bool synced)
 {
     if ((m_value != arg) || (m_value.type() != arg.type())) {
         m_value = arg;
