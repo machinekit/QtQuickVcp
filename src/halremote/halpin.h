@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QQueue>
 #include <machinetalk/protobuf/message.pb.h>
 
 namespace qtquickvcp {
@@ -38,6 +39,7 @@ class HalPin : public QObject
     Q_PROPERTY(int handle READ handle NOTIFY handleChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
+    Q_PROPERTY(bool queuing READ queuing WRITE setQueuing NOTIFY queuingChanged)
     Q_ENUMS(HalPinType)
     Q_ENUMS(HalPinDirection)
 
@@ -92,6 +94,11 @@ public:
         return m_synced;
     }
 
+    bool queuing() const
+    {
+        return m_queuing;
+    }
+
 signals:
 
     void nameChanged(const QString &arg);
@@ -101,6 +108,7 @@ signals:
     void handleChanged(int arg);
     void enabledChanged(bool arg);
     void syncedChanged(bool arg);
+    void queuingChanged(bool queuing);
 
 public slots:
 
@@ -111,6 +119,7 @@ void setValue(const QVariant &arg, bool synced = false);
 void setHandle(int arg);
 void setEnabled(bool arg);
 void setSynced(bool arg);
+void setQueuing(bool queuing);
 
 private:
     QString         m_name;
@@ -121,6 +130,11 @@ private:
     int             m_handle;
     bool            m_enabled;
     bool            m_synced;
+    bool            m_queuing;
+    QQueue<QVariant> m_valueQueue;
+
+private slots:
+    void processQueue(bool synced);
 
 }; // class HalPin
 } // namespace qtquickvcp
