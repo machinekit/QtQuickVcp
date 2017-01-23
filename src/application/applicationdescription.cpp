@@ -222,4 +222,4 @@ QString ApplicationDescription::getTranslationsPath(const QString &baseFilePath)
     return baseFilePath + "translations";
 }
 
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

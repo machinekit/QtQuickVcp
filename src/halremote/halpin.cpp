@@ -219,4 +219,4 @@ void HalPin::setSynced(bool arg)
         emit syncedChanged(arg);
     }
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

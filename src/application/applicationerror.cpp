@@ -104,4 +104,4 @@ void ApplicationError::clearConnected()
     m_connected = false;
     emit connectedChanged(m_connected);
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

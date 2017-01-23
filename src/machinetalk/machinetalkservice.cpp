@@ -311,4 +311,4 @@ void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject &
 
     object.insert("url", QUrl::fromLocalFile(filePath).toString());
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

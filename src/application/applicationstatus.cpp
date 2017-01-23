@@ -217,4 +217,4 @@ void ApplicationStatus::initializeObject(ApplicationStatus::StatusChannel channe
         break;
     }
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

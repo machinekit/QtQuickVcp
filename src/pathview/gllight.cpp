@@ -43,4 +43,4 @@ GLLight::GLLight(QObject *parent) :
     connect(this, &GLLight::enabledChanged,
             this, &GLLight::propertyChanged);
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

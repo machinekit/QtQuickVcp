@@ -308,4 +308,4 @@ void Service::updateUri()
     emit uriChanged(m_uri);
     emit readyChanged(m_ready);
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

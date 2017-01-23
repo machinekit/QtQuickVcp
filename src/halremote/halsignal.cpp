@@ -98,4 +98,4 @@ void HalSignal::setSynced(bool arg)
         emit syncedChanged(arg);
     }
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

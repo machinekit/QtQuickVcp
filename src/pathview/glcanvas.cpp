@@ -44,4 +44,4 @@ void GLCanvas::selectDrawable(void *pointer)
 {
     emit drawableSelected(pointer);
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

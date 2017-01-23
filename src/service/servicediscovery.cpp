@@ -1264,4 +1264,4 @@ void ServiceDiscovery::updateNetConfig()
         m_networkConfigManager->updateConfigurations();
     }
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
