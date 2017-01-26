@@ -1,6 +1,10 @@
 TEMPLATE = lib
 QT += qml quick
 
+release: {
+    CONFIG += qtquickcompiler
+}
+
 uri = Machinekit.HalRemote.Controls
 include(../plugin.pri)
 

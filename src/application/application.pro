@@ -1,6 +1,10 @@
 TEMPLATE = lib
 QT += qml quick network
 
+release: {
+    CONFIG += qtquickcompiler
+}
+
 uri = Machinekit.Application
 include(../plugin.pri)
 
