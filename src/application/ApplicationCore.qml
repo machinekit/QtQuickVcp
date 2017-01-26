@@ -151,19 +151,34 @@ Item {
     ApplicationStatus {
         id: applicationStatus
         statusUri: statusService.uri
-        ready: (statusService.ready || synced)
+        ready: (statusService.ready || statusSyncedQueue.output)
+    }
+
+    QueuedConnection {
+        id: statusSyncedQueue
+        input: applicationStatus.synced
     }
 
     ApplicationCommand {
         id: applicationCommand
         commandUri: commandService.uri
-        ready: (commandService.ready || connected)
+        ready: (commandService.ready || commandConnectedQueue.output)
+    }
+
+    QueuedConnection {
+        id: commandConnectedQueue
+        input: applicationCommand.connected
     }
 
     ApplicationError {
         id: applicationError
         errorUri: errorService.uri
-        ready: (errorService.ready || connected)
+        ready: (errorService.ready || errorConnectedQueue.output)
+    }
+
+    QueuedConnection {
+        id: errorConnectedQueue
+        input: applicationError.connected
     }
 
     ApplicationFile {

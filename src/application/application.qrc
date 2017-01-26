@@ -7,5 +7,6 @@
         <file>ApplicationObject.qml</file>
         <file>HomeAllAxesHelper.qml</file>
         <file>ApplicationHelper.qml</file>
+        <file>QueuedConnection.qml</file>
     </qresource>
 </RCC>
