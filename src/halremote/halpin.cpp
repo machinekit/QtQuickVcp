@@ -124,14 +124,6 @@ namespace qtquickvcp {
     to \c true when the echo from the \l HalRemoteComponent is received.
 */
 
-/*! \qmlproperty bool HalPin::queuing
-
-    This property holds whether the pin should queue value changes or not.
-    If this property is \c{true} the pin will wait for the \l synced property
-    to become \c{true} before forwarding any value update messages. This
-    ensures that all value toggles are promoted the remote HAL component.
-*/
-
 HalPin::HalPin(QObject *parent) :
     QObject(parent),
     m_name("default"),
@@ -141,8 +133,7 @@ HalPin::HalPin(QObject *parent) :
     m_syncValue(QVariant()),
     m_handle(0),
     m_enabled(true),
-    m_synced(false),
-    m_queuing(false)
+    m_synced(false)
 {
 }
 
@@ -190,17 +181,8 @@ void HalPin::setValue(const QVariant &value, bool synced)
 {
     if ((m_value != value) || (m_value.type() != value.type()))
     {
-        // don't send an update when we are queuing and not synced
-        if (m_queuing && !(m_synced || synced))
-        {
-            m_valueQueue.enqueue(value);
-            return;
-        }
-        else
-        {
-            m_value = value;
-            emit valueChanged(value);
-        }
+        m_value = value;
+        emit valueChanged(value);
     }
 
     if (synced == true) {
@@ -239,29 +221,4 @@ void HalPin::setSynced(bool arg)
     }
 }
 
-void HalPin::setQueuing(bool queuing)
-{
-    if (m_queuing == queuing) {
-        return;
-    }
-
-    m_queuing = queuing;
-    emit queuingChanged(queuing);
-
-    if (queuing) {
-        connect(this, &HalPin::syncedChanged, this, &HalPin::processQueue);
-    }
-    else {
-        disconnect(this, &HalPin::syncedChanged, this, &HalPin::processQueue);
-    }
-}
-
-void HalPin::processQueue(bool synced)
-{
-    if (m_valueQueue.isEmpty() || !synced) {
-        return;
-    }
-
-    setValue(m_valueQueue.dequeue(), false);
-}
 } // namespace qtquickvcp

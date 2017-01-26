@@ -16,7 +16,6 @@ private Q_SLOTS:
     void testDefaults();
     void testSyncing();
     void testSyncSequence();
-    void testQueuing();
 };
 
 HalPinTest::HalPinTest()
@@ -71,55 +70,6 @@ void HalPinTest::testSyncSequence()
 
     pin.setValue(true, false);
     QVERIFY2(pin.synced() == true, "should have stored last sync data");
-}
-
-void HalPinTest::testQueuing()
-{
-    HalPin pin;
-    pin.setType(HalPin::Bit);
-    pin.setDirection(HalPin::Out);
-    pin.setQueuing(true);
-
-    QSignalSpy syncedSpy(&pin, &HalPin::syncedChanged);
-    QSignalSpy valueSpy(&pin, &HalPin::valueChanged);
-
-    pin.setValue(true, true);
-    QVERIFY2(pin.synced() == true, "should be synced");
-    QVERIFY2(pin.value() == true, "value should be true");
-    QVERIFY2(valueSpy.count() == 1, "sent one message");
-    QVERIFY2(syncedSpy.count() == 1, "updated synced once");
-
-    syncedSpy.clear();
-    valueSpy.clear();
-    pin.setValue(false, false);
-    QVERIFY2(pin.synced() == false, "should not be synced");
-    QVERIFY2(pin.value() == false, "value should be true");
-    QVERIFY2(valueSpy.count() == 1, "sent one message");
-    QVERIFY2(syncedSpy.count() == 1, "updated synced once");
-
-    syncedSpy.clear();
-    valueSpy.clear();
-    pin.setValue(true, false);
-    QVERIFY2(pin.synced() == false, "should not be synced");
-    QVERIFY2(pin.value() == false, "value should be true");
-    QVERIFY2(valueSpy.count() == 0, "sent no message");
-    QVERIFY2(syncedSpy.count() == 0, "did not update synced");
-
-    syncedSpy.clear();
-    valueSpy.clear();
-    pin.setValue(false, true);
-    QVERIFY2(pin.synced() == false, "should not be synced");
-    QVERIFY2(pin.value() == true, "value should be true");
-    QVERIFY2(valueSpy.count() == 1, "sent one message");
-    QVERIFY2(syncedSpy.count() == 2, "updated synced twice");
-
-    syncedSpy.clear();
-    valueSpy.clear();
-    pin.setValue(true, true);
-    QVERIFY2(pin.synced() == true, "should not be synced");
-    QVERIFY2(pin.value() == true, "value should be true");
-    QVERIFY2(valueSpy.count() == 0, "sent no messages");
-    QVERIFY2(syncedSpy.count() == 1, "updated synced once");
 }
 
 QTEST_APPLESS_MAIN(HalPinTest)
