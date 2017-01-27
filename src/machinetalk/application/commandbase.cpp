@@ -353,7 +353,7 @@ void CommandBase::sendEmcAxisUnhome(Container &tx)
 
 void CommandBase::sendShutdown(Container &tx)
 {
-    sendCommandMessage(MT_LAUNCHER_SHUTDOWN, tx);
+    sendCommandMessage(MT_SHUTDOWN, tx);
 }
 
 void CommandBase::fsmDown()
