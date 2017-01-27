@@ -125,4 +125,4 @@ ApplicationConfigItem::ApplicationConfigItem(QObject *parent) :
 {
 
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

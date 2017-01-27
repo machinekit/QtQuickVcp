@@ -91,4 +91,4 @@ QUrl FileIO::createTempFile(const QString &fileName)
     return QUrl::fromLocalFile(m_temporaryDir->path() + "/" + fileName);
 }
 
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

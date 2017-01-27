@@ -53,7 +53,8 @@ static const struct {
     { "ApplicationObject", 1, 0 },
     { "ApplicationSettings", 1, 0 },
     { "MdiHistory", 1, 0 },
-    { "HomeAllAxesHelper", 1, 0 }
+    { "HomeAllAxesHelper", 1, 0 },
+    { "QueuedConnection",  1, 0 }
 };
 
 void MachinekitApplicationPlugin::registerTypes(const char *uri)

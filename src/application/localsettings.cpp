@@ -229,4 +229,4 @@ void LocalSettings::setName(QString arg)
     emit nameChanged(arg);
     updateFilePath();
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

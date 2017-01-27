@@ -113,4 +113,4 @@ void ApplicationPlugins::clearPlugins()
 
     emit pluginsChanged(QQmlListProperty<ApplicationPluginItem>(this, m_plugins));
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
