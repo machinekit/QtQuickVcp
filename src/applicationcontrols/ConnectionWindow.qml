@@ -575,9 +575,6 @@ Rectangle {
         id: applicationTranslator
         applicationName: mainWindow.mode === "local" ? localName : applicationConfig.selectedConfig.name
         translationsPath: mainWindow.mode === "local" ? localPath : applicationConfig.selectedConfig.translationsPath
-
-        onApplicationNameChanged: console.log(applicationName)
-        onTranslationsPathChanged: console.log(translationsPath)
     }
 
     ApplicationLauncher {
@@ -591,7 +588,6 @@ Rectangle {
                 setError(qsTr("Application Launcher Error:"), applicationLauncher.errorString);
             }
         }
-        onReadyChanged: console.log("launcher ready: " + ready)
     }
 
     ServiceDiscovery {

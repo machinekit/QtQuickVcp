@@ -942,4 +942,4 @@ void GLPathItem::triggerFullUpdate()
 {
     m_needsFullUpdate = true;
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

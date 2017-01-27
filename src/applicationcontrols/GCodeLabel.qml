@@ -28,8 +28,8 @@ Label {
     property alias core: object.core
     property alias status: object.status
 
-    property var desiredGCodes: [1,2,3,4,5,6,7,8,9]
-    property var desiredMCodes: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    property var desiredMCodes: [1,2,3,4,5,6,7,8,9]
+    property var desiredGCodes: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 
     property bool _ready: status.synced
     property var _mcodes: _ready ? status.interp.mcodes : []

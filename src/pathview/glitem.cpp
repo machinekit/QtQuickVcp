@@ -50,4 +50,4 @@ void GLItem::requestPaint()
 {
     emit needsUpdate();
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

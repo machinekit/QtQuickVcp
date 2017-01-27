@@ -1,6 +1,10 @@
 TEMPLATE = lib
 QT += qml quick network concurrent
 
+release: {
+    CONFIG += qtquickcompiler
+}
+
 uri = Machinekit.Application
 include(../plugin.pri)
 
@@ -63,7 +67,8 @@ QML_FILES = \
     ApplicationObject.qml \
     ApplicationSettings.qml \
     MdiHistory.qml \
-    HomeAllAxesHelper.qml
+    HomeAllAxesHelper.qml \
+    QueuedConnection.qml
 
 QML_INFRA_FILES = \
     $$QML_FILES \

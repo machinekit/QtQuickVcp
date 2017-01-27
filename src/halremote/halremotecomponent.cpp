@@ -542,4 +542,4 @@ void HalRemoteComponent::setTimeout()
     }
 }
 
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

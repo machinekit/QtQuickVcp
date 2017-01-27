@@ -165,4 +165,4 @@ QString ApplicationFileModel::formatByteSize(qint64 bytes) const
         return QString::number((double)bytes, 'f', 0) + "B";
     }
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

@@ -317,4 +317,4 @@ void MjpegStreamerClient::updateStreamBufferItem()
     emit timestampChanged(m_timestamp);
     emit timeChanged(m_time);
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

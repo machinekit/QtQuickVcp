@@ -20,7 +20,7 @@ A remote UI implementation for [Machinekit](https://github.com/machinekit/machin
 
 |   |  Travis CI | AppVeyor |
 |----------|:----:|:----:|
-| Status | [![Build Status](https://api.travis-ci.org/machinekoder/QtQuickVcp.svg?branch=master)](http://travis-ci.org/machinekoder/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true)](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true) |
+| Status | [![Build Status](https://api.travis-ci.org/machinekoder/QtQuickVcp.svg?branch=master)](http://travis-ci.org/machinekoder/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva/branch/master?svg=true)](https://ci.appveyor.com/project/machinekoder/qtquickvcp) |
 
 <a name="download" />
 ## Download

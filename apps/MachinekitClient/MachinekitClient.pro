@@ -5,6 +5,10 @@ TARGET = machinekit-client
 
 QT += qml quick widgets
 
+release: {
+    CONFIG += qtquickcompiler
+}
+
 SOURCES += main.cpp
 
 RESOURCES += qml.qrc

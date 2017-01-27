@@ -136,4 +136,4 @@ void ServiceDiscoveryItem::setTxtRecords(QStringList arg)
         emit txtRecordsChanged(arg);
     }
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

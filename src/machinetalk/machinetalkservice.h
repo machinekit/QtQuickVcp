@@ -54,17 +54,17 @@ public:
     static bool removeTempPath(const QString &name);
     static QString enumNameToCamelCase(const QString &name);
     static void recurseDescriptor(const google::protobuf::Descriptor *descriptor,
-                                  QJsonObject *object);
+                                  QJsonObject &object);
     static int recurseMessage(const google::protobuf::Message &message,
-                               QJsonObject *object,
-                               const QString &fieldFilter = QString(),
-                               const QString &tempDir = QString("json"));
+                              QJsonObject &object,
+                              const QString &fieldFilter = QString(),
+                              const QString &tempDir = QString("json"));
     static void updateValue(const google::protobuf::Message &message,
-                            QJsonValue *value,
+                            QJsonValue &value,
                             const QString &field,
                             const QString &tempDir = QString("json"));
     static void fileToJson(const machinetalk::File &file,
-                           QJsonObject *object,
+                           QJsonObject &object,
                            const QString tempDir);
 };
 } // namespace qtquickvcp

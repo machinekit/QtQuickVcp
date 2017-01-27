@@ -316,10 +316,12 @@ Rectangle {
     state: {
         switch (remoteComponent.connectionState) {
         case HalRemoteComponent.Synced:
-            if (_ready)
+            if (_ready) {
                 return "connected";
-            else
+            }
+            else {
                 return "disconnected";
+            }
         case HalRemoteComponent.Error:
                 return "error";
         default:

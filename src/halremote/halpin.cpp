@@ -130,7 +130,7 @@ HalPin::HalPin(QObject *parent) :
     m_type(Bit),
     m_direction(Out),
     m_value(false),
-    m_syncValue(false),
+    m_syncValue(QVariant()),
     m_handle(0),
     m_enabled(true),
     m_synced(false)
@@ -161,7 +161,7 @@ void HalPin::setType(HalPin::HalPinType arg)
     }
 }
 
-void HalPin::setName(QString arg)
+void HalPin::setName(const QString &arg)
 {
     if (m_name != arg) {
         m_name = arg;
@@ -177,16 +177,17 @@ void HalPin::setDirection(HalPin::HalPinDirection arg)
     }
 }
 
-void HalPin::setValue(QVariant arg, bool synced)
+void HalPin::setValue(const QVariant &value, bool synced)
 {
-    if ((m_value != arg) || (m_value.type() != arg.type())) {
-        m_value = arg;
-        emit valueChanged(arg);
+    if ((m_value != value) || (m_value.type() != value.type()))
+    {
+        m_value = value;
+        emit valueChanged(value);
     }
 
     if (synced == true) {
-        m_syncValue = arg;  // save the sync point
-    } else if (arg == m_syncValue) {
+        m_syncValue = value;  // save the sync point
+    } else if (value == m_syncValue) {
         synced = true;  // if value is same as sync point synced is always true
     }
 
@@ -219,4 +220,5 @@ void HalPin::setSynced(bool arg)
         emit syncedChanged(arg);
     }
 }
-}; // namespace qtquickvcp
+
+} // namespace qtquickvcp

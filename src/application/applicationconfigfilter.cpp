@@ -69,4 +69,4 @@ ApplicationConfigFilter::ApplicationConfigFilter(QObject *parent) :
     m_description("")
 {
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

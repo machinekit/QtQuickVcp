@@ -355,4 +355,4 @@ bool GCodeProgramModel::internalSetData(const QModelIndex &index, const QVariant
 
     return true;
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp

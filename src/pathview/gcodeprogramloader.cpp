@@ -102,4 +102,4 @@ void GCodeProgramLoader::load()
     file.close();
     emit loadingFinished();
 }
-}; // namespace qtquickvcp
+} // namespace qtquickvcp
