@@ -1,10 +1,6 @@
 TEMPLATE = lib
 QT += qml quick
 
-release: {
-    CONFIG += qtquickcompiler
-}
-
 uri = Machinekit.Application.Controls
 include(../plugin.pri)
 

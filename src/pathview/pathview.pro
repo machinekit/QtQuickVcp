@@ -1,10 +1,6 @@
 TEMPLATE = lib
 QT += qml quick network
 
-release: {
-    CONFIG += qtquickcompiler
-}
-
 uri = Machinekit.PathView
 include(../plugin.pri)
 
