@@ -2,20 +2,92 @@ import QtQuick 2.0
 import Machinekit.Application 1.0
 
 Item {
-    property var status: {"synced": false}
-    property var command: {"ready": false}
+    property var status: { "synced": false }
+    property var command: {"ready": false }
     property bool running: false
 
-    property bool _ready: status.synced && command.ready
-    property int _currentSequence: 0
-    property var _waitingAxesList: []
-    property var _homingAxesList: []
-    property var _prepareAxesList: []
+    QtObject {
+        id: d
+        readonly property bool ready: status.synced && command.ready
+        property int currentSequence: 0
+        property var waitingAxesList: []
+        property var homingAxesList: []
+        property var prepareAxesList: []
+
+        function checkHomingStatus() {
+             var homing = false;
+             var prepare = false;
+             var i;
+             var axis;
+             var list;
+
+             if (status.task.taskState !== ApplicationStatus.TaskStateOn) {
+                 running = false;
+                 return;
+             }
+
+             for (i = (d.prepareAxesList.length-1); i >= 0 ; --i) {
+                 axis = d.prepareAxesList[i];
+                 if (!status.motion.axis[axis].homing
+                         && !status.motion.axis[axis].homed) {
+                     prepare = true;
+                 }
+                 else {
+                     list = d.homingAxesList;
+                     list.push(axis);
+                     d.homingAxesList = list;
+
+                     list = d.prepareAxesList;
+                     list.splice(i, 1);
+                     d.prepareAxesList = list;
+                 }
+             }
+
+             if (prepare) {
+                 return;
+             }
+
+             for (i = 0; i < d.homingAxesList.length; ++i) {
+                 axis = d.homingAxesList[i];
+                 if (status.motion.axis[axis].homing) {
+                     homing = true;
+                     break;
+                 }
+             }
+
+             if (!homing) {
+                 d.homingAxesList = [];
+                 d.prepareAxesList = [];
+
+                 if (d.waitingAxesList.length === 0)
+                 {
+                     running = false;
+                     return;
+                 }
+
+                 var currentSequence = status.config.axis[d.waitingAxesList[0]].homeSequence;
+                 for (i = (d.waitingAxesList.length-1); i >= 0 ; --i) {
+                     axis = d.waitingAxesList[i];
+                     if (status.config.axis[axis].homeSequence === currentSequence)
+                     {
+                         command.homeAxis(axis);
+
+                         list = d.prepareAxesList;
+                         list.push(axis);
+                         d.prepareAxesList = list;
+
+                         list = d.waitingAxesList;
+                         list.splice(i, 1);
+                         d.waitingAxesList = list;
+                     }
+                 }
+             }
+         }
 
     id: root
 
     function trigger() {
-        if (!_ready || running) {
+        if (!d.ready || running) {
             return        }
 
         var axesList = []
@@ -35,90 +107,20 @@ Item {
         }
 
         axesList.reverse();
-        _waitingAxesList = axesList;
-        _homingAxesList = [];
-        _prepareAxesList = [];
-        _currentSequence = 0;
+        d.waitingAxesList = axesList;
+        d.homingAxesList = [];
+        d.prepareAxesList = [];
+        d.currentSequence = 0;
         running = true;
-        _check();
-    }
-
-    function _check() {
-        var homing = false;
-        var prepare = false;
-        var i;
-        var axis;
-        var list;
-
-        if (status.task.taskState !== ApplicationStatus.TaskStateOn) {
-            running = false;
-            return;
-        }
-
-        for (i = (_prepareAxesList.length-1); i >= 0 ; --i) {
-            axis = _prepareAxesList[i];
-            if (!status.motion.axis[axis].homing
-                    && !status.motion.axis[axis].homed) {
-                prepare = true;
-            }
-            else {
-                list = _homingAxesList;
-                list.push(axis);
-                _homingAxesList = list;
-
-                list = _prepareAxesList;
-                list.splice(i, 1);
-                _prepareAxesList = list;
-            }
-        }
-
-        if (prepare) {
-            return;
-        }
-
-        for (i = 0; i < _homingAxesList.length; ++i) {
-            axis = _homingAxesList[i];
-            if (status.motion.axis[axis].homing) {
-                homing = true;
-                break;
-            }
-        }
-
-        if (!homing) {
-            _homingAxesList = [];
-            _prepareAxesList = [];
-
-            if (_waitingAxesList.length === 0)
-            {
-                running = false;
-                return;
-            }
-
-            var currentSequence = status.config.axis[_waitingAxesList[0]].homeSequence;
-            for (i = (_waitingAxesList.length-1); i >= 0 ; --i) {
-                axis = _waitingAxesList[i];
-                if (status.config.axis[axis].homeSequence === currentSequence)
-                {
-                    command.homeAxis(axis);
-
-                    list = _prepareAxesList;
-                    list.push(axis);
-                    _prepareAxesList = list;
-
-                    list = _waitingAxesList;
-                    list.splice(i, 1);
-                    _waitingAxesList = list;
-                }
-            }
-        }
+        d.checkHomingStatus();
     }
 
     Timer {
         id: checkTimer
         interval: 400
         repeat: true
-        running: root.running && _ready
+        running: root.running && d.ready
 
-        onTriggered: _check()
+        onTriggered: d.checkHomingStatus()
     }
 }
