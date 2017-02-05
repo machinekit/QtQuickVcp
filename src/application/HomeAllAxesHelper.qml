@@ -5,6 +5,8 @@ Item {
     property var status: { "synced": false }
     property var command: {"ready": false }
     property bool running: false
+    readonly property bool homingOrderDefined: d.ready && (status.config.axis[0].homeSequence !== -1)
+    readonly property bool allHomed: d.ready ? d.allHomed() : false
 
     QtObject {
         id: d
@@ -83,6 +85,16 @@ Item {
                  }
              }
          }
+
+        function allHomed() {
+            for (var i = 0; i < status.config.axes; ++i) {
+                if (!status.motion.axis[i].homed) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 
     id: root
 
