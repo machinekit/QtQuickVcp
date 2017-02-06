@@ -114,7 +114,9 @@ if [ "${upload}" ]; then
     else
         target="QtQuickVcp_Development"
     fi
-    mv build.release/QtQuickVcp.tar.gz ${target}-${version}-${platform}.tar.gz
+    cp build.release/QtQuickVcp.tar.gz ${target}-latest-Android-${platform}.tar.gz
+    mv build.release/QtQuickVcp.tar.gz ${target}-${version}-Android-${platform}.tar.gz
+
     if [ $release -eq 1 ]; then
         target="MachinekitClient"
     else
