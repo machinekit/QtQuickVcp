@@ -202,7 +202,7 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: QtQuickVcp
-  package: QtQuickVcp-latest-Windows-x86
+  package: QtQuickVcp-Windows-latest-x86
   publish: true
   override: true
   explode: false
