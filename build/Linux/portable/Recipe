@@ -64,7 +64,7 @@ make install
 zipfile="QtQuickVcp.tar.gz"
 mkdir qml
 mkdir lib
-cp -r $QML_IMPORT_PATH/Machinekit qml/Machinekit
+cp -r ${QML_IMPORT_PATH}/Machinekit qml/Machinekit
 cp ${QT_INSTALL_PREFIX}/lib/libmachinetalk* lib/
 tar -zcf $zipfile qml lib
 # allow access to archive from outside the chroot
@@ -72,6 +72,7 @@ chmod a+rwx $zipfile
 chmod a+rwx .
 ls -lh $zipfile
 rm -r qml
+rm -r lib
 
 # create binary zip file
 qt-deploy ../build/deployment-scripts/linux_x64.ini --deploy
