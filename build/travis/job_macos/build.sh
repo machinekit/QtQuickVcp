@@ -46,6 +46,21 @@ qmake -r ..
 make
 make install
 
+# compress QtQuick module
+zipfile="QtQuickVcp.tar.gz"
+mkdir qml
+mkdir lib
+cp -r ${QML_IMPORT_PATH}/Machinekit qml/Machinekit
+cp ${QT_INSTALL_PREFIX}/lib/libmachinetalk* lib/
+cp /opt/local/lib/libzmq.4* lib/
+tar -zcf $zipfile qml lib
+# allow access to archive from outside the chroot
+chmod a+rwx $zipfile
+chmod a+rwx .
+ls -lh $zipfile
+rm -r qml
+rm -r lib
+
 ls
 # create Mac disk image
 qmldir=${PWD}/../apps/MachinekitClient/
@@ -80,14 +95,24 @@ fi
 
 if [ "${upload}" ]; then
     # rename binaries
+    # and upload dmg to Bintray
+    if [ $release -eq 1 ]; then
+        target="QtQuickVcp"
+    else
+        target="QtQuickVcp_Development"
+    fi
+    cp build.release/QtQuickVcp.tar.gz ${target}-latest-MacOSX-${platform}.tar.gz
+    mv build.release/QtQuickVcp.tar.gz ${target}-${version}-MacOSX-${platform}.tar.gz
+    ./build/travis/job_macos/bintray_lib.sh ${target}-${version}*.tar.gz
+    ./build/travis/job_macos/bintray_lib.sh ${target}-latest*.tar.gz
+
     if [ $release -eq 1 ]; then
         target="MachinekitClient"
     else
         target="MachinekitClient_Development"
     fi
     mv build.release/MachinekitClient.dmg ${target}-${version}-${platform}.dmg
-    # Upload dmg to Bintray
-    ./build/travis/job_macos/bintray_app.sh MachinekitClient*.dmg
+    ./build/travis/job_macos/bintray_app.sh ${target}*.dmg
 else
   echo "On branch '$branch' so dmg will not be uploaded." >&2
 fi
