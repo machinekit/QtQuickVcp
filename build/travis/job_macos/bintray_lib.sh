@@ -31,14 +31,6 @@ which curl || exit 1
 which bsdtar || exit 1 # https://github.com/libarchive/libarchive/wiki/ManPageBsdtar1 ; isoinfo cannot read zisofs
 which grep || exit 1
 
-# Do not upload artefacts generated as part of a pull request
-if [ $(env | grep TRAVIS_PULL_REQUEST ) ] ; then
-  if [ "$TRAVIS_PULL_REQUEST" != "false" ] ; then
-    echo "Not uploading AppImage since this is a pull request."
-    exit 0
-  fi
-fi
-
 BINTRAY_USER="${BINTRAY_USER:?Environment variable missing/empty!}" # env
 BINTRAY_API_KEY="${BINTRAY_API_KEY:?Environment variable missing/empty!}" # env
 
@@ -57,18 +49,18 @@ FILE="$1"
 [ -f "$FILE" ] || { echo "$0: Please provide a valid path to a file" >&2 ; exit 1 ;}
 
 # GENERAL NAMING SCHEME FOR APPIMAGES:
-# File: <appName>-<version>-<arch>.AppImage
+# File: <appName>-<version>-<arch>.tar.gz
 #
-# QTQUICKVCP NAMING SCHEME:
-# File:    QtQuickVcp-X.Y.Z-<arch>.AppImage (e.g. QtQuickVcp-2.0.3-x64.AppImage)
+# MACHINEKITCLIENT NAMING SCHEME:
+# File:    QtQuickVcp-X.Y.Z-<arch>.tar.gz (e.g. QtQuickVcp-2.0.3-x64.tar.gz)
 # Version: X.Y.Z
-# Package: QtQuickVcp-Linux-<arch>
+# Package: QtQuickVcp-MacOSX-<arch>
 #
 # NIGHTLY NAMING SCHEME: (For developer builds replace "Nightly" with "Dev")
-# File:    QtQuickVcp-Nightly-<datetime>-<branch>-<commit>-<arch>.AppImage
-#    (e.g. QtQuickVcp-Nightly-201601151332-master-f53w6dg-x64.AppImage)
+# File:    QtQuickVcp-Nightly-<datetime>-<branch>-<commit>-<arch>.tar.gz
+#    (e.g. QtQuickVcp-Nightly-201601151332-master-f53w6dg-x64.tar.gz)
 # Version: <datetime>-<branch>-<commit> (e.g. 201601151332-master-f53w6dg)
-# Package: QtQuickVcp-Nightly-Linux-<branch>-<arch> (e.g. QtQuickVcp-Nightly-master-x64)
+# Package: QtQuickVcp-Nightly-MacOSX-<branch>-<arch> (e.g. QtQuickVcp-Nightly-master-x64)
 
 # Read app name from file name (get characters before first dash)
 APPNAME="$(basename "$FILE" | sed -r 's|^([^-]*)-.*$|\1|')"
@@ -89,7 +81,7 @@ case "${ARCH}" in
   armel )
     SYSTEM="${ARCH} (old 32-bit ARM)"
     ;;
-  armhf )
+  armhf|armv7 )
     SYSTEM="${ARCH} (new 32-bit ARM)"
     ;;
   aarch64 )
@@ -106,9 +98,9 @@ FILE_UPLOAD_PATH="$(basename "${FILE}")"
 if [ "${APPNAME}" == "QtQuickVcp" ]; then
   # Upload a new version but don't publish it (invisible until published)
   url_query="" # Don't publish, don't overwrite existing files with same name
-  PCK_NAME="$APPNAME-Linux-$ARCH"
+  PCK_NAME="$APPNAME-MacOSX-$ARCH"
   BINTRAY_REPO="${BINTRAY_REPO:-QtQuickVcp}" # env, or use "QtQuickVcp"
-  LABELS="[\"machinekit\", \"machine control\", \"VCP\", \"AppImage\"]"
+  LABELS="[\"machinekit\", \"machine control\", \"VCP\", \"dmg\"]"
   [ "${TRUSTED}" == "true" ] && MATURITY="Official" || MATURITY="Stable"
 else
   # Upload and publish a new development/nightly build (visible to users immediately)
@@ -120,7 +112,7 @@ else
   # Get Git commit from $VERSION (get characters after last dash)
   COMMIT="$(echo $VERSION | sed -r 's|^.*-([^-]*)$|\1|')"
 
-  PCK_NAME="$APPNAME-Linux-$BRANCH-$ARCH"
+  PCK_NAME="$APPNAME-MacOSX-$BRANCH-$ARCH"
   BINTRAY_REPO="${BINTRAY_REPO:-QtQuickVcp-Development}" # env, or use "QtQuickVcp-Development"
   LABELS="unofficial"
 
@@ -137,7 +129,7 @@ CURL="curl -u${BINTRAY_USER}:${BINTRAY_API_KEY} -H Content-Type:application/json
 
 #exit 0
 
-# Get metadata from the desktop file inside the AppImage
+# Get metadata from the desktop file inside the dmg
 DESKTOP=$(bsdtar -tf "${FILE}" | grep ^./[^/]*.desktop$ | head -n 1)
 # Extract the description from the desktop file
 
@@ -153,14 +145,14 @@ echo "* DESKTOP $DESKTOP"
 #fi
 
 if [ "${APPNAME}" == "QtQuickVcp" ]; then
-  # Get description from desktop file (source file: build/Linux+BSD/mscore.desktop.in)
+  # Get description from desktop file (source file: build/MacOSX+BSD/mscore.desktop.in)
   DESCRIPTION="QtQuickVcp - Qt Quick Virtual Control Panel for Machinekit"
 else
   # Use custom description for nightly/development builds
   DESCRIPTION="Automated builds of the $BRANCH development branch. FOR TESTING PURPOSES ONLY!"
 fi
 # Add installation instructions to the description (same for all types of build)
-DESCRIPTION="${APPNAME} modules for $SYSTEM Linux systems.
+DESCRIPTION="${APPNAME} modules for $SYSTEM MacOSX systems.
 
 ${DESCRIPTION}
 
@@ -190,7 +182,7 @@ echo "Creating package ${PCK_NAME}..."
     \"maturity\": \"${MATURITY}\"
     }"
   ATTRIBUTES="[
-    {\"name\": \"Platform\", \"values\": [\"Linux\"], \"type\": \"string\"},
+    {\"name\": \"Platform\", \"values\": [\"MacOSX\"], \"type\": \"string\"},
     {\"name\": \"Architecture\", \"values\": [\"${SYSTEM}\"], \"type\": \"string\"}
     ]"
 ${CURL} -X POST -d "${data}" ${API}/packages/${BINTRAY_REPO_OWNER}/${BINTRAY_REPO} && new_package="true"
@@ -209,9 +201,9 @@ if [ $(which zsyncmake) ] ; then
   # Clear ISO 9660 Volume Descriptor #1 field "Application Used"
   # (contents not defined by ISO 9660) and write URL there
   dd if=/dev/zero of="${FILE}" bs=1 seek=33651 count=512 conv=notrunc
-  # Example for next line: Subsurface-_latestVersion-x86_64.AppImage
+  # Example for next line: Subsurface-_latestVersion-x86_64.tar.gz
   NAMELATESTVERSION=$(echo "${FILE_UPLOAD_PATH}" | sed -e "s|${VERSION}|_latestVersion|g")
-  # Example for next line: bintray-zsync|probono|AppImages|Subsurface|Subsurface-_latestVersion-x86_64.AppImage.zsync
+  # Example for next line: bintray-zsync|probono|dmgs|Subsurface|Subsurface-_latestVersion-x86_64.tar.gz.zsync
   LINE="bintray-zsync|${BINTRAY_REPO_OWNER}|${BINTRAY_REPO}|${PCK_NAME}|${NAMELATESTVERSION}.zsync"
   echo "${LINE}" | dd of="${FILE}" bs=1 seek=33651 count=512 conv=notrunc
   echo ""
@@ -227,9 +219,9 @@ fi
 echo ""
 echo "Uploading ${FILE}..."
 ${CURL} -T ${FILE} "${API}/content/${BINTRAY_REPO_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${VERSION}/${FILE_UPLOAD_PATH}?${url_query}" \
-  || { echo "$0: Error: AppImage upload failed!" >&2 ; exit 1 ;}
+  || { echo "$0: Error: dmg upload failed!" >&2 ; exit 1 ;}
 
-# Update version information *after* AppImage upload (don't want to create an empty version if upload fails)
+# Update version information *after* dmg upload (don't want to create an empty version if upload fails)
 echo ""
 echo "Updating version information for ${VERSION}..."
     data="{
@@ -258,7 +250,7 @@ if [ "${APPNAME}" != "QtQuickVcp" ]; then
   fi
 
   # Delete older versions of non-release packages (nightlies and dev. builds)
-  HERE="$(dirname "$(readlink -f "${0}")")"
+  HERE="$( cd "$(dirname "${0}")" ; pwd -P )"
   "${HERE}/bintray-tidy.sh" archive "${BINTRAY_REPO_OWNER}/${BINTRAY_REPO}/${PCK_NAME}" || true
 fi
 

@@ -87,21 +87,24 @@ fi
 
 if [ "${upload}" ]; then
     # rename binaries
+    # and upload AppImage to Bintray
     if [ $release -eq 1 ]; then
         target="QtQuickVcp"
     else
         target="QtQuickVcp_Development"
     fi
-    mv build.release/QtQuickVcp.tar.gz ${target}-${version}-${platform}.tar.gz
+    cp build.release/QtQuickVcp.tar.gz ${target}-latest-Linux-${platform}.tar.gz
+    mv build.release/QtQuickVcp.tar.gz ${target}-${version}-Linux-${platform}.tar.gz
+    ./build/travis/job2_AppImage/bintray_lib.sh ${target}-${version}*.tar.gz
+    ./build/travis/job2_AppImage/bintray_lib.sh ${target}-latest*.tar.gz
+
     if [ $release -eq 1 ]; then
         target="MachinekitClient"
     else
         target="MachinekitClient_Development"
     fi
     mv build.release/MachinekitClient.AppImage ${target}-${version}-${platform}.AppImage
-    # Upload AppImage to Bintray
-    ./build/travis/job2_AppImage/bintray_lib.sh QtQuickVcp*.tar.gz
-    ./build/travis/job2_AppImage/bintray_app.sh MachinekitClient*.AppImage
+    ./build/travis/job2_AppImage/bintray_app.sh ${target}*.AppImage
 else
   echo "On branch '$branch' so AppImage will not be uploaded." >&2
 fi
