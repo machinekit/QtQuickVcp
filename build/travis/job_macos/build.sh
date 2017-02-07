@@ -32,13 +32,13 @@ echo "#define REVISION \"${version}\"" > ./src/application/revision.h
 ##########################################################################
 # BUILD QTQUICKVCP
 ##########################################################################
-export PATH="${QT_PATH}/bin:$PATH"
-export LD_LIBRARY_PATH="${QT_PATH}/lib:$LD_LIBRARY_PATH"
-export QT_PLUGIN_PATH="${QT_PATH}/plugins"
-export QML_IMPORT_PATH="${QT_PATH}/qml"
-export QML2_IMPORT_PATH="${QT_PATH}/qml"
-export QT_QPA_PLATFORM_PLUGIN_PATH="${QT_PATH}/plugins/platforms"
-export QT_INSTALL_PREFIX="${QT_PATH}"
+export PATH="${QT_MACOS}/bin:$PATH"
+export LD_LIBRARY_PATH="${QT_MACOS}/lib:$LD_LIBRARY_PATH"
+export QT_PLUGIN_PATH="${QT_MACOS}/plugins"
+export QML_IMPORT_PATH="${QT_MACOS}/qml"
+export QML2_IMPORT_PATH="${QT_MACOS}/qml"
+export QT_QPA_PLATFORM_PLUGIN_PATH="${QT_MACOS}/plugins/platforms"
+export QT_INSTALL_PREFIX="${QT_MACOS}"
 
 mkdir -p build.release
 cd build.release
