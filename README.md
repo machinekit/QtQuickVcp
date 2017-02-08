@@ -42,6 +42,20 @@ The MachinekitClient is available in following app stores:
 | Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-MacOSX-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-MacOSX-master-x64/_latestVersion#files) |
 | Android armv7  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Android-master-armv7/_latestVersion#files) |
 
+**QtQuickVcp direct download links**
+
+For integration into your CI system QtQuickVcp can be directly downloaded using the download link in the following format:
+
+```
+https://dl.bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-latest-<OS>-<arch>.tar.gz
+```
+
+    For example, the latest QtQuickVcp Android build can be downloaded with the following command:
+```bash
+wget https://dl.bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-latest-Android-armv7.tar.gz
+```
+
+
 ### Stable releases
 | Operating System   |  MachinekitClient  | QtQuickVcp |
 |----------|:-------------:|:----:|
