@@ -67,7 +67,7 @@ deploy:
   override: true
   explode: false
   artifact: QtQuickVcp-x64-latest
-  version: $(appveyor_build_version)
+  version: latest
   on:
     branch: master
     appveyor_repo_tag: false
@@ -114,7 +114,7 @@ deploy:
   override: true
   explode: false
   artifact: QtQuickVcp-x64-latest
-  version: $(appveyor_build_version)
+  version: latest
   on:
     appveyor_repo_tag: true
 
@@ -160,7 +160,7 @@ deploy:
   override: true
   explode: false
   artifact: QtQuickVcp-x86-latest
-  version: $(appveyor_build_version)
+  version: latest
   on:
     branch: master
     appveyor_repo_tag: false
@@ -207,7 +207,7 @@ deploy:
   override: true
   explode: false
   artifact: QtQuickVcp-x86-latest
-  version: $(appveyor_build_version)
+  version: latest
   on:
     appveyor_repo_tag: true
 
