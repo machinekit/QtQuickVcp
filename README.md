@@ -50,7 +50,7 @@ For integration into your CI system QtQuickVcp can be directly downloaded using 
 https://dl.bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-latest-<OS>-<arch>.tar.gz
 ```
 
-    For example, the latest QtQuickVcp Android build can be downloaded with the following command:
+For example, the latest QtQuickVcp Android build can be downloaded with the following command:
 ```bash
 wget https://dl.bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-latest-Android-armv7.tar.gz
 ```
