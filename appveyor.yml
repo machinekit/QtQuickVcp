@@ -46,7 +46,7 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: QtQuickVcp-Development
-  package: QtQuickVcp_Development-Windows-master-x64
+  package: QtQuickVcp_Development-Windows-latest-x64
   publish: true
   override: true
   explode: false
@@ -94,7 +94,7 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: QtQuickVcp
-  package: QtQuickVcp-Windows-x64
+  package: QtQuickVcp-Windows-latest-x64
   publish: true
   override: true
   explode: false
@@ -139,7 +139,7 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: QtQuickVcp-Development
-  package: QtQuickVcp_Development-Windows-master-x86
+  package: QtQuickVcp_Development-Windows-latest-x86
   publish: true
   override: true
   explode: false
@@ -187,7 +187,7 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: QtQuickVcp
-  package: QtQuickVcp-Windows-x86
+  package: QtQuickVcp-latest-Windows-x86
   publish: true
   override: true
   explode: false
@@ -202,7 +202,7 @@ deploy:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
   repo: QtQuickVcp
-  package: QtQuickVcp-latest-Windows-x86
+  package: QtQuickVcp-Windows-latest-x86
   publish: true
   override: true
   explode: false

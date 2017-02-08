@@ -65,8 +65,8 @@ FILE="$1"
 # Read app name from file name (get characters before first dash)
 APPNAME="$(basename "$FILE" | sed -r 's|^([^-]*)-.*$|\1|')"
 
-# Read version from the file name (get characters between first and last dash)
-VERSION="$(basename "$FILE" | sed -r 's|^[^-]*-(.*)-[^-]*$|\1|')"
+# Read version from the file name (get characters between first and almost last dash)
+VERSION="$(basename "$FILE" | sed -r 's|^[^-]*-(.*)-[^-]*-[^-]*$|\1|')"
 
 # Read architecture from file name (characters between last dash and .tar.gz)
 ARCH="$(basename "$FILE" | sed -r 's|^.*-([^-]*)\.tar.gz$|\1|')"
