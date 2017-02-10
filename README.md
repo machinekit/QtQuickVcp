@@ -1,6 +1,10 @@
 # QtQuick Virtual Control Panel
 
-A remote UI implementation for [Machinekit](https://github.com/machinekit/machinekit) written in Qt/C++/QML.
+A remote UI implementation for [Machinekit](https://github.com/machinekit/machinekit) written in Qt/C++/QML. <a href="#contents">More info...</a>
+
+|   |  Travis CI | AppVeyor |
+|----------|:----:|:----:|
+| Build Status | [![Build Status](https://api.travis-ci.org/machinekoder/QtQuickVcp.svg?branch=master)](http://travis-ci.org/machinekoder/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/h8pi1hm0gj15nmgm?svg=true)](https://ci.appveyor.com/project/machinekoder/qtquickvcp) |
 
 ## Features
 
@@ -13,14 +17,6 @@ A remote UI implementation for [Machinekit](https://github.com/machinekit/machin
 * textual GCode preview
 * 3D GCode preview
 * cross-platform: runs on **Windows**, **Linux**, **Mac OS X**, **Android** and **iOS**
-
-## More info
-
-**Build status:**
-
-|   |  Travis CI | AppVeyor |
-|----------|:----:|:----:|
-| Status | [![Build Status](https://api.travis-ci.org/machinekoder/QtQuickVcp.svg?branch=master)](http://travis-ci.org/machinekoder/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva/branch/master?svg=true)](https://ci.appveyor.com/project/machinekoder/qtquickvcp) |
 
 <a name="download" />
 ## Download
@@ -65,6 +61,7 @@ wget https://dl.bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Devel
 | Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-MacOSX-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-MacOSX-x64/_latestVersion#files) |
 | Android armv7 | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Android-armv7/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Android-armv7/_latestVersion#files) |
 
+<a name="contents" />
 ## Contents
 
 **<a href="#qtquickvcp">What is QtQuickVcp?</a>**
