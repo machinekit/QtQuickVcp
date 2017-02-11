@@ -20,6 +20,7 @@ EstopAction 1.0 EstopAction.qml
 PowerAction 1.0 PowerAction.qml
 OpenAction 1.0 OpenAction.qml
 ReopenAction 1.0 ReopenAction.qml
+EditProgramAction 1.0 EditProgramAction.qml
 RunProgramAction 1.0 RunProgramAction.qml
 StepProgramAction 1.0 StepProgramAction.qml
 PauseResumeProgramAction 1.0 PauseResumeProgramAction.qml

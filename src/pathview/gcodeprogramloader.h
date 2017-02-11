@@ -39,9 +39,15 @@ class GCodeProgramLoader : public QObject
     Q_PROPERTY(QString localPath READ localPath WRITE setLocalPath NOTIFY localPathChanged)
     Q_PROPERTY(QString remotePath READ remotePath WRITE setRemotePath NOTIFY remotePathChanged)
     Q_PROPERTY(GCodeProgramModel *model READ model WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
 
 public:
     explicit GCodeProgramLoader(QObject *parent = 0);
+
+    QString text() const
+    {
+        return m_text;
+    }
 
     QString localFilePath() const
     {
@@ -64,15 +70,26 @@ public:
     }
 
 signals:
+    void textChanged();
     void localFilePathChanged(QString arg);
     void localPathChanged(QString arg);
     void remotePathChanged(QString arg);
     void modelChanged(GCodeProgramModel * arg);
     void loadingFinished();
     void loadingFailed();
+    void error(QString message);
 
 public slots:
+    void save(const QString &text);
+    void saveAs(const QString &localFilePath, const QString &text);
     void load();
+
+    void setText(const QString &arg) {
+        if (m_text != arg) {
+            m_text = arg;
+            emit textChanged();
+        }
+    }
 
     void setLocalFilePath(QString arg)
     {
@@ -80,6 +97,7 @@ public slots:
             m_localFilePath = arg;
             emit localFilePathChanged(arg);
         }
+        // qDebug("%s(%s:%d) m_localFilePath(%s)", __FILE__, __FUNCTION__, __LINE__, m_localFilePath.toLatin1().constData());
     }
 
     void setLocalPath(QString arg)
@@ -113,6 +131,7 @@ private:
     QString m_localPath;
     QString m_remotePath;
     GCodeProgramModel * m_model;
+    QString m_text;
 }; // class GCodeProgramLoader
 } // namespace qtquickvcp
 

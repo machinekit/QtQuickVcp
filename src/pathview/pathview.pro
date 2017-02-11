@@ -47,6 +47,8 @@ RESOURCES += \
     pathview.qrc
 
 QML_FILES = \
+    $$PWD/SourceEdit.qml \
+    $$PWD/FontIcon.qml \
     $$PWD/BoundingBox3D.qml \
     $$PWD/Coordinate3D.qml \
     $$PWD/GCodeSync.qml \

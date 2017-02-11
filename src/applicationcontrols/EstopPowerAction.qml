@@ -35,7 +35,7 @@ ApplicationAction {
     tooltip: qsTr("Reset Machine [%1]").arg(shortcut)
     checkable: true
     onTriggered: {
-        if (!checked) {
+        if (checked) {
             if (status.task.taskState === ApplicationStatus.TaskStateEstop) {
                 command.setTaskState('execute', ApplicationCommand.TaskStateEstopReset);
             }
@@ -50,6 +50,6 @@ ApplicationAction {
         }
     }
 
-    checked: _ready && (status.task.taskState !== ApplicationStatus.TaskStateOn)
+    checked: _ready && (status.task.taskState === ApplicationStatus.TaskStateOn)
     enabled: _ready
 }

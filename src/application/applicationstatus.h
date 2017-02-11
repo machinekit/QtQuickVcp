@@ -28,6 +28,17 @@
 #include <machinetalk/protobuf/status.pb.h>
 #include <application/statusbase.h>
 
+#include <QDateTime>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <QThread>
+#include <QtConcurrentRun>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QEventLoop>
+#include <QAtomicInt>
+
 namespace qtquickvcp {
 
 class ApplicationStatus : public machinetalk::application::StatusBase
@@ -223,6 +234,7 @@ public slots:
 private:
     QJsonObject     m_config;
     QJsonObject     m_motion;
+    QJsonObject     m_motion_buf;
     QJsonObject     m_io;
     QJsonObject     m_task;
     QJsonObject     m_interp;
@@ -231,6 +243,7 @@ private:
     StatusChannels  m_syncedChannels;
     StatusChannels  m_channels;
     QHash<QByteArray, StatusChannel> m_channelMap;
+    QAtomicInt      m_atomicInt;
 
     void emcstatUpdateReceived(StatusChannel channel, const machinetalk::Container &rx);
     void updateSync(StatusChannel channel);
@@ -240,6 +253,8 @@ private:
     void updateTaskObject(const machinetalk::EmcStatusTask &task);
     void updateInterpObject(const machinetalk::EmcStatusInterp &interp);
     void initializeObject(StatusChannel channel);
+    QFuture<void> future;
+    void run_thread(const machinetalk::EmcStatusMotion &motion);
 
 
 private slots:

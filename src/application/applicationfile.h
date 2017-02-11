@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QFile>
+#include <QFileInfo>
 #include "qftp.h"
 #include "applicationfilemodel.h"
 
@@ -34,6 +35,7 @@ class ApplicationFile : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
+    Q_PROPERTY(QString fileName READ fileName WRITE setFileName NOTIFY fileNameChanged)
     Q_PROPERTY(QString remoteFilePath READ remoteFilePath WRITE setRemoteFilePath NOTIFY remoteFilePathChanged)
     Q_PROPERTY(QString localFilePath READ localFilePath WRITE setLocalFilePath NOTIFY localFilePathChanged)
     Q_PROPERTY(QString remotePath READ remotePath WRITE setRemotePath NOTIFY remotePathChanged)
@@ -44,6 +46,7 @@ class ApplicationFile : public QObject
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(bool networkReady READ networkReady NOTIFY networkReadyChanged)
+    Q_PROPERTY(bool editMode READ editMode WRITE setEditMode NOTIFY editModeChanged)
     Q_PROPERTY(ApplicationFileModel *model READ model NOTIFY modelChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_ENUMS(TransferState TransferError)
@@ -69,6 +72,10 @@ public:
         FileError = 2
     };
 
+    bool editMode() const {
+        return m_editMode;
+    }
+
     QString uri() const
     {
         return m_uri;
@@ -82,6 +89,11 @@ public:
     QString errorString() const
     {
         return m_errorString;
+    }
+
+    QString fileName() const
+    {
+        return m_fileName;
     }
 
     QString localFilePath() const
@@ -135,6 +147,13 @@ public:
     }
 
 public slots:
+    void setEditMode(const bool &a) {
+        if (a != m_editMode) {
+            m_editMode = a;
+            emit editModeChanged();
+        }
+    }
+
     void setUri(const QString &arg)
     {
         if (m_uri == arg)
@@ -144,6 +163,15 @@ public slots:
         emit uriChanged(arg);
     }
 
+    void setFileName(const QString &arg)
+    {
+        if (m_fileName == arg)
+            return;
+
+        m_fileName = arg;
+        emit fileNameChanged(arg);
+    }
+
     void setLocalFilePath(const QString &arg)
     {
         if (m_localFilePath == arg)
@@ -151,6 +179,13 @@ public slots:
 
         m_localFilePath = arg;
         emit localFilePathChanged(arg);
+
+        QFileInfo fi(arg);
+        QString fname = fi.fileName();
+        if (m_fileName != fname) {
+            m_fileName = fname;
+            emit fileNameChanged(m_fileName);
+        }
     }
 
     void setRemoteFilePath(const QString &arg)
@@ -206,9 +241,12 @@ public slots:
     void createDirectory(const QString &name);
     void abort();
     void clearError();
+    bool isFileExist(QString fileName);
 
 private:
+    bool            m_editMode;
     QString         m_uri;
+    QString         m_fileName;
     QString         m_localFilePath;
     QString         m_remoteFilePath;
     QString         m_localPath;
@@ -241,9 +279,12 @@ private slots:
     void transferProgress(qint64 bytesSent, qint64 bytesTotal);
     void networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accesible);
     void addToList(const QUrlInfo &urlInfo);
+    void updateList();
     void ftpCommandFinished(int, bool error);
 
 signals:
+    void editModeChanged();
+    void fileNameChanged(const QString &arg);
     void uriChanged(const QString &arg);
     void errorChanged(TransferError arg);
     void errorStringChanged(const QString &arg);

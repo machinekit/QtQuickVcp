@@ -31,6 +31,7 @@ namespace qtquickvcp {
 
 ApplicationFile::ApplicationFile(QObject *parent) :
     QObject(parent),
+    m_editMode(false),
     m_uri(""),
     m_localFilePath(""),
     m_remoteFilePath(""),
@@ -70,6 +71,17 @@ ApplicationFile::~ApplicationFile()
     m_networkManager->deleteLater();
     m_model->deleteLater();
 }
+
+bool ApplicationFile::isFileExist(QString fileName)
+{
+    if (fileName.isEmpty()) return false;
+
+    QString localFilePath = applicationFilePath(fileName, m_serverDirectory);
+    QFileInfo fileInfo(localFilePath);
+    qDebug("%s(%s:%d) localFilePath(%s)", __FILE__, __FUNCTION__, __LINE__, localFilePath.toLatin1().constData());
+    return fileInfo.exists();
+}
+
 
 void ApplicationFile::startUpload()
 {
@@ -142,6 +154,8 @@ void ApplicationFile::startDownload()
         emit serverDirectoryChanged(m_serverDirectory);
         fileName = fileName.mid(i + 1);
     }
+    m_fileName = fileName;
+    emit fileNameChanged(m_fileName);
 
     url.setUrl(m_uri);
 
@@ -329,6 +343,8 @@ void ApplicationFile::initializeFtp()
     this, &ApplicationFile::ftpCommandFinished);
     connect(m_ftp, &QFtp::listInfo,
     this, &ApplicationFile::addToList);
+    connect(m_ftp, &QFtp::listUpdate,
+    this, &ApplicationFile::updateList);
     connect(m_ftp, &QFtp::dataTransferProgress,
     this, &ApplicationFile::transferProgress);
 
@@ -395,6 +411,16 @@ void ApplicationFile::addToList(const QUrlInfo &urlInfo)
 
     m_model->addItem(item);
 }
+
+void ApplicationFile::updateList()
+{
+    // qDebug("%s(%s:%d) begin", __FILE__, __FUNCTION__, __LINE__);
+    // quint64 baseTime = QDateTime::currentMSecsSinceEpoch();
+    m_model->beginUpdate();
+    m_model->endUpdate(); // this takes hundreds of ms
+    // qDebug("%s(%s:%d) end time (%llu)", __FILE__, __FUNCTION__, __LINE__, QDateTime::currentMSecsSinceEpoch() - baseTime);
+}
+
 
 void ApplicationFile::ftpCommandFinished(int, bool error)
 {

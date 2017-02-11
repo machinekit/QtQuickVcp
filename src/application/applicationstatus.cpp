@@ -34,7 +34,8 @@ ApplicationStatus::ApplicationStatus(QObject *parent) :
     m_running(false),
     m_synced(false),
     m_syncedChannels(NoChannel),
-    m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel)
+    m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel),
+    m_atomicInt(0)
 {
     connect(this, &ApplicationStatus::taskChanged,
             this, &ApplicationStatus::updateRunning);
@@ -63,10 +64,29 @@ void ApplicationStatus::updateSync(ApplicationStatus::StatusChannel channel)
     }
 }
 
+void ApplicationStatus::run_thread(const machinetalk::EmcStatusMotion &motion)
+{
+    // Service::recurseMessage(motion, &m_motion_buf);
+    MachinetalkService::recurseMessage(motion, m_motion_buf);
+
+    while (m_atomicInt.testAndSetAcquire(0, 1) == false) {};
+    m_motion = m_motion_buf;
+    m_atomicInt = 0;
+
+    emit motionChanged(m_motion);
+}
+
 void ApplicationStatus::updateMotionObject(const EmcStatusMotion &motion)
 {
-    MachinetalkService::recurseMessage(motion, m_motion);
-    emit motionChanged(m_motion);
+    future = QtConcurrent::run(this, &ApplicationStatus::run_thread, motion);
+    while (future.isRunning())
+    {
+        if (m_atomicInt.testAndSetAcquire(0, 2))
+        {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+            m_atomicInt = 0;
+        }
+    }
 }
 
 void ApplicationStatus::updateConfigObject(const EmcStatusConfig &config)
@@ -190,6 +210,7 @@ void ApplicationStatus::initializeObject(ApplicationStatus::StatusChannel channe
     {
     case MotionChannel:
         m_motion = QJsonObject();
+        m_motion_buf = QJsonObject();
         MachinetalkService::recurseDescriptor(EmcStatusMotion::descriptor(), m_motion);
         emit motionChanged(m_motion);
         break;

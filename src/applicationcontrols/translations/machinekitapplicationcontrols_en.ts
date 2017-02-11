@@ -165,6 +165,17 @@
     </message>
 </context>
 <context>
+    <name>EditProgramAction</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit current file [%1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>EstopAction</name>
     <message>
         <source>Estop</source>

@@ -33,6 +33,23 @@ GCodeProgramLoader::GCodeProgramLoader(QObject *parent) :
 {
 }
 
+void GCodeProgramLoader::save(const QString &text)
+{
+    QString localFilePath = QUrl(m_localFilePath).toLocalFile();
+    saveAs(localFilePath, text);
+}
+
+void GCodeProgramLoader::saveAs(const QString &localFilePath, const QString &text)
+{
+    QFile f(localFilePath);
+    if (!f.open(QFile::WriteOnly | QFile::Truncate | QFile::Text)) {
+        emit error(tr("Cannot save: ") + f.errorString());
+        return;
+    }
+    f.write(text.toLocal8Bit());
+    f.close();
+}
+
 void GCodeProgramLoader::load()
 {
     if (m_model == nullptr)
@@ -63,12 +80,11 @@ void GCodeProgramLoader::load()
         return;
     }
 
-    int lineNumber = 0;
+    QString data = QString(file.readAll());
+    setText(data);
 
-    while (!file.atEnd()) {
-        file.readLine();
-        lineNumber++;
-    }
+    int lineNumber = 0;
+    lineNumber = data.count(QLatin1Char('\n')) + 1; // +1 for the last line
 
     m_model->beginUpdate();
     m_model->prepareFile(remoteFilePath, lineNumber);

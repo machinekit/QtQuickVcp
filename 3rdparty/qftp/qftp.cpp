@@ -105,6 +105,7 @@ public:
 
 signals:
     void listInfo(const QUrlInfo&);
+    void listUpdate();
     void readyRead();
     void dataTransferProgress(qint64, qint64);
 
@@ -688,6 +689,7 @@ void QFtpDTP::socketReadyRead()
                     err = QString::fromLatin1(line);
             }
         }
+        emit listUpdate();
     } else {
         if (!is_ba && data.dev) {
             do {
@@ -1428,6 +1430,8 @@ QFtp::QFtp(QObject *parent)
             SIGNAL(dataTransferProgress(qint64,qint64)));
     connect(&d->pi.dtp, SIGNAL(listInfo(QUrlInfo)),
             SIGNAL(listInfo(QUrlInfo)));
+    connect(&d->pi.dtp, SIGNAL(listUpdate()),
+            SIGNAL(listUpdate()));
 }
 
 /*!

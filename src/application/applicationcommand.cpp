@@ -615,6 +615,14 @@ void ApplicationCommand::shutdown()
     }
 
     sendShutdown(m_tx);
+
+    QProcess process;
+    process.setWorkingDirectory("/sbin");
+    process.start("sudo -S shutdown -P now");   // -P(power-off)
+
+    bool retval = false;
+    while ((retval = process.waitForFinished()));
+        qDebug() << process.readAll();
 }
 
 void ApplicationCommand::setConnected()

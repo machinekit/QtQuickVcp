@@ -23,6 +23,7 @@
 #ifndef APPLICATIONCOMMAND_H
 #define APPLICATIONCOMMAND_H
 
+#include <QProcess>
 #include <QObject>
 #include <QJsonArray>
 #include <machinetalk/protobuf/message.pb.h>

@@ -15,6 +15,7 @@ RESOURCES += \
     applicationcontrols.qrc
 
 CONTROLS_QML_FILES = \
+    $$PWD/EditProgramAction.qml \
     $$PWD/EstopAction.qml \
     $$PWD/PowerAction.qml \
     $$PWD/OpenAction.qml \
