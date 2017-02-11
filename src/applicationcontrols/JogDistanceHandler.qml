@@ -31,22 +31,22 @@ ApplicationObject {
     property var incrementsModelReverse: incrementsModel.slice(0).reverse()
     property var distanceModel: continuousVisible ? [0.0].concat(_incrementsModelBase) : _incrementsModelBase
     property var distanceModelReverse: distanceModel.slice(0).reverse()
-    property var _incrementsModelBase: object.status.synced ? getIncrements() : []
+    property var _incrementsModelBase: root.status.synced ? _parseIncrements(axis, status) : []
+
+    id: root
 
     function _compareNumbers(a, b)
     {
         return a - b;
     }
 
-    id: object
-
-    function getIncrements() {
+    function _parseIncrements(axis, status) {
         var axisIncrements = undefined;
-        if ((object.axis >= 0) && (object.axis < object.status.config.axes)) {
-            axisIncrements = object.status.config.axis[object.axis].increments;
+        if ((axis >= 0) && (axis < status.config.axes)) {
+            axisIncrements = status.config.axis[axis].increments;
         }
         if ((axisIncrements === undefined) || (axisIncrements === "")) {
-            axisIncrements =  object.status.config.increments;
+            axisIncrements = status.config.increments;
         }
         return axisIncrements.split(" ").sort(_compareNumbers);
     }
