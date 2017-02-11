@@ -27,9 +27,9 @@ ApplicationObject {
     property int axis: 0
     property bool continuousVisible: true
     property string continuousText: qsTr("Continuous")
-    property var incrementsModel: continuousVisible ? _incrementsModelBase.concat([continuousText]) : _incrementsModelBase
+    property var incrementsModel: continuousVisible ? [continuousText].concat(_incrementsModelBase) : _incrementsModelBase
     property var incrementsModelReverse: incrementsModel.slice(0).reverse()
-    property var distanceModel: continuousVisible ? _incrementsModelBase.concat([0]) : _incrementsModelBase
+    property var distanceModel: continuousVisible ? [0.0].concat(_incrementsModelBase) : _incrementsModelBase
     property var distanceModelReverse: distanceModel.slice(0).reverse()
     property var _incrementsModelBase: object.status.synced ? getIncrements() : []
 
