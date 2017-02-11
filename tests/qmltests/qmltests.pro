@@ -7,4 +7,5 @@ QML_IMPORT_PATH += "$$PWD/../../app/PMCS_UI.PMCS UI"
 IMPORTPATH += "$$PWD/../../app/PMCS_UI.PMCS UI"
 
 DISTFILES += \
-    tst_ApplicationObject.qml
+    tst_ApplicationObject.qml \
+    tst_JogDistanceHandler.qml

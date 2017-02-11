@@ -27,11 +27,13 @@ ApplicationObject {
     property int axis: 0
     property bool continuousVisible: true
     property string continuousText: qsTr("Continuous")
-    property var incrementsModel: continuousVisible ? [continuousText].concat(_incrementsModelBase) : _incrementsModelBase
+    property var incrementsModel: continuousVisible ? [continuousText].concat(_incrementsModelBase.increments) : _incrementsModelBase
     property var incrementsModelReverse: incrementsModel.slice(0).reverse()
-    property var distanceModel: continuousVisible ? [0.0].concat(_incrementsModelBase) : _incrementsModelBase
+    property var distanceModel: continuousVisible ? [0.0].concat(_incrementsModelBase.distances) : _incrementsModelBase
     property var distanceModelReverse: distanceModel.slice(0).reverse()
-    property var _incrementsModelBase: root.status.synced ? _parseIncrements(axis, status) : []
+    property var _incrementsModelBase: _ready ? _parseIncrements(axis, status) : { increments: [], distances: [] }
+    property double _linearUnits: _ready ? status.config.linearUnits : 1.0
+    property bool _ready: status.synced
 
     id: root
 
@@ -40,15 +42,76 @@ ApplicationObject {
         return a - b;
     }
 
+    function _fromInternalLinearUnit(scale) {
+        var units = root._linearUnits * 25.4
+        return units * scale;
+    }
+
+    function _parseIncrementItem(increment) {
+        var scale;
+        if (increment.endsWith("mm")) {
+            scale = _fromInternalLinearUnit(1.0 / 25.4);
+            increment = increment.slice(0, increment.length - 2);
+        }
+        else if (increment.endsWith("cm")) {
+            scale = _fromInternalLinearUnit(10.0 / 25.4);
+            increment = increment.slice(0, increment.length - 2);
+        }
+        else if (increment.endsWith("um")) {
+            scale = _fromInternalLinearUnit(0.001 / 25.4);
+            increment = increment.slice(0, increment.length - 2);
+        }
+        else if (increment.endsWith("in")) {
+            scale = _fromInternalLinearUnit(1.0);
+            increment = increment.slice(0, increment.length - 2);
+        }
+        else if (increment.endsWith("inch")) {
+            scale = _fromInternalLinearUnit(1.0);
+            increment = increment.slice(0, increment.length - 4);
+        }
+        else if (increment.endsWith("mil")) {
+            scale = _fromInternalLinearUnit(0.001);
+            increment = increment.slice(0, increment.length - 3);
+        }
+        else {
+            scale = 1.0;
+        }
+
+        increment = increment.trim();
+        if (increment.indexOf("/") !== -1) {
+            var items = increment.split("/");
+            increment = Number(items[0].trim()) / Number(items[1].trim());
+        }
+        else {
+            increment = Number(increment);
+        }
+
+        return increment * scale;
+    }
+
     function _parseIncrements(axis, status) {
-        var axisIncrements = undefined;
+        /* load per axis increments or generic increments */
+        var increments = undefined;
         if ((axis >= 0) && (axis < status.config.axes)) {
-            axisIncrements = status.config.axis[axis].increments;
+            increments = status.config.axis[axis].increments;
         }
-        if ((axisIncrements === undefined) || (axisIncrements === "")) {
-            axisIncrements = status.config.increments;
+        if ((increments === undefined) || (increments === "")) {
+            increments = status.config.increments;
         }
-        return axisIncrements.split(" ").sort(_compareNumbers);
+
+        /* axis increments can have the form "1 2 3 4" or "1cm, 3mm, 4in" */
+        if (increments.indexOf(",") !== -1) {
+            increments = increments.split(",");
+            increments = increments.map(function (item) { return item.trim(); });
+        }
+        else {
+            increments = increments.split(" ");
+        }
+
+        /* convert the elements to numbers */
+        var distances = increments.map(_parseIncrementItem);
+
+        return { increments: increments, distances: distances };
     }
 }
 
