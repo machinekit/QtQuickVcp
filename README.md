@@ -4,14 +4,14 @@ A remote UI implementation for [Machinekit](https://github.com/machinekit/machin
 
 |   |  Travis CI | AppVeyor |
 |----------|:----:|:----:|
-| Build Status | [![Build Status](https://api.travis-ci.org/machinekoder/QtQuickVcp.svg?branch=master)](http://travis-ci.org/machinekoder/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/h8pi1hm0gj15nmgm?svg=true)](https://ci.appveyor.com/project/machinekoder/qtquickvcp) |
+| Build Status | [![Build Status](https://api.travis-ci.org/qtquickvcp/QtQuickVcp.svg?branch=master)](http://travis-ci.org/qtquickvcp/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/h8pi1hm0gj15nmgm?svg=true)](https://ci.appveyor.com/project/machinekoder/qtquickvcp) |
 
 ## Features
 
 * enables building remote user interfaces for Machinekit
 * automatic service discovery
 * control one or multiple Machinekit instance
-* remote UI deployment via [MachinekitClient](https://github.com/machinekoder/MachinekitClient/)
+* remote UI deployment via MachinekitClient
 * remote Machinekit instance launcher
 * UI components for machine control applications
 * textual GCode preview
@@ -226,19 +226,19 @@ while True:
 ```
 
 ##### Modifications for 3D Printers
-The Machineface user interface is especially designed for controlling 3D printers. Therefore it features some additional controls for heatbed, extruder temperature and more. It implements following a set of [MCodes](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.ini#L86) as well as a few [HAL signals](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.hal#L610). You may also want to take a look at the source code of Machineface: [DisplayPanel.qml](https://github.com/machinekoder/Machineface/blob/master/Machineface/DisplayPanel.qml#L54)
+The Machineface user interface is especially designed for controlling 3D printers. Therefore it features some additional controls for heatbed, extruder temperature and more. It implements following a set of [MCodes](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.ini#L86) as well as a few [HAL signals](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.hal#L610). You may also want to take a look at the source code of Machineface: [DisplayPanel.qml](https://github.com/qtquickvcp/Machineface/blob/master/Machineface/DisplayPanel.qml#L54)
 
 #### Cloning the User Interfaces
 At the moment two user interfaces based on QtQuickVcp exist:
 
-[Machineface](https://github.com/machinekoder/Machineface): a user interfaces designed for the use with small screens especially for 3D printers
+[Machineface](https://github.com/qtquickvcp/Machineface): a user interfaces designed for the use with small screens especially for 3D printers
 
-[Cetus](https://github.com/machinekoder/Cetus.git): a full-featured user interfaces that should provide something like Axis
+[Cetus](https://github.com/qtquickvcp/Cetus.git): a full-featured user interfaces that should provide something like Axis
 
 Clone both user interfaces on your device with Machinekit installed. I recommend **forking the user interfaces on GitHub** and cloning the fork so you can push modifications upstream quickly. To modify these user interfaces a simple text editor is sufficient. Using a text editor with syntax highlighting for QML might improve the development experience. (e.g. Kate or Qt Creator)
 
-    git clone https://github.com/machinekoder/Cetus.git
-    git clone https://github.com/machinekoder/Machineface.git
+    git clone https://github.com/qtquickvcp/Cetus.git
+    git clone https://github.com/qtquickvcp/Machineface.git
 
 #### Install the MachinekitClient
 Please download and install the MachinekitClient from the <a href="#download">Download section</a>.
@@ -567,9 +567,9 @@ See also [C++ Hash Deprecation Warning](http://stackoverflow.com/q/30430789/4599
 <a name="building_qtquickvcp" />
 ### Building QtQuickVcp
 
-After you have all the requirements installed clone and build the [QtQuickVcp repo](https://github.com/machinekoder/QtQuickVcp).
+After you have all the requirements installed clone and build the [QtQuickVcp repo](https://github.com/qtquickvcp/QtQuickVcp).
 
-    git clone https://github.com/machinekoder/QtQuickVcp
+    git clone https://github.com/qtquickvcp/QtQuickVcp
 
 Before building the project **modify the paths.pri file if necessary**.
 
@@ -594,7 +594,7 @@ QMAKE=~/bin/Qt/5.*/gcc*/bin/qmake
 QT_INSTALL_PREFIX=~/bin/Qt/5.*/gcc*
 
 # download and install QtQuickVcp
-git clone https://github.com/machinekoder/QtQuickVcp
+git clone https://github.com/qtquickvcp/QtQuickVcp
 mkdir -p build/QtQuickVcp
 cd build/QtQuickVcp
 
@@ -610,7 +610,7 @@ make install_docs
 <a name="machinekit_sdk" />
 ### MachinekitSDK
 If you also want to have QtQuickVcp specific wizards and extensions
-for QtCreator please continue with the install instructions for the [MachinekitSDK](https://github.com/machinekoder/MachinekitSDK)
+for QtCreator please continue with the install instructions for the [MachinekitSDK](https://github.com/qtquickvcp/MachinekitSDK)
 
 <a name="contributing"/>
 ## Contributing
