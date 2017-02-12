@@ -46,7 +46,7 @@ ApplicationAction {
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
         }
 
-        if (_homeAll) {
+        if (!_homeAll) {
             command.homeAxis(axis);
         }
         else {
