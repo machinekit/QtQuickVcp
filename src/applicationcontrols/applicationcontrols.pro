@@ -27,6 +27,7 @@ CONTROLS_QML_FILES = \
     $$PWD/ApplicationProgressBar.qml \
     $$PWD/ApplicationFileDialog.qml \
     $$PWD/JogStick.qml \
+    $$PWD/AbstractDigitalReadOut.qml \
     $$PWD/DigitalReadOut.qml \
     $$PWD/FeedrateSlider.qml \
     $$PWD/SpindlerateSlider.qml \

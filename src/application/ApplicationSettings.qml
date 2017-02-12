@@ -28,40 +28,48 @@ LocalSettings {
     property bool initialized: false
     property bool _ready: status.synced
 
-    id: localSettings
+    id: root
 
-    name: "settings"
-
-    Component.onCompleted: {
-        load();
-    }
     Component.onDestruction: {
-        save();
+        root.save();
     }
 
     on_ReadyChanged: {
         if (_ready && !initialized) {
-            for (var i = 0; i < status.config.axes; ++i) {
-                setValue("axis" + i + ".jogVelocity", status.config.defaultVelocity, false);
-            }
-            setValue("dro.showOffsets", false, false);
-            setValue("dro.showVelocity", true, false);
-            setValue("dro.showDistanceToGo", true, false);
-            setValue("preview.enable", false, false);
-            setValue("preview.showMachineLimits", true, false);
-            setValue("preview.showProgram", true, false);
-            setValue("preview.showProgramRapids", true, false);
-            setValue("preview.showLivePlot", true, false);
-            setValue("preview.showTool", true, false);
-            setValue("preview.showProgramExtents", true, false);
-            setValue("preview.showMachineLimits", true, false);
-            setValue("preview.alphaBlendProgram", false, false);
-            setValue("preview.showCoordinate", true, false);
-            setValue("preview.showGrid", true, false);
-            setValue("preview.zoomToProgram", true, false);
-            setValue("preview.gridInterval", 100.0, false);
-            setValue("mdi.history", [], false);
+            root.name = "settings-" + status.config.name;
+            root.load();
+            _initializeValues();
             initialized = true;
         }
+    }
+
+    function _initializeValues() {
+        for (var i = 0; i < status.config.axes; ++i) {
+            var velocity;
+            if (status.config.axis[i].axisType === ApplicationStatus.LinearAxis) {
+                velocity = status.config.defaultLinearVelocity;
+            }
+            else {
+                velocity = status.config.defaultAngularVelocity;
+            }
+            setValue("axis" + i + ".jogVelocity", velocity, false);
+        }
+        setValue("dro.showOffsets", false, false);
+        setValue("dro.showVelocity", true, false);
+        setValue("dro.showDistanceToGo", true, false);
+        setValue("preview.enable", false, false);
+        setValue("preview.showMachineLimits", true, false);
+        setValue("preview.showProgram", true, false);
+        setValue("preview.showProgramRapids", true, false);
+        setValue("preview.showLivePlot", true, false);
+        setValue("preview.showTool", true, false);
+        setValue("preview.showProgramExtents", true, false);
+        setValue("preview.showMachineLimits", true, false);
+        setValue("preview.alphaBlendProgram", false, false);
+        setValue("preview.showCoordinate", true, false);
+        setValue("preview.showGrid", true, false);
+        setValue("preview.zoomToProgram", true, false);
+        setValue("preview.gridInterval", 100.0, false);
+        setValue("mdi.history", [], false);
     }
 }

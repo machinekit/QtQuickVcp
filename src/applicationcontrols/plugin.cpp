@@ -46,6 +46,7 @@ static const struct {
     { "ApplicationProgressBar", 1, 0 },
     { "ApplicationFileDialog", 1, 0 },
     { "JogStick", 1, 0 },
+    { "AbstractDigitalReadOut", 1, 0 },
     { "DigitalReadOut", 1, 0 },
     { "FeedrateSlider", 1, 0 },
     { "FeedrateHandler", 1, 0 },
