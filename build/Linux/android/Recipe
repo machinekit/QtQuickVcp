@@ -51,7 +51,7 @@ export ANDROID_SDK_ROOT="${PWD}/android-sdk"
 export ANDROID_HOME="${PWD}/android-sdk"
 
 # If not building on Travis then might need to fetch QtQuickVcp
-[ -d "QtQuickVcp" ] || git clone --depth 1 https://github.com/machinekoder/QtQuickVcp.git
+[ -d "QtQuickVcp" ] || git clone --depth 1 https://github.com/qtquickvcp/QtQuickVcp.git
 
 cd QtQuickVcp
 

@@ -47,7 +47,7 @@ export QT_QPA_PLATFORM_PLUGIN_PATH="${PWD}/qt5/plugins/platforms"
 export QT_INSTALL_PREFIX="${PWD}/qt5"
 
 # If not building on Travis then might need to fetch QtQuickVcp
-[ -d "QtQuickVcp" ] || git clone --depth 1 https://github.com/machinekoder/QtQuickVcp.git
+[ -d "QtQuickVcp" ] || git clone --depth 1 https://github.com/qtquickvcp/QtQuickVcp.git
 
 cd QtQuickVcp
 
