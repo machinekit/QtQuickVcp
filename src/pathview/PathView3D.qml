@@ -318,8 +318,8 @@ GLView3D {
         position.z: (_ready ? status.motion.position.z - status.io.toolOffset.z : 0) + height
 
         cone: toolInfo.valid ? false : true
-        radius: toolInfo.valid ? toolDiameter / 2.0 : 2.5
-        height: toolInfo.valid ? toolLength : 5.0
+        radius: toolInfo.valid ? toolDiameter / 2.0 : 5.0 * pathView.sizeFactor
+        height: toolInfo.valid ? toolLength : 10.0 * pathView.sizeFactor
         color: pathView.colors["tool_diffuse"]
         rotationAngle: 180
         rotationAxis: Qt.vector3d(1,0,0)
