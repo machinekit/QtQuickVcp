@@ -1,5 +1,6 @@
 TEMPLATE = lib
 QT += qml quick network
+CONFIG += c++11
 
 android: {
     QT += androidextras
