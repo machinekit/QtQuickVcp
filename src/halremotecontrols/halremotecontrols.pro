@@ -1,5 +1,6 @@
 TEMPLATE = lib
 QT += qml quick
+CONFIG += c++11
 
 uri = Machinekit.HalRemote.Controls
 include(../plugin.pri)

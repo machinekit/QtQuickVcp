@@ -8,7 +8,7 @@ QT       += qml network
 QT       -= gui
 CONFIG -= android_install
 CONFIG += static
-
+CONFIG += c++11
 
 TARGET = machinetalk
 TEMPLATE = lib
