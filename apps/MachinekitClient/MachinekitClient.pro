@@ -1,9 +1,8 @@
 TEMPLATE = app
 TARGET = machinekit-client
 
-# CONFIG += console
-
 QT += qml quick widgets
+CONFIG += c++11
 
 release: {
     CONFIG += qtquickcompiler
