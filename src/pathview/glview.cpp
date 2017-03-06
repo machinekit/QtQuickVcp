@@ -983,7 +983,7 @@ quint32 GLView::getSelection()
     int maxCount = 0;
 
     // find the id that is most common in the selection
-    foreach(quint32 id, ids)
+    for (quint32 id: ids)
     {
         int count = 0;
         qCount(ids.begin(), ids.end(), id, count);
@@ -1183,7 +1183,7 @@ void GLView::resetTransformations(bool hard)
     {
         delete m_modelParameters;
         m_modelParameters = m_modelParametersStack.takeFirst();
-        foreach (Parameters *parameters, m_modelParametersStack)
+        for (Parameters *parameters: m_modelParametersStack)
         {
             delete parameters;
         }
@@ -1192,7 +1192,7 @@ void GLView::resetTransformations(bool hard)
 
         delete m_lineParameters;
         m_lineParameters = m_lineParametersStack.takeFirst();
-        foreach (LineParameters *parameters, m_lineParametersStack)
+        for (LineParameters *parameters: m_lineParametersStack)
         {
             delete parameters;
         }
@@ -1201,7 +1201,7 @@ void GLView::resetTransformations(bool hard)
 
         delete m_textParameters;
         m_textParameters = m_textParametersStack.takeFirst();
-        foreach (TextParameters *parameters, m_textParametersStack)
+        for (TextParameters *parameters: m_textParametersStack)
         {
             delete parameters;
         }
