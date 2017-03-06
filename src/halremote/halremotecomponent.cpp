@@ -218,8 +218,8 @@ void HalRemoteComponent::pinChange(QVariant value)
     // halfloat, hals32, or halu32 field.
     halPin = m_tx.add_pin();
 
-    halPin->set_handle(pin->handle());
-    halPin->set_type((ValueType)pin->type());
+    halPin->set_handle(static_cast<gpb::uint32>(pin->handle()));
+    halPin->set_type(static_cast<ValueType>(pin->type()));
     if (pin->type() == HalPin::Float)
     {
         halPin->set_halfloat(pin->value().toDouble());
@@ -469,7 +469,7 @@ void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &top
     for (int i = 0; i < rx.pin_size(); ++i)
     {
         Pin remotePin = rx.pin(i);
-        HalPin *localPin = m_pinsByHandle.value(remotePin.handle(), nullptr);
+        HalPin *localPin = m_pinsByHandle.value(static_cast<int>(remotePin.handle()), nullptr);
         if (localPin != nullptr) // in case we received a wrong pin handle
         {
             pinUpdate(remotePin, localPin);
