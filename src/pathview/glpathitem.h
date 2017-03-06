@@ -83,15 +83,15 @@ public slots:
 
 private:
     struct Position {
-        double x;
-        double y;
-        double z;
-        double a;
-        double b;
-        double c;
-        double u;
-        double v;
-        double w;
+        float x;
+        float y;
+        float z;
+        float a;
+        float b;
+        float c;
+        float u;
+        float v;
+        float w;
     };
 
     struct Offsets {
@@ -220,17 +220,17 @@ private slots:
 
 signals:
     void modelChanged(GCodeProgramModel * arg);
-    void arcFeedColorChanged(QColor arg);
-    void traverseColorChanged(QColor arg);
-    void selectedColorChanged(QColor arg);
-    void minimumExtentsChanged(QVector3D arg);
-    void maximumExtentsChanged(QVector3D arg);
-    void straightFeedColorChanged(QColor arg);
-    void executedColorChanged(QColor arg);
-    void activeColorChanged(QColor arg);
-    void backplotArcFeedColorChanged(QColor arg);
-    void backplotStraightFeedColorChanged(QColor arg);
-    void backplotTraverseColorChanged(QColor arg);
+    void arcFeedColorChanged(const QColor &arg);
+    void traverseColorChanged(const QColor &arg);
+    void selectedColorChanged(const QColor &arg);
+    void minimumExtentsChanged(const QVector3D &arg);
+    void maximumExtentsChanged(const QVector3D &arg);
+    void straightFeedColorChanged(const QColor &arg);
+    void executedColorChanged(const QColor &arg);
+    void activeColorChanged(const QColor &arg);
+    void backplotArcFeedColorChanged(const QColor &arg);
+    void backplotStraightFeedColorChanged(const QColor &arg);
+    void backplotTraverseColorChanged(const QColor &arg);
     void lineWidthChanged(float lineWidth);
     void traverseLineStippleLengthChanged(float traverseLineStippleLength);
 }; // class GLPathItem

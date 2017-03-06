@@ -561,9 +561,9 @@ void GLPathItem::processArcFeed(const Preview &preview)
     if (m_activePlane == XYPlane)
     {
         arcPathItem = new ArcPathItem();
-        newPosition.x = preview.first_end();
-        newPosition.y = preview.second_end();
-        newPosition.z = preview.axis_end_point();
+        newPosition.x = static_cast<float>(preview.first_end());
+        newPosition.y = static_cast<float>(preview.second_end());
+        newPosition.z = static_cast<float>(preview.axis_end_point());
         newVector = positionToVector3D(newPosition);
 
         startPoint.setX(currentVector.x());
@@ -574,9 +574,9 @@ void GLPathItem::processArcFeed(const Preview &preview)
     else if (m_activePlane == YZPlane)
     {
         arcPathItem = new ArcPathItem();
-        newPosition.y = preview.first_end();
-        newPosition.z = preview.second_end();
-        newPosition.x = preview.axis_end_point();
+        newPosition.y = static_cast<float>(preview.first_end());
+        newPosition.z = static_cast<float>(preview.second_end());
+        newPosition.x = static_cast<float>(preview.axis_end_point());
         newVector = positionToVector3D(newPosition);
 
         startPoint.setX(currentVector.y());
@@ -587,9 +587,9 @@ void GLPathItem::processArcFeed(const Preview &preview)
     else if (m_activePlane == XZPlane)
     {
         arcPathItem = new ArcPathItem();
-        newPosition.x = preview.first_end();
-        newPosition.z = preview.second_end();
-        newPosition.y = preview.axis_end_point();
+        newPosition.x = static_cast<float>(preview.first_end());
+        newPosition.z = static_cast<float>(preview.second_end());
+        newPosition.y = static_cast<float>(preview.axis_end_point());
         newVector = positionToVector3D(newPosition);
 
         startPoint.setX(currentVector.x());
@@ -774,42 +774,42 @@ void GLPathItem::processSelectPlane(const Preview &preview)
 GLPathItem::Position GLPathItem::previewPositionToPosition(const machinetalk::Position &position) const
 {
     Position newPosition;
-    newPosition.x = 0.0;
-    newPosition.y = 0.0;
-    newPosition.z = 0.0;
-    newPosition.a = 0.0;
-    newPosition.b = 0.0;
-    newPosition.c = 0.0;
-    newPosition.u = 0.0;
-    newPosition.v = 0.0;
-    newPosition.w = 0.0;
+    newPosition.x = 0.0f;
+    newPosition.y = 0.0f;
+    newPosition.z = 0.0f;
+    newPosition.a = 0.0f;
+    newPosition.b = 0.0f;
+    newPosition.c = 0.0f;
+    newPosition.u = 0.0f;
+    newPosition.v = 0.0f;
+    newPosition.w = 0.0f;
 
     if (position.has_x()) {
-        newPosition.x = position.x();
+        newPosition.x = static_cast<float>(position.x());
     }
     if (position.has_y()) {
-        newPosition.y = position.y();
+        newPosition.y = static_cast<float>(position.y());
     }
     if (position.has_z()) {
-        newPosition.z = position.z();
+        newPosition.z = static_cast<float>(position.z());
     }
     if (position.has_a()) {
-        newPosition.a = position.a();
+        newPosition.a = static_cast<float>(position.a());
     }
     if (position.has_b()) {
-        newPosition.b = position.b();
+        newPosition.b = static_cast<float>(position.b());
     }
     if (position.has_c()) {
-        newPosition.c = position.c();
+        newPosition.c = static_cast<float>(position.c());
     }
     if (position.has_u()) {
-        newPosition.u = position.u();
+        newPosition.u = static_cast<float>(position.u());
     }
     if (position.has_v()) {
-        newPosition.v = position.v();
+        newPosition.v = static_cast<float>(position.v());
     }
     if (position.has_w()) {
-        newPosition.w = position.w();
+        newPosition.w = static_cast<float>(position.w());
     }
 
     return newPosition;
