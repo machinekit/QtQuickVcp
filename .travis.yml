@@ -8,7 +8,7 @@ matrix:
   #          - env: "JOB=AppImage_i686"
   #          - env: "JOB=AppImage_armhf"
   #          - env: "JOB=Android_armv7"
-  #          - env: "JOB=MacOSX"
+            - env: "JOB=MacOSX"
   include:
     # 1st parallel build job - debug build on Ubuntu
     # - env: "JOB=Tests"
