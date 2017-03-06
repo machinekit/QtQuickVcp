@@ -184,7 +184,7 @@ QString ApplicationDescription::getMainFile(const QStringList &fileList, const Q
 
     // Number 1 priority main QML file has name main.qml
     preferredName = baseFilePath + "main.qml";
-    foreach (const QString &fileName, fileList)
+    for (const QString &fileName: fileList)
     {
         if (fileName == preferredName)
         {
@@ -197,7 +197,7 @@ QString ApplicationDescription::getMainFile(const QStringList &fileList, const Q
     if (mainFileName.isEmpty())
     {
         preferredName = baseFilePath + applicationName + ".qml";
-        foreach (QString fileName, fileList)
+        for (QString fileName: fileList)
         {
             if (fileName == preferredName)
             {

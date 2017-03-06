@@ -245,7 +245,7 @@ QObjectList HalRemoteComponent::recurseObjects(const QObjectList &list)
 {
     QObjectList halObjects;
 
-    foreach (QObject *object, list)
+    for (QObject *object: list)
     {
         HalPin *halPin = qobject_cast<HalPin *>(object);
         if (halPin != nullptr)
@@ -312,7 +312,7 @@ void HalRemoteComponent::bindPins()
     component = m_tx.add_comp();
     component->set_name(m_name.toStdString());
     component->set_no_create(!m_create);
-    foreach (HalPin *pin, m_pinsByName)
+    for (HalPin *pin: m_pinsByName)
     {
         Pin *halPin = component->add_pin();
         halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());  // pin name is always component.name
@@ -376,7 +376,7 @@ void HalRemoteComponent::addPins()
     addHalrcompTopic(m_name);
 
     halObjects = recurseObjects(m_containerItem->children());
-    foreach (QObject *object, halObjects)
+    for (QObject *object: halObjects)
     {
         HalPin *pin = static_cast<HalPin *>(object);
         if (pin->name().isEmpty()  || (pin->enabled() == false))    // ignore pins with empty name and disabled pins
@@ -398,7 +398,7 @@ void HalRemoteComponent::addPins()
 /** Removes all previously added pins */
 void HalRemoteComponent::removePins()
 {
-    foreach (HalPin *pin, m_pinsByName)
+    for (HalPin *pin: m_pinsByName)
     {
         disconnect(pin, &HalPin::valueChanged,
                 this, &HalRemoteComponent::pinChange);

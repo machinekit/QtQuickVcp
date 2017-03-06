@@ -516,7 +516,7 @@ void ServiceDiscovery::updateServices()
     oldServiceTypeMap = m_serviceItemsMap;
 
     // Iterate through all services and update all service types
-    foreach (ServiceList *serviceList, m_serviceLists)
+    for (ServiceList *serviceList: m_serviceLists)
     {
         for (int i = 0; i < serviceList->serviceCount(); ++i)
         {
@@ -574,7 +574,7 @@ void ServiceDiscovery::updateNameServers()
         return;
     }
 
-    foreach (NameServer *nameServer, m_nameServers)
+    for (NameServer *nameServer: m_nameServers)
     {
         QJDns::NameServer host;
 
@@ -826,7 +826,7 @@ void ServiceDiscovery::updateServiceType(QString serviceType)
     }
 
     // Iterate through all services and update all service types suitable for the announcement
-    foreach (ServiceList *serviceList, m_serviceLists)
+    for (ServiceList *serviceList: m_serviceLists)
     {
         for (int i = 0; i < serviceList->serviceCount(); ++i)
         {
@@ -883,7 +883,7 @@ bool ServiceDiscovery::filterServiceDiscoveryItem(ServiceDiscoveryItem *item, Se
     {
         QStringList txtRecords = item->txtRecords();
 
-        foreach (QString filter, serviceDiscoveryFilter->txtRecords())
+        for (QString filter: serviceDiscoveryFilter->txtRecords())
         {
             txtRecords = txtRecords.filter(QRegExp(filter, Qt::CaseSensitive, QRegExp::WildcardUnix));
         }
@@ -900,7 +900,7 @@ QList<ServiceDiscoveryItem *> ServiceDiscovery::filterServiceDiscoveryItems(QLis
 {
     QList<ServiceDiscoveryItem*> newServiceDiscoveryItems;
 
-    foreach (ServiceDiscoveryItem *item, serviceDiscoveryItems)
+    for (ServiceDiscoveryItem *item: serviceDiscoveryItems)
     {
         if (filterServiceDiscoveryItem(item, primaryFilter)
                 && filterServiceDiscoveryItem(item, secondaryFilter))
@@ -925,7 +925,7 @@ ServiceDiscoveryItem *ServiceDiscovery::addItem(QString name, QString type)
         return nullptr;
     }
 
-    foreach (ServiceDiscoveryItem *item, serviceDiscoveryItems)
+    for (ServiceDiscoveryItem *item: serviceDiscoveryItems)
     {
         if (item->name() == name)
         {
@@ -955,7 +955,7 @@ ServiceDiscoveryItem *ServiceDiscovery::getItem(QString name, QString type)
         return nullptr;
     }
 
-    foreach (ServiceDiscoveryItem *item, serviceDiscoveryItems)
+    for (ServiceDiscoveryItem *item: serviceDiscoveryItems)
     {
         if (item->name() == name)
         {
@@ -1074,7 +1074,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
     type = m_queryIdTypeMap.value(id);
 
-    foreach(QJDns::Record r, results.answerRecords)
+    for (QJDns::Record r: results.answerRecords)
     {
         ServiceDiscoveryItem * item;
         int newId;
@@ -1119,7 +1119,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_queryIdTypeMap.remove(id);
             m_queryIdItemMap.remove(id);
 
-            foreach (QString string, r.texts)
+            for (QString string: r.texts)
             {
                 txtRecords.append(string);
             }

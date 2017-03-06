@@ -111,7 +111,7 @@ void ServiceDiscoveryItem::setTxtRecords(QStringList arg)
         QString uuid("");
         int version(0);
 
-        foreach (QString string, m_txtRecords)
+        for (QString string: m_txtRecords)
         {
             QStringList keyValue;
             keyValue = string.split("=");
