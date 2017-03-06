@@ -109,7 +109,7 @@ Rectangle {
         Updates the services of this window.
     */
     function updateServices() {
-        var list = []; //main.services
+        var list = [];
         var nestedList = _recurseObjects(main.data, "Service");
         if (nestedList.length > 0) {
             list = list.concat(nestedList);
