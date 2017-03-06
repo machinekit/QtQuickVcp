@@ -3,7 +3,7 @@ sudo: false
 
 matrix:
   fast_finish: true
-  # allow_failures:
+  allow_failures:
   #          - env: "JOB=AppImage_x64"
   #          - env: "JOB=AppImage_i686"
   #          - env: "JOB=AppImage_armhf"
