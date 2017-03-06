@@ -108,23 +108,9 @@ void GLView::handleWindowChanged(QQuickWindow *win)
 
 void GLView::updatePerspectiveAspectRatio()
 {
-    qreal ratio;
-    int w;
-    int h;
-
-    if (window() != nullptr) {
-        ratio = window()->devicePixelRatio();
-    }
-    else {
-        ratio = 1.0f;
-    }
-
-    w = int(ratio * this->width());
-    h = int(ratio * this->height());
-
-    if ((w > 0) && (h > 0)) // avoid division by zero
+    if ((width() > 0.0) && (height() > 0)) // avoid division by zero
     {
-        m_projectionAspectRatio = (float)w/(float)h;
+        m_projectionAspectRatio = static_cast<float>(width() / height());
     }
     else {
         m_projectionAspectRatio = 1.0f;
@@ -291,7 +277,7 @@ void GLView::drawDrawables(GLView::ModelType type)
         case Line:
             drawLines();
             break;
-        default:
+        case NoType:
             return;
         }
     }
@@ -347,7 +333,7 @@ void GLView::removeDrawables(QList<GLView::Drawable> *drawableList)
 
 void GLView::initializeVertexBuffer(ModelType type, const QVector<ModelVertex> &vertices)
 {
-    initializeVertexBuffer(type, vertices.data(), vertices.length() * sizeof(ModelVertex));
+    initializeVertexBuffer(type, vertices.data(), vertices.length() * static_cast<int>(sizeof(ModelVertex)));
 }
 
 void GLView::initializeVertexBuffer(ModelType type, const void *bufferData, int bufferLength)
@@ -552,10 +538,10 @@ void GLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, i
 
     // create two perpendicular vectors - perp and q
     QVector3D perp = normal;
-    if ((normal.x() == 0) && (normal.z() == 0)) {
-        perp.setX(perp.x() + 1);
-    } else {
+    if ((normal.x() != 0.0f) || (normal.z() != 0.0f)) {
         perp.setY(perp.y() + 1);
+    } else {
+        perp.setX(perp.x() + 1);
     }
 
     // cross product
@@ -567,11 +553,11 @@ void GLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, i
     q.normalize();
 
     // calculate vertices
-    GLfloat twoPi = 2 * M_PI;
+    GLfloat twoPi = 2.0f * PI_F;
     for (int i = 0; i < detail; ++i)
     {
-        GLfloat theta1 = (GLfloat)i / (GLfloat)detail * twoPi; // go around circle and get points
-        GLfloat theta2 = (GLfloat)(i+1) / (GLfloat)detail * twoPi;
+        GLfloat theta1 = static_cast<GLfloat>(i) / static_cast<GLfloat>(detail) * twoPi; // go around circle and get points
+        GLfloat theta2 = static_cast<GLfloat>(i+1) / static_cast<GLfloat>(detail) * twoPi;
         ModelVertex vertex[6];
 
         QVector3D upVector(0,0,1);
@@ -579,9 +565,9 @@ void GLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, i
         QVector3D resultVector;
 
         // normals
-        normal.setX(qCos(theta1) * perp.x() + qSin(theta1) * q.x());
-        normal.setY(qCos(theta1) * perp.y() + qSin(theta1) * q.y());
-        normal.setZ(qCos(theta1) * perp.z() + qSin(theta1) * q.z());
+        normal.setX(std::cos(theta1) * perp.x() + std::sin(theta1) * q.x());
+        normal.setY(std::cos(theta1) * perp.y() + std::sin(theta1) * q.y());
+        normal.setZ(std::cos(theta1) * perp.z() + std::sin(theta1) * q.z());
 
         // top vertex
         vertex[0].position.x = P1.x() + r1 * normal.x();
@@ -603,9 +589,9 @@ void GLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, i
         vertex[1].normal.z = resultVector.z();
 
         // normals
-        normal.setX(qCos(theta2) * perp.x() + qSin(theta2) * q.x());
-        normal.setY(qCos(theta2) * perp.y() + qSin(theta2) * q.y());
-        normal.setZ(qCos(theta2) * perp.z() + qSin(theta2) * q.z());
+        normal.setX(std::cos(theta2) * perp.x() + std::sin(theta2) * q.x());
+        normal.setY(std::cos(theta2) * perp.y() + std::sin(theta2) * q.y());
+        normal.setZ(std::cos(theta2) * perp.z() + std::sin(theta2) * q.z());
 
         vertex[2].position.x = P2.x() + r2 * normal.x();
         vertex[2].position.y = P2.y() + r2 * normal.y();
@@ -623,7 +609,7 @@ void GLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, i
         vertex[3].normal.y = resultVector.y();
         vertex[3].normal.z = resultVector.z();
 
-        if (r2 != 0.0)
+        if (r2 != 0.0f)
         {
             vertex[5].position.x = P2.x();
             vertex[5].position.y = P2.y();
@@ -637,7 +623,7 @@ void GLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, i
             vertices.append(vertex[1]);
         }
 
-        if (r1 != 0.0)
+        if (r1 != 0.0f)
         {
             vertex[4].position.x = P1.x();
             vertex[4].position.y = P1.y();
@@ -676,15 +662,15 @@ void GLView::setupSphere(int detail)
 
     for (int latNumber = 0; latNumber <= latitudeBands; ++latNumber)
     {
-        GLfloat theta = (GLfloat)latNumber * M_PI / (GLfloat)latitudeBands;
-        GLfloat sinTheta = qSin(theta);
-        GLfloat cosTheta = qCos(theta);
+        GLfloat theta = static_cast<GLfloat>(latNumber) * PI_F / static_cast<GLfloat>(latitudeBands);
+        GLfloat sinTheta = std::sin(theta);
+        GLfloat cosTheta = std::cos(theta);
 
         for (int longNumber = 0; longNumber <= longitudeBands; ++longNumber)
         {
-            GLfloat phi = (GLfloat)longNumber * 2.0 * M_PI / (GLfloat)longitudeBands;
-            GLfloat sinPhi = qSin(phi);
-            GLfloat cosPhi = qCos(phi);
+            GLfloat phi = static_cast<GLfloat>(longNumber) * 2.0f * PI_F / static_cast<GLfloat>(longitudeBands);
+            GLfloat sinPhi = std::sin(phi);
+            GLfloat cosPhi = std::cos(phi);
 
             GLfloat x = cosPhi * sinTheta;
             GLfloat y = cosTheta;
@@ -762,7 +748,7 @@ void GLView::drawModelVertices(ModelType type)
             m_currentDrawableId++;
         }
 
-        glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size()/sizeof(ModelVertex));
+        glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size() / static_cast<int>(sizeof(ModelVertex)));
     }
 
     m_modelProgram->disableAttributeArray(m_positionLocation);
@@ -786,7 +772,7 @@ void GLView::drawLines()
     for (int i = 0; i < parametersList->size(); ++i)
     {
         LineParameters *lineParameters = static_cast<LineParameters*>(parametersList->at(i));
-        m_lineVertexBuffer->write(0, lineParameters->vertices.data(), lineParameters->vertices.size() * sizeof(GLvector3D));
+        m_lineVertexBuffer->write(0, lineParameters->vertices.data(), lineParameters->vertices.size() * static_cast<int>(sizeof(GLvector3D)));
         m_lineProgram->setUniformValue(m_lineColorLocation, lineParameters->color);
         m_lineProgram->setUniformValue(m_lineModelMatrixLocation, lineParameters->modelMatrix);
         m_lineProgram->setUniformValue(m_lineStippleLocation, lineParameters->stipple);
@@ -840,7 +826,7 @@ void GLView::drawTexts()
         }
 
         m_textProgram->setUniformValue(m_textAspectRatioLocation, aspectRatio);
-        m_textProgram->setUniformValue(m_textAlignmentLocation, (GLint)textParameters->alignment);
+        m_textProgram->setUniformValue(m_textAlignmentLocation, static_cast<GLint>(textParameters->alignment));
         m_textProgram->setUniformValue(m_textColorLocation, textParameters->color);
         m_textProgram->setUniformValue(m_textModelMatrixLocation, textParameters->modelMatrix);
         m_textProgram->setUniformValue(m_textTextureLocation, texture->textureId());
@@ -853,7 +839,7 @@ void GLView::drawTexts()
         }
 
         texture->bind(texture->textureId());
-        glDrawArrays(GL_TRIANGLES, 0, m_textVertexBuffer->size()/sizeof(TextVertex));
+        glDrawArrays(GL_TRIANGLES, 0, m_textVertexBuffer->size() / static_cast<int>(sizeof(TextVertex)));
         texture->release(texture->textureId());
     }
 
@@ -883,7 +869,7 @@ void GLView::prepareTextTexture(const QStaticText &staticText, QFont font)
     painter.drawStaticText(0, 0, staticText);
 
     QOpenGLTexture *texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-    float aspectRatio = staticText.size().width()/staticText.size().height();
+    float aspectRatio = static_cast<float>(staticText.size().width() / staticText.size().height());
 
     m_textTextList.append(staticText);
     m_textTextureList.append(texture);
@@ -982,7 +968,7 @@ quint32 GLView::getSelection()
     int sizeOffset;
     QPoint correctedSelectionPoint;
 
-    sizeOffset = qFloor((float)selectionSize/2.0);  // calculate the offset
+    sizeOffset = qFloor(static_cast<qreal>(selectionSize) / 2.0);  // calculate the offset
 
     // correct the position of the selection to center the mouse click
     correctedSelectionPoint.setX(qMin(qMax(m_selectionPoint.x() - sizeOffset, 0), window()->width() - selectionSize));
@@ -995,7 +981,7 @@ quint32 GLView::getSelection()
         quint32 id;
 
         glReadPixels(correctedSelectionPoint.x() + (i % selectionSize), correctedSelectionPoint.y() + (i / selectionSize), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &colorRGB);
-        id = ((quint32)colorRGB.r << 16) + ((quint32)colorRGB.g << 8) + (quint32)colorRGB.b;
+        id = (static_cast<quint32>(colorRGB.r) << 16) + (static_cast<quint32>(colorRGB.g) << 8) + static_cast<quint32>(colorRGB.b);
 
         if ((id != 0) && (!ids.contains(id)))   // collect all ids in selection
         {
@@ -1122,7 +1108,10 @@ void GLView::paint(QPainter *painter)
 
 void GLView::color(float r, float g, float b, float a)
 {
-    color(QColor((int)(255.0*r), (int)(255.0*g), (int)(255.0*b), (int)(255.0*a)));
+    color(QColor(static_cast<int>(255.0f * r),
+                 static_cast<int>(255.0f * g),
+                 static_cast<int>(255.0f * b),
+                 static_cast<int>(255.0f * a)));
 }
 
 void GLView::color(const QColor &color)
@@ -1182,9 +1171,9 @@ void GLView::mirror(float x, float y, float z)
 
 void GLView::mirror(const QVector3D &vector)
 {
-    int x = (int)vector.x();
-    int y = (int)vector.y();
-    int z = (int)vector.z();
+    int x = static_cast<int>(vector.x());
+    int y = static_cast<int>(vector.y());
+    int z = static_cast<int>(vector.z());
 
     m_modelParameters->modelMatrix.scale((x == 1) ? -1.0 : 1.0,
                                    (y == 1) ? -1.0 : 1.0,
@@ -1286,7 +1275,7 @@ void GLView::lineWidth(float width)
     m_lineParameters->width = width;
 }
 
-void GLView::lineStipple(float enable, float length)
+void GLView::lineStipple(bool enable, float length)
 {
     m_lineParameters->stipple = enable;
     m_lineParameters->stippleLength = length;
@@ -1512,12 +1501,12 @@ void GLView::paint()
     //glEnable(GL_SCISSOR_TEST);
 
     //glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
-    glViewport(0, 0, this->width(), this->height());
+    glViewport(0, 0, static_cast<GLsizei>(width()), static_cast<GLsizei>(height()));
 
-    glClearColor(m_thread_backgroundColor.redF(),
-                 m_thread_backgroundColor.greenF(),
-                 m_thread_backgroundColor.blueF(),
-                 m_thread_backgroundColor.alphaF());
+    glClearColor(static_cast<GLclampf>(m_thread_backgroundColor.redF()),
+                 static_cast<GLclampf>(m_thread_backgroundColor.greenF()),
+                 static_cast<GLclampf>(m_thread_backgroundColor.blueF()),
+                 static_cast<GLclampf>(m_thread_backgroundColor.alphaF()));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Enable depth test
