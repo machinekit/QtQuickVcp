@@ -59,7 +59,6 @@ GLView::GLView(QQuickItem *parent)
     //connect(this, SIGNAL(initialized()), this, SLOT(updateItems()), Qt::QueuedConnection);
 
     setRenderTarget(QQuickPaintedItem::InvertedYFramebufferObject);
-    setMipmap(true);
     //setAntialiasing(true);
 }
 
