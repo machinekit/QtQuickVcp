@@ -47,8 +47,6 @@ GLView::GLView(QQuickItem *parent)
     , m_camera(new QGLCamera(this))
     , m_light(new GLLight(this))
 {
-    //setFlag(QQuickItem::ItemHasContents, true);
-
     connect(this, &GLView::windowChanged,
             this, &GLView::handleWindowChanged);
     // queue this connection to prevent trigger on destruction
@@ -56,10 +54,8 @@ GLView::GLView(QQuickItem *parent)
             this, &GLView::updateChildren, Qt::QueuedConnection);
     connect(m_propertySignalMapper, static_cast<void (QSignalMapper::*)(QObject *)>(&QSignalMapper::mapped),
             this, &GLView::updateItem);
-    //connect(this, SIGNAL(initialized()), this, SLOT(updateItems()), Qt::QueuedConnection);
 
     setRenderTarget(QQuickPaintedItem::InvertedYFramebufferObject);
-    //setAntialiasing(true);
 }
 
 GLView::~GLView()
@@ -98,10 +94,6 @@ void GLView::handleWindowChanged(QQuickWindow *win)
                 this, &GLView::updatePerspectiveAspectRatio);
 
         updatePerspectiveAspectRatio(); // set current aspect ratio since signals will only be handled on change
-
-        // If we allow QML to do the clearing, they would clear what we paint
-        // and nothing would show.
-        //win->setClearBeforeRendering(true);
     }
 }
 
@@ -1483,23 +1475,9 @@ void GLView::updateColor(void *drawablePointer, const QColor &color)
 
 void GLView::paint()
 {
-    //Lboolean scissorEnabled;
-    //GLboolean depthTestEnabled;
-    //GLint depthFunc;
-    //GLboolean depthMask;
-    //GLboolean cullFaceEnabled;
-
-
     if (!m_initialized) {
         return;
     }
-
-    //glScissor(this->x(), window()->height() - this->y() - this->height(), this->width(), this->height());
-
-    //glGetBooleanv(GL_SCISSOR_TEST, &scissorEnabled);
-    //glEnable(GL_SCISSOR_TEST);
-
-    //glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
     glViewport(0, 0, static_cast<GLsizei>(width()), static_cast<GLsizei>(height()));
 
     glClearColor(static_cast<GLclampf>(m_thread_backgroundColor.redF()),
@@ -1509,15 +1487,11 @@ void GLView::paint()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Enable depth test
-    //glGetBooleanv(GL_DEPTH_TEST, &depthTestEnabled);
     glEnable(GL_DEPTH_TEST);
-    //glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
     glDepthFunc(GL_LEQUAL);
-    //glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
     glDepthMask(GL_TRUE);
 
     // Enable back face culling
-    //glGetBooleanv(GL_CULL_FACE, &cullFaceEnabled);
     glEnable(GL_CULL_FACE);
 
     // Enable Alpha blend
@@ -1567,24 +1541,6 @@ void GLView::paint()
         m_selectionModeActive = false;
         paint();
     }
-
-    /*if (!scissorEnabled)
-    {
-        glDisable(GL_SCISSOR_TEST);
-    }
-    glClear(GL_SCISSOR_BIT);
-
-    if (!depthTestEnabled)
-    {
-        glDisable(GL_DEPTH_TEST);
-    }
-    glDepthFunc(depthFunc);
-    glDepthMask(depthMask);
-
-    if (!cullFaceEnabled)
-    {
-        glDisable(GL_CULL_FACE);
-    }*/
 }
 
 void GLView::cleanup()
