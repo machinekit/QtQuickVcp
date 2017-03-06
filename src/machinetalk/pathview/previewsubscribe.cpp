@@ -99,7 +99,7 @@ bool PreviewSubscribe::startSocket()
             this, &PreviewSubscribe::processSocketMessage);
 
 
-    foreach(QString topic, m_socketTopics)
+    for (QString topic: m_socketTopics)
     {
         m_socket->subscribeTo(topic.toLocal8Bit());
     }

@@ -132,7 +132,7 @@ public slots:
 
     // line functions
     void lineWidth(float width);
-    void lineStipple(float enable, float length = 5.0);
+    void lineStipple(bool enable, float length = 5.0);
     void *line(float x, float y, float z);
     void *line(const QVector3D &vector);
     void* lineTo(float x, float y, float z);
