@@ -979,13 +979,22 @@ void GLView::paintGLItems()
 
 void GLView::paintGLItem(GLItem *item)
 {
+    Q_ASSERT(item != nullptr);
+    if (item == nullptr)
+    {
+        return;
+    }
+
     if (item->isVisible())
     {
         item->paint(this);
     }
     else
     {
-        removeDrawables(m_drawableListMap.value(item));     // if the item is not visible we remove all drawables
+        const auto drawables = m_drawableListMap.value(item, nullptr);
+        if (drawables != nullptr) {
+            removeDrawables(drawables);     // if the item is not visible we remove all drawables
+        }
     }
 }
 
