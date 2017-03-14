@@ -12,10 +12,10 @@ set(jdns_tool_SRCS
 
 add_executable(jdns-tool ${jdns_tool_SRCS} ${jdns_tool_MOC_SRCS} ${jdns_tool_MOC_SRCS})
 
-target_link_libraries(jdns-tool jdns q${QT_MAJ}jdns)
+target_link_libraries(jdns-tool jdns qjdns)
 
 set_target_properties(jdns-tool PROPERTIES
-                      OUTPUT_NAME jdns${QT_MAJ}
+                      OUTPUT_NAME jdns
 )
 
 install(TARGETS jdns-tool

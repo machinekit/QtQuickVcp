@@ -188,7 +188,7 @@ void JDnsShutdown::waitForShutdown(const QList<QJDnsShared*> &_list)
 	list = _list;
 	phase = 0;
 
-	m.lock();
+	QMutexLocker locker(&m);
 	start();
 	w.wait(&m);
 
