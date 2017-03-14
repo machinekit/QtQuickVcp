@@ -186,6 +186,8 @@ void  App::start()
 			x = QJDns::Hinfo;
 		else if(type == "cname")
 			x = QJDns::Cname;
+		else if(type == "ns")
+			x = QJDns::Ns;
 		else if(type == "any")
 			x = QJDns::Any;
 		else
@@ -279,7 +281,7 @@ void usage()
 	printf("  -6     use ipv6\n");
 	printf("  -q x   quit x seconds after starting\n");
 	printf("\n");
-	printf("uni/mul types: a aaaa ptr srv mx txt hinfo cname any\n");
+	printf("uni/mul types: a aaaa ptr srv mx txt hinfo cname ns any\n");
 	printf("pub items: ptr:name,answer srv:name,answer,port a:name,ipaddr\n");
 	printf("           txt:name,str0,...,strn aaaa:name,ipaddr\n");
 	printf("\n");

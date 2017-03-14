@@ -302,6 +302,10 @@ int jdns_packet_name_isvalid(const unsigned char *name, int size)
 	if(name[size - 1] != '.')
 		return 0;
 
+	// if name is one character (which must be a dot), return success
+	if(size == 1)
+		return 1;
+
 	// first byte can't be a dot if there are characters after
 	if(size > 1 && name[0] == '.')
 		return 0;
