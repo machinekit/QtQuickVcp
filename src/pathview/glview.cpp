@@ -328,7 +328,12 @@ void GLView::clearDrawables()
 
 void GLView::cleanupDrawables(ModelType type)
 {
-    QList<Parameters*> * parametersList = m_drawableMap.value(type);
+    QList<Parameters*> *parametersList = m_drawableMap.value(type, nullptr);
+
+    Q_ASSERT(parametersList != nullptr);
+    if (parametersList == nullptr) {
+        return;
+    }
 
     for (int i = (parametersList->size()-1); i >= 0; i--)
     {
