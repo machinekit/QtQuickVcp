@@ -118,10 +118,10 @@ static QByteArray makeReverseName(const QHostAddress &addr)
 	if(addr.protocol() == QAbstractSocket::IPv6Protocol)
 	{
 		Q_IPV6ADDR raw = addr.toIPv6Address();
-		for(int n = 0; n < 32; ++n)
+        for(int n = 0; n < 16; ++n)
 		{
 			char hi, lo;
-			getHex(raw.c[31 - n], &hi, &lo);
+            getHex(raw.c[15 - n], &hi, &lo);
 			out += lo;
 			out += '.';
 			out += hi;
