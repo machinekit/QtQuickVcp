@@ -3321,6 +3321,7 @@ int jdns_step_multicast(jdns_session_t *s, int now)
 		{
 			need_write = 1;
 			jdns_address_delete(addr);
+			jdns_packet_delete(packet);
 			break;
 		}
 
