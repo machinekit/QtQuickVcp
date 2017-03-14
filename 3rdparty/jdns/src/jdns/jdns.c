@@ -2691,6 +2691,7 @@ static jdns_rr_t *_mdnsda2rr(mdnsda a)
 
 		// we don't need a reference for these types
 		rr = jdns_rr_from_resource(pr, 0);
+		jdns_packet_resource_delete(pr);
 	}
 	// else, pull the values out of 'a' directly
 	else
