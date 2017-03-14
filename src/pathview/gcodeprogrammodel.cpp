@@ -311,8 +311,6 @@ QVariant GCodeProgramModel::internalData(const QModelIndex &index, int role) con
     default:
         return QVariant();
     }
-
-    return QVariant();
 }
 
 bool GCodeProgramModel::internalSetData(const QModelIndex &index, const QVariant &value, int role)
