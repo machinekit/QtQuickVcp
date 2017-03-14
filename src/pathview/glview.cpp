@@ -283,33 +283,27 @@ GLView::Parameters* GLView::addDrawableData(GLView::ModelType type, const GLView
 
 void GLView::drawDrawables(GLView::ModelType type)
 {
-    if (type == NoType)
+    switch (type)
     {
+    case Cube:
+    case Cylinder:
+    case Cone:
+    case Sphere:
+        drawModelVertices(type);
+        break;
+    case Text:
+        drawTexts();
+        break;
+    case Line:
+        drawLines();
+        break;
+    case NoType:
         QMapIterator<ModelType, QList<Parameters*>* > i(m_drawableMap);
         while (i.hasNext()) {
             i.next();
             drawDrawables(i.key());
         }
-    }
-    else
-    {
-        switch (type)
-        {
-        case Cube:
-        case Cylinder:
-        case Cone:
-        case Sphere:
-            drawModelVertices(type);
-            break;
-        case Text:
-            drawTexts();
-            break;
-        case Line:
-            drawLines();
-            break;
-        case NoType:
-            return;
-        }
+        break;
     }
 }
 
