@@ -149,6 +149,8 @@ Service::Service(QObject *parent) :
     m_filter(new ServiceDiscoveryFilter(this)),
     m_required(false),
     m_serviceQuery(new ServiceDiscoveryQuery(this)),
+    m_itemsReady(false),
+    m_rawUri(""),
     m_hostname(""),
     m_hostaddress("")
 {
