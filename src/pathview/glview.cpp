@@ -965,7 +965,17 @@ void GLView::updateGLItems()
 
 void GLView::clearGLItem(GLItem *item)
 {
-    removeDrawables(m_drawableListMap.value(item));
+    Q_ASSERT(item != nullptr);
+    if (item == nullptr)
+    {
+        return;
+    }
+
+    const auto drawables = m_drawableListMap.value(item, nullptr);
+    if (drawables != nullptr)
+    {
+        removeDrawables(drawables);
+    }
 }
 
 void GLView::updateGLItem(GLItem *item)
