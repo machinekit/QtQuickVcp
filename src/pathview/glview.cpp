@@ -267,7 +267,8 @@ GLView::Parameters* GLView::addDrawableData(const GLView::TextParameters &parame
 
 GLView::Parameters* GLView::addDrawableData(GLView::ModelType type, const GLView::Parameters &parameters)
 {
-    QList<Parameters*> *parametersList = m_drawableMap.value(type);
+    QList<Parameters*> *parametersList = m_drawableMap.value(type, nullptr);
+    Q_ASSERT(parametersList != nullptr);
     Parameters *modelParameters = new Parameters(parameters);
     modelParameters->creator = m_currentGlItem;
     parametersList->append(modelParameters);
