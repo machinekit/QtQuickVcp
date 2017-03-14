@@ -1584,4 +1584,63 @@ void GLView::reset()
 {
     removeDrawables(m_currentDrawableList);
 }
+
+GLView::Parameters::Parameters():
+    creator(nullptr),
+    modelMatrix(QMatrix4x4()),
+    color(QColor(Qt::yellow)),
+    deleteFlag(false)
+{ }
+
+GLView::Parameters::Parameters(GLView::Parameters *parameters)
+{
+    creator = parameters->creator;
+    modelMatrix = parameters->modelMatrix;
+    color = parameters->color;
+    deleteFlag = parameters->deleteFlag;
+}
+
+GLView::Parameters::~Parameters()
+{
+
+}
+
+GLView::LineParameters::LineParameters():
+    Parameters(),
+    width(1.0),
+    stipple(false),
+    stippleLength(1.0)
+{
+    GLvector3D vector;
+    vector.x = 0.0;
+    vector.y = 0.0;
+    vector.z = 0.0;
+    vertices.append(vector);
+    color = QColor(Qt::red);
+}
+
+GLView::LineParameters::LineParameters(GLView::LineParameters *parameters):
+    Parameters(parameters)
+{
+    vertices = parameters->vertices;
+    width = parameters->width;
+    stipple = parameters->stipple;
+    stippleLength = parameters->stippleLength;
+}
+
+GLView::TextParameters::TextParameters():
+    Parameters(),
+    staticText(QStaticText()),
+    alignment(AlignLeft)
+{
+    color = QColor(Qt::white);
+}
+
+GLView::TextParameters::TextParameters(GLView::TextParameters *parameters):
+    Parameters(parameters)
+{
+    staticText = parameters->staticText;
+    alignment = parameters->alignment;
+}
+
 } // namespace qtquickvcp
