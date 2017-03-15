@@ -470,8 +470,12 @@ void QJDnsSharedPrivate::late_shutdown()
 QJDnsSharedRequestPrivate::QJDnsSharedRequestPrivate(QJDnsSharedRequest *_q) : QObject(_q)
 	, q(_q)
 	, jsp(NULL)
+	, type(QJDnsSharedRequest::Query)
 	, qType(QJDns::A)
+	, pubmode(QJDns::Shared)
+	, ppmode(QJDnsSharedPrivate::None)
 	, success(false)
+	, error(QJDnsSharedRequest::ErrorNoNet)
 	, lateTimer(this)
 {
 	connect(&lateTimer, SIGNAL(timeout()), SLOT(lateTimer_timeout()));
