@@ -297,6 +297,7 @@ QStringList QJDnsSharedDebug::readDebugLines()
 QJDnsSharedPrivate::QJDnsSharedPrivate(QJDnsShared *_q)
 	: QObject(_q)
 	, q(_q)
+	, mode(QJDnsShared::Multicast)
 	, shutting_down(false)
 	, db(NULL)
 {
