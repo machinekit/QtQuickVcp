@@ -141,7 +141,7 @@ public slots:
     void *lineFromTo(const QVector3D &startPosition, const QVector3D &endPosition);
     void beginPath();
     void *endPath();
-    void *arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset = 0.0);
+    void *arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset = 0.0f, int arcDivison = 16);
 
     // text functions
     void text(QString text, TextAlignment alignment = AlignLeft, QFont font = QFont());

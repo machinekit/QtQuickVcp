@@ -1374,14 +1374,13 @@ void *GLView::endPath()
     return parameters;
 }
 
-void *GLView::arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset)
+void *GLView::arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset, int arcDivison)
 {
     float currentX;
     float currentY;
     float currentZ;
     float startX = 0.0f;
     float startY = 0.0f;
-    const float arcPrecision = 16.0f;  // 16 segments per revolution
     int nSegments;
     float totalAngle;
     float segmentAngle;
@@ -1398,7 +1397,7 @@ void *GLView::arc(float x, float y, float radius, float startAngle, float endAng
         totalAngle = std::fabs(endAngle - startAngle);
     }
 
-    nSegments = static_cast<int>(std::ceil(totalAngle * arcPrecision / (2.0f * PI_F)));
+    nSegments = static_cast<int>(std::ceil(totalAngle * static_cast<float>(arcDivison) / (2.0f * PI_F)));
     segmentAngle = totalAngle / static_cast<float>(nSegments);
     if (!anticlockwise) {
         segmentAngle *= -1.0;

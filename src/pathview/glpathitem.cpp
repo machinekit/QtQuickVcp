@@ -45,6 +45,7 @@ GLPathItem::GLPathItem(QQuickItem *parent) :
     m_activeColor(QColor(Qt::red)),
     m_lineWidth(1.0),
     m_traverseLineStippleLength(1.0),
+    m_arcDivision(16),
     m_needsFullUpdate(true),
     m_minimumExtents(QVector3D(0, 0, 0)),
     m_maximumExtents(QVector3D(0, 0, 0))
@@ -117,7 +118,8 @@ void GLPathItem::paint(GLView *glView)
                                               arcPathItem->startAngle,
                                               arcPathItem->endAngle,
                                               arcPathItem->anticlockwise,
-                                              arcPathItem->helixOffset);
+                                              arcPathItem->helixOffset,
+                                              m_arcDivision);
             }
 
             if (drawablePointer != nullptr)
@@ -221,6 +223,11 @@ float GLPathItem::lineWidth() const
 float GLPathItem::traverseLineStippleLength() const
 {
     return m_traverseLineStippleLength;
+}
+
+int GLPathItem::arcDivision() const
+{
+    return m_arcDivision;
 }
 
 QColor GLPathItem::straightFeedColor() const
@@ -353,6 +360,16 @@ void GLPathItem::setTraverseLineStippleLength(float arg)
         m_traverseLineStippleLength = arg;
         emit traverseLineStippleLengthChanged(arg);
     }
+}
+
+void GLPathItem::setArcDivision(int arcDivision)
+{
+    if (m_arcDivision == arcDivision) {
+        return;
+    }
+
+    m_arcDivision = arcDivision;
+    emit arcDivisionChanged(arcDivision);
 }
 
 void GLPathItem::setBackplotArcFeedColor(QColor arg)

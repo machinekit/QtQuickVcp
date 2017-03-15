@@ -45,6 +45,7 @@ class GLPathItem : public GLItem
     Q_PROPERTY(QVector3D maximumExtents READ maximumExtents NOTIFY maximumExtentsChanged)
     Q_PROPERTY(float lineWidth READ lineWidth WRITE setLineWidth NOTIFY lineWidthChanged)
     Q_PROPERTY(float traverseLineStippleLength READ traverseLineStippleLength WRITE setTraverseLineStippleLength NOTIFY traverseLineStippleLengthChanged)
+    Q_PROPERTY(int arcDivision READ arcDivision WRITE setArcDivision NOTIFY arcDivisionChanged)
 
 public:
     explicit GLPathItem(QQuickItem *parent = 0);
@@ -65,6 +66,7 @@ public:
     QVector3D maximumExtents() const;
     float lineWidth() const;
     float traverseLineStippleLength() const;
+    int arcDivision() const;
 
 public slots:
     virtual void selectDrawable(void *pointer);
@@ -80,6 +82,7 @@ public slots:
     void setActiveColor(QColor arg);
     void setLineWidth(float arg);
     void setTraverseLineStippleLength(float arg);
+    void setArcDivision(int arcDivision);
 
 private:
     struct Position {
@@ -177,6 +180,7 @@ private:
     QColor m_activeColor;
     float m_lineWidth;
     float m_traverseLineStippleLength;
+    int m_arcDivision;
 
     Offsets m_activeOffsets;
     machinetalk::Position m_relativePosition; // current relative position (without offsets)
@@ -233,6 +237,7 @@ signals:
     void backplotTraverseColorChanged(const QColor &arg);
     void lineWidthChanged(float lineWidth);
     void traverseLineStippleLengthChanged(float traverseLineStippleLength);
+    void arcDivisionChanged(int arcDivision);
 }; // class GLPathItem
 } // namespace qtquickvcp
 

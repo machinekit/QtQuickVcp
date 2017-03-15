@@ -471,6 +471,7 @@ GLView3D {
         selectedColor: pathView.colors["selected"]
         activeColor: pathView.colors["active"]
         traverseLineStippleLength: (pathView.viewMode === "Perspective") ? 0.015 * camera.distance / pathView.cameraZoom : 0.015
+        arcDivision: _ready ? status.config.arcdivision : 16
         model: (pathView.model !== undefined) ? pathView.model : tmpModel
     }
 
