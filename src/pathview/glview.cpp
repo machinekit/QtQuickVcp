@@ -1043,7 +1043,7 @@ quint32 GLView::getSelection()
     int maxCount = 0;
 
     // find the id that is most common in the selection
-    for (quint32 id: ids)
+    for (const quint32 id: ids)
     {
         int count = 0;
         qCount(ids.begin(), ids.end(), id, count);
