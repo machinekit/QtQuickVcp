@@ -138,9 +138,7 @@ static QJDns::Record import_record(const jdns_rr_t *in)
 	out.owner = QByteArray((const char *)in->owner);
 	out.ttl = in->ttl;
 	out.type = in->type;
-	out.rdata = QByteArray((const char *)in->rdata, in->rdlength);
-	out.port = 0;
-	out.weight = 0;
+    out.rdata = QByteArray((const char *)in->rdata, in->rdlength);
 
 	// known
 	if(in->haveKnown)
@@ -272,10 +270,13 @@ QJDns::NameServer::NameServer()
 // QJDns::Record
 //----------------------------------------------------------------------------
 QJDns::Record::Record()
+    : ttl(0)
+    , type(-1)
+    , haveKnown(false)
+    , priority(0)
+    , weight(0)
+    , port(0)
 {
-	ttl = 0;
-	type = -1;
-	haveKnown = false;
 }
 
 bool QJDns::Record::verify() const
