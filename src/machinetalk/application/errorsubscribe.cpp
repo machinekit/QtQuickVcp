@@ -110,7 +110,7 @@ bool ErrorSubscribe::startSocket()
             this, &ErrorSubscribe::processSocketMessage);
 
 
-    for (QString topic: m_socketTopics)
+    for (const QString &topic: m_socketTopics)
     {
         m_socket->subscribeTo(topic.toLocal8Bit());
     }

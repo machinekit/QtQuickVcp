@@ -197,7 +197,7 @@ QString ApplicationDescription::getMainFile(const QStringList &fileList, const Q
     if (mainFileName.isEmpty())
     {
         preferredName = baseFilePath + applicationName + ".qml";
-        for (QString fileName: fileList)
+        for (const QString &fileName: fileList)
         {
             if (fileName == preferredName)
             {

@@ -883,7 +883,7 @@ bool ServiceDiscovery::filterServiceDiscoveryItem(ServiceDiscoveryItem *item, Se
     {
         QStringList txtRecords = item->txtRecords();
 
-        for (QString filter: serviceDiscoveryFilter->txtRecords())
+        for (const QString &filter: serviceDiscoveryFilter->txtRecords())
         {
             txtRecords = txtRecords.filter(QRegExp(filter, Qt::CaseSensitive, QRegExp::WildcardUnix));
         }
@@ -1074,7 +1074,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
     type = m_queryIdTypeMap.value(id);
 
-    for (QJDns::Record r: results.answerRecords)
+    for (const QJDns::Record &r: results.answerRecords)
     {
         ServiceDiscoveryItem * item;
         int newId;
@@ -1119,7 +1119,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_queryIdTypeMap.remove(id);
             m_queryIdItemMap.remove(id);
 
-            for (QString string: r.texts)
+            for (const QString &string: r.texts)
             {
                 txtRecords.append(string);
             }
