@@ -2067,6 +2067,10 @@ int _unicast_do_writes(jdns_session_t *s, int now)
 		}
 
 		// in theory, it is not possible for 'ns' to be null here
+		if (ns == 0)
+		{
+			continue; // but lets make sure it will not stab us in the back
+		}
 
 		// don't send the packet if there is already one in the queue
 		already_sending = 0;
