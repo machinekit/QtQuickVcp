@@ -271,8 +271,8 @@ static jdns_string_t *file_nextline(FILE *f)
 	at = 0;
 	while(1)
 	{
-		unsigned char c = fgetc(f);
-		if(feof(f))
+		unsigned char c = (unsigned char)fgetc(f); // cast is intentional
+		if(feof(f)) // checking EOF here
 		{
 			if(at > 0)
 			{
