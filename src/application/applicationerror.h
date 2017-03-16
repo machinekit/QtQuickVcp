@@ -80,7 +80,7 @@ private:
     bool            m_connected;
     ErrorChannels   m_channels;
 
-    void errorMessageReceived(const machinetalk::Container rx);
+    void errorMessageReceived(const machinetalk::Container &rx);
 
 private slots:
     void emcNmlErrorReceived(const QByteArray &topic, const machinetalk::Container &rx);

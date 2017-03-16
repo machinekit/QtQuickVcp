@@ -35,14 +35,52 @@ namespace qtquickvcp {
 GLView::GLView(QQuickItem *parent)
     : QQuickPaintedItem(parent)
     , m_initialized(false)
-    , m_modelProgram(0)
-    , m_lineProgram(0)
-    , m_textProgram(0)
+    , m_modelProgram(nullptr)
+    , m_lineProgram(nullptr)
+    , m_textProgram(nullptr)
     , m_projectionAspectRatio(1.0)
-    , m_backgroundColor(QColor(Qt::black))
+    , m_positionLocation(0)
+    , m_normalLocation(0)
+    , m_colorLocation(0)
+    , m_lightPositionLocation(0)
+    , m_lightIntensitiesLocation(0)
+    , m_lightAttenuationLocation(0)
+    , m_lightAmbientCoefficientLocation(0)
+    , m_lightEnabledLocation(0)
+    , m_projectionMatrixLocation(0)
+    , m_viewMatrixLocation(0)
+    , m_modelMatrixLocation(0)
+    , m_selectionModeLocation(0)
+    , m_idColorLocation(0)
+    , m_lineProjectionMatrixLocation(0)
+    , m_lineViewMatrixLocation(0)
+    , m_lineModelMatrixLocation(0)
+    , m_lineColorLocation(0)
+    , m_linePositionLocation(0)
+    , m_lineStippleLocation(0)
+    , m_lineStippleLengthLocation(0)
+    , m_lineSelectionModeLocation(0)
+    , m_lineIdColorLocation(0)
+    , m_textProjectionMatrixLocation(0)
+    , m_textViewMatrixLocation(0)
+    , m_textModelMatrixLocation(0)
+    , m_textColorLocation(0)
+    , m_textPositionLocation(0)
+    , m_textTexCoordinateLocation(0)
+    , m_textTextureLocation(0)
+    , m_textAspectRatioLocation(0)
+    , m_textAlignmentLocation(0)
+    , m_textSelectionModeLocation(0)
+    , m_textIdColorLocation(0)
+    , m_backgroundColor(Qt::black)
+    , m_thread_backgroundColor(Qt::black)
     , m_pathEnabled(false)
+    , m_lineParameters(nullptr)
+    , m_textParameters(nullptr)
+    , m_currentDrawableId(0)
     , m_selectionModeActive(false)
     , m_currentGlItem(nullptr)
+    , m_currentDrawableList(nullptr)
     , m_propertySignalMapper(new QSignalMapper(this))
     , m_camera(new QGLCamera(this))
     , m_light(new GLLight(this))
@@ -229,7 +267,8 @@ GLView::Parameters* GLView::addDrawableData(const GLView::TextParameters &parame
 
 GLView::Parameters* GLView::addDrawableData(GLView::ModelType type, const GLView::Parameters &parameters)
 {
-    QList<Parameters*> *parametersList = m_drawableMap.value(type);
+    QList<Parameters*> *parametersList = m_drawableMap.value(type, nullptr);
+    Q_ASSERT(parametersList != nullptr);
     Parameters *modelParameters = new Parameters(parameters);
     modelParameters->creator = m_currentGlItem;
     parametersList->append(modelParameters);
@@ -244,33 +283,27 @@ GLView::Parameters* GLView::addDrawableData(GLView::ModelType type, const GLView
 
 void GLView::drawDrawables(GLView::ModelType type)
 {
-    if (type == NoType)
+    switch (type)
     {
+    case Cube:
+    case Cylinder:
+    case Cone:
+    case Sphere:
+        drawModelVertices(type);
+        break;
+    case Text:
+        drawTexts();
+        break;
+    case Line:
+        drawLines();
+        break;
+    case NoType:
         QMapIterator<ModelType, QList<Parameters*>* > i(m_drawableMap);
         while (i.hasNext()) {
             i.next();
             drawDrawables(i.key());
         }
-    }
-    else
-    {
-        switch (type)
-        {
-        case Cube:
-        case Cylinder:
-        case Cone:
-        case Sphere:
-            drawModelVertices(type);
-            break;
-        case Text:
-            drawTexts();
-            break;
-        case Line:
-            drawLines();
-            break;
-        case NoType:
-            return;
-        }
+        break;
     }
 }
 
@@ -290,7 +323,12 @@ void GLView::clearDrawables()
 
 void GLView::cleanupDrawables(ModelType type)
 {
-    QList<Parameters*> * parametersList = m_drawableMap.value(type);
+    QList<Parameters*> *parametersList = m_drawableMap.value(type, nullptr);
+
+    Q_ASSERT(parametersList != nullptr);
+    if (parametersList == nullptr) {
+        return;
+    }
 
     for (int i = (parametersList->size()-1); i >= 0; i--)
     {
@@ -922,7 +960,17 @@ void GLView::updateGLItems()
 
 void GLView::clearGLItem(GLItem *item)
 {
-    removeDrawables(m_drawableListMap.value(item));
+    Q_ASSERT(item != nullptr);
+    if (item == nullptr)
+    {
+        return;
+    }
+
+    const auto drawables = m_drawableListMap.value(item, nullptr);
+    if (drawables != nullptr)
+    {
+        removeDrawables(drawables);
+    }
 }
 
 void GLView::updateGLItem(GLItem *item)
@@ -941,13 +989,22 @@ void GLView::paintGLItems()
 
 void GLView::paintGLItem(GLItem *item)
 {
+    Q_ASSERT(item != nullptr);
+    if (item == nullptr)
+    {
+        return;
+    }
+
     if (item->isVisible())
     {
         item->paint(this);
     }
     else
     {
-        removeDrawables(m_drawableListMap.value(item));     // if the item is not visible we remove all drawables
+        const auto drawables = m_drawableListMap.value(item, nullptr);
+        if (drawables != nullptr) {
+            removeDrawables(drawables);     // if the item is not visible we remove all drawables
+        }
     }
 }
 
@@ -1583,4 +1640,63 @@ void GLView::reset()
 {
     removeDrawables(m_currentDrawableList);
 }
+
+GLView::Parameters::Parameters():
+    creator(nullptr),
+    modelMatrix(QMatrix4x4()),
+    color(QColor(Qt::yellow)),
+    deleteFlag(false)
+{ }
+
+GLView::Parameters::Parameters(GLView::Parameters *parameters)
+{
+    creator = parameters->creator;
+    modelMatrix = parameters->modelMatrix;
+    color = parameters->color;
+    deleteFlag = parameters->deleteFlag;
+}
+
+GLView::Parameters::~Parameters()
+{
+
+}
+
+GLView::LineParameters::LineParameters():
+    Parameters(),
+    width(1.0),
+    stipple(false),
+    stippleLength(1.0)
+{
+    GLvector3D vector;
+    vector.x = 0.0;
+    vector.y = 0.0;
+    vector.z = 0.0;
+    vertices.append(vector);
+    color = QColor(Qt::red);
+}
+
+GLView::LineParameters::LineParameters(GLView::LineParameters *parameters):
+    Parameters(parameters)
+{
+    vertices = parameters->vertices;
+    width = parameters->width;
+    stipple = parameters->stipple;
+    stippleLength = parameters->stippleLength;
+}
+
+GLView::TextParameters::TextParameters():
+    Parameters(),
+    staticText(QStaticText()),
+    alignment(AlignLeft)
+{
+    color = QColor(Qt::white);
+}
+
+GLView::TextParameters::TextParameters(GLView::TextParameters *parameters):
+    Parameters(parameters)
+{
+    staticText = parameters->staticText;
+    alignment = parameters->alignment;
+}
+
 } // namespace qtquickvcp

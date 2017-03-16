@@ -139,8 +139,6 @@ QVariant ApplicationFileModel::internalData(const QModelIndex &index, int role) 
     default:
         return QVariant();
     }
-
-    return QVariant();
 }
 
 QString ApplicationFileModel::formatByteSize(qint64 bytes) const

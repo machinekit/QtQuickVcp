@@ -224,20 +224,9 @@ private:
 
     class Parameters {
     public:
-        Parameters():
-            creator(nullptr),
-            modelMatrix(QMatrix4x4()),
-            color(QColor(Qt::yellow)),
-            deleteFlag(false)
-        { }
-
-        Parameters(Parameters *parameters)
-        {
-            creator = parameters->creator;
-            modelMatrix = parameters->modelMatrix;
-            color = parameters->color;
-            deleteFlag = parameters->deleteFlag;
-        }
+        Parameters();
+        Parameters(Parameters *parameters);
+        virtual ~Parameters();
 
         GLItem *creator;
         QMatrix4x4 modelMatrix;
@@ -247,28 +236,8 @@ private:
 
     class LineParameters: public Parameters {
     public:
-        LineParameters():
-            Parameters(),
-            width(1.0),
-            stipple(false),
-            stippleLength(1.0)
-        {
-            GLvector3D vector;
-            vector.x = 0.0;
-            vector.y = 0.0;
-            vector.z = 0.0;
-            vertices.append(vector);
-            color = QColor(Qt::red);
-        }
-
-        LineParameters(LineParameters *parameters):
-            Parameters(parameters)
-        {
-            vertices = parameters->vertices;
-            width = parameters->width;
-            stipple = parameters->stipple;
-            stippleLength = parameters->stippleLength;
-        }
+        LineParameters();
+        LineParameters(LineParameters *parameters);
 
         QVector<GLvector3D> vertices;
         GLfloat width;
@@ -278,20 +247,8 @@ private:
 
     class TextParameters: public Parameters {
     public:
-        TextParameters():
-            Parameters(),
-            staticText(QStaticText()),
-            alignment(AlignLeft)
-        {
-            color = QColor(Qt::white);
-        }
-
-        TextParameters(TextParameters *parameters):
-            Parameters(parameters)
-        {
-            staticText = parameters->staticText;
-            alignment = parameters->alignment;
-        }
+        TextParameters();
+        TextParameters(TextParameters *parameters);
 
         QStaticText staticText;
         TextAlignment alignment;

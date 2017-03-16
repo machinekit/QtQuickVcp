@@ -86,15 +86,15 @@ public slots:
 
 private:
     struct Position {
-        float x;
-        float y;
-        float z;
-        float a;
-        float b;
-        float c;
-        float u;
-        float v;
-        float w;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+        float a = 0.0f;
+        float b = 0.0f;
+        float c = 0.0f;
+        float u = 0.0f;
+        float v = 0.0f;
+        float w = 0.0f;
     };
 
     struct Offsets {

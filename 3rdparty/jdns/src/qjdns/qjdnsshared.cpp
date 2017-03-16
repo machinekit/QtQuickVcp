@@ -118,10 +118,10 @@ static QByteArray makeReverseName(const QHostAddress &addr)
 	if(addr.protocol() == QAbstractSocket::IPv6Protocol)
 	{
 		Q_IPV6ADDR raw = addr.toIPv6Address();
-		for(int n = 0; n < 32; ++n)
+        for(int n = 0; n < 16; ++n)
 		{
 			char hi, lo;
-			getHex(raw.c[31 - n], &hi, &lo);
+            getHex(raw.c[15 - n], &hi, &lo);
 			out += lo;
 			out += '.';
 			out += hi;
@@ -188,7 +188,7 @@ void JDnsShutdown::waitForShutdown(const QList<QJDnsShared*> &_list)
 	list = _list;
 	phase = 0;
 
-	m.lock();
+	QMutexLocker locker(&m);
 	start();
 	w.wait(&m);
 
@@ -297,6 +297,7 @@ QStringList QJDnsSharedDebug::readDebugLines()
 QJDnsSharedPrivate::QJDnsSharedPrivate(QJDnsShared *_q)
 	: QObject(_q)
 	, q(_q)
+	, mode(QJDnsShared::Multicast)
 	, shutting_down(false)
 	, db(NULL)
 {
@@ -470,8 +471,12 @@ void QJDnsSharedPrivate::late_shutdown()
 QJDnsSharedRequestPrivate::QJDnsSharedRequestPrivate(QJDnsSharedRequest *_q) : QObject(_q)
 	, q(_q)
 	, jsp(NULL)
+	, type(QJDnsSharedRequest::Query)
 	, qType(QJDns::A)
+	, pubmode(QJDns::Shared)
+	, ppmode(QJDnsSharedPrivate::None)
 	, success(false)
+	, error(QJDnsSharedRequest::ErrorNoNet)
 	, lateTimer(this)
 {
 	connect(&lateTimer, SIGNAL(timeout()), SLOT(lateTimer_timeout()));

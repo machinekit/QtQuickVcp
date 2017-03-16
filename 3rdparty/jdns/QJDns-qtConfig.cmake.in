@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+if(NOT JDns_FOUND)
+  find_package(JDns "@JDNS_LIB_VERSION_STRING@" REQUIRED)
+endif(NOT JDns_FOUND)
+
+if(NOT TARGET qjdns)
+	include(${CMAKE_CURRENT_LIST_DIR}/QJDns@QT_MAJ@Targets.cmake)
+endif()
+
+set(QJDns_LIBRARY qjdns)

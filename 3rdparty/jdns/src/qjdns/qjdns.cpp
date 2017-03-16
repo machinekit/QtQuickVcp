@@ -139,6 +139,8 @@ static QJDns::Record import_record(const jdns_rr_t *in)
 	out.ttl = in->ttl;
 	out.type = in->type;
 	out.rdata = QByteArray((const char *)in->rdata, in->rdlength);
+	out.port = 0;
+	out.weight = 0;
 
 	// known
 	if(in->haveKnown)

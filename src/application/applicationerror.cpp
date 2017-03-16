@@ -35,7 +35,7 @@ ApplicationError::ApplicationError(QObject *parent) :
 {
 }
 
-void ApplicationError::errorMessageReceived(const Container rx)
+void ApplicationError::errorMessageReceived(const Container &rx)
 {
     for (int i = 0; i < rx.note_size(); ++i)
     {

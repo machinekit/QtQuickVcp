@@ -2691,6 +2691,7 @@ static jdns_rr_t *_mdnsda2rr(mdnsda a)
 
 		// we don't need a reference for these types
 		rr = jdns_rr_from_resource(pr, 0);
+		jdns_packet_resource_delete(pr);
 	}
 	// else, pull the values out of 'a' directly
 	else
@@ -3320,6 +3321,7 @@ int jdns_step_multicast(jdns_session_t *s, int now)
 		{
 			need_write = 1;
 			jdns_address_delete(addr);
+			jdns_packet_delete(packet);
 			break;
 		}
 
