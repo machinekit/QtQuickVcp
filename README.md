@@ -6,6 +6,11 @@ A remote UI implementation for [Machinekit](https://github.com/machinekit/machin
 |----------|:----:|:----:|
 | Build Status | [![Build Status](https://api.travis-ci.org/qtquickvcp/QtQuickVcp.svg?branch=master)](http://travis-ci.org/qtquickvcp/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/h8pi1hm0gj15nmgm?svg=true)](https://ci.appveyor.com/project/machinekoder/qtquickvcp) |
 
+<a href="https://scan.coverity.com/projects/qtquickvcp-qtquickvcp">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/10524/badge.svg"/>
+</a>
+
 ## Features
 
 * enables building remote user interfaces for Machinekit
