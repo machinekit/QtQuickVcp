@@ -308,18 +308,22 @@ static void my_srand()
 QJDns::Private::Private(QJDns *_q)
 	: QObject(_q)
 	, q(_q)
+	, mode(QJDns::Multicast)
+	, sess(nullptr)
+	, shutting_down(false)
 	, stepTrigger(this)
 	, debugTrigger(this)
 	, stepTimeout(this)
-	, pErrors(0)
-	, pPublished(0)
-	, pResponses(0)
+	, new_debug_strings(false)
+	, next_handle(0)
+	, need_handle(false)
+	, pending(0)
+	, pending_wait(false)
+	, complete_shutdown(false)
+	, pErrors(nullptr)
+	, pPublished(nullptr)
+	, pResponses(nullptr)
 {
-	sess = 0;
-	shutting_down = false;
-	new_debug_strings = false;
-	pending = 0;
-
 	connect(&stepTrigger, SIGNAL(timeout()), SLOT(doNextStepSlot()));
 	stepTrigger.setSingleShot(true);
 
