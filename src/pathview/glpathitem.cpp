@@ -32,23 +32,26 @@ using namespace machinetalk;
 
 namespace qtquickvcp {
 
-GLPathItem::GLPathItem(QQuickItem *parent) :
-    GLItem(parent),
-    m_model(nullptr),
-    m_arcFeedColor(QColor(Qt::white)),
-    m_straightFeedColor(QColor(Qt::white)),
-    m_traverseColor(QColor(Qt::cyan)),
-    m_backplotArcFeedColor(QColor(Qt::yellow)),
-    m_backplotStraightFeedColor(QColor(Qt::yellow)),
-    m_backplotTraverseColor(QColor(Qt::yellow)),
-    m_selectedColor(QColor(Qt::magenta)),
-    m_activeColor(QColor(Qt::red)),
-    m_lineWidth(1.0),
-    m_traverseLineStippleLength(1.0),
-    m_arcDivision(16),
-    m_needsFullUpdate(true),
-    m_minimumExtents(QVector3D(0, 0, 0)),
-    m_maximumExtents(QVector3D(0, 0, 0))
+GLPathItem::GLPathItem(QQuickItem *parent)
+    : GLItem(parent)
+    , m_model(nullptr)
+    , m_arcFeedColor(QColor(Qt::white))
+    , m_straightFeedColor(QColor(Qt::white))
+    , m_traverseColor(QColor(Qt::cyan))
+    , m_backplotArcFeedColor(QColor(Qt::yellow))
+    , m_backplotStraightFeedColor(QColor(Qt::yellow))
+    , m_backplotTraverseColor(QColor(Qt::yellow))
+    , m_selectedColor(QColor(Qt::magenta))
+    , m_activeColor(QColor(Qt::red))
+    , m_lineWidth(1.0)
+    , m_traverseLineStippleLength(1.0)
+    , m_arcDivision(16)
+    , m_activePlane(XYPlane)
+    , m_previousSelectedDrawable(nullptr)
+    , m_needsFullUpdate(true)
+    , m_minimumExtents(QVector3D(0, 0, 0))
+    , m_maximumExtents(QVector3D(0, 0, 0))
+    , m_extentsUpdated(false)
 {
     connect(this, &GLPathItem::visibleChanged,
             this, &GLPathItem::triggerFullUpdate);
