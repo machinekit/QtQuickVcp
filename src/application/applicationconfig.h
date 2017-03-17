@@ -99,6 +99,7 @@ private:
     ApplicationConfigItem *m_selectedConfig;
     QList<ApplicationConfigItem*> m_configs;
     ApplicationConfigFilter *m_filter;
+    QString m_tmpPath;
 
     // more efficient to reuse a protobuf Message
     machinetalk::Container m_tx;
