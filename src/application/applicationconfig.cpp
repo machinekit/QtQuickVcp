@@ -164,11 +164,12 @@ namespace qtquickvcp {
 
     Unselects the configuration with the given name and updates \l{selectedConfig}.
 */
-ApplicationConfig::ApplicationConfig(QObject *parent) :
-    application::ConfigBase(parent),
-     m_synced(false),
-     m_selectedConfig(new ApplicationConfigItem(this)),
-     m_filter(new ApplicationConfigFilter(this))
+ApplicationConfig::ApplicationConfig(QObject *parent)
+    : application::ConfigBase(parent)
+    , m_synced(false)
+    , m_selectedConfig(new ApplicationConfigItem(this))
+    , m_filter(new ApplicationConfigFilter(this))
+    , m_tmpPath("")
 {
 }
 
@@ -181,8 +182,7 @@ void ApplicationConfig::cleanupFiles()
 {
     if (!m_selectedConfig->name().isEmpty())
     {
-        QString path = MachinetalkService::applicationTempPath(m_selectedConfig->name());
-        QDir dir(path);
+        QDir dir(m_tmpPath);
         dir.removeRecursively();
     }
 }
@@ -246,7 +246,9 @@ void ApplicationConfig::applicationDetailReceived(const Container &rx)
             m_selectedConfig->setDescription(QString::fromStdString(app.description()));
             m_selectedConfig->setType(type);
 
-            baseFilePath = MachinetalkService::applicationTempPath(m_selectedConfig->name());
+            // update the tmp path and use it to store the config, UUID enforces reload of UI
+            m_tmpPath = MachinetalkService::applicationTempPath(m_selectedConfig->name() + "-" + QUuid::createUuid().toString().remove('{').remove('}'));
+            baseFilePath = m_tmpPath;
             if (!dir.mkpath(baseFilePath))
             {
                 qWarning() << "unable to create directory " << baseFilePath;
