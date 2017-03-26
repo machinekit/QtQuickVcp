@@ -16,21 +16,20 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace application {
+namespace machinetalk { namespace application {
 
 /** Generic Launcher Base implementation */
-LauncherBase::LauncherBase(QObject *parent) :
-    QObject(parent),
-    QQmlParserStatus(),
-    m_componentCompleted(false),
-    m_ready(false),
-    m_debugName("Launcher Base"),
-    m_launchercmdChannel(nullptr),
-    m_launcherChannel(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
+LauncherBase::LauncherBase(QObject *parent)
+    : QObject(parent)
+    , QQmlParserStatus()
+    , m_componentCompleted(false)
+    , m_ready(false)
+    , m_debugName("Launcher Base")
+    , m_launchercmdChannel(nullptr)
+    , m_launcherChannel(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
 {
     // initialize launchercmd channel
     m_launchercmdChannel = new common::RpcClient(this);
@@ -451,5 +450,5 @@ void LauncherBase::stop()
         emit fsmSyncedDisconnect(QPrivateSignal());
     }
 }
-} // namespace application
-} // namespace machinetalk
+
+} } // namespace machinetalk::application

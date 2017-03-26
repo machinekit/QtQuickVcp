@@ -16,24 +16,23 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace common {
+namespace machinetalk { namespace common {
 
 /** Generic Subscribe implementation */
-Subscribe::Subscribe(QObject *parent) :
-    QObject(parent),
-    m_ready(false),
-    m_debugName("Subscribe"),
-    m_socketUri(""),
-    m_context(nullptr),
-    m_socket(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
-    ,m_heartbeatTimer(new QTimer(this)),
-    m_heartbeatInterval(2500),
-    m_heartbeatLiveness(0),
-    m_heartbeatResetLiveness(2)
+Subscribe::Subscribe(QObject *parent)
+    : QObject(parent)
+    , m_ready(false)
+    , m_debugName("Subscribe")
+    , m_socketUri("")
+    , m_context(nullptr)
+    , m_socket(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
+    , m_heartbeatTimer(new QTimer(this))
+    , m_heartbeatInterval(2500)
+    , m_heartbeatLiveness(0)
+    , m_heartbeatResetLiveness(2)
 {
 
     m_heartbeatTimer->setSingleShot(true);
@@ -392,5 +391,5 @@ void Subscribe::stop()
         emit fsmUpStop(QPrivateSignal());
     }
 }
-} // namespace common
-} // namespace machinetalk
+
+} } // namespace machinetalk::common

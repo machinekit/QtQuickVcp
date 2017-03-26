@@ -16,20 +16,19 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace pathview {
+namespace machinetalk { namespace pathview {
 
 /** Generic Preview Subscribe implementation */
-PreviewSubscribe::PreviewSubscribe(QObject *parent) :
-    QObject(parent),
-    m_ready(false),
-    m_debugName("Preview Subscribe"),
-    m_socketUri(""),
-    m_context(nullptr),
-    m_socket(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
+PreviewSubscribe::PreviewSubscribe(QObject *parent)
+    : QObject(parent)
+    , m_ready(false)
+    , m_debugName("Preview Subscribe")
+    , m_socketUri("")
+    , m_context(nullptr)
+    , m_socket(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
 {
     // state machine
     connect(this, &PreviewSubscribe::fsmDownConnect,
@@ -284,5 +283,5 @@ void PreviewSubscribe::connected()
         emit fsmTryingConnected(QPrivateSignal());
     }
 }
-} // namespace pathview
-} // namespace machinetalk
+
+} } // namespace machinetalk::pathview

@@ -13,11 +13,11 @@
 #include <pathview/previewsubscribe.h>
 #include <pathview/previewsubscribe.h>
 
-namespace machinetalk {
-namespace pathview {
+namespace machinetalk { namespace pathview {
 
-class PreviewClientBase : public QObject
-,public QQmlParserStatus
+class PreviewClientBase
+    : public QObject
+    , public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -227,6 +227,6 @@ signals:
     void fsmUpStatusTrying(QPrivateSignal);
     void fsmUpDisconnect(QPrivateSignal);
 };
-} // namespace pathview
-} // namespace machinetalk
+
+} } // namespace machinetalk::pathview
 #endif //PREVIEW_CLIENT_BASE_H

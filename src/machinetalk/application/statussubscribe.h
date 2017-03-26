@@ -10,10 +10,10 @@
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 
-namespace machinetalk {
-namespace application {
+namespace machinetalk { namespace application {
 
-class StatusSubscribe : public QObject
+class StatusSubscribe
+    : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
@@ -155,15 +155,15 @@ private slots:
 
 
     void fsmDown();
-    void fsmDownConnectEvent();
+    void fsmDownStartEvent();
     void fsmTrying();
-    void fsmTryingConnectedEvent();
-    void fsmTryingDisconnectEvent();
+    void fsmTryingFullUpdateReceivedEvent();
+    void fsmTryingStopEvent();
     void fsmUp();
-    void fsmUpTimeoutEvent();
-    void fsmUpTickEvent();
-    void fsmUpMessageReceivedEvent();
-    void fsmUpDisconnectEvent();
+    void fsmUpHeartbeatTimeoutEvent();
+    void fsmUpHeartbeatTickEvent();
+    void fsmUpAnyMsgReceivedEvent();
+    void fsmUpStopEvent();
 
 
 signals:
@@ -177,18 +177,18 @@ signals:
     // fsm
     void fsmDownEntered(QPrivateSignal);
     void fsmDownExited(QPrivateSignal);
-    void fsmDownConnect(QPrivateSignal);
+    void fsmDownStart(QPrivateSignal);
     void fsmTryingEntered(QPrivateSignal);
     void fsmTryingExited(QPrivateSignal);
-    void fsmTryingConnected(QPrivateSignal);
-    void fsmTryingDisconnect(QPrivateSignal);
+    void fsmTryingFullUpdateReceived(QPrivateSignal);
+    void fsmTryingStop(QPrivateSignal);
     void fsmUpEntered(QPrivateSignal);
     void fsmUpExited(QPrivateSignal);
-    void fsmUpTimeout(QPrivateSignal);
-    void fsmUpTick(QPrivateSignal);
-    void fsmUpMessageReceived(QPrivateSignal);
-    void fsmUpDisconnect(QPrivateSignal);
+    void fsmUpHeartbeatTimeout(QPrivateSignal);
+    void fsmUpHeartbeatTick(QPrivateSignal);
+    void fsmUpAnyMsgReceived(QPrivateSignal);
+    void fsmUpStop(QPrivateSignal);
 };
-} // namespace application
-} // namespace machinetalk
+
+} } // namespace machinetalk::application
 #endif //STATUS_SUBSCRIBE_H

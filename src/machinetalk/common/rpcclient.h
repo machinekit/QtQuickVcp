@@ -10,10 +10,10 @@
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 
-namespace machinetalk {
-namespace common {
+namespace machinetalk { namespace common {
 
-class RpcClient : public QObject
+class RpcClient
+    : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
@@ -197,6 +197,6 @@ signals:
     void fsmUpAnyMsgSent(QPrivateSignal);
     void fsmUpStop(QPrivateSignal);
 };
-} // namespace common
-} // namespace machinetalk
+
+} } // namespace machinetalk::common
 #endif //RPC_CLIENT_H

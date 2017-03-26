@@ -12,11 +12,11 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <common/rpcclient.h>
 
-namespace machinetalk {
-namespace application {
+namespace machinetalk { namespace application {
 
-class ConfigBase : public QObject
-,public QQmlParserStatus
+class ConfigBase
+    : public QObject
+    , public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -213,6 +213,6 @@ signals:
     void fsmLoadingConfigTrying(QPrivateSignal);
     void fsmLoadingDisconnect(QPrivateSignal);
 };
-} // namespace application
-} // namespace machinetalk
+
+} } // namespace machinetalk::application
 #endif //CONFIG_BASE_H

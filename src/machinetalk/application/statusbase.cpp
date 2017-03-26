@@ -16,20 +16,19 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace application {
+namespace machinetalk { namespace application {
 
 /** Generic Status Base implementation */
-StatusBase::StatusBase(QObject *parent) :
-    QObject(parent),
-    QQmlParserStatus(),
-    m_componentCompleted(false),
-    m_ready(false),
-    m_debugName("Status Base"),
-    m_statusChannel(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
+StatusBase::StatusBase(QObject *parent)
+    : QObject(parent)
+    , QQmlParserStatus()
+    , m_componentCompleted(false)
+    , m_ready(false)
+    , m_debugName("Status Base")
+    , m_statusChannel(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
 {
     // initialize status channel
     m_statusChannel = new application::StatusSubscribe(this);
@@ -340,5 +339,5 @@ void StatusBase::channelsSynced()
         emit fsmSyncingChannelsSynced(QPrivateSignal());
     }
 }
-} // namespace application
-} // namespace machinetalk
+
+} } // namespace machinetalk::application

@@ -16,21 +16,20 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace halremote {
+namespace machinetalk { namespace halremote {
 
 /** Generic Remote Component Base implementation */
-RemoteComponentBase::RemoteComponentBase(QObject *parent) :
-    QObject(parent),
-    QQmlParserStatus(),
-    m_componentCompleted(false),
-    m_ready(false),
-    m_debugName("Remote Component Base"),
-    m_halrcmdChannel(nullptr),
-    m_halrcompChannel(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
+RemoteComponentBase::RemoteComponentBase(QObject *parent)
+    : QObject(parent)
+    , QQmlParserStatus()
+    , m_componentCompleted(false)
+    , m_ready(false)
+    , m_debugName("Remote Component Base")
+    , m_halrcmdChannel(nullptr)
+    , m_halrcompChannel(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
 {
     // initialize halrcmd channel
     m_halrcmdChannel = new common::RpcClient(this);
@@ -777,5 +776,5 @@ void RemoteComponentBase::stop()
         emit fsmErrorDisconnect(QPrivateSignal());
     }
 }
-} // namespace halremote
-} // namespace machinetalk
+
+} } // namespace machinetalk::halremote

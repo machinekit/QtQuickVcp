@@ -13,11 +13,11 @@
 #include <common/rpcservice.h>
 #include <common/publish.h>
 
-namespace machinetalk {
-namespace param {
+namespace machinetalk { namespace param {
 
-class ParamServer : public QObject
-,public QQmlParserStatus
+class ParamServer
+    : public QObject
+    , public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -190,6 +190,6 @@ signals:
     void fsmUpExited(QPrivateSignal);
     void fsmUpDisconnect(QPrivateSignal);
 };
-} // namespace param
-} // namespace machinetalk
+
+} } // namespace machinetalk::param
 #endif //PARAM_SERVER_H

@@ -13,11 +13,11 @@
 #include <common/rpcclient.h>
 #include <halremote/halrcompsubscribe.h>
 
-namespace machinetalk {
-namespace halremote {
+namespace machinetalk { namespace halremote {
 
-class RemoteComponentBase : public QObject
-,public QQmlParserStatus
+class RemoteComponentBase
+    : public QObject
+    , public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -290,6 +290,6 @@ signals:
     void fsmErrorExited(QPrivateSignal);
     void fsmErrorDisconnect(QPrivateSignal);
 };
-} // namespace halremote
-} // namespace machinetalk
+
+} } // namespace machinetalk::halremote
 #endif //REMOTE_COMPONENT_BASE_H

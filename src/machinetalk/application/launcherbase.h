@@ -13,11 +13,11 @@
 #include <common/rpcclient.h>
 #include <application/launchersubscribe.h>
 
-namespace machinetalk {
-namespace application {
+namespace machinetalk { namespace application {
 
-class LauncherBase : public QObject
-,public QQmlParserStatus
+class LauncherBase
+    : public QObject
+    , public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -244,6 +244,6 @@ signals:
     void fsmSyncedLaunchercmdTrying(QPrivateSignal);
     void fsmSyncedDisconnect(QPrivateSignal);
 };
-} // namespace application
-} // namespace machinetalk
+
+} } // namespace machinetalk::application
 #endif //LAUNCHER_BASE_H
