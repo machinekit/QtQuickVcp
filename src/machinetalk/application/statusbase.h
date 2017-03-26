@@ -12,11 +12,11 @@
 #include <machinetalk/protobuf/message.pb.h>
 #include <application/statussubscribe.h>
 
-namespace machinetalk {
-namespace application {
+namespace machinetalk { namespace application {
 
-class StatusBase : public QObject
-,public QQmlParserStatus
+class StatusBase
+    : public QObject
+    , public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -202,6 +202,6 @@ signals:
     void fsmUpStatusTrying(QPrivateSignal);
     void fsmUpDisconnect(QPrivateSignal);
 };
-} // namespace application
-} // namespace machinetalk
+
+} } // namespace machinetalk::application
 #endif //STATUS_BASE_H

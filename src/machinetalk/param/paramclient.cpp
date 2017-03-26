@@ -16,21 +16,20 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace param {
+namespace machinetalk { namespace param {
 
 /** Generic Param Client implementation */
-ParamClient::ParamClient(QObject *parent) :
-    QObject(parent),
-    QQmlParserStatus(),
-    m_componentCompleted(false),
-    m_ready(false),
-    m_debugName("Param Client"),
-    m_paramcmdChannel(nullptr),
-    m_paramChannel(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
+ParamClient::ParamClient(QObject *parent)
+    : QObject(parent)
+    , QQmlParserStatus()
+    , m_componentCompleted(false)
+    , m_ready(false)
+    , m_debugName("Param Client")
+    , m_paramcmdChannel(nullptr)
+    , m_paramChannel(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
 {
     // initialize paramcmd channel
     m_paramcmdChannel = new common::RpcClient(this);
@@ -501,5 +500,5 @@ void ParamClient::stop()
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }
-} // namespace param
-} // namespace machinetalk
+
+} } // namespace machinetalk::param

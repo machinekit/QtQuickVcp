@@ -16,21 +16,20 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace param {
+namespace machinetalk { namespace param {
 
 /** Generic Param Server implementation */
-ParamServer::ParamServer(QObject *parent) :
-    QObject(parent),
-    QQmlParserStatus(),
-    m_componentCompleted(false),
-    m_ready(false),
-    m_debugName("Param Server"),
-    m_paramcmdChannel(nullptr),
-    m_paramChannel(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
+ParamServer::ParamServer(QObject *parent)
+    : QObject(parent)
+    , QQmlParserStatus()
+    , m_componentCompleted(false)
+    , m_ready(false)
+    , m_debugName("Param Server")
+    , m_paramcmdChannel(nullptr)
+    , m_paramChannel(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
 {
     // initialize paramcmd channel
     m_paramcmdChannel = new common::RpcService(this);
@@ -157,5 +156,5 @@ void ParamServer::fsmUpDisconnectEvent()
         stopParamChannel();
      }
 }
-} // namespace param
-} // namespace machinetalk
+
+} } // namespace machinetalk::param

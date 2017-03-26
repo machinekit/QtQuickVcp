@@ -10,10 +10,10 @@
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 
-namespace machinetalk {
-namespace pathview {
+namespace machinetalk { namespace pathview {
 
-class PreviewSubscribe : public QObject
+class PreviewSubscribe
+    : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
@@ -159,6 +159,6 @@ signals:
     void fsmUpMessageReceived(QPrivateSignal);
     void fsmUpDisconnect(QPrivateSignal);
 };
-} // namespace pathview
-} // namespace machinetalk
+
+} } // namespace machinetalk::pathview
 #endif //PREVIEW_SUBSCRIBE_H

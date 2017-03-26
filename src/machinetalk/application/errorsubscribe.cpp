@@ -16,43 +16,42 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace application {
+namespace machinetalk { namespace application {
 
 /** Generic Error Subscribe implementation */
-ErrorSubscribe::ErrorSubscribe(QObject *parent) :
-    QObject(parent),
-    m_ready(false),
-    m_debugName("Error Subscribe"),
-    m_socketUri(""),
-    m_context(nullptr),
-    m_socket(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
-    ,m_heartbeatTimer(new QTimer(this)),
-    m_heartbeatInterval(2500),
-    m_heartbeatLiveness(0),
-    m_heartbeatResetLiveness(2)
+ErrorSubscribe::ErrorSubscribe(QObject *parent)
+    : QObject(parent)
+    , m_ready(false)
+    , m_debugName("Error Subscribe")
+    , m_socketUri("")
+    , m_context(nullptr)
+    , m_socket(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
+    , m_heartbeatTimer(new QTimer(this))
+    , m_heartbeatInterval(2500)
+    , m_heartbeatLiveness(0)
+    , m_heartbeatResetLiveness(2)
 {
 
     m_heartbeatTimer->setSingleShot(true);
     connect(m_heartbeatTimer, &QTimer::timeout, this, &ErrorSubscribe::heartbeatTimerTick);
     // state machine
-    connect(this, &ErrorSubscribe::fsmDownConnect,
-            this, &ErrorSubscribe::fsmDownConnectEvent);
-    connect(this, &ErrorSubscribe::fsmTryingConnected,
-            this, &ErrorSubscribe::fsmTryingConnectedEvent);
-    connect(this, &ErrorSubscribe::fsmTryingDisconnect,
-            this, &ErrorSubscribe::fsmTryingDisconnectEvent);
-    connect(this, &ErrorSubscribe::fsmUpTimeout,
-            this, &ErrorSubscribe::fsmUpTimeoutEvent);
-    connect(this, &ErrorSubscribe::fsmUpTick,
-            this, &ErrorSubscribe::fsmUpTickEvent);
-    connect(this, &ErrorSubscribe::fsmUpMessageReceived,
-            this, &ErrorSubscribe::fsmUpMessageReceivedEvent);
-    connect(this, &ErrorSubscribe::fsmUpDisconnect,
-            this, &ErrorSubscribe::fsmUpDisconnectEvent);
+    connect(this, &ErrorSubscribe::fsmDownStart,
+            this, &ErrorSubscribe::fsmDownStartEvent);
+    connect(this, &ErrorSubscribe::fsmTryingFullUpdateReceived,
+            this, &ErrorSubscribe::fsmTryingFullUpdateReceivedEvent);
+    connect(this, &ErrorSubscribe::fsmTryingStop,
+            this, &ErrorSubscribe::fsmTryingStopEvent);
+    connect(this, &ErrorSubscribe::fsmUpHeartbeatTimeout,
+            this, &ErrorSubscribe::fsmUpHeartbeatTimeoutEvent);
+    connect(this, &ErrorSubscribe::fsmUpHeartbeatTick,
+            this, &ErrorSubscribe::fsmUpHeartbeatTickEvent);
+    connect(this, &ErrorSubscribe::fsmUpAnyMsgReceived,
+            this, &ErrorSubscribe::fsmUpAnyMsgReceivedEvent);
+    connect(this, &ErrorSubscribe::fsmUpStop,
+            this, &ErrorSubscribe::fsmUpStopEvent);
 
     m_context = new PollingZMQContext(this, 1);
     connect(m_context, &PollingZMQContext::pollError,
@@ -169,13 +168,13 @@ void ErrorSubscribe::heartbeatTimerTick()
     {
          if (m_state == Up)
          {
-             emit fsmUpTimeout(QPrivateSignal());
+             emit fsmUpHeartbeatTimeout(QPrivateSignal());
          }
          return;
     }
     if (m_state == Up)
     {
-        emit fsmUpTick(QPrivateSignal());
+        emit fsmUpHeartbeatTick(QPrivateSignal());
     }
 }
 
@@ -204,7 +203,7 @@ void ErrorSubscribe::processSocketMessage(const QList<QByteArray> &messageList)
 
     if (m_state == Up)
     {
-        emit fsmUpMessageReceived(QPrivateSignal());
+        emit fsmUpAnyMsgReceived(QPrivateSignal());
     }
 
     // react to ping message
@@ -216,9 +215,9 @@ void ErrorSubscribe::processSocketMessage(const QList<QByteArray> &messageList)
             m_heartbeatInterval = pparams.keepalive_timer();
         }
 
-        if (m_state == Trying)
+        if (m_state == Up)
         {
-            emit fsmTryingConnected(QPrivateSignal());
+            emit fsmUpAnyMsgReceived(QPrivateSignal());
         }
         return; // ping is uninteresting
     }
@@ -241,12 +240,12 @@ void ErrorSubscribe::fsmDown()
     emit stateChanged(m_state);
 }
 
-void ErrorSubscribe::fsmDownConnectEvent()
+void ErrorSubscribe::fsmDownStartEvent()
 {
     if (m_state == Down)
     {
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_debugName, "Event CONNECT");
+        DEBUG_TAG(1, m_debugName, "Event START");
 #endif
         // handle state change
         emit fsmDownExited(QPrivateSignal());
@@ -266,12 +265,12 @@ void ErrorSubscribe::fsmTrying()
     emit stateChanged(m_state);
 }
 
-void ErrorSubscribe::fsmTryingConnectedEvent()
+void ErrorSubscribe::fsmTryingFullUpdateReceivedEvent()
 {
     if (m_state == Trying)
     {
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_debugName, "Event CONNECTED");
+        DEBUG_TAG(1, m_debugName, "Event FULL UPDATE RECEIVED");
 #endif
         // handle state change
         emit fsmTryingExited(QPrivateSignal());
@@ -283,12 +282,12 @@ void ErrorSubscribe::fsmTryingConnectedEvent()
      }
 }
 
-void ErrorSubscribe::fsmTryingDisconnectEvent()
+void ErrorSubscribe::fsmTryingStopEvent()
 {
     if (m_state == Trying)
     {
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event STOP");
 #endif
         // handle state change
         emit fsmTryingExited(QPrivateSignal());
@@ -309,12 +308,12 @@ void ErrorSubscribe::fsmUp()
     emit stateChanged(m_state);
 }
 
-void ErrorSubscribe::fsmUpTimeoutEvent()
+void ErrorSubscribe::fsmUpHeartbeatTimeoutEvent()
 {
     if (m_state == Up)
     {
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_debugName, "Event TIMEOUT");
+        DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TIMEOUT");
 #endif
         // handle state change
         emit fsmUpExited(QPrivateSignal());
@@ -327,24 +326,24 @@ void ErrorSubscribe::fsmUpTimeoutEvent()
      }
 }
 
-void ErrorSubscribe::fsmUpTickEvent()
+void ErrorSubscribe::fsmUpHeartbeatTickEvent()
 {
     if (m_state == Up)
     {
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_debugName, "Event TICK");
+        DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TICK");
 #endif
         // execute actions
         resetHeartbeatTimer();
      }
 }
 
-void ErrorSubscribe::fsmUpMessageReceivedEvent()
+void ErrorSubscribe::fsmUpAnyMsgReceivedEvent()
 {
     if (m_state == Up)
     {
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_debugName, "Event MESSAGE RECEIVED");
+        DEBUG_TAG(1, m_debugName, "Event ANY MSG RECEIVED");
 #endif
         // execute actions
         resetHeartbeatLiveness();
@@ -352,12 +351,12 @@ void ErrorSubscribe::fsmUpMessageReceivedEvent()
      }
 }
 
-void ErrorSubscribe::fsmUpDisconnectEvent()
+void ErrorSubscribe::fsmUpStopEvent()
 {
     if (m_state == Up)
     {
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
+        DEBUG_TAG(1, m_debugName, "Event STOP");
 #endif
         // handle state change
         emit fsmUpExited(QPrivateSignal());
@@ -373,7 +372,7 @@ void ErrorSubscribe::fsmUpDisconnectEvent()
 void ErrorSubscribe::start()
 {
     if (m_state == Down) {
-        emit fsmDownConnect(QPrivateSignal());
+        emit fsmDownStart(QPrivateSignal());
     }
 }
 
@@ -381,11 +380,11 @@ void ErrorSubscribe::start()
 void ErrorSubscribe::stop()
 {
     if (m_state == Trying) {
-        emit fsmTryingDisconnect(QPrivateSignal());
+        emit fsmTryingStop(QPrivateSignal());
     }
     if (m_state == Up) {
-        emit fsmUpDisconnect(QPrivateSignal());
+        emit fsmUpStop(QPrivateSignal());
     }
 }
-} // namespace application
-} // namespace machinetalk
+
+} } // namespace machinetalk::application

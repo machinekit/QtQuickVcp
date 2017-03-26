@@ -16,20 +16,19 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace application {
+namespace machinetalk { namespace application {
 
 /** Generic Command Base implementation */
-CommandBase::CommandBase(QObject *parent) :
-    QObject(parent),
-    QQmlParserStatus(),
-    m_componentCompleted(false),
-    m_ready(false),
-    m_debugName("Command Base"),
-    m_commandChannel(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
+CommandBase::CommandBase(QObject *parent)
+    : QObject(parent)
+    , QQmlParserStatus()
+    , m_componentCompleted(false)
+    , m_ready(false)
+    , m_debugName("Command Base")
+    , m_commandChannel(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
 {
     // initialize command channel
     m_commandChannel = new common::RpcClient(this);
@@ -509,5 +508,5 @@ void CommandBase::stop()
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }
-} // namespace application
-} // namespace machinetalk
+
+} } // namespace machinetalk::application

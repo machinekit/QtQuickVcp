@@ -16,21 +16,20 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace pathview {
+namespace machinetalk { namespace pathview {
 
 /** Generic Preview Client Base implementation */
-PreviewClientBase::PreviewClientBase(QObject *parent) :
-    QObject(parent),
-    QQmlParserStatus(),
-    m_componentCompleted(false),
-    m_ready(false),
-    m_debugName("Preview Client Base"),
-    m_previewChannel(nullptr),
-    m_previewstatusChannel(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
+PreviewClientBase::PreviewClientBase(QObject *parent)
+    : QObject(parent)
+    , QQmlParserStatus()
+    , m_componentCompleted(false)
+    , m_ready(false)
+    , m_debugName("Preview Client Base")
+    , m_previewChannel(nullptr)
+    , m_previewstatusChannel(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
 {
     // initialize preview channel
     m_previewChannel = new pathview::PreviewSubscribe(this);
@@ -501,5 +500,5 @@ void PreviewClientBase::stop()
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }
-} // namespace pathview
-} // namespace machinetalk
+
+} } // namespace machinetalk::pathview

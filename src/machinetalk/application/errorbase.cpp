@@ -16,20 +16,19 @@ namespace gpb = google::protobuf;
 
 using namespace nzmqt;
 
-namespace machinetalk {
-namespace application {
+namespace machinetalk { namespace application {
 
 /** Generic Error Base implementation */
-ErrorBase::ErrorBase(QObject *parent) :
-    QObject(parent),
-    QQmlParserStatus(),
-    m_componentCompleted(false),
-    m_ready(false),
-    m_debugName("Error Base"),
-    m_errorChannel(nullptr),
-    m_state(Down),
-    m_previousState(Down),
-    m_errorString("")
+ErrorBase::ErrorBase(QObject *parent)
+    : QObject(parent)
+    , QQmlParserStatus()
+    , m_componentCompleted(false)
+    , m_ready(false)
+    , m_debugName("Error Base")
+    , m_errorChannel(nullptr)
+    , m_state(Down)
+    , m_previousState(Down)
+    , m_errorString("")
 {
     // initialize error channel
     m_errorChannel = new application::ErrorSubscribe(this);
@@ -287,5 +286,5 @@ void ErrorBase::stop()
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }
-} // namespace application
-} // namespace machinetalk
+
+} } // namespace machinetalk::application
