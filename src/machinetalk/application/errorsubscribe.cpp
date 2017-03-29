@@ -40,8 +40,8 @@ ErrorSubscribe::ErrorSubscribe(QObject *parent)
     // state machine
     connect(this, &ErrorSubscribe::fsmDownStart,
             this, &ErrorSubscribe::fsmDownStartEvent);
-    connect(this, &ErrorSubscribe::fsmTryingFullUpdateReceived,
-            this, &ErrorSubscribe::fsmTryingFullUpdateReceivedEvent);
+    connect(this, &ErrorSubscribe::fsmTryingPingReceived,
+            this, &ErrorSubscribe::fsmTryingPingReceivedEvent);
     connect(this, &ErrorSubscribe::fsmTryingStop,
             this, &ErrorSubscribe::fsmTryingStopEvent);
     connect(this, &ErrorSubscribe::fsmUpHeartbeatTimeout,
@@ -215,9 +215,9 @@ void ErrorSubscribe::processSocketMessage(const QList<QByteArray> &messageList)
             m_heartbeatInterval = pparams.keepalive_timer();
         }
 
-        if (m_state == Up)
+        if (m_state == Trying)
         {
-            emit fsmUpAnyMsgReceived(QPrivateSignal());
+            emit fsmTryingPingReceived(QPrivateSignal());
         }
         return; // ping is uninteresting
     }
@@ -265,12 +265,12 @@ void ErrorSubscribe::fsmTrying()
     emit stateChanged(m_state);
 }
 
-void ErrorSubscribe::fsmTryingFullUpdateReceivedEvent()
+void ErrorSubscribe::fsmTryingPingReceivedEvent()
 {
     if (m_state == Trying)
     {
 #ifdef QT_DEBUG
-        DEBUG_TAG(1, m_debugName, "Event FULL UPDATE RECEIVED");
+        DEBUG_TAG(1, m_debugName, "Event PING RECEIVED");
 #endif
         // handle state change
         emit fsmTryingExited(QPrivateSignal());

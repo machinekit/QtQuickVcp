@@ -157,7 +157,7 @@ private slots:
     void fsmDown();
     void fsmDownStartEvent();
     void fsmTrying();
-    void fsmTryingFullUpdateReceivedEvent();
+    void fsmTryingPingReceivedEvent();
     void fsmTryingStopEvent();
     void fsmUp();
     void fsmUpHeartbeatTimeoutEvent();
@@ -180,7 +180,7 @@ signals:
     void fsmDownStart(QPrivateSignal);
     void fsmTryingEntered(QPrivateSignal);
     void fsmTryingExited(QPrivateSignal);
-    void fsmTryingFullUpdateReceived(QPrivateSignal);
+    void fsmTryingPingReceived(QPrivateSignal);
     void fsmTryingStop(QPrivateSignal);
     void fsmUpEntered(QPrivateSignal);
     void fsmUpExited(QPrivateSignal);
