@@ -138,7 +138,7 @@ static QJDns::Record import_record(const jdns_rr_t *in)
 	out.owner = QByteArray((const char *)in->owner);
 	out.ttl = in->ttl;
 	out.type = in->type;
-    out.rdata = QByteArray((const char *)in->rdata, in->rdlength);
+	out.rdata = QByteArray((const char *)in->rdata, in->rdlength);
 
 	// known
 	if(in->haveKnown)
@@ -309,7 +309,7 @@ QJDns::Private::Private(QJDns *_q)
 	: QObject(_q)
 	, q(_q)
 	, mode(QJDns::Multicast)
-	, sess(nullptr)
+	, sess(NULL)
 	, shutting_down(false)
 	, stepTrigger(this)
 	, debugTrigger(this)
@@ -320,9 +320,9 @@ QJDns::Private::Private(QJDns *_q)
 	, pending(0)
 	, pending_wait(false)
 	, complete_shutdown(false)
-	, pErrors(nullptr)
-	, pPublished(nullptr)
-	, pResponses(nullptr)
+	, pErrors(NULL)
+	, pPublished(NULL)
+	, pResponses(NULL)
 {
 	connect(&stepTrigger, SIGNAL(timeout()), SLOT(doNextStepSlot()));
 	stepTrigger.setSingleShot(true);
