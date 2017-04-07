@@ -213,7 +213,7 @@ void Subscribe::processSocketMessage(const QList<QByteArray> &messageList)
     }
 
     // react to full update message
-    if (rx.type() == MT_FULL_UPDATE)
+    else if (rx.type() == MT_FULL_UPDATE)
     {
         if (rx.has_pparams())
         {
@@ -387,7 +387,7 @@ void Subscribe::stop()
     if (m_state == Trying) {
         emit fsmTryingStop(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpStop(QPrivateSignal());
     }
 }

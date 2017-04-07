@@ -4,8 +4,8 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef LAUNCHER_SUBSCRIBE_H
-#define LAUNCHER_SUBSCRIBE_H
+#ifndef APPLICATION_LAUNCHER_SUBSCRIBE_H
+#define APPLICATION_LAUNCHER_SUBSCRIBE_H
 #include <QObject>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -191,4 +191,4 @@ signals:
 };
 
 } } // namespace machinetalk::application
-#endif //LAUNCHER_SUBSCRIBE_H
+#endif // APPLICATION_LAUNCHER_SUBSCRIBE_H

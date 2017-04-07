@@ -108,7 +108,7 @@ void StatusBase::processStatusChannelMessage(const QByteArray &topic, const Cont
     }
 
     // react to emcstat incremental update message
-    if (rx.type() == MT_EMCSTAT_INCREMENTAL_UPDATE)
+    else if (rx.type() == MT_EMCSTAT_INCREMENTAL_UPDATE)
     {
         emcstatIncrementalUpdateReceived(topic, rx);
     }
@@ -296,7 +296,7 @@ void StatusBase::statusChannelStateChanged(application::StatusSubscribe::State s
         }
     }
 
-    if (state == application::StatusSubscribe::Trying)
+    else if (state == application::StatusSubscribe::Trying)
     {
         if (m_state == Syncing)
         {
@@ -304,7 +304,7 @@ void StatusBase::statusChannelStateChanged(application::StatusSubscribe::State s
         }
     }
 
-    if (state == application::StatusSubscribe::Up)
+    else if (state == application::StatusSubscribe::Up)
     {
         if (m_state == Trying)
         {
@@ -327,7 +327,7 @@ void StatusBase::stop()
     if (m_state == Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }

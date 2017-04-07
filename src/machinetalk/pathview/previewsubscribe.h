@@ -4,8 +4,8 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef PREVIEW_SUBSCRIBE_H
-#define PREVIEW_SUBSCRIBE_H
+#ifndef PATHVIEW_PREVIEW_SUBSCRIBE_H
+#define PATHVIEW_PREVIEW_SUBSCRIBE_H
 #include <QObject>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -161,4 +161,4 @@ signals:
 };
 
 } } // namespace machinetalk::pathview
-#endif //PREVIEW_SUBSCRIBE_H
+#endif // PATHVIEW_PREVIEW_SUBSCRIBE_H

@@ -4,8 +4,8 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef SUBSCRIBE_H
-#define SUBSCRIBE_H
+#ifndef COMMON_SUBSCRIBE_H
+#define COMMON_SUBSCRIBE_H
 #include <QObject>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -191,4 +191,4 @@ signals:
 };
 
 } } // namespace machinetalk::common
-#endif //SUBSCRIBE_H
+#endif // COMMON_SUBSCRIBE_H

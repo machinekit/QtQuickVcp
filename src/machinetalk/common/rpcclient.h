@@ -4,8 +4,8 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef RPC_CLIENT_H
-#define RPC_CLIENT_H
+#ifndef COMMON_RPC_CLIENT_H
+#define COMMON_RPC_CLIENT_H
 #include <QObject>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -199,4 +199,4 @@ signals:
 };
 
 } } // namespace machinetalk::common
-#endif //RPC_CLIENT_H
+#endif // COMMON_RPC_CLIENT_H

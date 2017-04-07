@@ -382,7 +382,7 @@ void ErrorSubscribe::stop()
     if (m_state == Trying) {
         emit fsmTryingStop(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpStop(QPrivateSignal());
     }
 }

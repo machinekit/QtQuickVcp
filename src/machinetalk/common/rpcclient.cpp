@@ -155,7 +155,7 @@ void RpcClient::heartbeatTimerTick()
          {
              emit fsmUpHeartbeatTimeout(QPrivateSignal());
          }
-         if (m_state == Trying)
+         else if (m_state == Trying)
          {
              emit fsmTryingHeartbeatTimeout(QPrivateSignal());
          }
@@ -165,7 +165,7 @@ void RpcClient::heartbeatTimerTick()
     {
         emit fsmUpHeartbeatTick(QPrivateSignal());
     }
-    if (m_state == Trying)
+    else if (m_state == Trying)
     {
         emit fsmTryingHeartbeatTick(QPrivateSignal());
     }
@@ -190,7 +190,7 @@ void RpcClient::processSocketMessage(const QList<QByteArray> &messageList)
         emit fsmTryingAnyMsgReceived(QPrivateSignal());
     }
 
-    if (m_state == Up)
+    else if (m_state == Up)
     {
         emit fsmUpAnyMsgReceived(QPrivateSignal());
     }
@@ -231,7 +231,7 @@ void RpcClient::sendSocketMessage(ContainerType type, Container &tx)
         emit fsmUpAnyMsgSent(QPrivateSignal());
     }
 
-    if (m_state == Trying)
+    else if (m_state == Trying)
     {
         emit fsmTryingAnyMsgSent(QPrivateSignal());
     }
@@ -454,7 +454,7 @@ void RpcClient::stop()
     if (m_state == Trying) {
         emit fsmTryingStop(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpStop(QPrivateSignal());
     }
 }

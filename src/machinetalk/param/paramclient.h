@@ -4,14 +4,14 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef PARAM_CLIENT_H
-#define PARAM_CLIENT_H
+#ifndef PARAM_PARAM_CLIENT_H
+#define PARAM_PARAM_CLIENT_H
 #include <QObject>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
-#include <common/rpcclient.h>
-#include <common/subscribe.h>
+#include "../common/rpcclient.h"
+#include "../common/subscribe.h"
 
 namespace machinetalk { namespace param {
 
@@ -252,4 +252,4 @@ signals:
 };
 
 } } // namespace machinetalk::param
-#endif //PARAM_CLIENT_H
+#endif // PARAM_PARAM_CLIENT_H

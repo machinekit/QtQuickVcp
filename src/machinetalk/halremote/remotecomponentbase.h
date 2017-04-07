@@ -4,14 +4,14 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef REMOTE_COMPONENT_BASE_H
-#define REMOTE_COMPONENT_BASE_H
+#ifndef HAL_REMOTE_REMOTE_COMPONENT_BASE_H
+#define HAL_REMOTE_REMOTE_COMPONENT_BASE_H
 #include <QObject>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
-#include <common/rpcclient.h>
-#include <halremote/halrcompsubscribe.h>
+#include "../common/rpcclient.h"
+#include "../halremote/halrcompsubscribe.h"
 
 namespace machinetalk { namespace halremote {
 
@@ -292,4 +292,4 @@ signals:
 };
 
 } } // namespace machinetalk::halremote
-#endif //REMOTE_COMPONENT_BASE_H
+#endif // HAL_REMOTE_REMOTE_COMPONENT_BASE_H

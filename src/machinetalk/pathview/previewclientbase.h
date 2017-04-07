@@ -4,14 +4,14 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef PREVIEW_CLIENT_BASE_H
-#define PREVIEW_CLIENT_BASE_H
+#ifndef PATHVIEW_PREVIEW_CLIENT_BASE_H
+#define PATHVIEW_PREVIEW_CLIENT_BASE_H
 #include <QObject>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
-#include <pathview/previewsubscribe.h>
-#include <pathview/previewsubscribe.h>
+#include "../pathview/previewsubscribe.h"
+#include "../pathview/previewsubscribe.h"
 
 namespace machinetalk { namespace pathview {
 
@@ -229,4 +229,4 @@ signals:
 };
 
 } } // namespace machinetalk::pathview
-#endif //PREVIEW_CLIENT_BASE_H
+#endif // PATHVIEW_PREVIEW_CLIENT_BASE_H

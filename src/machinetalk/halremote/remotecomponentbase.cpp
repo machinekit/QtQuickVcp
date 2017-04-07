@@ -163,7 +163,7 @@ void RemoteComponentBase::processHalrcmdChannelMessage(const Container &rx)
     }
 
     // react to halrcomp bind reject message
-    if (rx.type() == MT_HALRCOMP_BIND_REJECT)
+    else if (rx.type() == MT_HALRCOMP_BIND_REJECT)
     {
 
         // update error string with note
@@ -181,7 +181,7 @@ void RemoteComponentBase::processHalrcmdChannelMessage(const Container &rx)
     }
 
     // react to halrcomp set reject message
-    if (rx.type() == MT_HALRCOMP_SET_REJECT)
+    else if (rx.type() == MT_HALRCOMP_SET_REJECT)
     {
 
         // update error string with note
@@ -212,13 +212,13 @@ void RemoteComponentBase::processHalrcompChannelMessage(const QByteArray &topic,
     }
 
     // react to halrcomp incremental update message
-    if (rx.type() == MT_HALRCOMP_INCREMENTAL_UPDATE)
+    else if (rx.type() == MT_HALRCOMP_INCREMENTAL_UPDATE)
     {
         halrcompIncrementalUpdateReceived(topic, rx);
     }
 
     // react to halrcomp error message
-    if (rx.type() == MT_HALRCOMP_ERROR)
+    else if (rx.type() == MT_HALRCOMP_ERROR)
     {
 
         // update error string with note
@@ -250,7 +250,7 @@ void RemoteComponentBase::sendHalrcmdMessage(ContainerType type, Container &tx)
             emit fsmBindHalrcompBindMsgSent(QPrivateSignal());
         }
     }
-    if (type == MT_HALRCOMP_SET)
+    else if (type == MT_HALRCOMP_SET)
     {
 
         if (m_state == Synced)
@@ -694,17 +694,17 @@ void RemoteComponentBase::halrcmdChannelStateChanged(common::RpcClient::State st
         {
             emit fsmSyncingHalrcmdTrying(QPrivateSignal());
         }
-        if (m_state == Synced)
+        else if (m_state == Synced)
         {
             emit fsmSyncedHalrcmdTrying(QPrivateSignal());
         }
-        if (m_state == Binding)
+        else if (m_state == Binding)
         {
             emit fsmBindingHalrcmdTrying(QPrivateSignal());
         }
     }
 
-    if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::Up)
     {
         if (m_state == Trying)
         {
@@ -724,7 +724,7 @@ void RemoteComponentBase::halrcompChannelStateChanged(halremote::HalrcompSubscri
         }
     }
 
-    if (state == halremote::HalrcompSubscribe::Up)
+    else if (state == halremote::HalrcompSubscribe::Up)
     {
         if (m_state == Syncing)
         {
@@ -763,16 +763,16 @@ void RemoteComponentBase::stop()
     if (m_state == Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    if (m_state == Binding) {
+    else if (m_state == Binding) {
         emit fsmBindingDisconnect(QPrivateSignal());
     }
-    if (m_state == Syncing) {
+    else if (m_state == Syncing) {
         emit fsmSyncingDisconnect(QPrivateSignal());
     }
-    if (m_state == Synced) {
+    else if (m_state == Synced) {
         emit fsmSyncedDisconnect(QPrivateSignal());
     }
-    if (m_state == Error) {
+    else if (m_state == Error) {
         emit fsmErrorDisconnect(QPrivateSignal());
     }
 }
