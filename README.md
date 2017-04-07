@@ -630,6 +630,9 @@ This wiki page is for developers who want to extend the functionality of QtQuick
 
 If you are new to Qt and/or QtQuick I would recommend you to read the Qt documentation and follow the getting started and tutorials: http://qt-project.org/doc/qt-5/gettingstartedqml.html
 
+### Coding Style Guidelines
+If you want to contribute to the project please respect the coding style guidelines of the project outlined in the [.editorconfig](.editorconfig) file.
+
 ### Choosing the right QML module
 QtQuickVcp is split into several QML modules:
 
