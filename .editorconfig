@@ -1,12 +1,12 @@
 # EditorConfig helps developers define and maintain consistent
 # coding styles between different editors and IDEs
 # editorconfig.org
+## Please be sure to apply these when submitting a pull request.
 
 root = true
 
 
 [*]
-
 indent_style = space
 indent_size = 4
 
