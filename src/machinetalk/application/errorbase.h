@@ -4,13 +4,13 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef ERROR_BASE_H
-#define ERROR_BASE_H
+#ifndef APPLICATION_ERROR_BASE_H
+#define APPLICATION_ERROR_BASE_H
 #include <QObject>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
-#include <application/errorsubscribe.h>
+#include "../application/errorsubscribe.h"
 
 namespace machinetalk { namespace application {
 
@@ -197,4 +197,4 @@ signals:
 };
 
 } } // namespace machinetalk::application
-#endif //ERROR_BASE_H
+#endif // APPLICATION_ERROR_BASE_H

@@ -103,7 +103,7 @@ void ConfigBase::processConfigChannelMessage(const Container &rx)
     }
 
     // react to application detail message
-    if (rx.type() == MT_APPLICATION_DETAIL)
+    else if (rx.type() == MT_APPLICATION_DETAIL)
     {
 
         if (m_state == Loading)
@@ -114,7 +114,7 @@ void ConfigBase::processConfigChannelMessage(const Container &rx)
     }
 
     // react to error message
-    if (rx.type() == MT_ERROR)
+    else if (rx.type() == MT_ERROR)
     {
 
         // update error string with note
@@ -401,17 +401,17 @@ void ConfigBase::configChannelStateChanged(common::RpcClient::State state)
         {
             emit fsmListingConfigTrying(QPrivateSignal());
         }
-        if (m_state == Up)
+        else if (m_state == Up)
         {
             emit fsmUpConfigTrying(QPrivateSignal());
         }
-        if (m_state == Loading)
+        else if (m_state == Loading)
         {
             emit fsmLoadingConfigTrying(QPrivateSignal());
         }
     }
 
-    if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::Up)
     {
         if (m_state == Trying)
         {
@@ -434,13 +434,13 @@ void ConfigBase::stop()
     if (m_state == Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    if (m_state == Listing) {
+    else if (m_state == Listing) {
         emit fsmListingDisconnect(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
-    if (m_state == Loading) {
+    else if (m_state == Loading) {
         emit fsmLoadingDisconnect(QPrivateSignal());
     }
 }

@@ -4,13 +4,13 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef CONFIG_BASE_H
-#define CONFIG_BASE_H
+#ifndef APPLICATION_CONFIG_BASE_H
+#define APPLICATION_CONFIG_BASE_H
 #include <QObject>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
-#include <common/rpcclient.h>
+#include "../common/rpcclient.h"
 
 namespace machinetalk { namespace application {
 
@@ -215,4 +215,4 @@ signals:
 };
 
 } } // namespace machinetalk::application
-#endif //CONFIG_BASE_H
+#endif // APPLICATION_CONFIG_BASE_H

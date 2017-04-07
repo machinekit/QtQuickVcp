@@ -153,7 +153,7 @@ void LauncherBase::processLauncherChannelMessage(const QByteArray &topic, const 
     }
 
     // react to launcher incremental update message
-    if (rx.type() == MT_LAUNCHER_INCREMENTAL_UPDATE)
+    else if (rx.type() == MT_LAUNCHER_INCREMENTAL_UPDATE)
     {
         launcherIncrementalUpdateReceived(topic, rx);
     }
@@ -394,13 +394,13 @@ void LauncherBase::launchercmdChannelStateChanged(common::RpcClient::State state
         {
             emit fsmSyncingLaunchercmdTrying(QPrivateSignal());
         }
-        if (m_state == Synced)
+        else if (m_state == Synced)
         {
             emit fsmSyncedLaunchercmdTrying(QPrivateSignal());
         }
     }
 
-    if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::Up)
     {
         if (m_state == Trying)
         {
@@ -420,7 +420,7 @@ void LauncherBase::launcherChannelStateChanged(application::LauncherSubscribe::S
         }
     }
 
-    if (state == application::LauncherSubscribe::Up)
+    else if (state == application::LauncherSubscribe::Up)
     {
         if (m_state == Syncing)
         {
@@ -443,10 +443,10 @@ void LauncherBase::stop()
     if (m_state == Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    if (m_state == Syncing) {
+    else if (m_state == Syncing) {
         emit fsmSyncingDisconnect(QPrivateSignal());
     }
-    if (m_state == Synced) {
+    else if (m_state == Synced) {
         emit fsmSyncedDisconnect(QPrivateSignal());
     }
 }

@@ -435,19 +435,19 @@ void PreviewClientBase::previewChannelStateChanged(pathview::PreviewSubscribe::S
         {
             emit fsmUpPreviewTrying(QPrivateSignal());
         }
-        if (m_state == Statustrying)
+        else if (m_state == Statustrying)
         {
             emit fsmStatustryingPreviewTrying(QPrivateSignal());
         }
     }
 
-    if (state == pathview::PreviewSubscribe::Up)
+    else if (state == pathview::PreviewSubscribe::Up)
     {
         if (m_state == Trying)
         {
             emit fsmTryingPreviewUp(QPrivateSignal());
         }
-        if (m_state == Previewtrying)
+        else if (m_state == Previewtrying)
         {
             emit fsmPreviewtryingPreviewUp(QPrivateSignal());
         }
@@ -463,19 +463,19 @@ void PreviewClientBase::previewstatusChannelStateChanged(pathview::PreviewSubscr
         {
             emit fsmUpStatusTrying(QPrivateSignal());
         }
-        if (m_state == Previewtrying)
+        else if (m_state == Previewtrying)
         {
             emit fsmPreviewtryingStatusTrying(QPrivateSignal());
         }
     }
 
-    if (state == pathview::PreviewSubscribe::Up)
+    else if (state == pathview::PreviewSubscribe::Up)
     {
         if (m_state == Trying)
         {
             emit fsmTryingStatusUp(QPrivateSignal());
         }
-        if (m_state == Statustrying)
+        else if (m_state == Statustrying)
         {
             emit fsmStatustryingStatusUp(QPrivateSignal());
         }
@@ -496,7 +496,7 @@ void PreviewClientBase::stop()
     if (m_state == Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }

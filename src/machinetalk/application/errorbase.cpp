@@ -102,31 +102,31 @@ void ErrorBase::processErrorChannelMessage(const QByteArray &topic, const Contai
     }
 
     // react to emc nml text message
-    if (rx.type() == MT_EMC_NML_TEXT)
+    else if (rx.type() == MT_EMC_NML_TEXT)
     {
         emcNmlTextReceived(topic, rx);
     }
 
     // react to emc nml display message
-    if (rx.type() == MT_EMC_NML_DISPLAY)
+    else if (rx.type() == MT_EMC_NML_DISPLAY)
     {
         emcNmlDisplayReceived(topic, rx);
     }
 
     // react to emc operator text message
-    if (rx.type() == MT_EMC_OPERATOR_TEXT)
+    else if (rx.type() == MT_EMC_OPERATOR_TEXT)
     {
         emcOperatorTextReceived(topic, rx);
     }
 
     // react to emc operator error message
-    if (rx.type() == MT_EMC_OPERATOR_ERROR)
+    else if (rx.type() == MT_EMC_OPERATOR_ERROR)
     {
         emcOperatorErrorReceived(topic, rx);
     }
 
     // react to emc operator display message
-    if (rx.type() == MT_EMC_OPERATOR_DISPLAY)
+    else if (rx.type() == MT_EMC_OPERATOR_DISPLAY)
     {
         emcOperatorDisplayReceived(topic, rx);
     }
@@ -259,7 +259,7 @@ void ErrorBase::errorChannelStateChanged(application::ErrorSubscribe::State stat
         }
     }
 
-    if (state == application::ErrorSubscribe::Up)
+    else if (state == application::ErrorSubscribe::Up)
     {
         if (m_state == Trying)
         {
@@ -282,7 +282,7 @@ void ErrorBase::stop()
     if (m_state == Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }

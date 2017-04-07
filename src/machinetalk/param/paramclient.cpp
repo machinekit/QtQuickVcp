@@ -139,7 +139,7 @@ void ParamClient::processParamChannelMessage(const QByteArray &topic, const Cont
     }
 
     // react to incremental update message
-    if (rx.type() == MT_INCREMENTAL_UPDATE)
+    else if (rx.type() == MT_INCREMENTAL_UPDATE)
     {
         incrementalUpdateReceived(topic, rx);
     }
@@ -429,19 +429,19 @@ void ParamClient::paramcmdChannelStateChanged(common::RpcClient::State state)
         {
             emit fsmSyncingParamcmdTrying(QPrivateSignal());
         }
-        if (m_state == Up)
+        else if (m_state == Up)
         {
             emit fsmUpParamcmdTrying(QPrivateSignal());
         }
     }
 
-    if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::Up)
     {
         if (m_state == Trying)
         {
             emit fsmTryingParamcmdUp(QPrivateSignal());
         }
-        if (m_state == Connecting)
+        else if (m_state == Connecting)
         {
             emit fsmConnectingParamcmdUp(QPrivateSignal());
         }
@@ -457,19 +457,19 @@ void ParamClient::paramChannelStateChanged(common::Subscribe::State state)
         {
             emit fsmTryingParamTrying(QPrivateSignal());
         }
-        if (m_state == Up)
+        else if (m_state == Up)
         {
             emit fsmUpParamTrying(QPrivateSignal());
         }
     }
 
-    if (state == common::Subscribe::Up)
+    else if (state == common::Subscribe::Up)
     {
         if (m_state == Syncing)
         {
             emit fsmSyncingParamUp(QPrivateSignal());
         }
-        if (m_state == Connecting)
+        else if (m_state == Connecting)
         {
             emit fsmConnectingParamUp(QPrivateSignal());
         }
@@ -490,13 +490,13 @@ void ParamClient::stop()
     if (m_state == Connecting) {
         emit fsmConnectingDisconnect(QPrivateSignal());
     }
-    if (m_state == Syncing) {
+    else if (m_state == Syncing) {
         emit fsmSyncingDisconnect(QPrivateSignal());
     }
-    if (m_state == Trying) {
+    else if (m_state == Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }

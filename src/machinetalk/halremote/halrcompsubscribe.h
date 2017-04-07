@@ -4,8 +4,8 @@
 ** Any changes in this file will be lost.
 **
 ****************************************************************************/
-#ifndef HALRCOMP_SUBSCRIBE_H
-#define HALRCOMP_SUBSCRIBE_H
+#ifndef HAL_REMOTE_HALRCOMP_SUBSCRIBE_H
+#define HAL_REMOTE_HALRCOMP_SUBSCRIBE_H
 #include <QObject>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
@@ -191,4 +191,4 @@ signals:
 };
 
 } } // namespace machinetalk::halremote
-#endif //HALRCOMP_SUBSCRIBE_H
+#endif // HAL_REMOTE_HALRCOMP_SUBSCRIBE_H

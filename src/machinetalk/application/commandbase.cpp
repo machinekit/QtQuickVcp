@@ -84,13 +84,13 @@ void CommandBase::processCommandChannelMessage(const Container &rx)
     }
 
     // react to emccmd completed message
-    if (rx.type() == MT_EMCCMD_COMPLETED)
+    else if (rx.type() == MT_EMCCMD_COMPLETED)
     {
         emccmdCompletedReceived(rx);
     }
 
     // react to error message
-    if (rx.type() == MT_ERROR)
+    else if (rx.type() == MT_ERROR)
     {
 
         // update error string with note
@@ -481,7 +481,7 @@ void CommandBase::commandChannelStateChanged(common::RpcClient::State state)
         }
     }
 
-    if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::Up)
     {
         if (m_state == Trying)
         {
@@ -504,7 +504,7 @@ void CommandBase::stop()
     if (m_state == Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }

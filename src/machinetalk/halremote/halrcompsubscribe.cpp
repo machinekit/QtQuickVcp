@@ -213,7 +213,7 @@ void HalrcompSubscribe::processSocketMessage(const QList<QByteArray> &messageLis
     }
 
     // react to halrcomp full update message
-    if (rx.type() == MT_HALRCOMP_FULL_UPDATE)
+    else if (rx.type() == MT_HALRCOMP_FULL_UPDATE)
     {
         if (rx.has_pparams())
         {
@@ -387,7 +387,7 @@ void HalrcompSubscribe::stop()
     if (m_state == Trying) {
         emit fsmTryingStop(QPrivateSignal());
     }
-    if (m_state == Up) {
+    else if (m_state == Up) {
         emit fsmUpStop(QPrivateSignal());
     }
 }
