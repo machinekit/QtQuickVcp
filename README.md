@@ -6,10 +6,7 @@ A remote UI implementation for [Machinekit](https://github.com/machinekit/machin
 |----------|:----:|:----:|
 | Build Status | [![Build Status](https://api.travis-ci.org/qtquickvcp/QtQuickVcp.svg?branch=master)](http://travis-ci.org/qtquickvcp/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/h8pi1hm0gj15nmgm?svg=true)](https://ci.appveyor.com/project/machinekoder/qtquickvcp) |
 
-<a href="https://scan.coverity.com/projects/qtquickvcp-qtquickvcp">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/10524/badge.svg"/>
-</a>
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/10524/badge.svg)](https://scan.coverity.com/projects/qtquickvcp-qtquickvcp)
 
 ## Features
 
@@ -23,8 +20,9 @@ A remote UI implementation for [Machinekit](https://github.com/machinekit/machin
 * 3D GCode preview
 * cross-platform: runs on **Windows**, **Linux**, **Mac OS X**, **Android** and **iOS**
 
-<a name="download" />
+
 ## Download
+
 Binaries for the QtQuickVcp library and MachinekitClient can be found here:
 
 ### From App Store
@@ -66,39 +64,37 @@ wget https://dl.bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Devel
 | Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-MacOSX-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-MacOSX-x64/_latestVersion#files) |
 | Android armv7 | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Android-armv7/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Android-armv7/_latestVersion#files) |
 
-<a name="contents" />
+
 ## Contents
 
-**<a href="#qtquickvcp">What is QtQuickVcp?</a>**
+**[What is QtQuickVcp?](#qtquickvcp)**
 
-**<a href="#machinekitclient">What is the MachinekitClient?</a>**
+**[What is the MachinekitClient?](#machinekitclient)**
 
-**<a href="#getting_started">Getting Started</a>**
+**[Getting Started](#getting_started)**
 
-* <a href="#hello_world_video">Hello World in QtQuickVcp</a>
-* <a href="#qt5_uis_with_machinekitsdk">Building Qt5 UIs with MachinekitSDK</a>
-* <a href="#module_overview">QtQuick Module Overview</a>
-* <a href="#using_mkwrapper">Using mkwrapper</a>
-* <a href="#using_mklauncher">Using mklauncher</a>
+* [Hello World in QtQuickVcp](#hello_world_video)
+* [Building Qt5 UIs with MachinekitSDK](#qt5_uis_with_machinekitsdk)
+* [QtQuick Module Overview](#module_overview)
+* [Using mkwrapper](#using_mkwrapper)
+* [Using mklauncher](#using_mklauncher)
 
-**<a href="#build_and_install">Building and Installing</a>**
+**[Building and Installing](#build_and_install)**
 
-* <a href="#easy_way">Easy Way - Vagrant Box</a>
-* <a href="#generic_requirements">Generic Requirements</a>
-* <a href="#linux_install">Linux</a>
-* <a href="#windows_install">Windows</a>
-* <a href="#android_install">Android</a>
-* <a href="#mac_install">Mac and iOS</a>
-* <a href="#building_qtquickvcp">Building QtQuickVcp</a>
-* <a href="#machinekit_sdk">MachinekitSDK</a>
+* [Easy Way - Vagrant Box](#easy_way)
+* [Generic Requirements](#generic_requirements)
+* [Linux](#linux_install)
+* [Windows](#windows_install)
+* [Android](#android_install)
+* [Mac and iOS](#mac_install)
+* [Building QtQuickVcp](#building_qtquickvcp)
+* [MachinekitSDK](#machinekit_sdk)
 
-**<a href="#contributing">Contributing</a>**
+**[Contributing](#contributing)**
 
-**<a href="#developing_qtquickvcp">Developing QtQuickVcp</a>**
+**[Developing QtQuickVcp](#developing_qtquickvcp)**
 
-<a name="qtquickvcp" />
-## What is QtQuickVcp?
-
+## What is QtQuickVcp?<a name="qtquickvcp" > </a>
 QtQuickVcp is a Machinekit component which adds the ability create new
 user interfaces for Machinekit. Unlike
 [GladeVCP](http://www.linuxcnc.org/docs/2.5/html/gui/gladevcp.html)
@@ -108,32 +104,27 @@ QtQuickVcp is designed with the aspect of remote interfaces on mobile devices an
 in mind. A UI is designed once for a specific form factor and can then be deployed to any mobile, embedded
 or desktop device over the network.
 
-<a name="machinekitclient" />
-## What is the MachinekitClient?
-
+## What is the MachinekitClient?<a name="machinekitclient" ></a>
 The MachinekitClient application is intended to be used as generic client for QtQuickVcp based user interfaces. MachinekitClient serves as client for remote distribution of QtQuickVcp-based user interfaces.
 
 Using the generic MachinekitClient is the easiest way to use QtQuickVcp. However, you can also build QtQuickVcp UIs as standalone applications.
 
-<a name="getting_started" />
-## Getting Started
+## Getting Started<a name="getting_started" ></a>
 A good way to get started is to watch the video tutorials on YouTube.
 
 Another resource for learning about QtQuickVcp, Machinekit and other
 machine control related stuff is [Machine Koder Blog](http://machinekoder.com)
 
-<a name="hello_world_video" />
-### HelloWorld in QtQuickVcp
+### HelloWorld in QtQuickVcp<a name="hello_world_video" ></a>
 [![HelloWorld in QtQuickVcp](http://img.youtube.com/vi/hyY1DoJ3mOA/0.jpg)](http://www.youtube.com/watch?v=hyY1DoJ3mOA)
 
-<a name="qt5_uis_with_machinekitsdk" />
-### Building Qt5 UIs with MachinekitSDK
+### Building Qt5 UIs with MachinekitSDK<a name="qt5_uis_with_machinekitsdk" ></a>
 [![Building Qt5 UIs with MachinekitSDK](http://img.youtube.com/vi/IdB5769JtqI/0.jpg)](https://www.youtube.com/watch?v=IdB5769JtqI)
 
 More detailed videos for specific areas will follow.
 
-<a name="module_overview" />
-### QtQuick Module Overview
+
+### QtQuick Module Overview<a name="module_overview" ></a>
 QtQuickVcp comes with the following QtQuick modules.
 
 * *Machinekit.HalRemote* - Non GUI HAL remote pins and components
@@ -144,8 +135,7 @@ QtQuickVcp comes with the following QtQuick modules.
 * *Machinekit.PathView* - GCode path and progress views
 * *Machinekit.VideoView* - Video views, e.g. for mjpeg-webcam streams
 
-<a name="using_mkwrapper" />
-### Using mkwrapper
+### Using mkwrapper<a name="using_mkwrapper" ></a>
 Mkwrapper is the Machinekit server side application for the
 Machinekit.Application modules. This short intro will help you making
 your Machinekit configuration work with mkwrapper.
@@ -260,8 +250,7 @@ Now start the MachinekitClient on the desired platform. For some networks it may
 #### Setup mklauncher
 With newer versions of QtQuickVcp the entry point for the MachinekitClient has been changed to the mklauncher service.
 
-<a name="using_mklauncher" />
-### Using mklauncher
+### Using mklauncher<a name="using_mklauncher" ></a>
 Mklauncher is the new entry point for MachinekitClient. It acts as a remote version of the Machinekit Launcher. Usage is quite simple (use =mklauncher --help= for details) the only thing you need to add to your Machinekit configarion is a =launcher.ini= file.
 
 ```ini
@@ -286,8 +275,7 @@ Once you have successfully launched mklauncher you are ready to connect using th
 
 If you have a embedded Machinekit setup e.g. on the BeagleBone Black, it is recommended to start mklauncher at boot using systemd. Use this guide for reference: [Starting a Machinekit configuration at boot](https://github.com/machinekoder/asciidoc-sandbox/blob/master/Starting-a-Machinekit-configuration-at-boot.md) or use this script [register.py](https://gist.github.com/machinekoder/3eaa42f79f7a19e2244a).
 
-<a name="build_and_install"/>
-## Building and installing
+## Building and installing<a name="build_and_install" ></a>
 QtQuickVcp is very versatile and is available for following platforms:
 
 * Windows Vista or newer
@@ -307,14 +295,13 @@ supported platforms. Please only try to build and install QtQuickVcp
 on you own if you feel confident to do so and if you plan to
 contribute to the QtQuickVcp project.
 
-<a name="easy_way" />
-### Easy Way - Vagrant Box
+### Easy Way - Vagrant Box<a name="easy_way" ></a>
 The easiest way to get a running MachinekitSDK, QtQuickVcp and Machinekit installation is to use
 the [Vagrant configuration](https://github.com/machinekoder/machinekit-vagrant). Follow the steps provided
 in the repository and you will have a working installation with a few clicks.
 
-<a name="generic_requirements" />
-### Generic Requirements
+
+### Generic Requirements<a name="generic_requirements" ></a>
 QtQuickVcp has the following requirements:
 
 * [Qt SDK](http://qt-project.org/downloads) with Qt 5.4.0 or newer
@@ -329,8 +316,7 @@ You can define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS to acknowledge that you
 If MSVC2015 is the only option you have, add  `_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=1;`  to "Preprocessor Definitions" entry under Project Properties.
 See also [C++ Hash Deprecation Warning](http://stackoverflow.com/q/30430789/4599792)
 
-<a name="android_install" />
-### Android
+### Android<a name="android_install" ></a>
 Build instruction for Android toolchain on Linux
 #### Prerequisites
 * Install [Qt SDK for Android](http://www.qt.io/download-open-source/)
@@ -403,8 +389,7 @@ Alter and execute the following commands
     make
     sudo make install
 
-<a name="mac_install" />
-### Mac - OS X and iOS
+### Mac - OS X and iOS<a name="mac_install" ></a>
 #### Prerequisites
 * Update [OSX to the latest version](http://www.apple.com/osx/how-to-upgrade/) (or you may not be able to deploy to your device)
 * Install [XCode from the App Store](https://itunes.apple.com/us/app/xcode/id497799835)
@@ -457,8 +442,8 @@ See https://gist.github.com/machinekoder/847dc5f320a21f1a9977 installs protobuf 
     chmod +x build-protobuf-2.6.1.sh
     sudo ./build-protobuf-2.6.1.sh
 
-<a name="linux_install" />
-### Linux
+
+### Linux<a name="linux_install" ></a>
 The following steps are tested on **Debian Jessie**. For other
 distributions please use the äquivalent packages if available.
 
@@ -501,8 +486,7 @@ not enable 3D acceleration or OpenGL will not work inside the VM.
     make check
     sudo make install
 
-<a name="windows_install" />
-### Windows
+### Windows<a name="windows_install" ></a>
 If you want to use Windows in a VirtualBox VM please enable 3D acceleration for Qt to work properly.
 
 #### Prerequisites
@@ -612,20 +596,17 @@ make install
 make install_docs
 ```
 
-<a name="machinekit_sdk" />
-### MachinekitSDK
+### MachinekitSDK<a name="machinekit_sdk" ></a>
 If you also want to have QtQuickVcp specific wizards and extensions
 for QtCreator please continue with the install instructions for the [MachinekitSDK](https://github.com/qtquickvcp/MachinekitSDK)
 
-<a name="contributing"/>
-## Contributing
+## Contributing<a name="contributing"/>
 
 * Create an issue in the issue tracker (e.g. Fan control missing)
 * Fork the git repository.
 * After you have coded some cool new stuff please create a pull request and link it to the issue.
 
-<a name="developing_qtquickvcp" />
-## Developing QtQuickVcp
+## Developing QtQuickVcp<a name="developing_qtquickvcp" ></a>
 This wiki page is for developers who want to extend the functionality of QtQuickVcp.
 
 If you are new to Qt and/or QtQuick I would recommend you to read the Qt documentation and follow the getting started and tutorials: http://qt-project.org/doc/qt-5/gettingstartedqml.html
