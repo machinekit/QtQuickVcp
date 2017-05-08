@@ -69,11 +69,6 @@ public:
         return m_error;
     }
 
-    QString errorString() const
-    {
-        return m_errorString;
-    }
-
     QObject *containerItem() const
     {
         return m_containerItem;
@@ -151,7 +146,6 @@ private:
     QString         m_name;
     bool            m_connected;
     ConnectionError m_error;
-    QString         m_errorString;
     QObject*        m_containerItem;
     bool            m_create;
     bool            m_bind;
@@ -188,7 +182,6 @@ signals:
     void nameChanged(QString name);
     void connectedChanged(bool connected);
     void errorChanged(ConnectionError error);
-    void errorStringChanged(QString errorString);
     void containerItemChanged(QObject * containerItem);
     void createChanged(bool create);
     void bindChanged(bool bind);

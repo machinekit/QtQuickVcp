@@ -179,7 +179,6 @@ HalRemoteComponent::HalRemoteComponent(QObject *parent) :
     m_name("default"),
     m_connected(false),
     m_error(NoError),
-    m_errorString(""),
     m_containerItem(this),
     m_create(true),
     m_bind(true)
@@ -480,12 +479,8 @@ void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &top
 void HalRemoteComponent::halrcompErrorReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
-    QString errorString;
-
-    for (int i = 0; i < rx.note_size(); ++i)
-    {
-        errorString.append(QString::fromStdString(rx.note(i)) + "\n");
-    }
+    Q_UNUSED(rx);
+    // errorString is automatically updated
 }
 
 void HalRemoteComponent::bindComponent()
