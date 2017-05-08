@@ -30,64 +30,69 @@ ApplicationItem {
     property alias gcodeProgramLoader: gcodeProgramLoader
     property alias previewClient: previewClient
 
-    property bool _ready: file.ready
-    property bool _previewEnabled: settings.initialized && settings.values.preview.enable
+    /*! Updates the preview if a file is loaded. */
+    function updatePreview() {
+        if (file.remoteFilePath !== "") {
+            d.executePreview();
+        }
+    }
+
+    /*! Clears the preview part of the \l GCodeProgramModel. */
+    function clearPreview() {
+        gcodeProgramModel.clearPreview();
+    }
 
     id: pathViewCore
 
-    on_ReadyChanged: {
-        if (_ready) {
-            file.onUploadFinished.connect(fileUploadFinished);
-            file.onDownloadFinished.connect(fileDownloadFinished);
-        }
-        else {
-            file.onUploadFinished.disconnect(fileUploadFinished);
-            file.onDownloadFinished.disconnect(fileDownloadFinished);
-        }
-    }
+    QtObject {
+        id: d
+        readonly property bool ready: file.ready
+        readonly property bool previewEnabled: settings.initialized && settings.values.preview.enable
 
-    function fileUploadFinished() {
-        gcodeProgramModel.clear();
-        gcodeProgramLoader.load();
-        if (_previewEnabled) {
-            _executePreview();
+        onReadyChanged: {
+            if (ready) {
+                file.onUploadFinished.connect(fileUploadFinished);
+                file.onDownloadFinished.connect(fileDownloadFinished);
+            }
+            else {
+                file.onUploadFinished.disconnect(fileUploadFinished);
+                file.onDownloadFinished.disconnect(fileDownloadFinished);
+            }
         }
-    }
 
-    function fileDownloadFinished() {
-        gcodeProgramModel.clear();
-        gcodeProgramLoader.load();
-        if (_previewEnabled) {
-            _executePreview();
+        function fileUploadFinished() {
+            gcodeProgramModel.clear();
+            gcodeProgramLoader.load();
+            if (previewEnabled) {
+                executePreview();
+            }
         }
-    }
 
-    on_PreviewEnabledChanged: {
-        if (_previewEnabled
-            && (file.remoteFilePath !== "")
-            && (file.localFilePath !== "")
-            && (file.transferState === ApplicationFile.NoTransfer))
-        {
-            gcodeProgramModel.clearPreview();
-            _executePreview();
+        function fileDownloadFinished() {
+            gcodeProgramModel.clear();
+            gcodeProgramLoader.load();
+            if (previewEnabled) {
+                executePreview();
+            }
         }
-    }
 
-    function _executePreview() {
-        if (file.remoteFilePath.split('.').pop() === 'ngc') {   // only open ngc files
-            command.openProgram('preview', file.remoteFilePath);
-            command.runProgram('preview', 0);
+        onPreviewEnabledChanged: {
+            if (previewEnabled
+                && (file.remoteFilePath !== "")
+                && (file.localFilePath !== "")
+                && (file.transferState === ApplicationFile.NoTransfer))
+            {
+                gcodeProgramModel.clearPreview();
+                executePreview();
+            }
         }
-    }
 
-    function updatePreview() {
-        if (file.remoteFilePath !== "") {
-            _executePreview();
+        function executePreview() {
+            if (file.remoteFilePath.split('.').pop() === 'ngc') {   // only open ngc files
+                command.openProgram('preview', file.remoteFilePath);
+                command.runProgram('preview', 0);
+            }
         }
-    }
-
-    function clearPreview() {
-        gcodeProgramModel.clearPreview();
     }
 
     Service {
