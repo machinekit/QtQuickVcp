@@ -32,7 +32,7 @@ ApplicationItem {
 
     /*! Updates the preview if a file is loaded. */
     function updatePreview() {
-        if (file.remoteFilePath !== "") {
+        if (file.remoteFilePath !== "file://") {
             d.executePreview();
         }
     }
@@ -49,18 +49,23 @@ ApplicationItem {
         readonly property bool ready: file.ready
         readonly property bool previewEnabled: settings.initialized && settings.values.preview.enable
 
+        /*! /internal
+            Cannot directly connect to slots since the file property is var and not a QObject.
+        */
         onReadyChanged: {
             if (ready) {
-                file.onUploadFinished.connect(fileUploadFinished);
-                file.onDownloadFinished.connect(fileDownloadFinished);
+                file.onUploadFinished.connect(onFileUploadFinished);
+                file.onDownloadFinished.connect(onFileDownloadFinished);
+                file.onRemoteFilePathChanged.connect(onRemoteFilePathChanged);
             }
             else {
-                file.onUploadFinished.disconnect(fileUploadFinished);
-                file.onDownloadFinished.disconnect(fileDownloadFinished);
+                file.onUploadFinished.disconnect(onFileUploadFinished);
+                file.onDownloadFinished.disconnect(onFileDownloadFinished);
+                file.onRemoteFilePathChanged.disconnect(onRemoteFilePathChanged);
             }
         }
 
-        function fileUploadFinished() {
+        function onFileUploadFinished() {
             gcodeProgramModel.clear();
             gcodeProgramLoader.load();
             if (previewEnabled) {
@@ -68,11 +73,17 @@ ApplicationItem {
             }
         }
 
-        function fileDownloadFinished() {
+        function onFileDownloadFinished() {
             gcodeProgramModel.clear();
             gcodeProgramLoader.load();
             if (previewEnabled) {
                 executePreview();
+            }
+        }
+
+        function onRemoteFilePathChanged(path) {
+            if (path === "file://") {
+                clearPreview();  // clear preview when program is unloaded
             }
         }
 
