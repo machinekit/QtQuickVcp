@@ -47,4 +47,6 @@ ApplicationAction {
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && status.running
+
+    Binding { target: root; property: "checked"; value: root._paused }
 }
