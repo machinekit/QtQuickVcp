@@ -295,7 +295,7 @@ void Service::updateUri()
         QUrl url = QUrl(m_rawUri);
         QString host = url.host();
 
-        if (m_hostname.contains(host))  // hostname is in form .local. and host in .local
+        if (m_hostname.contains(host, Qt::CaseInsensitive))  // hostname is in form .local. and host in .local
         {
             url.setHost(m_hostaddress); // use resolved address
             m_uri = url.toString();
