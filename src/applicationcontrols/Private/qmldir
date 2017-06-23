@@ -1,5 +1,4 @@
 module Machinekit.Application.Controls.Private
-NetworkPage 1.0 NetworkPage.qml
 InstancePage 1.0 InstancePage.qml
 LauncherPage 1.0 LauncherPage.qml
 SelectedPage 1.0 SelectedPage.qml

@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/Machinekit/Application/Controls/Private">
         <file>SelectedPage.qml</file>
-        <file>NetworkPage.qml</file>
         <file>LoadingPage.qml</file>
         <file>LauncherPage.qml</file>
         <file>InstancePage.qml</file>
