@@ -275,6 +275,10 @@
         <source>IP address or hostname</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Warning!&lt;br&gt;No network connection found, service discovery unavailable. Please check your network connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>JogAction</name>
@@ -389,13 +393,6 @@
     </message>
     <message>
         <source>Enable mist [%1]</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>NetworkPage</name>
-    <message>
-        <source>Warning!&lt;br&gt;No network connection found, service discovery unavailable. Please check your network connection.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

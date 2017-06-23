@@ -44,7 +44,6 @@
         <file>JogButton.qml</file>
         <file>JogDistanceComboBox.qml</file>
         <file>TeleopAction.qml</file>
-        <file>Private/NetworkPage.qml</file>
         <file>Private/InstancePage.qml</file>
         <file>Private/LauncherPage.qml</file>
         <file>Private/SelectedPage.qml</file>

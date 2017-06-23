@@ -8,7 +8,11 @@ import Machinekit.Service 1.0
 Item {
     property bool autoSelectInstance: false
     property var instances: []
-    property var serviceDiscovery: { "lookupMode": ServiceDiscovery.MulticastDNS }
+    property var serviceDiscovery: {
+        "lookupMode": ServiceDiscovery.MulticastDNS,
+        "networkReady": true
+    }
+    readonly property bool networkReady: serviceDiscovery.networkReady
 
     signal nameServersChanged()
     signal instanceSelected(string uuid)
@@ -123,10 +127,12 @@ Item {
         anchors.fill: parent
 
         onCurrentIndexChanged: {
-            if (currentIndex === 0)
+            if (currentIndex === 0) {
                 serviceDiscovery.lookupMode = ServiceDiscovery.MulticastDNS;
-            else
+            }
+            else {
                 serviceDiscovery.lookupMode = ServiceDiscovery.UnicastDNS;
+            }
         }
 
         Binding {
@@ -147,6 +153,7 @@ Item {
 
                     Layout.fillWidth: true
                     Layout.preferredHeight: Math.max(dummyButton.height, implicitHeight)
+                    visible: root.networkReady
                     text: qsTr("Available Instances:")
                     font.pointSize: dummyText.font.pointSize * 1.3
                     font.bold: true
@@ -158,8 +165,23 @@ Item {
                 Loader {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
+                    visible: root.networkReady
                     sourceComponent: instanceListView
                     active: true
+                }
+
+                Item {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    visible: !root.networkReady
+
+                    Label {
+                        anchors.centerIn: parent
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignHCenter
+                        font.pointSize: dummyText.font.pointSize * 1.1
+                        text: qsTr("Warning!<br>No network connection found, service discovery unavailable. Please check your network connection.")
+                    }
                 }
             }
         }

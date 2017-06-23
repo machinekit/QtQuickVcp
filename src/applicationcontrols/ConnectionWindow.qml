@@ -466,11 +466,6 @@ Rectangle {
         colorGroup: enabled ? SystemPalette.Active : SystemPalette.Disabled
     }
 
-    NetworkPage {
-        id: networkPage 
-        anchors.fill: parent
-    }
-
     InstancePage {
         id: instancePage
         anchors.fill: parent
@@ -638,10 +633,7 @@ Rectangle {
     }
 
     state: {
-        if (!serviceDiscovery.networkReady) {
-            return "network";
-        }
-        else if (d.errorActive) {
+        if (d.errorActive) {
             return "error";
         }
         else if (appPage.status === Loader.Ready) {
@@ -671,19 +663,7 @@ Rectangle {
 
     states: [
         State {
-            name: "network"
-            PropertyChanges { target: networkPage; visible: true }
-            PropertyChanges { target: instancePage; visible: false }
-            PropertyChanges { target: launcherPage; visible: false }
-            PropertyChanges { target: selectedPage; visible: false }
-            PropertyChanges { target: configPage; visible: false }
-            PropertyChanges { target: appPage; visible: false }
-            PropertyChanges { target: errorPage; visible: false}
-            PropertyChanges { target: loadingPage; visible: false }
-        },
-        State {
             name: "instance"
-            PropertyChanges { target: networkPage; visible: false }
             PropertyChanges { target: instancePage; visible: true }
             PropertyChanges { target: launcherPage; visible: false }
             PropertyChanges { target: selectedPage; visible: false }
@@ -694,7 +674,6 @@ Rectangle {
         },
         State {
             name: "launcher"
-            PropertyChanges { target: networkPage; visible: false }
             PropertyChanges { target: instancePage; visible: false }
             PropertyChanges { target: launcherPage; visible: true }
             PropertyChanges { target: selectedPage; visible: false }
@@ -705,7 +684,6 @@ Rectangle {
         },
         State {
             name: "launcher-selected"
-            PropertyChanges { target: networkPage; visible: false }
             PropertyChanges { target: instancePage; visible: false }
             PropertyChanges { target: launcherPage; visible: false }
             PropertyChanges { target: selectedPage; visible: true }
@@ -716,7 +694,6 @@ Rectangle {
         },
         State {
             name: "config"
-            PropertyChanges { target: networkPage; visible: false }
             PropertyChanges { target: instancePage; visible: false }
             PropertyChanges { target: launcherPage; visible: false }
             PropertyChanges { target: selectedPage; visible: false }
@@ -727,7 +704,6 @@ Rectangle {
         },
         State {
             name: "app-loading"
-            PropertyChanges { target: networkPage; visible: false }
             PropertyChanges { target: instancePage; visible: false }
             PropertyChanges { target: launcherPage; visible: false }
             PropertyChanges { target: selectedPage; visible: false }
@@ -738,7 +714,6 @@ Rectangle {
         },
         State {
             name: "app-loaded"
-            PropertyChanges { target: networkPage; visible: false }
             PropertyChanges { target: instancePage; visible: false }
             PropertyChanges { target: launcherPage; visible: false }
             PropertyChanges { target: selectedPage; visible: false }
@@ -749,7 +724,6 @@ Rectangle {
         },
         State {
             name: "error"
-            PropertyChanges { target: networkPage; visible: false }
             PropertyChanges { target: instancePage; visible: false }
             PropertyChanges { target: launcherPage; visible: false }
             PropertyChanges { target: selectedPage; visible: false }

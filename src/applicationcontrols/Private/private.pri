@@ -1,6 +1,5 @@
 # private qml files
 PRIVATE_QML_FILES += \
-    $$PWD/NetworkPage.qml \
     $$PWD/InstancePage.qml \
     $$PWD/LauncherPage.qml \
     $$PWD/SelectedPage.qml \

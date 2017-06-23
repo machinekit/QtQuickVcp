@@ -276,6 +276,10 @@
         <source>IP address or hostname</source>
         <translation>IP Adresse oder Hostname</translation>
     </message>
+    <message>
+        <source>Warning!&lt;br&gt;No network connection found, service discovery unavailable. Please check your network connection.</source>
+        <translation type="unfinished">Warnung!&lt;br&gt;Keine Netzwerkverbindung gefunden. Dienstsuche nicht verfügbar. Bitte prüfen Sie Ihre Netzwerkverbindung.</translation>
+    </message>
 </context>
 <context>
     <name>JogAction</name>
@@ -397,7 +401,7 @@
     <name>NetworkPage</name>
     <message>
         <source>Warning!&lt;br&gt;No network connection found, service discovery unavailable. Please check your network connection.</source>
-        <translation>Warnung!&lt;br&gt;Keine Netzwerkverbindung gefunden. Dienstsuche nicht verfügbar. Bitte prüfen Sie Ihre Netzwerkverbindung.</translation>
+        <translation type="vanished">Warnung!&lt;br&gt;Keine Netzwerkverbindung gefunden. Dienstsuche nicht verfügbar. Bitte prüfen Sie Ihre Netzwerkverbindung.</translation>
     </message>
 </context>
 <context>
