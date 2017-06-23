@@ -47,6 +47,7 @@ class Service : public QObject
     Q_PROPERTY(bool required READ required WRITE setRequired NOTIFY requiredChanged)
     Q_PROPERTY(QQmlListProperty<qtquickvcp::ServiceDiscoveryQuery> queries READ queries)
     Q_PROPERTY(QString hostName READ hostName NOTIFY hostNameChanged)
+    Q_PROPERTY(QString hostAddress READ hostAddress NOTIFY hostAddressChanged)
 
 public:
     explicit Service(QObject *parent = 0);
@@ -117,6 +118,11 @@ public:
     QString hostName() const
     {
         return m_hostName;
+    }
+
+    QString hostAddress() const
+    {
+        return m_hostAddress;
     }
 
 public slots:
@@ -193,7 +199,7 @@ private:
     bool m_itemsReady;        // true when we have items
     QString m_rawUri;         // the raw uri from the items
     QString m_hostName;       // the hostname that is queried
-    QString m_hostaddress;    // the address that was resolved
+    QString m_hostAddress;    // the address that was resolved
 
     const QString composeSdString(QString type, QString domain, QString protocol);
     const QString composeSdString(QString subType, QString type, QString domain, QString protocol);
@@ -218,6 +224,7 @@ signals:
     void requiredChanged(bool arg);
     void queriesChanged();
     void hostNameChanged(QString hostName);
+    void hostAddressChanged(QString hostAddress);
 
 }; // class Service
 } // namespace qtquickvcp

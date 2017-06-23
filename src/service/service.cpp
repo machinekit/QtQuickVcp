@@ -140,6 +140,11 @@ namespace qtquickvcp {
     This property holds the hostName of the computer where this service located at.
 */
 
+/*! \qmlproperty string Service::hostAddress
+
+    This property holds the hostAddress of the computer where this service located at.
+*/
+
 Service::Service(QObject *parent) :
     QObject(parent),
     m_type(""),
@@ -157,7 +162,7 @@ Service::Service(QObject *parent) :
     m_itemsReady(false),
     m_rawUri(""),
     m_hostName(""),
-    m_hostaddress("")
+    m_hostAddress("")
 {
     this->setObjectName("Service");
 
@@ -214,7 +219,7 @@ void Service::serviceQueryItemsUpdated(QQmlListProperty<ServiceDiscoveryItem> ne
         m_name = m_items.at(0)->name();
         m_version = m_items.at(0)->version();
         m_hostName = m_items.at(0)->hostName();
-        m_hostaddress = m_items.at(0)->hostAddress();
+        m_hostAddress = m_items.at(0)->hostAddress();
 
         m_itemsReady = true;
     }
@@ -225,7 +230,7 @@ void Service::serviceQueryItemsUpdated(QQmlListProperty<ServiceDiscoveryItem> ne
         m_name = "";
         m_version = 0;
         m_hostName = "";
-        m_hostaddress = "";
+        m_hostAddress = "";
         m_itemsReady = false;
     }
 
@@ -233,6 +238,7 @@ void Service::serviceQueryItemsUpdated(QQmlListProperty<ServiceDiscoveryItem> ne
     emit nameChanged(m_name);
     emit versionChanged(m_version);
     emit hostNameChanged(m_hostName);
+    emit hostAddressChanged(m_hostAddress);
     emit itemsChanged(items());
 
     updateUri();
@@ -303,7 +309,7 @@ void Service::updateUri()
 
         if (m_hostName.contains(host, Qt::CaseInsensitive))  // hostname is in form .local. and host in .local
         {
-            url.setHost(m_hostaddress); // use resolved address
+            url.setHost(m_hostAddress); // use resolved address
             m_uri = url.toString();
         }
         else
