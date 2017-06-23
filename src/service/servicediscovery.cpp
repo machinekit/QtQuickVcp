@@ -618,30 +618,30 @@ void ServiceDiscovery::setUnicastLookupInterval(int arg)
 
 void ServiceDiscovery::setLookupMode(ServiceDiscovery::LookupMode arg)
 {
-    if (m_lookupMode != arg)
+    if (m_lookupMode == arg) {
+        return;
+    }
+
+    bool ready;
+    if (m_lookupReady)
     {
-        bool ready;
+        deinitializeMdns();
+        ready = true;
+    }
+    else
+    {
+        ready = false;
+    }
 
-        if (m_lookupReady)
-        {
-            deinitializeMdns();
-            ready = true;
-        }
-        else
-        {
-            ready = false;
-        }
+    m_lookupMode = arg;
+    emit lookupModeChanged(arg);
 
-        m_lookupMode = arg;
-        emit lookupModeChanged(arg);
-
-        if (ready)
-        {
-            if (!initializeMdns()) {
-                // in case init fails we reset the network state to retrigger the initialization
-                m_networkReady = false;
-                emit networkReadyChanged(m_networkReady);
-            }
+    if (ready)
+    {
+        if (!initializeMdns()) {
+            // in case init fails we reset the network state to retrigger the initialization
+            m_networkReady = false;
+            emit networkReadyChanged(m_networkReady);
         }
     }
 }
