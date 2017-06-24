@@ -602,7 +602,8 @@ void ServiceDiscovery::updateNameServers()
 
     if (m_running)
     {
-        unicastLookup();
+        stopQueries();
+        startQueries();
     }
 }
 

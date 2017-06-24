@@ -112,12 +112,21 @@ Item {
                 onClicked: instanceSelected(root.instances[index].uuid)
             }
 
-            BusyIndicator {
-                anchors.centerIn: parent
-                running: true
+            Item {
                 visible: d.localInstances.length === 0
-                height: Math.min(root.width, root.height) * 0.15
-                width: height
+                anchors.fill: parent
+
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    running: true
+                    height: Math.min(root.width, root.height) * 0.15
+                    width: height
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: listView.forceActiveFocus()
+                }
             }
         }
     }
