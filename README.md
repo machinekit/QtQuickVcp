@@ -32,7 +32,7 @@ The MachinekitClient is available in following app stores:
 |-------|:----:|
 | Google Play Store | [![Get it on Google Play!](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=io.machinekit.appdiscover) |
 
-### Development releases
+### Running releases
 | Operating System   |  MachinekitClient  | QtQuickVcp |
 |----------|:-------------:|:----:|
 | Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/_latestVersion#files) |
@@ -53,17 +53,6 @@ For example, the latest QtQuickVcp Android build can be downloaded with the foll
 ```bash
 wget https://dl.bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-latest-Android-armv7.tar.gz
 ```
-
-
-### Stable releases
-| Operating System   |  MachinekitClient  | QtQuickVcp |
-|----------|:-------------:|:----:|
-| Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Windows-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Windows-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x64/_latestVersion#files) |
-| Windows 32bit  |  [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Windows-x86/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Windows-x86/_latestVersion#files)   | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x86/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Windows-x86/_latestVersion#files)  |
-| Linux 64bit    | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Linux-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Linux-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Linux-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Linux-x64/_latestVersion#files) |
-| Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-MacOSX-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-MacOSX-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-MacOSX-x64/_latestVersion#files) |
-| Android armv7 | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient/MachinekitClient-Android-armv7/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp/QtQuickVcp-Android-armv7/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp/QtQuickVcp-Android-armv7/_latestVersion#files) |
-
 
 ## Contents
 
