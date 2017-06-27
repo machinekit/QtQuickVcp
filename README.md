@@ -32,7 +32,9 @@ The MachinekitClient is available in following app stores:
 |-------|:----:|
 | Google Play Store | [![Get it on Google Play!](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=io.machinekit.appdiscover) |
 
-### Running releases
+### Rolling releases
+You can find rolling releases of the MachinekitClient and the QtQuickVcp library below. Stable releases have been dropped in favor of continuous deployment to decrease maintainance effort.
+
 | Operating System   |  MachinekitClient  | QtQuickVcp |
 |----------|:-------------:|:----:|
 | Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/_latestVersion#files) |
