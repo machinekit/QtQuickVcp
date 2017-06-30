@@ -1,10 +1,11 @@
+syntax = "proto2";
 // use a self-describing format as suggested in protobuf docs
 // and on the mailing list
 
 // see README.msgid
 // msgid base: 500
 
-package pb;
+package machinetalk;
 
 
 import "machinetalk/protobuf/nanopb.proto";

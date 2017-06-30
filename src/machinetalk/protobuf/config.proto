@@ -1,9 +1,10 @@
+syntax = "proto2";
 import "machinetalk/protobuf/nanopb.proto";
 
 // see README.msgid
 // msgid base: 200
 
-package pb;
+package machinetalk;
 
 enum ApplicationType {
     QT5_QML    = 1;
@@ -74,5 +75,5 @@ message Launcher {
     repeated StdoutLine   output         = 10; // stdout output of the command
     optional int32        returncode     = 11; // return code of the command
     optional string       workdir        = 12; // working dir of the command
-
+    optional uint32       priority       = 13; // priority for sorting, smaller means lower priority
 }
