@@ -318,67 +318,73 @@ Build instruction for Android toolchain on Linux
 #### Stand-alone Android toolchain
 First create a Android Stand-alone toolchain:
 
-    sudo ~/bin/android-ndk/build/tools/make-standalone-toolchain.sh --install-dir=/opt/android-toolchain --arch=arm
-    export PATH=/opt/android-toolchain/bin:$PATH
+```bash
+sudo ~/bin/android-ndk/build/tools/make-standalone-toolchain.sh --install-dir=/opt/android-toolchain --arch=arm
+export PATH=/opt/android-toolchain/bin:$PATH
+```
 
 #### libsodium
 **Not yet necessary. You can skip this step.**
 
-    git clone https://github.com/jedisct1/libsodium.git
-    cd libsodium
-    git checkout v1.0.8
-    sh autogen.sh
-    ./configure --enable-static --disable-shared --prefix=$OUTPUT_DIR
-    make
-    sudo make install
+```bash
+export OUTPUT_DIR=/opt/libsodium-android
+
+git clone https://github.com/jedisct1/libsodium.git
+cd libsodium
+git checkout 1.0.9
+sh autogen.sh
+./configure --enable-static --disable-shared --prefix=$OUTPUT_DIR
+make
+sudo make install
+```
 
 #### ZeroMQ
 Alter and execute the following commands
 
-    mkdir tmp
-    cd tmp/
+```bash
+export OUTPUT_DIR=/opt/zeromq-android
+export RANLIB=/opt/android-toolchain/bin/arm-linux-androideabi-ranlib
 
-    export OUTPUT_DIR=/opt/zeromq-android
-    export RANLIB=/opt/android-toolchain/bin/arm-linux-androideabi-ranlib
+git clone https://github.com/zeromq/zeromq4-x.git
+cd zeromq4-x/
+git checkout v4.0.8
 
-    git clone https://github.com/zeromq/zeromq4-x.git
-    cd zeromq4-x/
-    git checkout v4.0.8
+# fix compile problems
+mv tools/curve_keygen.c tools/curve_keygen.cpp
+sed -i 's/\.c\>/&pp/' tools/Makefile.am
+rm -f tools/.deps/curve_keygen.Po
 
-    # fix compile problems
-    mv tools/curve_keygen.c tools/curve_keygen.cpp
-    sed -i 's/\.c\>/&pp/' tools/Makefile.am
-    rm -f tools/.deps/curve_keygen.Po
-
-    ./autogen.sh
-    ./configure --enable-static --disable-shared --host=arm-linux-androideabi --prefix=$OUTPUT_DIR \
-    LDFLAGS="-L$OUTPUT_DIR/lib" CPPFLAGS="-fPIC -I$OUTPUT_DIR/include" LIBS="-lgcc"
-    make
-    sudo make install
-
-    cd ..
+./autogen.sh
+./configure --enable-static --disable-shared --host=arm-linux-androideabi --prefix=$OUTPUT_DIR \
+LDFLAGS="-L$OUTPUT_DIR/lib" CPPFLAGS="-fPIC -I$OUTPUT_DIR/include" LIBS="-lgcc"
+make
+sudo make install
+```
 
 #### Protobuf
 
-    export PATH=/opt/android-toolchain/bin:$PATH
-    export CFLAGS="-fPIC -DANDROID -nostdlib"
-    export CC=arm-linux-androideabi-gcc
-    export CXX=arm-linux-androideabi-g++
-    export NDK=~/bin/android-ndk
-    export SYSROOT=$NDK/platform/android-9/arch-arm
-    export OUTPUT_DIR=/opt/protobuf-android
+```bash
+export PATH=/opt/android-toolchain/bin:$PATH
+export CFLAGS="-fPIC -DANDROID -nostdlib"
+export CC=arm-linux-androideabi-gcc
+export CXX=arm-linux-androideabi-g++
+export NDK=~/bin/android-ndk
+export SYSROOT=$NDK/platform/android-9/arch-arm
+export OUTPUT_DIR=/opt/protobuf-android
 
-    # Latest and greatest, you might prefer 2.5.0 since it is usually installed in your distro
-    git clone https://github.com/google/protobuf.git
-    cd protobuf
-    git checkout v2.6.1
+# Latest and greatest, you might prefer v2.5.0 for Debian wheezy and v3.0.2 for Debian stretch
+# sincee it is usually installed in your distro
+git clone https://github.com/google/protobuf.git
+cd protobuf
+git checkout v3.0.2
 
-    mkdir -p gtest/msvc
-    touch gtest/msvc/foo.vcproj
-    ./autogen.sh
-    ./configure --enable-static --disable-shared --host=arm-eabi --with-sysroot=$SYSROOT CC=$CC CXX=$CXX --enable-cross-compile --with-protoc=protoc LIBS="-lc" --prefix=$OUTPUT_DIR
-    make
-    sudo make install
+mkdir -p gtest/msvc
+touch gtest/msvc/foo.vcproj
+./autogen.sh
+./configure --enable-static --disable-shared --host=arm-eabi --with-sysroot=$SYSROOT CC=$CC CXX=$CXX --enable-cross-compile --with-protoc=protoc LIBS="-lc" --prefix=$OUTPUT_DIR
+make
+sudo make install
+```
 
 ### Mac - OS X and iOS<a name="mac_install" ></a>
 #### Prerequisites
