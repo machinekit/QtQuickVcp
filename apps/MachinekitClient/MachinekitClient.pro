@@ -72,3 +72,8 @@ icon.files = icons/machinekit.png
 
 INSTALLS += target desktop icon
 }
+
+contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+    ANDROID_EXTRA_LIBS = \
+        $$PWD/../../../build-QtQuickVcp-Android_for_armeabi_v7a_GCC_4_9_Qt_5_9_0_for_Android_armv7-Debug/3rdparty/machinetalk-protobuf-qt/libmachinetalk-pb2.so
+}

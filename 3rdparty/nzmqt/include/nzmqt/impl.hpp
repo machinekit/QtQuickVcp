@@ -228,7 +228,7 @@ NZMQT_INLINE bool ZMQSocket::sendMessage(const QList<QByteArray>& msg_, SendFlag
 
 NZMQT_INLINE bool ZMQSocket::receiveMessage(ZMQMessage* msg_, ReceiveFlags flags_)
 {
-    return recv(msg_, flags_);
+    return recv(msg_, static_cast<int>(flags_));
 }
 
 NZMQT_INLINE QList<QByteArray> ZMQSocket::receiveMessage()
