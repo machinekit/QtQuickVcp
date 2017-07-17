@@ -7,6 +7,7 @@
 #ifndef HAL_REMOTE_REMOTE_COMPONENT_BASE_H
 #define HAL_REMOTE_REMOTE_COMPONENT_BASE_H
 #include <QObject>
+#include <QSet>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>

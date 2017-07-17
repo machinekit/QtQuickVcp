@@ -7,6 +7,8 @@
 #ifndef COMMON_SUBSCRIBE_H
 #define COMMON_SUBSCRIBE_H
 #include <QObject>
+#include <QSet>
+#include <QTimer>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 

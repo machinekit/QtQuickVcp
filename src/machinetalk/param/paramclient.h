@@ -7,6 +7,7 @@
 #ifndef PARAM_PARAM_CLIENT_H
 #define PARAM_PARAM_CLIENT_H
 #include <QObject>
+#include <QSet>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
