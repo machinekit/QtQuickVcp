@@ -61,7 +61,7 @@ cd build.release
 # build QtQuickVcp
 qmake -r ..
 make
-make install
+make -C src install
 make INSTALL_ROOT=android-build install
 
 # check if machinetalk library is installed
