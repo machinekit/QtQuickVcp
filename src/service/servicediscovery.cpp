@@ -24,6 +24,7 @@
 
 #if defined(Q_OS_ANDROID)
 #include <QtAndroidExtras/QAndroidJniObject>
+#include <QtAndroid>
 #endif
 
 namespace qtquickvcp {
@@ -301,8 +302,10 @@ bool ServiceDiscovery::initializeMdns()
     if (m_lookupMode == MulticastDNS)
     {
 #if defined(Q_OS_ANDROID)
-        QAndroidJniObject::callStaticMethod<void>("io/machinekit/service/MulticastActivator",
-                                                  "enable");
+        QtAndroid::runOnAndroidThreadSync([](){
+            QAndroidJniObject::callStaticMethod<void>("io/machinekit/service/MulticastActivator", "enable",
+                                                      "(Landroid/content/Context;)V", QtAndroid::androidActivity().object<jobject>());
+        });
 #endif
         initialized = m_jdns->init(QJDns::Multicast, QHostAddress::Any);
     }
@@ -375,8 +378,11 @@ void ServiceDiscovery::deinitializeMdns()
     m_jdns = nullptr;
 
 #if defined(Q_OS_ANDROID)
-    QAndroidJniObject::callStaticMethod<void>("io/machinekit/service/MulticastActivator",
-                                              "disable");
+    if (m_lookupMode == MulticastDNS) {
+        QtAndroid::runOnAndroidThreadSync([](){
+            QAndroidJniObject::callStaticMethod<void>("io/machinekit/service/MulticastActivator", "disable");
+        });
+    }
 #endif
 
     m_lookupReady = false;                      // lookup no ready anymore
