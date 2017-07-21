@@ -30,18 +30,15 @@ Item {
         visible: false
     }
 
-    Dialog {
+    MessageDialog {
         id: shutdownDialog
         title: qsTr("System Shutdown")
+        text: qsTr("Do you really want to shutdown the Machinekit system?")
         standardButtons: StandardButton.Yes | StandardButton.No
 
         onYes: {
             systemShutdown();
             goBack();
-        }
-
-        Label {
-            text: qsTr("Do you really want to shutdown the Machinekit system?")
         }
     }
 
