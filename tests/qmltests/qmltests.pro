@@ -1,6 +1,7 @@
 TEMPLATE = app
 TARGET = tst_qml
 CONFIG += warn_on qmltestcase
+CONFIG -= app_bundle
 SOURCES += tst_qml.cpp
 
 QML_IMPORT_PATH += "$$PWD/../../app/PMCS_UI.PMCS UI"
