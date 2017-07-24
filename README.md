@@ -564,6 +564,8 @@ Open Qt Creator and open the QtQuickVcp.pro file. Select the Qt version you want
 `install, docs and install_docs`
 ![Qt Creator Build Settings](doc/images/qtc_build_settings.png)
 
+Note: for android you need to prefix the install command as follows: `-C 3rdparty install` and `-C src install` else you will get errors during the Android "make install".
+
 Build the project in release mode (or debug mode if you want to debug QtQuickVcp and you application). Now you should have a working QtQuickVcp installed to your Qt version.
 
 #### Setup Qt Creator
