@@ -1,3 +1,5 @@
+include(../../paths.pri)
+
 MACHINETALK_PATH = $$OUT_PWD/../../3rdparty/machinetalk-protobuf-qt
 INCLUDEPATH += $$MACHINETALK_PATH/build/cpp
 !isEmpty(PROTOBUF_INCLUDE_PATH): INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH

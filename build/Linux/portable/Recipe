@@ -20,11 +20,10 @@ set -x # Be verbose
 
 # This script should be run inside CentOS 6 if possible,
 # or CentOS 7 if 6 is unavailable for your architecture.
-if [ "$(grep "Debian GNU/Linux 8 (jessie)" /etc/*release*)" ]; then
-  OS="Debian Jessie"
+if [ "$(grep "Debian GNU/Linux 9 (stretch)" /etc/*release*)" ]; then
+  OS="Debian Stretch"
 else
-  echo "${0}: Error: Not running on Debian Jessie!" >&2
-  exit 1
+  echo "${0}: Warning: Not running on Debian Jessie!" >&2
 fi
 
 ##########################################################################

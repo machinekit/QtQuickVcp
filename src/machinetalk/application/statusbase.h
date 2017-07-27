@@ -7,6 +7,7 @@
 #ifndef APPLICATION_STATUS_BASE_H
 #define APPLICATION_STATUS_BASE_H
 #include <QObject>
+#include <QSet>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>

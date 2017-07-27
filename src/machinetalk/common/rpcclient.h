@@ -7,6 +7,8 @@
 #ifndef COMMON_RPC_CLIENT_H
 #define COMMON_RPC_CLIENT_H
 #include <QObject>
+#include <QSet>
+#include <QTimer>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 

@@ -543,10 +543,10 @@ Repeat for `x64` in `protobuf\vsprojects\x64\Release`.
 ##### MSVC2015
 Even if you have the option to use MSVC2015, use MSVC2013 instead by changing the platform tool set to Visual Studio 2013,
 as you will get this kind of compiler error with MSVC2015:
-````
+```
 error C2338: <hash_*> is deprecated and will be REMOVED. Please use <unordered_*>.
 You can define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
-````
+```
 If MSVC2015 is the only option you have, add  `_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=1;`  to "Preprocessor Definitions" entry under Project Properties.
 See also [C++ Hash Deprecation Warning](http://stackoverflow.com/q/30430789/4599792)
 
@@ -563,6 +563,8 @@ Before building the project **modify the paths.pri file if necessary**.
 Open Qt Creator and open the QtQuickVcp.pro file. Select the Qt version you want to build against. Before building the project add these additional make commands to your project settings:
 `install, docs and install_docs`
 ![Qt Creator Build Settings](doc/images/qtc_build_settings.png)
+
+Note: for android you need to prefix the install command as follows: `-C 3rdparty install` and `-C src install` else you will get errors during the Android "make install".
 
 Build the project in release mode (or debug mode if you want to debug QtQuickVcp and you application). Now you should have a working QtQuickVcp installed to your Qt version.
 
@@ -595,7 +597,7 @@ make install_docs
 
 ### MachinekitSDK<a name="machinekit_sdk" ></a>
 If you also want to have QtQuickVcp specific wizards and extensions
-for QtCreator please continue with the install instructions for the [MachinekitSDK](https://github.com/qtquickvcp/MachinekitSDK)
+for Qt Creator please continue with the install instructions for the [MachinekitSDK](https://github.com/qtquickvcp/MachinekitSDK)
 
 ## Contributing<a name="contributing"/>
 

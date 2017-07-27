@@ -7,6 +7,8 @@
 #ifndef HAL_REMOTE_HALRCOMP_SUBSCRIBE_H
 #define HAL_REMOTE_HALRCOMP_SUBSCRIBE_H
 #include <QObject>
+#include <QSet>
+#include <QTimer>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 

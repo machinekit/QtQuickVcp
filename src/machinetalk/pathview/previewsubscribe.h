@@ -7,6 +7,7 @@
 #ifndef PATHVIEW_PREVIEW_SUBSCRIBE_H
 #define PATHVIEW_PREVIEW_SUBSCRIBE_H
 #include <QObject>
+#include <QSet>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
 
