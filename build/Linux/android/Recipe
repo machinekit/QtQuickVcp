@@ -124,7 +124,7 @@ if [ "${upload}" ]; then
     fi
     mv build.release/MachinekitClient.apk ${target}-${version}-${platform}.apk
     # deploy apk file to Play Store
-    android-publish -s ./build/Linux/android/google_play_credentials.json -p io.machinekit.appdiscover -t beta -a MachinekitClient*.apk || true
+    android-publish -s ./build/Linux/android/google_play_credentials.json -p io.machinekit.appdiscover -t alpha -a MachinekitClient*.apk || true
     chmod a+rwx MachinekitClient*.apk
 
 else
