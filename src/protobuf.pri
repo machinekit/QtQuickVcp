@@ -26,7 +26,7 @@ message("Generating protocol buffer classes from .proto files.")
 protobuf_decl.name = protobuf headers
 protobuf_decl.input = PROTOS
 protobuf_decl.output = $$OUT_PWD/$$PROTOGEN/$$NAMESPACE_DIR/${QMAKE_FILE_BASE}.pb.h
-protobuf_decl.commands = $$PROTOBUF_PROTOC --cpp_out=$$shell_path($$OUT_PWD/$$PROTOGEN/) $$PROTOPATHS $$relative_path(${QMAKE_FILE_NAME}, $$OUT_PWD)
+protobuf_decl.commands = $$shell_path($$PROTOBUF_PROTOC) --cpp_out=$$shell_path($$OUT_PWD/$$PROTOGEN/) $$PROTOPATHS $$relative_path(${QMAKE_FILE_NAME}, $$OUT_PWD)
 ios: {
     protobuf_decl.commands += $$escape_expand(\n\t)
     protobuf_decl.commands += sed -i \'\' -e \'s/namespace\ google /namespace\ google_public /g\' ${QMAKE_FILE_OUT} $$escape_expand(\n\t)

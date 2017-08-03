@@ -7,8 +7,8 @@ INCLUDEPATH += $$MACHINETALK_PATH/build/cpp
 !win32 {
     LIBS += -L$$MACHINETALK_PATH
 } else {
-    LIBS += -L$$MACHINETALK_PATH/release
-    LIBS += -L$$MACHINETALK_PATH/debug
+    CONFIG(debug, release): LIBS += -L$$MACHINETALK_PATH/release
+    CONFIG(debug, debug): LIBS += -L$$MACHINETALK_PATH/debug
     !isEmpty(PROTOBUF_LIB_PATH): LIBS += -L$$PROTOBUF_LIB_PATH
     !isEmpty(PROTOBUF_LIB_FLAGS): LIBS += $$PROTOBUF_LIB_FLAGS
     LIBS += -llibprotobuf

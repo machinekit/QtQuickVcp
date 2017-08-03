@@ -12,8 +12,10 @@ SOURCES += main.cpp
 
 RESOURCES += qml.qrc
 
-QML_FILES = $$PWD/*.qml \
-    $$PWD/MachinekitClient.ServiceDisplay/*.qml
+QML_FILES = $$PWD/init.qml \
+    $$PWD/main.qml \
+    $$PWD/SplashScreen.qml \
+    $$PWD/MachinekitClient.ServiceDisplay/ServiceDisplay.qml
 OTHER_FILES += $$QML_FILES
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
