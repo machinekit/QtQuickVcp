@@ -488,9 +488,8 @@ If you want to use Windows in a VirtualBox VM please enable 3D acceleration for 
 
 #### Prerequisites
 * Install everything to `C:\bin`
-* Install Microsoft Visual Studio of your choice
- * [2015 Community Edition](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx)
- * [2013 Express Edition](https://www.microsoft.com/en-us/download/details.aspx?id=44914)
+* Install Microsoft Visual Studio
+ * [Community Edition](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx)
 * Install [Qt SDK](http://www.qt.io/download-open-source/) for Windows (Use the MSVC2015 or MSVC2013 version depending on Visual Studio)
 * Install a Git command line client (VS2015 comes with Git, [Git for Windows](https://git-for-windows.github.io/) is also fine, select add to Windows Path in setup)
 * Create a link from your users directory to `C:\bin`
@@ -502,7 +501,7 @@ Open a cmd window:
     cd C:\bin
     git clone https://github.com/zeromq/zeromq4-x.git
     cd zeromq4-x
-    git checkout v4.0.7
+    git checkout v4.0.8
 
 Now start Visual Studio and open the solution `C:\zeromq4-x\builds\msvc\msvc11.sln` say yes to migrating the project to the new format.
 
@@ -540,7 +539,7 @@ Copy the `libprotobuf.pdb` files from `protobuf\vsprojects\Release` to the `Qt\<
 
 Repeat for `x64` in `protobuf\vsprojects\x64\Release`.
 
-##### MSVC2015
+##### MSVC2015 and MSVC2017
 Even if you have the option to use MSVC2015, use MSVC2013 instead by changing the platform tool set to Visual Studio 2013,
 as you will get this kind of compiler error with MSVC2015:
 ```
