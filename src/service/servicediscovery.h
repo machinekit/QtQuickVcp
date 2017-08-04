@@ -135,22 +135,22 @@ private:
     LookupMode m_lookupMode;
     int m_unicastLookupInterval;    // interval for unicast lookups, queries are stop when retriggered
     int m_unicastErrorThreshold;    // amount of unicast lookup timeouts to tolerate
-    ServiceDiscoveryFilter *m_filter;
+    QPointer<ServiceDiscoveryFilter> m_filter;
     QList<ServiceList*> m_serviceLists;
     QList<NameServer*> m_nameServers;
 
-    QNetworkSession *m_networkSession;
-    QNetworkConfigurationManager *m_networkConfigManager;
-    QTimer *m_networkConfigTimer; // Timer for refreshing the network status
+    QPointer<QNetworkSession> m_networkSession;
+    QPointer<QNetworkConfigurationManager> m_networkConfigManager;
+    QPointer<QTimer> m_networkConfigTimer; // Timer for refreshing the network status
 
-    QJDns *m_jdns;
+    QPointer<QJDns> m_jdns;
     QMap<int, QJDns::Type> m_queryIdTypeMap; // queryId > type
     QMap<int, ServiceDiscoveryItem *> m_queryIdItemMap; // queryId > item
     QMap<int, QString> m_queryIdServiceMap; // queryId > serviceType
     QMap<QString, QList<ServiceDiscoveryItem*> > m_serviceItemsMap; // serviceType > items
     QMap<QString, QJDns::Type> m_serviceTypeMap; // serviceType > queryType
 
-    QTimer *m_unicastLookupTimer;
+    QPointer<QTimer> m_unicastLookupTimer;
 
     void initializeNetworkSession();
     void startQueries();

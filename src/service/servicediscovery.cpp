@@ -275,7 +275,7 @@ bool ServiceDiscovery::initializeMdns()
 {
     bool initialized;
 
-    if (m_jdns != nullptr) // already initialized
+    if (!m_jdns.isNull()) // already initialized
     {
         return true;
     }
@@ -322,7 +322,7 @@ bool ServiceDiscovery::initializeMdns()
 #endif
 
         m_jdns->deleteLater();
-        m_jdns = nullptr;
+        m_jdns.clear();
         return false;
     }
     else
@@ -352,7 +352,7 @@ bool ServiceDiscovery::initializeMdns()
 
 void ServiceDiscovery::deinitializeMdns()
 {
-    if (m_jdns == nullptr)
+    if (m_jdns.isNull())
     {
         return;
     }
@@ -375,7 +375,7 @@ void ServiceDiscovery::deinitializeMdns()
     }
 
     m_jdns->deleteLater();
-    m_jdns = nullptr;
+    m_jdns.clear();
 
 #if defined(Q_OS_ANDROID)
     if (m_lookupMode == MulticastDNS) {
@@ -575,7 +575,7 @@ void ServiceDiscovery::updateNameServers()
 {
     QList<QJDns::NameServer> nameServers;
 
-    if ((m_jdns == nullptr) || (m_lookupMode != UnicastDNS))
+    if ((m_jdns.isNull()) || (m_lookupMode != UnicastDNS))
     {
         return;
     }
@@ -1237,7 +1237,7 @@ void ServiceDiscovery::openNetworkSession()
 #ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
 #endif
-            if (m_networkSession != nullptr)
+            if (!m_networkSession.isNull())
             {
                 m_networkSession->deleteLater();
             }
@@ -1266,8 +1266,7 @@ void ServiceDiscovery::openNetworkSession()
 
 void ServiceDiscovery::networkConfigUpdateCompleted()
 {
-
-    if ((m_networkSession == nullptr)
+    if ((m_networkSession.isNull())
             || (!m_networkSession->isOpen())
             || (!m_networkReady))
     {
