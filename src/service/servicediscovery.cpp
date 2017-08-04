@@ -681,7 +681,7 @@ void ServiceDiscovery::stopQueries()
     }
 }
 
-void ServiceDiscovery::startQuery(QString serviceType)
+void ServiceDiscovery::startQuery(const QString &serviceType)
 {
     int queryId;
 
@@ -705,7 +705,7 @@ void ServiceDiscovery::startQuery(QString serviceType)
 #endif
 }
 
-void ServiceDiscovery::stopQuery(QString serviceType)
+void ServiceDiscovery::stopQuery(const QString &serviceType)
 {
     int queryId;
     bool found;
@@ -737,7 +737,7 @@ void ServiceDiscovery::stopQuery(QString serviceType)
 #endif
 }
 
-void ServiceDiscovery::refreshQuery(QString serviceType)
+void ServiceDiscovery::refreshQuery(const QString &serviceType)
 {
     int queryId;
     bool found;
@@ -794,7 +794,7 @@ void ServiceDiscovery::stopItemQueries(ServiceDiscoveryItem *item)
     }
 }
 
-void ServiceDiscovery::addServiceType(QString serviceType, QJDns::Type queryType)
+void ServiceDiscovery::addServiceType(const QString &serviceType, QJDns::Type queryType)
 {
     QList<ServiceDiscoveryItem*> serviceDiscoveryItems;
 
@@ -807,7 +807,7 @@ void ServiceDiscovery::addServiceType(QString serviceType, QJDns::Type queryType
     m_serviceTypeMap.insert(serviceType, queryType);
 }
 
-void ServiceDiscovery::removeServiceType(QString serviceType)
+void ServiceDiscovery::removeServiceType(const QString &serviceType)
 {
     if (!m_serviceItemsMap.contains(serviceType))
     {
@@ -819,7 +819,7 @@ void ServiceDiscovery::removeServiceType(QString serviceType)
     m_serviceTypeMap.remove(serviceType);
 }
 
-void ServiceDiscovery::updateServiceType(QString serviceType)
+void ServiceDiscovery::updateServiceType(const QString &serviceType)
 {
     QList<ServiceDiscoveryItem*> serviceDiscoveryItems;
 
@@ -919,7 +919,7 @@ QList<ServiceDiscoveryItem *> ServiceDiscovery::filterServiceDiscoveryItems(QLis
     return newServiceDiscoveryItems;
 }
 
-ServiceDiscoveryItem *ServiceDiscovery::addItem(QString name, QString type)
+ServiceDiscoveryItem *ServiceDiscovery::addItem(const QString &name, const QString &type)
 {
     QList<ServiceDiscoveryItem*> serviceDiscoveryItems;
 
@@ -949,7 +949,7 @@ ServiceDiscoveryItem *ServiceDiscovery::addItem(QString name, QString type)
     return item;
 }
 
-ServiceDiscoveryItem *ServiceDiscovery::getItem(QString name, QString type)
+ServiceDiscoveryItem *ServiceDiscovery::getItem(const QString &name, const QString &type)
 {
     QList<ServiceDiscoveryItem*> serviceDiscoveryItems;
 
@@ -973,13 +973,13 @@ ServiceDiscoveryItem *ServiceDiscovery::getItem(QString name, QString type)
     return nullptr;
 }
 
-void ServiceDiscovery::updateItem(QString name, QString type)
+void ServiceDiscovery::updateItem(const QString &name, const QString &type)
 {
     Q_UNUSED(name)
     updateServiceType(type);
 }
 
-void ServiceDiscovery::removeItem(QString name, QString type)
+void ServiceDiscovery::removeItem(const QString &name, const QString &type)
 {
     QList<ServiceDiscoveryItem*> serviceDiscoveryItems;
 
@@ -1005,7 +1005,7 @@ void ServiceDiscovery::removeItem(QString name, QString type)
     }
 }
 
-void ServiceDiscovery::clearItems(QString type)
+void ServiceDiscovery::clearItems(const QString &type)
 {
     QList<ServiceDiscoveryItem*> serviceDiscoveryItems;
 
@@ -1032,7 +1032,7 @@ void ServiceDiscovery::clearItems(QString type)
 }
 
 /** Removes items that have not been updated and flags other items with not updated **/
-void ServiceDiscovery::purgeItems(QString serviceType)
+void ServiceDiscovery::purgeItems(const QString &serviceType)
 {
     QList<ServiceDiscoveryItem*> serviceDiscoveryItems;
     bool modified;

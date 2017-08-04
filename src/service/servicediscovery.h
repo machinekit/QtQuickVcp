@@ -125,7 +125,7 @@ signals:
     void lookupModeChanged(LookupMode arg);
     void unicastLookupIntervalChanged(int arg);
     void unicastErrorThresholdChanged(int unicastErrorThreshold);
-    void nameServersChanged(QQmlListProperty<NameServer> arg);
+    void nameServersChanged(const QQmlListProperty<NameServer> &arg);
 
 private:
     bool m_componentCompleted;
@@ -155,23 +155,23 @@ private:
     void initializeNetworkSession();
     void startQueries();
     void stopQueries();
-    void startQuery(QString serviceType);
-    void stopQuery(QString serviceType);
-    void refreshQuery(QString serviceType);
+    void startQuery(const QString &serviceType);
+    void stopQuery(const QString &serviceType);
+    void refreshQuery(const QString &serviceType);
     void stopItemQueries(ServiceDiscoveryItem *item);
-    void addServiceType(QString serviceType, QJDns::Type queryType);
-    void removeServiceType(QString serviceType);
-    void updateServiceType(QString serviceType);
+    void addServiceType(const QString &serviceType, QJDns::Type queryType);
+    void removeServiceType(const QString &serviceType);
+    void updateServiceType(const QString &serviceType);
     void removeAllServiceTypes();
     void updateAllServiceTypes();
     static bool filterServiceDiscoveryItem(ServiceDiscoveryItem *item, ServiceDiscoveryFilter *serviceDiscoveryFilter);
     static QList<ServiceDiscoveryItem *> filterServiceDiscoveryItems(QList<ServiceDiscoveryItem *> serviceDiscoveryItems, ServiceDiscoveryFilter *primaryFilter, ServiceDiscoveryFilter *secondaryFilter);
-    ServiceDiscoveryItem *addItem(QString name, QString type);
-    ServiceDiscoveryItem *getItem(QString name, QString type);
-    void updateItem(QString name, QString type);
-    void removeItem(QString name, QString type);
-    void clearItems(QString type);
-    void purgeItems(QString serviceType);
+    ServiceDiscoveryItem *addItem(const QString &name, const QString &type);
+    ServiceDiscoveryItem *getItem(const QString &name, const QString &type);
+    void updateItem(const QString &name, const QString &type);
+    void removeItem(const QString &name, const QString &type);
+    void clearItems(const QString &type);
+    void purgeItems(const QString &serviceType);
 
 private slots:
     void resultsReady(int id, const QJDns::Response &results);
