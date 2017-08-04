@@ -60,6 +60,9 @@ public:
     int queriesCount() const;
     ServiceDiscoveryQuery *query(int index) const;
 
+    inline QList<ServiceDiscoveryQuery*>::iterator begin() { return m_queries.begin(); }
+    inline QList<ServiceDiscoveryQuery*>::iterator end() { return m_queries.end(); }
+
     QString uri() const
     {
         return m_uri;
