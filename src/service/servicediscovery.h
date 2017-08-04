@@ -177,7 +177,7 @@ private slots:
     void resultsReady(int id, const QJDns::Response &results);
     void error(int id, QJDns::Error e);
     void openNetworkSession();
-    void updateNetConfig();
+    void networkConfigUpdateCompleted();
     bool initializeMdns();
     void deinitializeMdns();
     void networkSessionOpened();

@@ -241,10 +241,6 @@ ServiceDiscovery::ServiceDiscovery(QObject *parent) :
     m_jdns(nullptr),
     m_unicastLookupTimer(new QTimer(this))
 {
-    m_networkConfigTimer->setInterval(3000);
-    connect(m_networkConfigTimer, &QTimer::timeout,
-            this, &ServiceDiscovery::updateNetConfig);
-
     m_unicastLookupTimer->setInterval(m_unicastLookupInterval);
     connect(m_unicastLookupTimer, &QTimer::timeout,
             this, &ServiceDiscovery::unicastLookup);
@@ -266,8 +262,12 @@ void ServiceDiscovery::initializeNetworkSession()
     // now begin the process of opening the network link
     m_networkConfigManager = new QNetworkConfigurationManager(this);
     connect(m_networkConfigManager, &QNetworkConfigurationManager::updateCompleted,
-            this, &ServiceDiscovery::openNetworkSession);
+            this, &ServiceDiscovery::networkConfigUpdateCompleted);
     m_networkConfigManager->updateConfigurations();
+
+    m_networkConfigTimer->setInterval(3000);
+    connect(m_networkConfigTimer, &QTimer::timeout,
+            m_networkConfigManager, &QNetworkConfigurationManager::updateConfigurations);
     m_networkConfigTimer->start(); // update the connections cyclically
 }
 
@@ -1262,13 +1262,15 @@ void ServiceDiscovery::openNetworkSession()
     }
 }
 
-void ServiceDiscovery::updateNetConfig()
+void ServiceDiscovery::networkConfigUpdateCompleted()
 {
+
     if ((m_networkSession == nullptr)
             || (!m_networkSession->isOpen())
             || (!m_networkReady))
     {
-        m_networkConfigManager->updateConfigurations();
+        openNetworkSession();
     }
 }
+
 } // namespace qtquickvcp
