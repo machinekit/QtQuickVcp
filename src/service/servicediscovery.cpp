@@ -1225,13 +1225,15 @@ void ServiceDiscovery::openNetworkSession()
     DEBUG_TAG(2, "SD", "number of configs: " << availableConfigs.size());
 #endif
 
-    for (int i = 0; i < availableConfigs.size(); ++i)
+    for (const QNetworkConfiguration &config: availableConfigs)
     {
-        QNetworkConfiguration config = availableConfigs.at(i);
         if ((config.bearerType() == QNetworkConfiguration::BearerEthernet)
             || (config.bearerType() == QNetworkConfiguration::BearerWLAN)
             || (config.bearerType() == QNetworkConfiguration::BearerUnknown))  // unknown is usually ethernet or any other local network
         {
+            if (config.name().contains("Teredo")) {
+                continue;
+            }
 #ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
 #endif
