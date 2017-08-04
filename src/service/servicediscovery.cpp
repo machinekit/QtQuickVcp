@@ -280,17 +280,7 @@ bool ServiceDiscovery::initializeMdns()
         return true;
     }
 
-#ifdef QT_DEBUG
-    QString mode;
-    if (m_lookupMode == MulticastDNS)
-    {
-        mode = "multicast";
-    }
-    else {
-        mode = "unicast";
-    }
-    DEBUG_TAG(1, "SD", "Initializing JDNS " + mode);
-#endif
+    DEBUG_TAG(1, "SD", "Initializing JDNS " << ((m_lookupMode == MulticastDNS) ? "multicast" : "unicast"));
 
     m_jdns = new QJDns(this);
 
@@ -316,10 +306,8 @@ bool ServiceDiscovery::initializeMdns()
 
     if (!initialized) // something went wrong
     {
-#ifdef QT_DEBUG
         DEBUG_TAG(1, "SD", "Initializing JDNS failed");
         DEBUG_TAG(1, "SD", m_jdns->debugLines());
-#endif
 
         m_jdns->deleteLater();
         m_jdns.clear();
@@ -357,9 +345,7 @@ void ServiceDiscovery::deinitializeMdns()
         return;
     }
 
-#ifdef QT_DEBUG
     DEBUG_TAG(1, "SD", "Deinitializing JDNS");
-#endif
 
     if (m_running)
     {
@@ -412,11 +398,8 @@ void ServiceDiscovery::networkSessionClosed()
 
 void ServiceDiscovery::networkSessionError(QNetworkSession::SessionError error)
 {
-#ifdef QT_DEBUG
-    WARNING_TAG(1, "SD", "network session error:" << error << m_networkSession->errorString());
-#else
     Q_UNUSED(error)
-#endif
+    WARNING_TAG(1, "SD", "network session error:" << error << m_networkSession->errorString());
 }
 
 void ServiceDiscovery::unicastLookup()
@@ -592,7 +575,7 @@ void ServiceDiscovery::updateNameServers()
 
     if (nameServers.isEmpty())
     {
-        // TODO: error
+        qWarning() << "Warning: no name servers";
     }
 
     m_jdns->setNameServers(nameServers);
@@ -688,9 +671,7 @@ void ServiceDiscovery::startQuery(const QString &serviceType)
     m_queryIdTypeMap.insert(queryId, queryType);
     m_queryIdServiceMap.insert(queryId, serviceType);
 
-#ifdef QT_DEBUG
     DEBUG_TAG(1, "SD", "Started query" << queryId << serviceType << queryType);
-#endif
 }
 
 void ServiceDiscovery::stopQuery(const QString &serviceType)
@@ -719,9 +700,7 @@ void ServiceDiscovery::stopQuery(const QString &serviceType)
     m_queryIdServiceMap.remove(queryId);
     clearItems(serviceType);
 
-#ifdef QT_DEBUG
     DEBUG_TAG(1, "SD", "Stopped query" << queryId << serviceType);
-#endif
 }
 
 void ServiceDiscovery::refreshQuery(const QString &serviceType)
@@ -757,9 +736,7 @@ void ServiceDiscovery::refreshQuery(const QString &serviceType)
     m_queryIdTypeMap.insert(queryId, queryType);
     m_queryIdServiceMap.insert(queryId, serviceType);
 
-#ifdef QT_DEBUG
     DEBUG_TAG(2, "SD", "Refreshed query" << queryId << serviceType);
-#endif
 }
 
 void ServiceDiscovery::stopItemQueries(const ServiceDiscoveryItem *item)
@@ -1043,9 +1020,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             QString serviceType = m_queryIdServiceMap.value(id);
             QString name = r.name.left(r.name.indexOf("._"));
 
-#ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "Ptr DNS record:" << r.owner << r.name << serviceType << name << "TTL:" << r.ttl);
-#endif
 
             if (r.ttl > 0)
             {
@@ -1083,9 +1058,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
             item->setTxtRecords(txtRecords);
 
-#ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "Txt DNS record" << item->type() << item->name() << "Texts:" << r.texts);
-#endif
         }
         else if (type == QJDns::Srv)
         {
@@ -1103,9 +1076,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             item->setHostName(r.name);
             item->setPort(r.port);
 
-#ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "Srv DNS record" << item->type() << item->name() << "Port:" << r.port);
-#endif
         }
         else if ((type == QJDns::A) || (type == QJDns::Aaaa))
         {
@@ -1116,11 +1087,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_queryIdItemMap.remove(id);
             item->setHostAddress(r.address.toString());
 
-#ifdef QT_DEBUG
-            if (item) {
-                DEBUG_TAG(2, "SD", "A DNS record" << item->type() << item->name() << "Address:" << r.address.toString());
-            }
-#endif
+            DEBUG_TAG(2, "SD", "A DNS record" << item->type() << item->name() << "Address:" << r.address.toString());
         }
 
         if (item != nullptr)   // we got a answer to a request
@@ -1137,6 +1104,8 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
 void ServiceDiscovery::error(int id, QJDns::Error e)
 {
+    Q_UNUSED(id);
+
     QString errorString;
     if(e == QJDns::ErrorGeneric)
         errorString = "Generic";
@@ -1147,13 +1116,9 @@ void ServiceDiscovery::error(int id, QJDns::Error e)
     else if(e == QJDns::ErrorConflict)
         errorString = "Conflict";
 
-#ifdef QT_DEBUG
     WARNING_TAG(1, "SD",  "==================== error ====================");
     WARNING_TAG(1, "SD",  "id:" << id << errorString);
     WARNING_TAG(1, "SD", m_jdns->debugLines());
-#else
-    Q_UNUSED(id)
-#endif
 }
 
 bool ServiceDiscovery::networkConfigIsQualified(const QNetworkConfiguration &config)
@@ -1176,13 +1141,13 @@ bool ServiceDiscovery::networkConfigIsQualified(const QNetworkConfiguration &con
     case QNetworkConfiguration::Bearer4G:
         return false;
     }
+
+    return false; // can never be reached
 }
 
 void ServiceDiscovery::openNetworkSession()
 {
-#ifdef QT_DEBUG
-                DEBUG_TAG(3, "SD", "trying to open network session");
-#endif
+    DEBUG_TAG(3, "SD", "trying to open network session");
 
     // use the default network configuration and make sure that the link is open
     QList<QNetworkConfiguration> availableConfigs;
@@ -1193,17 +1158,14 @@ void ServiceDiscovery::openNetworkSession()
     }
     availableConfigs.append(m_networkConfigManager->allConfigurations(QNetworkConfiguration::Discovered));
 
-#ifdef QT_DEBUG
     DEBUG_TAG(2, "SD", "number of configs: " << availableConfigs.size());
-#endif
 
     for (const QNetworkConfiguration &config: availableConfigs)
     {
         if (networkConfigIsQualified(config))
         {
-#ifdef QT_DEBUG
             DEBUG_TAG(2, "SD", "network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
-#endif
+
             if (!m_networkSession.isNull())
             {
                 m_networkSession->deleteLater();
@@ -1222,12 +1184,10 @@ void ServiceDiscovery::openNetworkSession()
 
             return;
         }
-#ifdef QT_DEBUG
         else
         {
             DEBUG_TAG(2, "SD", "unsupported network config: " << config.bearerTypeName() << config.bearerTypeFamily() << config.name());
         }
-#endif
     }
 }
 
