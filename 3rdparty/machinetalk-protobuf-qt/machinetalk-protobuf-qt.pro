@@ -6,6 +6,11 @@ macx | win32: {
     CONFIG += static
 }
 
+linux-g++: {
+    # disable warnings
+    QMAKE_CXXFLAGS += -w
+}
+
 TARGET = machinetalk-pb2
 TEMPLATE = lib
 
