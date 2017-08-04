@@ -1,4 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS += qmltests \
-    halremotetests
+    halremotetests \
+    servicediscoverytests
