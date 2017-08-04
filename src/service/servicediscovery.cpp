@@ -554,7 +554,7 @@ void ServiceDiscovery::updateNameServers()
         return;
     }
 
-    for (NameServer *nameServer: m_nameServers)
+    for (const NameServer *nameServer: m_nameServers)
     {
         QJDns::NameServer host;
 
