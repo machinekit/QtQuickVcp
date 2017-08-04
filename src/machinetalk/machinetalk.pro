@@ -47,10 +47,6 @@ HEADERS += $$PWD/common/rpcclient.h \
            $$PWD/machinetalkservice.h
            $$PWD/machinetalk_global.h
 
-#macx | win32: {
-#    CONFIG += static
-#}
-
 include(../../paths.pri)
 include(../zeromq.pri)
 include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)
