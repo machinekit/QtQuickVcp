@@ -158,7 +158,7 @@ private:
     void startQuery(const QString &serviceType);
     void stopQuery(const QString &serviceType);
     void refreshQuery(const QString &serviceType);
-    void stopItemQueries(ServiceDiscoveryItem *item);
+    void stopItemQueries(const ServiceDiscoveryItem *item);
     void addServiceType(const QString &serviceType, QJDns::Type queryType);
     void removeServiceType(const QString &serviceType);
     void updateServiceType(const QString &serviceType);
@@ -172,6 +172,8 @@ private:
     void removeItem(const QString &name, const QString &type);
     void clearItems(const QString &type);
     void purgeItems(const QString &serviceType);
+
+    bool networkConfigIsQualified(const QNetworkConfiguration &config);
 
 private slots:
     void resultsReady(int id, const QJDns::Response &results);
