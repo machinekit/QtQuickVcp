@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QQmlListProperty>
+#include <QList>
 #include "service.h"
 
 namespace qtquickvcp {
@@ -40,6 +41,9 @@ public:
     QQmlListProperty<Service> services();
     int serviceCount() const;
     Service *service(int index) const;
+
+    inline QList<Service*>::iterator begin() { return m_services.begin(); }
+    inline QList<Service*>::iterator end() { return m_services.end(); }
 
 private:
     QList<Service*> m_services;
