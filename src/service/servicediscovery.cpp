@@ -333,12 +333,14 @@ bool ServiceDiscovery::initializeMdns()
         }
 
         emit lookupReadyChanged(m_lookupReady);
+
+        connect(m_jdns, &QJDns::debugLinesReady, [this]() { qDebug() << m_jdns->debugLines(); });
     }
 
     return true;
 }
 
-void ServiceDiscovery::deinitializeMdns()
+void ServiceDiscovery::deinitializeMdns(bool cleanup)
 {
     if (m_jdns.isNull())
     {
@@ -347,7 +349,7 @@ void ServiceDiscovery::deinitializeMdns()
 
     DEBUG_TAG(1, "SD", "Deinitializing JDNS");
 
-    if (m_running)
+    if (m_running && cleanup)
     {
         if (m_lookupMode == UnicastDNS)
         {
@@ -371,8 +373,10 @@ void ServiceDiscovery::deinitializeMdns()
     }
 #endif
 
-    m_lookupReady = false;                      // lookup no ready anymore
-    emit lookupReadyChanged(m_lookupReady);
+    if (cleanup) {
+        m_lookupReady = false;                      // lookup not ready anymore
+        emit lookupReadyChanged(m_lookupReady);
+    }
 }
 
 void ServiceDiscovery::networkSessionOpened()
@@ -390,7 +394,7 @@ void ServiceDiscovery::networkSessionOpened()
 
 void ServiceDiscovery::networkSessionClosed()
 {
-    deinitializeMdns();
+    deinitializeMdns(true);
 
     m_networkReady = false;                     // network no ready anymore
     emit networkReadyChanged(m_networkReady);
@@ -404,6 +408,8 @@ void ServiceDiscovery::networkSessionError(QNetworkSession::SessionError error)
 
 void ServiceDiscovery::unicastLookup()
 {
+    //deinitializeMdns(false);
+    //initializeMdns();
     for (const auto &key: m_serviceItemsMap.keys())
     {
         refreshQuery(key);
@@ -606,7 +612,7 @@ void ServiceDiscovery::setLookupMode(ServiceDiscovery::LookupMode arg)
     bool ready;
     if (m_lookupReady)
     {
-        deinitializeMdns();
+        deinitializeMdns(true);
         ready = true;
     }
     else
@@ -1010,15 +1016,15 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
     for (const QJDns::Record &r: results.answerRecords)
     {
-        ServiceDiscoveryItem * item;
+        ServiceDiscoveryItem *item;
         int newId;
 
         item = nullptr;
 
         if (type == QJDns::Ptr)
         {
-            QString serviceType = m_queryIdServiceMap.value(id);
-            QString name = r.name.left(r.name.indexOf("._"));
+            const QString &serviceType = m_queryIdServiceMap.value(id);
+            const QString &name = r.name.left(r.name.indexOf("._"));
 
             DEBUG_TAG(2, "SD", "Ptr DNS record:" << r.owner << r.name << serviceType << name << "TTL:" << r.ttl);
 
@@ -1107,14 +1113,20 @@ void ServiceDiscovery::error(int id, QJDns::Error e)
     Q_UNUSED(id);
 
     QString errorString;
-    if(e == QJDns::ErrorGeneric)
+    switch (e) {
+    case QJDns::ErrorGeneric:
         errorString = "Generic";
-    else if(e == QJDns::ErrorNXDomain)
+        break;
+    case QJDns::ErrorNXDomain:
         errorString = "NXDomain";
-    else if(e == QJDns::ErrorTimeout)
+        break;
+    case QJDns::ErrorTimeout:
         errorString = "Timeout";
-    else if(e == QJDns::ErrorConflict)
+        break;
+    case QJDns::ErrorConflict:
         errorString = "Conflict";
+        break;
+    }
 
     WARNING_TAG(1, "SD",  "==================== error ====================");
     WARNING_TAG(1, "SD",  "id:" << id << errorString);

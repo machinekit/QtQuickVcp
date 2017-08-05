@@ -181,7 +181,7 @@ private slots:
     void openNetworkSession();
     void networkConfigUpdateCompleted();
     bool initializeMdns();
-    void deinitializeMdns();
+    void deinitializeMdns(bool cleanup);
     void networkSessionOpened();
     void networkSessionClosed();
     void networkSessionError(QNetworkSession::SessionError error);
