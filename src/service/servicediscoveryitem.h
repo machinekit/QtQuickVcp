@@ -46,179 +46,37 @@ class ServiceDiscoveryItem : public QObject
 public:
     explicit ServiceDiscoveryItem(QObject *parent = 0);
 
-
-    QString uri() const
-    {
-        return m_uri;
-    }
-
-    int port() const
-    {
-        return m_port;
-    }
-
-    QString hostName() const
-    {
-        return m_hostName;
-    }
-
-    QString hostAddress() const
-    {
-        return m_hostAddress;
-    }
-
-    QString name() const
-    {
-        return m_name;
-    }
-
-    QString type() const
-    {
-        return m_type;
-    }
-
-    QStringList txtRecords() const
-    {
-        return m_txtRecords;
-    }
-
-    QString uuid() const
-    {
-        return m_uuid;
-    }
-
-    QSet<int> outstandingRequests() const
-    {
-        return m_outstandingRequests;
-    }
-
-    bool hasOutstandingRequests()
-    {
-        return (!m_outstandingRequests.isEmpty());
-    }
-
-    int version() const
-    {
-        return m_version;
-    }
-
-    bool updated() const
-    {
-        return m_updated;
-    }
-
-    int errorCount() const
-    {
-        return m_errorCount;
-    }
+    QString uri() const;
+    int port() const;
+    QString hostName() const;
+    QString hostAddress() const;
+    QString name() const;
+    QString type() const;
+    QStringList txtRecords() const;
+    QString uuid() const;
+    QSet<int> outstandingRequests() const;
+    bool hasOutstandingRequests();
+    int version() const;
+    bool updated() const;
+    int errorCount() const;
 
 public slots:
-
-    void setUri(QString arg)
-    {
-        if (m_uri != arg) {
-            m_uri = arg;
-            emit uriChanged(arg);
-        }
-    }
-    void setPort(int arg)
-    {
-        if (m_port != arg) {
-            m_port = arg;
-            emit portChanged(arg);
-        }
-    }
-
-    void setHostName(QString arg)
-    {
-        if (m_hostName != arg) {
-            m_hostName = arg;
-            emit hostNameChanged(arg);
-        }
-    }
-
-    void setHostAddress(QString arg)
-    {
-        if (m_hostAddress != arg) {
-            m_hostAddress = arg;
-            emit hostAddressChanged(arg);
-        }
-    }
-
-    void setName(QString arg)
-    {
-        if (m_name != arg) {
-            m_name = arg;
-            emit nameChanged(arg);
-        }
-    }
-
-    void setType(QString arg)
-    {
-        if (m_type != arg) {
-            m_type = arg;
-            emit typeChanged(arg);
-        }
-    }
-
-    void setTxtRecords(QStringList arg);
-
-    void setUuid(QString arg)
-    {
-        if (m_uuid != arg) {
-            m_uuid = arg;
-            emit uuidChanged(arg);
-        }
-    }
-
-    void addOutstandingRequest(int arg)
-    {
-        m_outstandingRequests.insert(arg);
-    }
-
-    void removeOutstandingRequest(int arg)
-    {
-        m_outstandingRequests.remove(arg);
-    }
-
-    void clearOutstandingRequests()
-    {
-        m_outstandingRequests.clear();
-    }
-
-    void setVersion(int arg)
-    {
-        if (m_version != arg) {
-            m_version = arg;
-            emit versionChanged(arg);
-        }
-    }
-
-    void setUpdated(bool arg)
-    {
-        if (m_updated != arg) {
-            m_updated = arg;
-            emit updatedChanged(arg);
-        }
-    }
-
-    void setErrorCount(int errorCount)
-    {
-        if (m_errorCount == errorCount)
-            return;
-
-        m_errorCount = errorCount;
-    }
-
-    void resetErrorCount()
-    {
-        m_errorCount = 0;
-    }
-
-    void increaseErrorCount()
-    {
-        m_errorCount += 1;
-    }
+    void setUri(const QString &arg);
+    void setPort(int arg);
+    void setHostName(const QString &arg);
+    void setHostAddress(const QString &arg);
+    void setName(const QString &arg);
+    void setType(const QString &arg);
+    void setTxtRecords(const QStringList &arg);
+    void setUuid(const QString &arg);
+    void addOutstandingRequest(int arg);
+    void removeOutstandingRequest(int arg);
+    void clearOutstandingRequests();
+    void setVersion(int arg);
+    void setUpdated(bool arg);
+    void setErrorCount(int errorCount);
+    void resetErrorCount();
+    void increaseErrorCount();
 
 private:
     QString m_name;
@@ -235,14 +93,14 @@ private:
     int m_errorCount;
 
 signals:
-    void uriChanged(QString arg);
+    void uriChanged(const QString &arg);
     void portChanged(int arg);
-    void hostNameChanged(QString hostName);
-    void hostAddressChanged(QString arg);
-    void nameChanged(QString arg);
-    void typeChanged(QString arg);
-    void txtRecordsChanged(QStringList arg);
-    void uuidChanged(QString arg);
+    void hostNameChanged(const QString &hostName);
+    void hostAddressChanged(const QString &arg);
+    void nameChanged(const QString &arg);
+    void typeChanged(const QString &arg);
+    void txtRecordsChanged(const QStringList &arg);
+    void uuidChanged(const QString &arg);
     void versionChanged(int arg);
     void updatedChanged(bool arg);
 }; // class ServiceDiscoveryItem

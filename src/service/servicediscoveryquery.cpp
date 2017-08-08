@@ -52,4 +52,49 @@ void ServiceDiscoveryQuery::setItems(QList<ServiceDiscoveryItem *> newServiceDis
 
     emit itemsChanged(items());
 }
-}; // namepsace qtquickvcp
+
+QJDns::Type ServiceDiscoveryQuery::queryType() const
+{
+    return m_queryType;
+}
+
+QString ServiceDiscoveryQuery::serviceType() const
+{
+    return m_serviceType;
+}
+
+ServiceDiscoveryFilter *ServiceDiscoveryQuery::filter() const
+{
+    return m_filter;
+}
+
+void ServiceDiscoveryQuery::setQueryType(QJDns::Type type)
+{
+    if (m_queryType == type) {
+        return;
+    }
+
+    m_queryType = type;
+    emit queryTypeChanged(type);
+}
+
+void ServiceDiscoveryQuery::setServiceType(const QString &serviceType)
+{
+    if (m_serviceType == serviceType) {
+        return;
+    }
+
+    m_serviceType = serviceType;
+    emit serviceTypeChanged(serviceType);
+}
+
+void ServiceDiscoveryQuery::setFilter(ServiceDiscoveryFilter *filter)
+{
+    if (m_filter == filter) {
+        return;
+    }
+
+    m_filter = filter;
+    emit filterChanged(filter);
+}
+} // namepsace qtquickvcp

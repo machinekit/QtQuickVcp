@@ -20,12 +20,13 @@
 **
 ****************************************************************************/
 
-#ifndef QNAMESERVER_H
-#define QNAMESERVER_H
+#ifndef NAMESERVER_H
+#define NAMESERVER_H
 
 #include <QObject>
 #include <QHostAddress>
 #include <QDnsLookup>
+#include <QPointer>
 
 namespace qtquickvcp {
 
@@ -39,44 +40,19 @@ class NameServer : public QObject
 public:
     explicit NameServer(QObject *parent = 0);
 
-    QString hostName() const
-    {
-        return m_hostName;
-    }
-
-    QHostAddress hostAddress() const
-    {
-        return m_hostAddress;
-    }
-
-    int port() const
-    {
-        return m_port;
-    }
+    QString hostName() const;
+    QHostAddress hostAddress() const;
+    int port() const;
 
 public slots:
-    void setHostName(QString arg)
-    {
-        if (m_hostName != arg) {
-            m_hostName = arg;
-            emit hostNameChanged(arg);
-            updateHostAddress();
-        }
-    }
-
-    void setPort(int arg)
-    {
-        if (m_port != arg) {
-            m_port = arg;
-            emit portChanged(arg);
-        }
-    }
+    void setHostName(const QString &arg);
+    void setPort(int arg);
 
 private:
     QString m_hostName;
     QHostAddress m_hostAddress;
     int m_port;
-    QDnsLookup *m_dnsLookup;
+    QPointer<QDnsLookup> m_dnsLookup;
 
     void updateHostAddress();
 
@@ -84,10 +60,11 @@ private slots:
     void handleServers();
 
 signals:
-    void hostNameChanged(QString arg);
-    void hostAddressChanged(QHostAddress arg);
+    void hostNameChanged(const QString &arg);
+    void hostAddressChanged(const QHostAddress &arg);
     void portChanged(int arg);
+
 }; // class NameServer
 } // namespace qtquickvcp
 
-#endif // QNAMESERVER_H
+#endif // NAMESERVER_H
