@@ -97,20 +97,21 @@ public:
 
 public slots:
 
-    void setLaunchercmdUri(QString uri)
+    void setLaunchercmdUri(const QString &uri)
     {
         m_launchercmdChannel->setSocketUri(uri);
     }
 
-    void setLauncherUri(QString uri)
+    void setLauncherUri(const QString &uri)
     {
         m_launcherChannel->setSocketUri(uri);
     }
 
-    void setDebugName(QString debugName)
+    void setDebugName(const QString &debugName)
     {
-        if (m_debugName == debugName)
+        if (m_debugName == debugName) {
             return;
+        }
 
         m_debugName = debugName;
         emit debugNameChanged(debugName);
@@ -128,8 +129,9 @@ public slots:
 
     void setReady(bool ready)
     {
-        if (m_ready == ready)
+        if (m_ready == ready) {
             return;
+        }
 
         m_ready = ready;
         emit readyChanged(ready);
@@ -216,13 +218,13 @@ private slots:
     virtual void unsyncStatus() = 0;
 
 signals:
-    void launchercmdUriChanged(QString uri);
-    void launcherUriChanged(QString uri);
+    void launchercmdUriChanged(const QString &uri);
+    void launcherUriChanged(const QString &uri);
     void launchercmdMessageReceived(const Container &rx);
     void launcherMessageReceived(const QByteArray &topic, const Container &rx);
-    void debugNameChanged(QString debugName);
+    void debugNameChanged(const QString &debugName);
     void stateChanged(LauncherBase::State state);
-    void errorStringChanged(QString errorString);
+    void errorStringChanged(const QString &errorString);
     void launchercmdHeartbeatIntervalChanged(int interval);
     void launcherHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);

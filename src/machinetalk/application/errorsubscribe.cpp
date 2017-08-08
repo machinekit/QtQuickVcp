@@ -32,7 +32,7 @@ ErrorSubscribe::ErrorSubscribe(QObject *parent)
     , m_heartbeatTimer(new QTimer(this))
     , m_heartbeatInterval(2500)
     , m_heartbeatLiveness(0)
-    , m_heartbeatResetLiveness(2)
+    , m_heartbeatResetLiveness(5)
 {
 
     m_heartbeatTimer->setSingleShot(true);

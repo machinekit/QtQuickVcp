@@ -98,20 +98,21 @@ public:
 
 public slots:
 
-    void setParamcmdUri(QString uri)
+    void setParamcmdUri(const QString &uri)
     {
         m_paramcmdChannel->setSocketUri(uri);
     }
 
-    void setParamUri(QString uri)
+    void setParamUri(const QString &uri)
     {
         m_paramChannel->setSocketUri(uri);
     }
 
-    void setDebugName(QString debugName)
+    void setDebugName(const QString &debugName)
     {
-        if (m_debugName == debugName)
+        if (m_debugName == debugName) {
             return;
+        }
 
         m_debugName = debugName;
         emit debugNameChanged(debugName);
@@ -129,8 +130,9 @@ public slots:
 
     void setReady(bool ready)
     {
-        if (m_ready == ready)
+        if (m_ready == ready) {
             return;
+        }
 
         m_ready = ready;
         emit readyChanged(ready);
@@ -217,12 +219,12 @@ private slots:
     virtual void clearSynced() = 0;
 
 signals:
-    void paramcmdUriChanged(QString uri);
-    void paramUriChanged(QString uri);
+    void paramcmdUriChanged(const QString &uri);
+    void paramUriChanged(const QString &uri);
     void paramMessageReceived(const QByteArray &topic, const Container &rx);
-    void debugNameChanged(QString debugName);
+    void debugNameChanged(const QString &debugName);
     void stateChanged(ParamClient::State state);
-    void errorStringChanged(QString errorString);
+    void errorStringChanged(const QString &errorString);
     void paramcmdHeartbeatIntervalChanged(int interval);
     void paramHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
