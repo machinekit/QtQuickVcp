@@ -20,6 +20,8 @@ TEMPLATE = app
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += JDNS_STATIC
+DEFINES += "JDNS_EXPORT="
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -27,7 +29,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SERVICE_PATH = $$PWD/../../src/service/
+JDNS_PATH = $$PWD/../../3rdparty/jdns/include/jdns
 INCLUDEPATH += $$SERVICE_PATH
+INCLUDEPATH += $$JDNS_PATH
 HEADERS += \
     $$SERVICE_PATH/nameserver.h \
     $$SERVICE_PATH/service.h \
@@ -35,7 +39,9 @@ HEADERS += \
     $$SERVICE_PATH/servicediscoveryfilter.h \
     $$SERVICE_PATH/servicediscoveryitem.h \
     $$SERVICE_PATH/servicediscoveryquery.h \
-    $$SERVICE_PATH/servicelist.h
+    $$SERVICE_PATH/servicelist.h \
+    $$JDNS_PATH/qjdns.h
+
 SOURCES += \
     $$SERVICE_PATH/nameserver.cpp \
     $$SERVICE_PATH/service.cpp \
@@ -43,9 +49,11 @@ SOURCES += \
     $$SERVICE_PATH/servicediscoveryfilter.cpp \
     $$SERVICE_PATH/servicediscoveryitem.cpp \
     $$SERVICE_PATH/servicediscoveryquery.cpp \
-    $$SERVICE_PATH/servicelist.cpp
+    $$SERVICE_PATH/servicelist.cpp \
+    qjdns_stub.cpp
 
 SOURCES += \
-        tst_servicediscoverytest.cpp
+        tst_servicediscoverytest.cpp \
+        qjdns_stub.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
