@@ -1,5 +1,8 @@
 #include <QString>
 #include <QtTest>
+#include <servicediscovery.h>
+
+using namespace qtquickvcp;
 
 class ServiceDiscoveryTest : public QObject
 {
@@ -9,16 +12,20 @@ public:
     ServiceDiscoveryTest();
 
 private Q_SLOTS:
-    void testCase1();
+    void setRunningSetsRunningStateToTrue();
 };
 
 ServiceDiscoveryTest::ServiceDiscoveryTest()
 {
 }
 
-void ServiceDiscoveryTest::testCase1()
+void ServiceDiscoveryTest::setRunningSetsRunningStateToTrue()
 {
-    QVERIFY2(true, "Failure");
+    ServiceDiscovery discovery;
+
+    discovery.setRunning(true);
+
+    QVERIFY2(discovery.isRunning() == true, "set running did not work");
 }
 
 QTEST_APPLESS_MAIN(ServiceDiscoveryTest)
