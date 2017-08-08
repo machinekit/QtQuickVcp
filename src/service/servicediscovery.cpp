@@ -363,8 +363,6 @@ bool ServiceDiscovery::initializeMdns()
         }
 
         emit lookupReadyChanged(m_lookupReady);
-
-        connect(m_jdns, &QJDns::debugLinesReady, [this]() { qDebug() << m_jdns->debugLines(); });
     }
 
     return true;
