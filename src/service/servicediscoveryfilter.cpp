@@ -66,4 +66,54 @@ ServiceDiscoveryFilter::ServiceDiscoveryFilter(QObject *parent) :
     m_name("")
 {
 }
+
+QString ServiceDiscoveryFilter::name() const
+{
+    return m_name;
+}
+
+QStringList ServiceDiscoveryFilter::txtRecords() const
+{
+    return m_txtRecords;
+}
+
+bool ServiceDiscoveryFilter::apply(const ServiceDiscoveryItem &item) const
+{
+    if (!((m_name == "") || item.name().contains(QRegExp(m_name, Qt::CaseSensitive, QRegExp::WildcardUnix))))
+    {
+        return false;
+    }
+
+    if (!m_txtRecords.isEmpty())
+    {
+        QStringList txtRecords = item.txtRecords();
+
+        for (const QString &filter: m_txtRecords)
+        {
+            txtRecords = txtRecords.filter(QRegExp(filter, Qt::CaseSensitive, QRegExp::WildcardUnix));
+        }
+        if (txtRecords.isEmpty())
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void ServiceDiscoveryFilter::setName(const QString &arg)
+{
+    if (m_name != arg) {
+        m_name = arg;
+        emit nameChanged(arg);
+    }
+}
+
+void ServiceDiscoveryFilter::setTxtRecords(const QStringList &arg)
+{
+    if (m_txtRecords != arg) {
+        m_txtRecords = arg;
+        emit txtRecordsChanged(arg);
+    }
+}
 } // namespace qtquickvcp

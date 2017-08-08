@@ -102,7 +102,177 @@ ServiceDiscoveryItem::ServiceDiscoveryItem(QObject *parent) :
 {
 }
 
-void ServiceDiscoveryItem::setTxtRecords(QStringList arg)
+QString ServiceDiscoveryItem::uri() const
+{
+    return m_uri;
+}
+
+int ServiceDiscoveryItem::port() const
+{
+    return m_port;
+}
+
+QString ServiceDiscoveryItem::hostName() const
+{
+    return m_hostName;
+}
+
+QString ServiceDiscoveryItem::hostAddress() const
+{
+    return m_hostAddress;
+}
+
+QString ServiceDiscoveryItem::name() const
+{
+    return m_name;
+}
+
+QString ServiceDiscoveryItem::type() const
+{
+    return m_type;
+}
+
+QStringList ServiceDiscoveryItem::txtRecords() const
+{
+    return m_txtRecords;
+}
+
+QString ServiceDiscoveryItem::uuid() const
+{
+    return m_uuid;
+}
+
+QSet<int> ServiceDiscoveryItem::outstandingRequests() const
+{
+    return m_outstandingRequests;
+}
+
+bool ServiceDiscoveryItem::hasOutstandingRequests()
+{
+    return (!m_outstandingRequests.isEmpty());
+}
+
+int ServiceDiscoveryItem::version() const
+{
+    return m_version;
+}
+
+bool ServiceDiscoveryItem::updated() const
+{
+    return m_updated;
+}
+
+int ServiceDiscoveryItem::errorCount() const
+{
+    return m_errorCount;
+}
+
+void ServiceDiscoveryItem::setUri(const QString &arg)
+{
+    if (m_uri != arg) {
+        m_uri = arg;
+        emit uriChanged(arg);
+    }
+}
+
+void ServiceDiscoveryItem::setPort(int arg)
+{
+    if (m_port != arg) {
+        m_port = arg;
+        emit portChanged(arg);
+    }
+}
+
+void ServiceDiscoveryItem::setHostName(const QString &arg)
+{
+    if (m_hostName != arg) {
+        m_hostName = arg;
+        emit hostNameChanged(arg);
+    }
+}
+
+void ServiceDiscoveryItem::setHostAddress(const QString &arg)
+{
+    if (m_hostAddress != arg) {
+        m_hostAddress = arg;
+        emit hostAddressChanged(arg);
+    }
+}
+
+void ServiceDiscoveryItem::setName(const QString &arg)
+{
+    if (m_name != arg) {
+        m_name = arg;
+        emit nameChanged(arg);
+    }
+}
+
+void ServiceDiscoveryItem::setType(const QString &arg)
+{
+    if (m_type != arg) {
+        m_type = arg;
+        emit typeChanged(arg);
+    }
+}
+
+void ServiceDiscoveryItem::setUuid(const QString &arg)
+{
+    if (m_uuid != arg) {
+        m_uuid = arg;
+        emit uuidChanged(arg);
+    }
+}
+
+void ServiceDiscoveryItem::addOutstandingRequest(int arg)
+{
+    m_outstandingRequests.insert(arg);
+}
+
+void ServiceDiscoveryItem::removeOutstandingRequest(int arg)
+{
+    m_outstandingRequests.remove(arg);
+}
+
+void ServiceDiscoveryItem::clearOutstandingRequests()
+{
+    m_outstandingRequests.clear();
+}
+
+void ServiceDiscoveryItem::setVersion(int arg)
+{
+    if (m_version != arg) {
+        m_version = arg;
+        emit versionChanged(arg);
+    }
+}
+
+void ServiceDiscoveryItem::setUpdated(bool arg)
+{
+    if (m_updated != arg) {
+        m_updated = arg;
+        emit updatedChanged(arg);
+    }
+}
+
+void ServiceDiscoveryItem::setErrorCount(int errorCount)
+{
+    if (m_errorCount == errorCount)
+        return;
+
+    m_errorCount = errorCount;
+}
+
+void ServiceDiscoveryItem::resetErrorCount()
+{
+    m_errorCount = 0;
+}
+
+void ServiceDiscoveryItem::increaseErrorCount()
+{
+    m_errorCount += 1;
+}
+
+void ServiceDiscoveryItem::setTxtRecords(const QStringList &arg)
 {
     if (m_txtRecords != arg) {
         m_txtRecords = arg;

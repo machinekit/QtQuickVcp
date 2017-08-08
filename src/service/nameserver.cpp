@@ -33,6 +33,38 @@ NameServer::NameServer(QObject *parent) :
 {
 }
 
+QString NameServer::hostName() const
+{
+    return m_hostName;
+}
+
+QHostAddress NameServer::hostAddress() const
+{
+    return m_hostAddress;
+}
+
+int NameServer::port() const
+{
+    return m_port;
+}
+
+void NameServer::setHostName(const QString &arg)
+{
+    if (m_hostName != arg) {
+        m_hostName = arg;
+        emit hostNameChanged(arg);
+        updateHostAddress();
+    }
+}
+
+void NameServer::setPort(int arg)
+{
+    if (m_port != arg) {
+        m_port = arg;
+        emit portChanged(arg);
+    }
+}
+
 void NameServer::updateHostAddress()
 {
     QHostAddress newHostAddress(m_hostName);
@@ -47,7 +79,7 @@ void NameServer::updateHostAddress()
 
         if (!m_hostName.isEmpty())
         {
-            if (m_dnsLookup != nullptr)
+            if (!m_dnsLookup.isNull())
             {
                 m_dnsLookup->abort();
                 m_dnsLookup->deleteLater();
@@ -74,7 +106,7 @@ void NameServer::handleServers()
       qDebug() << "DNS lookup error:" << m_dnsLookup->errorString();
 #endif
        m_dnsLookup->deleteLater();
-       m_dnsLookup = nullptr;
+       m_dnsLookup.clear();
        return;
    }
 
@@ -86,6 +118,6 @@ void NameServer::handleServers()
    }
 
    m_dnsLookup->deleteLater();
-   m_dnsLookup = nullptr;
+   m_dnsLookup.clear();
 }
 } // namespace qtquickvcp

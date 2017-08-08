@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QQmlListProperty>
+#include "servicediscoveryitem.h"
 
 namespace qtquickvcp {
 
@@ -36,40 +37,27 @@ class ServiceDiscoveryFilter : public QObject
 public:
     explicit ServiceDiscoveryFilter(QObject *parent = 0);
 
-    QString name() const
-    {
-        return m_name;
-    }
+    QString name() const;
+    QStringList txtRecords() const;
 
-    QStringList txtRecords() const
-    {
-        return m_txtRecords;
-    }
+    /** Apply filter on passed item.
+     * @arg item Item to be checked for filtering.
+     * @result True if filter matches else false.
+     */
+    bool apply(const ServiceDiscoveryItem &item) const;
 
 public slots:
-    void setName(QString arg)
-    {
-        if (m_name != arg) {
-            m_name = arg;
-            emit nameChanged(arg);
-        }
-    }
-
-    void setTxtRecords(QStringList arg)
-    {
-        if (m_txtRecords != arg) {
-            m_txtRecords = arg;
-            emit txtRecordsChanged(arg);
-        }
-    }
+    void setName(const QString &arg);
+    void setTxtRecords(const QStringList &arg);
 
 private:
     QString m_name;
     QStringList m_txtRecords;
 
 signals:
-    void nameChanged(QString arg);
-    void txtRecordsChanged(QStringList arg);
+    void nameChanged(const QString &arg);
+    void txtRecordsChanged(const QStringList &arg);
+
 }; // class ServiceDiscoveryFilter
 } // namespace qtquickvcp
 

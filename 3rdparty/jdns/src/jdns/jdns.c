@@ -1696,7 +1696,7 @@ query_t *_get_query(jdns_session_t *s, const unsigned char *qname, int qtype, in
 	q->dns_id = -1;
 	q->time_start = 0;
 	q->time_next = 0;
-	q->trycache = 1;
+    q->trycache = 1;
 	q->retrying = 0;
 	list_insert(s->queries, q, -1);
 
@@ -1930,7 +1930,7 @@ int _unicast_do_writes(jdns_session_t *s, int now)
 
 					new_q = _get_query(s, q->qname, q->qtype, 1);
 					new_q->retrying = 1; // slow it down
-					new_q->trycache = 0; // don't use the cache for this
+                    new_q->trycache = 0; // don't use the cache for this
 				}
 
 				nxdomain = r->answerCount == 0 ? 1 : 0;

@@ -32,6 +32,11 @@ const int debugLevel = 3;
 #define WARNING(l, x) if (debugLevel >= l) qWarning() << x;
 #define WARNING_TAG(l, tag, x) if (debugLevel >= l) qWarning() << "[" << tag << "]" << x;
 
+#else
+#define DEBUG(l, x)
+#define DEBUG_TAG(l, tag, x)
+#define WARNING(l, x)
+#define WARNING_TAG(l, tag, x)
 #endif
 
 #endif // DEBUGHELPER_H

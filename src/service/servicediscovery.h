@@ -38,7 +38,7 @@ class ServiceDiscovery : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(bool running READ isRunning WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(bool networkReady READ isNetworkReady NOTIFY networkReadyChanged)
     Q_PROPERTY(bool lookupReady READ isLookupReady NOTIFY lookupReadyChanged)
     Q_PROPERTY(ServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
@@ -61,35 +61,13 @@ public:
     void classBegin() {}
     void componentComplete();
 
-    bool running() const
-    {
-        return m_running;
-    }
-
-    bool isNetworkReady() const
-    {
-        return m_networkReady;
-    }
-
-    ServiceDiscoveryFilter *filter() const
-    {
-        return m_filter;
-    }
-
-    bool isLookupReady() const
-    {
-        return m_lookupReady;
-    }
-
-    LookupMode lookupMode() const
-    {
-        return m_lookupMode;
-    }
-
-    int unicastLookupInterval() const
-    {
-        return m_unicastLookupInterval;
-    }
+    bool isRunning() const;
+    bool isNetworkReady() const;
+    ServiceDiscoveryFilter *filter() const;
+    bool isLookupReady() const;
+    LookupMode lookupMode() const;
+    int unicastLookupInterval() const;
+    int unicastErrorThreshold() const;
 
     QQmlListProperty<ServiceList> serviceLists();
     int serviceListCount() const;
@@ -98,11 +76,6 @@ public:
     QQmlListProperty<NameServer> nameServers();
     int nameServerCount() const;
     NameServer *nameServer(int index) const;
-
-    int unicastErrorThreshold() const
-    {
-        return m_unicastErrorThreshold;
-    }
 
 public slots:
     void setRunning(bool arg);
@@ -125,7 +98,7 @@ signals:
     void lookupModeChanged(LookupMode arg);
     void unicastLookupIntervalChanged(int arg);
     void unicastErrorThresholdChanged(int unicastErrorThreshold);
-    void nameServersChanged(QQmlListProperty<NameServer> arg);
+    void nameServersChanged(const QQmlListProperty<NameServer> &arg);
 
 private:
     bool m_componentCompleted;
@@ -135,51 +108,53 @@ private:
     LookupMode m_lookupMode;
     int m_unicastLookupInterval;    // interval for unicast lookups, queries are stop when retriggered
     int m_unicastErrorThreshold;    // amount of unicast lookup timeouts to tolerate
-    ServiceDiscoveryFilter *m_filter;
+    QPointer<ServiceDiscoveryFilter> m_filter;
     QList<ServiceList*> m_serviceLists;
     QList<NameServer*> m_nameServers;
 
-    QNetworkSession *m_networkSession;
-    QNetworkConfigurationManager *m_networkConfigManager;
-    QTimer *m_networkConfigTimer; // Timer for refreshing the network status
+    QPointer<QNetworkSession> m_networkSession;
+    QPointer<QNetworkConfigurationManager> m_networkConfigManager;
+    QPointer<QTimer> m_networkConfigTimer; // Timer for refreshing the network status
 
-    QJDns *m_jdns;
+    QPointer<QJDns> m_jdns;
     QMap<int, QJDns::Type> m_queryIdTypeMap; // queryId > type
     QMap<int, ServiceDiscoveryItem *> m_queryIdItemMap; // queryId > item
     QMap<int, QString> m_queryIdServiceMap; // queryId > serviceType
     QMap<QString, QList<ServiceDiscoveryItem*> > m_serviceItemsMap; // serviceType > items
     QMap<QString, QJDns::Type> m_serviceTypeMap; // serviceType > queryType
 
-    QTimer *m_unicastLookupTimer;
+    QPointer<QTimer> m_unicastLookupTimer;
 
     void initializeNetworkSession();
-    void startQueries();
-    void stopQueries();
-    void startQuery(QString serviceType);
-    void stopQuery(QString serviceType);
-    void refreshQuery(QString serviceType);
-    void stopItemQueries(ServiceDiscoveryItem *item);
-    void addServiceType(QString serviceType, QJDns::Type queryType);
-    void removeServiceType(QString serviceType);
-    void updateServiceType(QString serviceType);
+    static bool networkConfigIsQualified(const QNetworkConfiguration &config);
+
+    void startAllQueries();
+    void stopAllQueries();
+    void refreshAllQueries();
+    void startQuery(const QString &serviceType);
+    void stopQuery(const QString &serviceType);
+    void refreshQuery(const QString &serviceType);
+    void stopItemQueries(const ServiceDiscoveryItem *item);
+    void addServiceType(const QString &serviceType, QJDns::Type queryType);
+    void removeServiceType(const QString &serviceType);
+    void updateServiceType(const QString &serviceType);
     void removeAllServiceTypes();
     void updateAllServiceTypes();
-    static bool filterServiceDiscoveryItem(ServiceDiscoveryItem *item, ServiceDiscoveryFilter *serviceDiscoveryFilter);
     static QList<ServiceDiscoveryItem *> filterServiceDiscoveryItems(QList<ServiceDiscoveryItem *> serviceDiscoveryItems, ServiceDiscoveryFilter *primaryFilter, ServiceDiscoveryFilter *secondaryFilter);
-    ServiceDiscoveryItem *addItem(QString name, QString type);
-    ServiceDiscoveryItem *getItem(QString name, QString type);
-    void updateItem(QString name, QString type);
-    void removeItem(QString name, QString type);
-    void clearItems(QString type);
-    void purgeItems(QString serviceType);
+    ServiceDiscoveryItem *addItem(const QString &name, const QString &type);
+    ServiceDiscoveryItem *getItem(const QString &name, const QString &type);
+    void updateItem(const QString &name, const QString &type);
+    void removeItem(const QString &name, const QString &type);
+    void clearAlItems(const QString &type);
+    void purgeAllItems(const QString &serviceType);
 
 private slots:
     void resultsReady(int id, const QJDns::Response &results);
     void error(int id, QJDns::Error e);
     void openNetworkSession();
-    void updateNetConfig();
+    void networkConfigUpdateCompleted();
     bool initializeMdns();
-    void deinitializeMdns();
+    void deinitializeMdns(bool cleanup);
     void networkSessionOpened();
     void networkSessionClosed();
     void networkSessionError(QNetworkSession::SessionError error);

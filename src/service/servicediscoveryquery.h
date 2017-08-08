@@ -46,48 +46,16 @@ public:
     ServiceDiscoveryItem *item(int index) const;
     void setItems(QList<ServiceDiscoveryItem*> newServiceDiscoveryItems);
 
-    QJDns::Type queryType() const
-    {
-        return m_queryType;
-    }
+    QJDns::Type queryType() const;
 
-    QString serviceType() const
-    {
-        return m_serviceType;
-    }
+    QString serviceType() const;
 
-    ServiceDiscoveryFilter * filter() const
-    {
-        return m_filter;
-    }
+    ServiceDiscoveryFilter *filter() const;
 
 public slots:
-    void setQueryType(QJDns::Type type)
-    {
-        if (m_queryType == type)
-            return;
-
-        m_queryType = type;
-        emit queryTypeChanged(type);
-    }
-
-    void setServiceType(QString serviceType)
-    {
-        if (m_serviceType == serviceType)
-            return;
-
-        m_serviceType = serviceType;
-        emit serviceTypeChanged(serviceType);
-    }
-
-    void setFilter(ServiceDiscoveryFilter * filter)
-    {
-        if (m_filter == filter)
-            return;
-
-        m_filter = filter;
-        emit filterChanged(filter);
-    }
+    void setQueryType(QJDns::Type type);
+    void setServiceType(const QString &serviceType);
+    void setFilter(ServiceDiscoveryFilter * filter);
 
 private:
     QJDns::Type m_queryType;
@@ -97,9 +65,10 @@ private:
 
 signals:
     void queryTypeChanged(QJDns::Type queryType);
-    void serviceTypeChanged(QString serviceType);
+    void serviceTypeChanged(const QString &serviceType);
     void itemsChanged(QQmlListProperty<ServiceDiscoveryItem> arg);
     void filterChanged(ServiceDiscoveryFilter * filter);
+
 }; // class ServiceDiscoveryQuery
 } // namespace qtquickvcp
 
