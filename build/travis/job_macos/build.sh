@@ -101,10 +101,8 @@ if [ "${upload}" ]; then
     else
         target="QtQuickVcp_Development"
     fi
-    cp build.release/QtQuickVcp.tar.gz ${target}-latest-MacOSX-${platform}.tar.gz
     mv build.release/QtQuickVcp.tar.gz ${target}-${version}-MacOSX-${platform}.tar.gz
     ./build/travis/job_macos/bintray_lib.sh ${target}-${version}*.tar.gz
-    ./build/travis/job_macos/bintray_lib.sh ${target}-latest*.tar.gz
 
     if [ $release -eq 1 ]; then
         target="MachinekitClient"

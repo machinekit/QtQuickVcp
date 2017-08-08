@@ -45,15 +45,15 @@ You can find rolling releases of the MachinekitClient and the QtQuickVcp library
 
 **QtQuickVcp direct download links**
 
-For integration into your CI system QtQuickVcp can be directly downloaded using the download link in the following format:
+For integration into your CI system QtQuickVcp can be directly downloaded using as simple shell script. For example, the latest QtQuickVcp Android build can be downloaded with the following command:
 
-```
-https://dl.bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-latest-<OS>-<arch>.tar.gz
-```
-
-For example, the latest QtQuickVcp Android build can be downloaded with the following command:
 ```bash
-wget https://dl.bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-latest-Android-armv7.tar.gz
+arch=armv7
+platform=Android
+extension=tar.gz
+package=$(wget -qO- https://dl.bintray.com/machinekoder/QtQuickVcp-Development/ | grep ${arch} | grep ${extension} | grep ${platform} | tail -n 1 | awk -F"\"" '{print $4}')
+url=https://dl.bintray.com/machinekoder/QtQuickVcp-Development/${package:1}
+wget -O qtquickvcp.${extension} ${url}
 ```
 
 ## Contents

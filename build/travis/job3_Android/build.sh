@@ -80,7 +80,6 @@ docker run --env-file ./env.list -i -v "${PWD}:/QtQuickVcp" \
 if [ "${upload}" ]; then
     # Upload apk to Bintray
     ./build/travis/job3_Android/bintray_lib.sh QtQuickVcp*-${version}*.tar.gz
-    ./build/travis/job3_Android/bintray_lib.sh QtQuickVcp*-latest*.tar.gz
     ./build/travis/job3_Android/bintray_android.sh MachinekitClient*.apk
 else
   echo "On branch '$branch' so Package will not be uploaded." >&2
