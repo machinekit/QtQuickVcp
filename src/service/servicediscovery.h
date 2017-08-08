@@ -153,8 +153,11 @@ private:
     QPointer<QTimer> m_unicastLookupTimer;
 
     void initializeNetworkSession();
-    void startQueries();
-    void stopQueries();
+    static bool networkConfigIsQualified(const QNetworkConfiguration &config);
+
+    void startAllQueries();
+    void stopAllQueries();
+    void refreshAllQueries();
     void startQuery(const QString &serviceType);
     void stopQuery(const QString &serviceType);
     void refreshQuery(const QString &serviceType);
@@ -170,10 +173,8 @@ private:
     ServiceDiscoveryItem *getItem(const QString &name, const QString &type);
     void updateItem(const QString &name, const QString &type);
     void removeItem(const QString &name, const QString &type);
-    void clearItems(const QString &type);
-    void purgeItems(const QString &serviceType);
-
-    bool networkConfigIsQualified(const QNetworkConfiguration &config);
+    void clearAlItems(const QString &type);
+    void purgeAllItems(const QString &serviceType);
 
 private slots:
     void resultsReady(int id, const QJDns::Response &results);

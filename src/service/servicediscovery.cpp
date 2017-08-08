@@ -408,8 +408,8 @@ void ServiceDiscovery::networkSessionError(QNetworkSession::SessionError error)
 
 void ServiceDiscovery::unicastLookup()
 {
-    //deinitializeMdns(false);
-    //initializeMdns();
+    deinitializeMdns(false);
+    initializeMdns();
     for (const auto &key: m_serviceItemsMap.keys())
     {
         refreshQuery(key);
@@ -484,7 +484,7 @@ void ServiceDiscovery::setRunning(bool arg)
         }
 
         if (m_running) {
-            startQueries();
+            startAllQueries();
 
             if (m_lookupMode == UnicastDNS)
             {
@@ -498,7 +498,7 @@ void ServiceDiscovery::setRunning(bool arg)
                 m_unicastLookupTimer->stop();
             }
 
-            stopQueries();
+            stopAllQueries();
         }
     }
 }
@@ -533,7 +533,7 @@ void ServiceDiscovery::updateServices()
         }
     }
 
-    // Iterate trough all item that are left and remove them
+    // Iterate trough all items that are left and remove them
     for (const auto &key: oldServiceTypeMap.keys())
     {
         if (m_running && m_networkReady)
@@ -588,8 +588,7 @@ void ServiceDiscovery::updateNameServers()
 
     if (m_running)
     {
-        stopQueries();
-        startQueries();
+        refreshAllQueries();
     }
 }
 
@@ -643,7 +642,7 @@ void ServiceDiscovery::setFilter(ServiceDiscoveryFilter *arg)
     }
 }
 
-void ServiceDiscovery::startQueries()
+void ServiceDiscovery::startAllQueries()
 {
     for (const auto &key: m_serviceItemsMap.keys())
     {
@@ -651,11 +650,19 @@ void ServiceDiscovery::startQueries()
     }
 }
 
-void ServiceDiscovery::stopQueries()
+void ServiceDiscovery::stopAllQueries()
 {
     for (const auto &key: m_serviceItemsMap.keys())
     {
         stopQuery(key);
+    }
+}
+
+void ServiceDiscovery::refreshAllQueries()
+{
+    for (const auto &key: m_serviceItemsMap.keys())
+    {
+        refreshQuery(key);
     }
 }
 
@@ -704,7 +711,7 @@ void ServiceDiscovery::stopQuery(const QString &serviceType)
     m_jdns->queryCancel(queryId);
     m_queryIdTypeMap.remove(queryId);
     m_queryIdServiceMap.remove(queryId);
-    clearItems(serviceType);
+    clearAlItems(serviceType);
 
     DEBUG_TAG(1, "SD", "Stopped query" << queryId << serviceType);
 }
@@ -736,7 +743,7 @@ void ServiceDiscovery::refreshQuery(const QString &serviceType)
     m_queryIdTypeMap.remove(queryId);
     m_queryIdServiceMap.remove(queryId);
 
-    purgeItems(serviceType);                                                   // purge outdated items
+    purgeAllItems(serviceType);                                                   // purge outdated items
 
     queryId = m_jdns->queryStart(serviceType.toLocal8Bit(), queryType);       // start a new query
     m_queryIdTypeMap.insert(queryId, queryType);
@@ -781,7 +788,7 @@ void ServiceDiscovery::removeServiceType(const QString &serviceType)
         return;
     }
 
-    clearItems(serviceType);
+    clearAlItems(serviceType);
     m_serviceItemsMap.remove(serviceType);
     m_serviceTypeMap.remove(serviceType);
 }
@@ -948,7 +955,7 @@ void ServiceDiscovery::removeItem(const QString &name, const QString &type)
     }
 }
 
-void ServiceDiscovery::clearItems(const QString &type)
+void ServiceDiscovery::clearAlItems(const QString &type)
 {
     if (!m_serviceItemsMap.contains(type))
     {
@@ -970,7 +977,7 @@ void ServiceDiscovery::clearItems(const QString &type)
 }
 
 /** Removes items that have not been updated and flags other items with not updated **/
-void ServiceDiscovery::purgeItems(const QString &serviceType)
+void ServiceDiscovery::purgeAllItems(const QString &serviceType)
 {
     if (!m_serviceItemsMap.contains(serviceType))
     {
@@ -1096,7 +1103,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             DEBUG_TAG(2, "SD", "A DNS record" << item->type() << item->name() << "Address:" << r.address.toString());
         }
 
-        if (item != nullptr)   // we got a answer to a request
+        if (item != nullptr)   // we got an answer to a request
         {
             if (!(item->hasOutstandingRequests()))   // item is fully resolved
             {
