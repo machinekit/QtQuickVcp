@@ -841,38 +841,13 @@ void ServiceDiscovery::updateAllServiceTypes()
     }
 }
 
-bool ServiceDiscovery::filterServiceDiscoveryItem(ServiceDiscoveryItem *item, ServiceDiscoveryFilter *serviceDiscoveryFilter)
-{
-    if (!((serviceDiscoveryFilter->name() == "") || item->name().contains(QRegExp(serviceDiscoveryFilter->name(), Qt::CaseSensitive, QRegExp::WildcardUnix))))
-    {
-        return false;
-    }
-
-    if (!serviceDiscoveryFilter->txtRecords().isEmpty())
-    {
-        QStringList txtRecords = item->txtRecords();
-
-        for (const QString &filter: serviceDiscoveryFilter->txtRecords())
-        {
-            txtRecords = txtRecords.filter(QRegExp(filter, Qt::CaseSensitive, QRegExp::WildcardUnix));
-        }
-        if (txtRecords.isEmpty())
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 QList<ServiceDiscoveryItem *> ServiceDiscovery::filterServiceDiscoveryItems(QList<ServiceDiscoveryItem *> serviceDiscoveryItems, ServiceDiscoveryFilter *primaryFilter, ServiceDiscoveryFilter *secondaryFilter)
 {
     QList<ServiceDiscoveryItem*> newServiceDiscoveryItems;
 
     for (ServiceDiscoveryItem *item: serviceDiscoveryItems)
     {
-        if (filterServiceDiscoveryItem(item, primaryFilter)
-                && filterServiceDiscoveryItem(item, secondaryFilter))
+        if (primaryFilter->apply(*item) && secondaryFilter->apply(*item))
         {
             newServiceDiscoveryItems.append(item);
         }

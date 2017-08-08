@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QQmlListProperty>
+#include "servicediscoveryitem.h"
 
 namespace qtquickvcp {
 
@@ -38,6 +39,12 @@ public:
 
     QString name() const;
     QStringList txtRecords() const;
+
+    /** Apply filter on passed item.
+     * @arg item Item to be checked for filtering.
+     * @result True if filter matches else false.
+     */
+    bool apply(const ServiceDiscoveryItem &item) const;
 
 public slots:
     void setName(const QString &arg);
