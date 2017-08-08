@@ -257,6 +257,36 @@ void ServiceDiscovery::componentComplete()
     initializeNetworkSession();
 }
 
+bool ServiceDiscovery::isRunning() const
+{
+    return m_running;
+}
+
+bool ServiceDiscovery::isNetworkReady() const
+{
+    return m_networkReady;
+}
+
+ServiceDiscoveryFilter *ServiceDiscovery::filter() const
+{
+    return m_filter;
+}
+
+bool ServiceDiscovery::isLookupReady() const
+{
+    return m_lookupReady;
+}
+
+ServiceDiscovery::LookupMode ServiceDiscovery::lookupMode() const
+{
+    return m_lookupMode;
+}
+
+int ServiceDiscovery::unicastLookupInterval() const
+{
+    return m_unicastLookupInterval;
+}
+
 void ServiceDiscovery::initializeNetworkSession()
 {
     // now begin the process of opening the network link
@@ -444,6 +474,11 @@ int ServiceDiscovery::nameServerCount() const
 NameServer *ServiceDiscovery::nameServer(int index) const
 {
     return m_nameServers.at(index);
+}
+
+int ServiceDiscovery::unicastErrorThreshold() const
+{
+    return m_unicastErrorThreshold;
 }
 
 void ServiceDiscovery::addNameServer(NameServer *nameServer)

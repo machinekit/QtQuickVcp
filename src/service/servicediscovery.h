@@ -38,7 +38,7 @@ class ServiceDiscovery : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(bool running READ isRunning WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(bool networkReady READ isNetworkReady NOTIFY networkReadyChanged)
     Q_PROPERTY(bool lookupReady READ isLookupReady NOTIFY lookupReadyChanged)
     Q_PROPERTY(ServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
@@ -61,35 +61,13 @@ public:
     void classBegin() {}
     void componentComplete();
 
-    bool running() const
-    {
-        return m_running;
-    }
-
-    bool isNetworkReady() const
-    {
-        return m_networkReady;
-    }
-
-    ServiceDiscoveryFilter *filter() const
-    {
-        return m_filter;
-    }
-
-    bool isLookupReady() const
-    {
-        return m_lookupReady;
-    }
-
-    LookupMode lookupMode() const
-    {
-        return m_lookupMode;
-    }
-
-    int unicastLookupInterval() const
-    {
-        return m_unicastLookupInterval;
-    }
+    bool isRunning() const;
+    bool isNetworkReady() const;
+    ServiceDiscoveryFilter *filter() const;
+    bool isLookupReady() const;
+    LookupMode lookupMode() const;
+    int unicastLookupInterval() const;
+    int unicastErrorThreshold() const;
 
     QQmlListProperty<ServiceList> serviceLists();
     int serviceListCount() const;
@@ -98,11 +76,6 @@ public:
     QQmlListProperty<NameServer> nameServers();
     int nameServerCount() const;
     NameServer *nameServer(int index) const;
-
-    int unicastErrorThreshold() const
-    {
-        return m_unicastErrorThreshold;
-    }
 
 public slots:
     void setRunning(bool arg);
