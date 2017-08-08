@@ -1066,7 +1066,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
 
             DEBUG_TAG(2, "SD", "Srv DNS record" << item->type() << item->name() << "Port:" << r.port);
         }
-        else if ((type == QJDns::A) || (type == QJDns::Aaaa))
+        else if (type == QJDns::A)
         {
             item = m_queryIdItemMap.value(id);
             m_jdns->queryCancel(id);    // we have our results
