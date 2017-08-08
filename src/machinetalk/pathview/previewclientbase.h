@@ -86,20 +86,21 @@ public:
 
 public slots:
 
-    void setPreviewUri(QString uri)
+    void setPreviewUri(const QString &uri)
     {
         m_previewChannel->setSocketUri(uri);
     }
 
-    void setPreviewstatusUri(QString uri)
+    void setPreviewstatusUri(const QString &uri)
     {
         m_previewstatusChannel->setSocketUri(uri);
     }
 
-    void setDebugName(QString debugName)
+    void setDebugName(const QString &debugName)
     {
-        if (m_debugName == debugName)
+        if (m_debugName == debugName) {
             return;
+        }
 
         m_debugName = debugName;
         emit debugNameChanged(debugName);
@@ -107,8 +108,9 @@ public slots:
 
     void setReady(bool ready)
     {
-        if (m_ready == ready)
+        if (m_ready == ready) {
             return;
+        }
 
         m_ready = ready;
         emit readyChanged(ready);
@@ -195,13 +197,13 @@ private slots:
     virtual void clearConnected() = 0;
 
 signals:
-    void previewUriChanged(QString uri);
-    void previewstatusUriChanged(QString uri);
+    void previewUriChanged(const QString &uri);
+    void previewstatusUriChanged(const QString &uri);
     void previewMessageReceived(const QByteArray &topic, const Container &rx);
     void previewstatusMessageReceived(const QByteArray &topic, const Container &rx);
-    void debugNameChanged(QString debugName);
+    void debugNameChanged(const QString &debugName);
     void stateChanged(PreviewClientBase::State state);
-    void errorStringChanged(QString errorString);
+    void errorStringChanged(const QString &errorString);
     void readyChanged(bool ready);
     // fsm
     void fsmDownEntered(QPrivateSignal);

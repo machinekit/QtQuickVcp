@@ -101,20 +101,21 @@ public:
 
 public slots:
 
-    void setHalrcmdUri(QString uri)
+    void setHalrcmdUri(const QString &uri)
     {
         m_halrcmdChannel->setSocketUri(uri);
     }
 
-    void setHalrcompUri(QString uri)
+    void setHalrcompUri(const QString &uri)
     {
         m_halrcompChannel->setSocketUri(uri);
     }
 
-    void setDebugName(QString debugName)
+    void setDebugName(const QString &debugName)
     {
-        if (m_debugName == debugName)
+        if (m_debugName == debugName) {
             return;
+        }
 
         m_debugName = debugName;
         emit debugNameChanged(debugName);
@@ -132,8 +133,9 @@ public slots:
 
     void setReady(bool ready)
     {
-        if (m_ready == ready)
+        if (m_ready == ready) {
             return;
+        }
 
         m_ready = ready;
         emit readyChanged(ready);
@@ -243,13 +245,13 @@ private slots:
     virtual void setTimeout() = 0;
 
 signals:
-    void halrcmdUriChanged(QString uri);
-    void halrcompUriChanged(QString uri);
+    void halrcmdUriChanged(const QString &uri);
+    void halrcompUriChanged(const QString &uri);
     void halrcmdMessageReceived(const Container &rx);
     void halrcompMessageReceived(const QByteArray &topic, const Container &rx);
-    void debugNameChanged(QString debugName);
+    void debugNameChanged(const QString &debugName);
     void stateChanged(RemoteComponentBase::State state);
-    void errorStringChanged(QString errorString);
+    void errorStringChanged(const QString &errorString);
     void halrcmdHeartbeatIntervalChanged(int interval);
     void halrcompHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);

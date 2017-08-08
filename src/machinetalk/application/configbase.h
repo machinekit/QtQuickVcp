@@ -85,15 +85,16 @@ public:
 
 public slots:
 
-    void setConfigUri(QString uri)
+    void setConfigUri(const QString &uri)
     {
         m_configChannel->setSocketUri(uri);
     }
 
-    void setDebugName(QString debugName)
+    void setDebugName(const QString &debugName)
     {
-        if (m_debugName == debugName)
+        if (m_debugName == debugName) {
             return;
+        }
 
         m_debugName = debugName;
         emit debugNameChanged(debugName);
@@ -106,8 +107,9 @@ public slots:
 
     void setReady(bool ready)
     {
-        if (m_ready == ready)
+        if (m_ready == ready) {
             return;
+        }
 
         m_ready = ready;
         emit readyChanged(ready);
@@ -183,11 +185,11 @@ private slots:
     virtual void unsyncConfig() = 0;
 
 signals:
-    void configUriChanged(QString uri);
+    void configUriChanged(const QString &uri);
     void configMessageReceived(const Container &rx);
-    void debugNameChanged(QString debugName);
+    void debugNameChanged(const QString &debugName);
     void stateChanged(ConfigBase::State state);
-    void errorStringChanged(QString errorString);
+    void errorStringChanged(const QString &errorString);
     void configHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm

@@ -83,15 +83,16 @@ public:
 
 public slots:
 
-    void setErrorUri(QString uri)
+    void setErrorUri(const QString &uri)
     {
         m_errorChannel->setSocketUri(uri);
     }
 
-    void setDebugName(QString debugName)
+    void setDebugName(const QString &debugName)
     {
-        if (m_debugName == debugName)
+        if (m_debugName == debugName) {
             return;
+        }
 
         m_debugName = debugName;
         emit debugNameChanged(debugName);
@@ -104,8 +105,9 @@ public slots:
 
     void setReady(bool ready)
     {
-        if (m_ready == ready)
+        if (m_ready == ready) {
             return;
+        }
 
         m_ready = ready;
         emit readyChanged(ready);
@@ -176,11 +178,11 @@ private slots:
     virtual void clearConnected() = 0;
 
 signals:
-    void errorUriChanged(QString uri);
+    void errorUriChanged(const QString &uri);
     void errorMessageReceived(const QByteArray &topic, const Container &rx);
-    void debugNameChanged(QString debugName);
+    void debugNameChanged(const QString &debugName);
     void stateChanged(ErrorBase::State state);
-    void errorStringChanged(QString errorString);
+    void errorStringChanged(const QString &errorString);
     void errorHeartbeatIntervalChanged(int interval);
     void readyChanged(bool ready);
     // fsm

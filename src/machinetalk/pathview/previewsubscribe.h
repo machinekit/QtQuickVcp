@@ -61,19 +61,21 @@ public:
 
 public slots:
 
-    void setSocketUri(QString uri)
+    void setSocketUri(const QString &uri)
     {
-        if (m_socketUri == uri)
+        if (m_socketUri == uri) {
             return;
+        }
 
         m_socketUri = uri;
         emit socketUriChanged(uri);
     }
 
-    void setDebugName(QString debugName)
+    void setDebugName(const QString &debugName)
     {
-        if (m_debugName == debugName)
+        if (m_debugName == debugName) {
             return;
+        }
 
         m_debugName = debugName;
         emit debugNameChanged(debugName);
@@ -81,8 +83,9 @@ public slots:
 
     void setReady(bool ready)
     {
-        if (m_ready == ready)
+        if (m_ready == ready) {
             return;
+        }
 
         m_ready = ready;
         emit readyChanged(ready);
@@ -127,7 +130,7 @@ private slots:
     void stopSocket();
 
     void processSocketMessage(const QList<QByteArray> &messageList);
-    void socketError(int errorNum, const QString& errorMsg);
+    void socketError(int errorNum, const QString &errorMsg);
 
 
     void fsmDown();
@@ -141,11 +144,11 @@ private slots:
 
 
 signals:
-    void socketUriChanged(QString uri);
+    void socketUriChanged(const QString &uri);
     void socketMessageReceived(const QByteArray &topic, const Container &rx);
-    void debugNameChanged(QString debugName);
+    void debugNameChanged(const QString &debugName);
     void stateChanged(PreviewSubscribe::State state);
-    void errorStringChanged(QString errorString);
+    void errorStringChanged(const QString &errorString);
     void readyChanged(bool ready);
     // fsm
     void fsmDownEntered(QPrivateSignal);
