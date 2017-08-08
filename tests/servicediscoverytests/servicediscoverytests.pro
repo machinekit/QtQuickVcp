@@ -49,8 +49,7 @@ SOURCES += \
     $$SERVICE_PATH/servicediscoveryfilter.cpp \
     $$SERVICE_PATH/servicediscoveryitem.cpp \
     $$SERVICE_PATH/servicediscoveryquery.cpp \
-    $$SERVICE_PATH/servicelist.cpp \
-    qjdns_stub.cpp
+    $$SERVICE_PATH/servicelist.cpp
 
 SOURCES += \
         tst_servicediscoverytest.cpp \
