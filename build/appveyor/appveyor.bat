@@ -114,7 +114,6 @@ if %release% == 0 (
     set target2="MachinekitClient"
 )
 
-cp QtQuickVcp.zip %target1%-latest-Windows-%platform%.zip
 mv QtQuickVcp.zip %target1%-%version%-Windows-%platform%.zip
 mv MachinekitClient.zip %target2%-%version%-%platform%.zip
 

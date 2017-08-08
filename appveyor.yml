@@ -30,14 +30,10 @@ artifacts:
     name: MachinekitClient-x86-archive
   - path: 'build.release\QtQuickVcp*-*-*-*-Windows-x86.zip'
     name: QtQuickVcp-x86-archive
-  - path: 'build.release\QtQuickVcp*-latest-Windows-x86.zip'
-    name: QtQuickVcp-x86-latest
   - path: 'build.release\MachinekitClient*x64.zip'
     name: MachinekitClient-x64-archive
   - path: 'build.release\QtQuickVcp*-*-*-*-Windows-x64.zip'
     name: QtQuickVcp-x64-archive
-  - path: 'build.release\QtQuickVcp*-latest-Windows-x64.zip'
-    name: QtQuickVcp-x64-latest
 
 deploy:
 - provider: BinTray
@@ -52,22 +48,6 @@ deploy:
   explode: false
   artifact: QtQuickVcp-x64-archive
   version: $(appveyor_build_version)
-  on:
-    branch: master
-    appveyor_repo_tag: false
-
-- provider: BinTray
-  username: machinekoder
-  api_key:
-    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
-  subject: machinekoder
-  repo: QtQuickVcp-Development
-  package: QtQuickVcp_Development-Windows-latest-x64
-  publish: true
-  override: true
-  explode: false
-  artifact: QtQuickVcp-x64-latest
-  version: latest
   on:
     branch: master
     appveyor_repo_tag: false
@@ -108,21 +88,6 @@ deploy:
   api_key:
     secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
   subject: machinekoder
-  repo: QtQuickVcp
-  package: QtQuickVcp-Windows-latest-x64
-  publish: true
-  override: true
-  explode: false
-  artifact: QtQuickVcp-x64-latest
-  version: latest
-  on:
-    appveyor_repo_tag: true
-
-- provider: BinTray
-  username: machinekoder
-  api_key:
-    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
-  subject: machinekoder
   repo: MachinekitClient
   package: MachinekitClient-Windows-x64
   publish: true
@@ -145,22 +110,6 @@ deploy:
   explode: false
   artifact: QtQuickVcp-x86-archive
   version: $(appveyor_build_version)
-  on:
-    branch: master
-    appveyor_repo_tag: false
-
-- provider: BinTray
-  username: machinekoder
-  api_key:
-    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
-  subject: machinekoder
-  repo: QtQuickVcp-Development
-  package: QtQuickVcp_Development-Windows-latest-x86
-  publish: true
-  override: true
-  explode: false
-  artifact: QtQuickVcp-x86-latest
-  version: latest
   on:
     branch: master
     appveyor_repo_tag: false
@@ -193,21 +142,6 @@ deploy:
   explode: false
   artifact: QtQuickVcp-x86-archive
   version: $(appveyor_build_version)
-  on:
-    appveyor_repo_tag: true
-
-- provider: BinTray
-  username: machinekoder
-  api_key:
-    secure: W+r/AcwTE6+ZntNkPg4ulGEWL9A51GF0UkCqT7OqS1OSLZZHrn9MUQdoODQulAaZ
-  subject: machinekoder
-  repo: QtQuickVcp
-  package: QtQuickVcp-Windows-latest-x86
-  publish: true
-  override: true
-  explode: false
-  artifact: QtQuickVcp-x86-latest
-  version: latest
   on:
     appveyor_repo_tag: true
 
