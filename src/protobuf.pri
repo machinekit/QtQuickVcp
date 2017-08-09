@@ -21,8 +21,6 @@ isEmpty(PROTOGEN): PROTOGEN = generated
 PROTOPATHS =
 for(p, PROTOPATH):PROTOPATHS += --proto_path=$$shell_path($$relative_path($${p}, $$OUT_PWD))
 
-message("Generating protocol buffer classes from .proto files.")
-
 protobuf_decl.name = protobuf headers
 protobuf_decl.input = PROTOS
 protobuf_decl.output = $$OUT_PWD/$$PROTOGEN/$$NAMESPACE_DIR/${QMAKE_FILE_BASE}.pb.h

@@ -3,9 +3,9 @@ INCLUDEPATH += $$PWD
 
 !win32 {
     LIBS += -L$$MACHINETALK_PATH
+    LIBS += -Bstatic
 } else {
-    LIBS += -L$$MACHINETALK_PATH/release
-    LIBS += -L$$MACHINETALK_PATH/debug
+    CONFIG(release, debug|release): LIBS += -L$$MACHINETALK_PATH/release
+    CONFIG(debug, debug|release): LIBS += -L$$MACHINETALK_PATH/debug
 }
-LIBS += -Bstatic
 LIBS += -lmachinetalk

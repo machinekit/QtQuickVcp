@@ -35,7 +35,7 @@ SUBDIRS += 3rdparty src apps # examples
 src.depends = 3rdparty
 apps.depends = src
 
-debug: CONFIG(debug, debug|release) {
+CONFIG(debug, debug|release) {
     SUBDIRS += tests
     tests.depends = src
 }
@@ -43,3 +43,10 @@ debug: CONFIG(debug, debug|release) {
 include(qtquickvcp_version.pri)
 include(paths.pri)
 include(doc/doc.pri)
+
+CONFIG(debug, debug|release) {
+    message("running in DEBUG mode")
+}
+else {
+    message("running in RELEASE mode")
+}
