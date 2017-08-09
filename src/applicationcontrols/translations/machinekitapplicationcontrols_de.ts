@@ -398,13 +398,6 @@
     </message>
 </context>
 <context>
-    <name>NetworkPage</name>
-    <message>
-        <source>Warning!&lt;br&gt;No network connection found, service discovery unavailable. Please check your network connection.</source>
-        <translation type="vanished">Warnung!&lt;br&gt;Keine Netzwerkverbindung gefunden. Dienstsuche nicht verfügbar. Bitte prüfen Sie Ihre Netzwerkverbindung.</translation>
-    </message>
-</context>
-<context>
     <name>OpenAction</name>
     <message>
         <source>Open file</source>
