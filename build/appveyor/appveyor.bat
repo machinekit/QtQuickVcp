@@ -86,9 +86,9 @@ cd ..
 cd %APPVEYOR_BUILD_FOLDER%
 mkdir build.release
 cd build.release
-qmake ..
-nmake
-nmake install
+qmake -r .. || goto :error
+nmake || goto :error
+nmake install || goto :error
 
 mkdir MachinekitClient
 cd MachinekitClient
