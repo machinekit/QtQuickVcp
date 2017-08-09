@@ -9,7 +9,6 @@ static const struct {
     { "ErrorPage", 1, 0 },
     { "InstancePage", 1, 0 },
     { "LauncherPage", 1, 0 },
-    { "NetworkPage", 1, 0 },
     { "SelectedPage", 1, 0 }
 };
 #endif // PLUGINPRIVATE_H
