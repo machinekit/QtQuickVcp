@@ -53,7 +53,7 @@ QMAKE_CLEAN += $$OUT_PWD/../../imports/$$TARGETPATH/
 
 # ========== install additional files ==========
 isEmpty(QMLPLUGINDUMP): QMLPLUGINDUMP = 1
-equals(QMLPLUGINDUMP, 1): !ios: !android: CONFIG(debug, release): {
+equals(QMLPLUGINDUMP, 1): !ios: !android: CONFIG(release, debug|release): {
     dumppluginqmltypes.CONFIG = no_files no_path
     dumppluginqmltypes.commands = $$dirname(QMAKE_QMAKE)/qmlplugindump -nonrelocatable "$$uri $$PLUGIN_VERSION $$shell_path($$OUT_PWD/../../imports/) > $$shell_path($$OUT_PWD/../../imports/$$TARGETPATH/plugins.qmltypes)"
     INSTALLS += dumppluginqmltypes

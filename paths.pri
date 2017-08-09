@@ -30,8 +30,8 @@ macx: {
     PROTOBUF_LIB_FLAGS = -Bstatic
 }
 win32-msvc2013 | win32-msvc2015 | win32-msvc2017: {
-    CONFIG(debug, debug): PROTOBUF_DEBUG = Debug
-    CONFIG(debug, release): PROTOBUF_DEBUG = Release
+    CONFIG(debug, debug|release): PROTOBUF_DEBUG = Debug
+    CONFIG(release, debug|release): PROTOBUF_DEBUG = Release
 
     PROTOBUF_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)/bin/protobuf/src
     ZEROMQ_INCLUDE_PATH = $$(HOMEDRIVE)$$(HOMEPATH)/bin/zeromq4-x/include
