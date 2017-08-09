@@ -29,7 +29,7 @@ macx: {
     PROTOBUF_PROTOC = /opt/local/bin/protoc
     PROTOBUF_LIB_FLAGS = -Bstatic
 }
-win32-msvc2013 | win32-msvc2015 | win32-msvc2017: {
+win32-msvc*: {
     CONFIG(debug, debug|release): PROTOBUF_DEBUG = Debug
     CONFIG(release, debug|release): PROTOBUF_DEBUG = Release
 
