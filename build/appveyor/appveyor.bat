@@ -7,8 +7,8 @@ cd tmp
 
 :: get version label
 appveyor DownloadFile http://ci.roessler.systems/files/qt-bin/UnxUtils.zip -Filename UnxUtils.zip
-7z x UnxUtils.zip
-cp usr\local\wbin\date.exe .
+7z x UnxUtils.zip || goto :error
+cp usr\local\wbin\date.exe . || goto :error
 
 cd ..
 
@@ -32,13 +32,13 @@ if %release% == 0 (
 if %release% == 0 (
     set version=%datetime%-%branch%-%revision%
 )
-echo #define REVISION "%version%" > src\application\revision.h
-appveyor UpdateBuild -Version "%version%-%ARCH%"
+echo #define REVISION "%version%" > src\application\revision.h || goto :error
+appveyor UpdateBuild -Version "%version%-%ARCH%" || goto :error
 
 
 cd tmp
-appveyor DownloadFile http://ci.roessler.systems/files/qt-bin/protobuf-win-%ARCH%.7z -Filename protolibs.7z
-7z x protolibs.7z
+appveyor DownloadFile http://ci.roessler.systems/files/qt-bin/protobuf-win-%ARCH%.7z -Filename protolibs.7z || goto :error
+7z x protolibs.7z || goto :error
 cd protolibs
 if %ARCH% == x64 (
     SET PROTODIR=%HOMEDRIVE%%HOMEPATH%\bin\protobuf\vsprojects\x64\Release
@@ -46,22 +46,22 @@ if %ARCH% == x64 (
     SET PROTODIR=%HOMEDRIVE%%HOMEPATH%\bin\protobuf\vsprojects\Release
 )
 mkdir -p %PROTODIR%
-mv protoc.exe %PROTODIR%\
-mv libprotoc.lib %PROTODIR%\
-cp libprotobuf.lib %PROTODIR%\
-mv libprotobuf.lib %QTDIR%\lib\
+mv protoc.exe %PROTODIR%\ || goto :error
+mv libprotoc.lib %PROTODIR%\ || goto :error
+cp libprotobuf.lib %PROTODIR%\ || goto :error
+mv libprotobuf.lib %QTDIR%\lib\ || goto :error
 cd ..
 
 SET PROTOVERSION=2.6.1
 appveyor DownloadFile https://github.com/google/protobuf/archive/v%PROTOVERSION%.zip -Filename protosrc.zip
-7z x protosrc.zip
-cd protobuf-%PROTOVERSION%
+7z x protosrc.zip || goto :error
+cd protobuf-%PROTOVERSION% || goto :error
 SET PROTODIR=%HOMEDRIVE%%HOMEPATH%\bin\protobuf\
-cp -r src %PROTODIR%
-cd ..
+cp -r src %PROTODIR% || goto :error
+cd .. || goto :error
 
-appveyor DownloadFile http://ci.roessler.systems/files/qt-bin/zeromq-win-%ARCH%.7z -Filename zmqlibs.7z
-7z x zmqlibs.7z
+appveyor DownloadFile http://ci.roessler.systems/files/qt-bin/zeromq-win-%ARCH%.7z -Filename zmqlibs.7z || goto :error
+7z x zmqlibs.7z || goto :error
 cd zmqlibs
 if %ARCH% == x64 (
     SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x\lib\x64
@@ -69,17 +69,17 @@ if %ARCH% == x64 (
     SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x\lib\Win32
 )
 mkdir -p %ZEROMQDIR%
-cp libzmq.lib %ZEROMQDIR%\
-mv libzmq.lib %QTDIR%\lib\
-mv libzmq.dll %QTDIR%\bin\
+cp libzmq.lib %ZEROMQDIR%\ || goto :error
+mv libzmq.lib %QTDIR%\lib\ || goto :error
+mv libzmq.dll %QTDIR%\bin\ || goto :error
 cd ..
 
 SET ZMQVERSION=4.0.8
-appveyor DownloadFile https://github.com/zeromq/zeromq4-x/archive/v%ZMQVERSION%.zip -Filename zmqsrc.zip
-7z x zmqsrc.zip
+appveyor DownloadFile https://github.com/zeromq/zeromq4-x/archive/v%ZMQVERSION%.zip -Filename zmqsrc.zip || goto :error
+7z x zmqsrc.zip || goto :error
 cd zeromq4-x-%ZMQVERSION%
 SET ZEROMQDIR=%HOMEDRIVE%%HOMEPATH%\bin\zeromq4-x
-cp -r include %ZEROMQDIR%
+cp -r include %ZEROMQDIR% || goto :error
 cd ..
 
 :: start build
@@ -92,17 +92,17 @@ nmake install || goto :error
 
 mkdir MachinekitClient
 cd MachinekitClient
-cp ../apps/MachinekitClient/release/machinekit-client.exe .
-windeployqt --angle --release --qmldir ../../apps/MachinekitClient/ machinekit-client.exe
-cp %QTDIR%\bin\libzmq.dll .
-cd ..
-7z a MachinekitClient.zip MachinekitClient/
+cp ../apps/MachinekitClient/release/machinekit-client.exe . || goto :error
+windeployqt --angle --release --qmldir ../../apps/MachinekitClient/ machinekit-client.exe || goto :error
+cp %QTDIR%\bin\libzmq.dll . || goto :error
+cd .. || goto :error
+7z a MachinekitClient.zip MachinekitClient/ || goto :error
 
 mkdir qml
 mkdir lib
-cp -r %QTDIR%/qml/Machinekit qml/
-cp -r %QTDIR%/bin/libzmq.dll lib/
-7z a QtQuickVcp.zip qml/ lib/
+cp -r %QTDIR%/qml/Machinekit qml/ || goto :error
+cp -r %QTDIR%/bin/libzmq.dll lib/ || goto :error
+7z a QtQuickVcp.zip qml/ lib/ || goto :error
 
 :: rename deployment files
 set platform=%ARCH%
@@ -114,8 +114,8 @@ if %release% == 0 (
     set target2="MachinekitClient"
 )
 
-mv QtQuickVcp.zip %target1%-%version%-Windows-%platform%.zip
-mv MachinekitClient.zip %target2%-%version%-%platform%.zip
+mv QtQuickVcp.zip %target1%-%version%-Windows-%platform%.zip || goto :error
+mv MachinekitClient.zip %target2%-%version%-%platform%.zip || goto :error
 
 goto :EOF
 
