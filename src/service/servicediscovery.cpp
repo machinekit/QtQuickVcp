@@ -949,13 +949,14 @@ void ServiceDiscovery::removeItem(const QString &name, const QString &type)
     }
 
     auto serviceDiscoveryItems = m_serviceItemsMap.value(type);
-
-    for (int i = 0; i < serviceDiscoveryItems.count(); ++i)
+    for (auto iterator = serviceDiscoveryItems.begin(); iterator != serviceDiscoveryItems.end(); ++iterator)
     {
-        if (serviceDiscoveryItems.at(i)->name() == name)
+        const auto item = *iterator;
+        if (item->name() == name)
         {
-            stopItemQueries(serviceDiscoveryItems.at(i));
-            serviceDiscoveryItems.takeAt(i)->deleteLater();
+            stopItemQueries(item);
+            item->deleteLater();
+            serviceDiscoveryItems.erase(iterator);
             m_serviceItemsMap.insert(type, serviceDiscoveryItems);
             updateServiceType(type);
             return;
@@ -995,25 +996,27 @@ void ServiceDiscovery::purgeAllItems(const QString &serviceType)
     auto serviceDiscoveryItems = m_serviceItemsMap.value(serviceType);
     bool modified = false;
 
-    for (int i = (serviceDiscoveryItems.count()-1); i >= 0; i--)
+    for (auto iterator = serviceDiscoveryItems.begin(); iterator != serviceDiscoveryItems.end();)
     {
-        ServiceDiscoveryItem *serviceDiscoveryItem = serviceDiscoveryItems.at(i);
+        ServiceDiscoveryItem *item = *iterator;
 
-        if (!serviceDiscoveryItem->updated())    // remove old items
+        if (!item->updated())    // remove old items
         {
-            serviceDiscoveryItem->increaseErrorCount();
-            if (serviceDiscoveryItem->errorCount() > m_unicastErrorThreshold ) // if threshold is reached we cleanup
+            item->increaseErrorCount();
+            if (item->errorCount() > m_unicastErrorThreshold ) // if threshold is reached we cleanup
             {
-                stopItemQueries(serviceDiscoveryItem);
-                serviceDiscoveryItems.removeAt(i);
-                serviceDiscoveryItem->deleteLater();
+                stopItemQueries(item);
+                item->deleteLater();
+                serviceDiscoveryItems.erase(iterator);
                 modified = true;
+                continue; // make sure we do not update the iterator
             }
         }
         else
         {
-            serviceDiscoveryItem->setUpdated(false);
+            item->setUpdated(false);
         }
+        ++iterator; // next if we did not delete anything
     }
 
     if (modified)
