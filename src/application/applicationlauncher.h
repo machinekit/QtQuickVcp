@@ -56,6 +56,7 @@ public slots:
     void writeToStdin(int index, const QString &data);
     void call(const QString &command);
     void shutdown();
+    void setImportance(int index, int importance);
 
 private:
     QJsonValue m_launchers;

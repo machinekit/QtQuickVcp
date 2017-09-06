@@ -196,6 +196,11 @@ void LauncherBase::sendLauncherShutdown(Container &tx)
     sendLaunchercmdMessage(MT_LAUNCHER_SHUTDOWN, tx);
 }
 
+void LauncherBase::sendLauncherSet(Container &tx)
+{
+    sendLaunchercmdMessage(MT_LAUNCHER_SET, tx);
+}
+
 void LauncherBase::fsmDown()
 {
 #ifdef QT_DEBUG
