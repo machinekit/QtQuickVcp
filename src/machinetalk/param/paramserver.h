@@ -32,10 +32,10 @@ class ParamServer
     Q_ENUMS(State)
 
 public:
-    explicit ParamServer(QObject *parent = 0);
+    explicit ParamServer(QObject *parent = nullptr);
     ~ParamServer();
 
-    enum State {
+    enum class State {
         Down = 0,
         Up = 1,
     };
@@ -139,9 +139,9 @@ public slots:
     }
 
 
-    void sendParamMessage(ContainerType type, Container &tx);
-    void sendFullUpdate(Container &tx);
-    void sendIncrementalUpdate(Container &tx);
+    void sendParamMessage(const QByteArray &topic, ContainerType type, Container &tx);
+    void sendFullUpdate(const QByteArray &topic, Container &tx);
+    void sendIncrementalUpdate(const QByteArray &topic, Container &tx);
 
 protected:
 
@@ -164,7 +164,7 @@ private slots:
 
     void startParamcmdChannel();
     void stopParamcmdChannel();
-    void processParamcmdChannelMessage(const Container &rx);
+    void processParamcmdChannelMessage(const QByteArray &topic, const Container &rx);
 
     void startParamChannel();
     void stopParamChannel();
@@ -174,12 +174,12 @@ private slots:
     void fsmUp();
     void fsmUpDisconnectEvent();
 
-    virtual void incrementalUpdateReceived(const Container &rx) = 0;
+    virtual void incrementalUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
 
 signals:
     void paramcmdUriChanged(const QString &uri);
     void paramUriChanged(const QString &uri);
-    void paramcmdMessageReceived(const Container &rx);
+    void paramcmdMessageReceived(const QByteArray &topic, const Container &rx);
     void debugNameChanged(const QString &debugName);
     void stateChanged(ParamServer::State state);
     void errorStringChanged(const QString &errorString);

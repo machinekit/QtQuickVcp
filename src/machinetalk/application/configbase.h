@@ -30,10 +30,10 @@ class ConfigBase
     Q_ENUMS(State)
 
 public:
-    explicit ConfigBase(QObject *parent = 0);
+    explicit ConfigBase(QObject *parent = nullptr);
     ~ConfigBase();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Listing = 2,

@@ -30,10 +30,10 @@ class CommandBase
     Q_ENUMS(State)
 
 public:
-    explicit CommandBase(QObject *parent = 0);
+    explicit CommandBase(QObject *parent = nullptr);
     ~CommandBase();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Up = 2,

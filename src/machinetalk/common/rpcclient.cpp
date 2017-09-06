@@ -26,17 +26,16 @@ RpcClient::RpcClient(QObject *parent)
     , m_socketUri("")
     , m_context(nullptr)
     , m_socket(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
-    , m_heartbeatTimer(new QTimer(this))
     , m_heartbeatInterval(2500)
     , m_heartbeatLiveness(0)
     , m_heartbeatResetLiveness(5)
 {
 
-    m_heartbeatTimer->setSingleShot(true);
-    connect(m_heartbeatTimer, &QTimer::timeout, this, &RpcClient::heartbeatTimerTick);
+    m_heartbeatTimer.setSingleShot(true);
+    connect(&m_heartbeatTimer, &QTimer::timeout, this, &RpcClient::heartbeatTimerTick);
     // state machine
     connect(this, &RpcClient::fsmDownStart,
             this, &RpcClient::fsmDownStartEvent);
@@ -91,7 +90,7 @@ bool RpcClient::startSocket()
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        //updateState(SocketError, errorString); TODO
+        qCritical() << m_debugName << ":" << errorString;
         return false;
     }
 
@@ -124,15 +123,15 @@ void RpcClient::resetHeartbeatLiveness()
 
 void RpcClient::resetHeartbeatTimer()
 {
-    if (m_heartbeatTimer->isActive())
+    if (m_heartbeatTimer.isActive())
     {
-        m_heartbeatTimer->stop();
+        m_heartbeatTimer.stop();
     }
 
     if (m_heartbeatInterval > 0)
     {
-        m_heartbeatTimer->setInterval(m_heartbeatInterval);
-        m_heartbeatTimer->start();
+        m_heartbeatTimer.setInterval(m_heartbeatInterval);
+        m_heartbeatTimer.start();
     }
 }
 
@@ -143,7 +142,7 @@ void RpcClient::startHeartbeatTimer()
 
 void RpcClient::stopHeartbeatTimer()
 {
-    m_heartbeatTimer->stop();
+    m_heartbeatTimer.stop();
 }
 
 void RpcClient::heartbeatTimerTick()
@@ -151,21 +150,21 @@ void RpcClient::heartbeatTimerTick()
     m_heartbeatLiveness -= 1;
     if (m_heartbeatLiveness == 0)
     {
-         if (m_state == Up)
+         if (m_state == State::Up)
          {
              emit fsmUpHeartbeatTimeout(QPrivateSignal());
          }
-         else if (m_state == Trying)
+         else if (m_state == State::Trying)
          {
              emit fsmTryingHeartbeatTimeout(QPrivateSignal());
          }
          return;
     }
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
         emit fsmUpHeartbeatTick(QPrivateSignal());
     }
-    else if (m_state == Trying)
+    else if (m_state == State::Trying)
     {
         emit fsmTryingHeartbeatTick(QPrivateSignal());
     }
@@ -175,7 +174,7 @@ void RpcClient::heartbeatTimerTick()
 void RpcClient::processSocketMessage(const QList<QByteArray> &messageList)
 {
     Container &rx = m_socketRx;
-    rx.ParseFromArray(messageList.at(0).data(), messageList.at(0).size());
+    rx.ParseFromArray(messageList.last().data(), messageList.last().size());
 
 #ifdef QT_DEBUG
     std::string s;
@@ -185,12 +184,12 @@ void RpcClient::processSocketMessage(const QList<QByteArray> &messageList)
 
     // react to any incoming message
 
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
         emit fsmTryingAnyMsgReceived(QPrivateSignal());
     }
 
-    else if (m_state == Up)
+    else if (m_state == State::Up)
     {
         emit fsmUpAnyMsgReceived(QPrivateSignal());
     }
@@ -226,12 +225,12 @@ void RpcClient::sendSocketMessage(ContainerType type, Container &tx)
     }
     tx.Clear();
 
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
         emit fsmUpAnyMsgSent(QPrivateSignal());
     }
 
-    else if (m_state == Trying)
+    else if (m_state == State::Trying)
     {
         emit fsmTryingAnyMsgSent(QPrivateSignal());
     }
@@ -254,13 +253,13 @@ void RpcClient::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void RpcClient::fsmDownStartEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event START");
@@ -282,13 +281,13 @@ void RpcClient::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void RpcClient::fsmTryingAnyMsgReceivedEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event ANY MSG RECEIVED");
@@ -305,7 +304,7 @@ void RpcClient::fsmTryingAnyMsgReceivedEvent()
 
 void RpcClient::fsmTryingHeartbeatTimeoutEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TIMEOUT");
@@ -320,7 +319,7 @@ void RpcClient::fsmTryingHeartbeatTimeoutEvent()
 
 void RpcClient::fsmTryingHeartbeatTickEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TICK");
@@ -332,7 +331,7 @@ void RpcClient::fsmTryingHeartbeatTickEvent()
 
 void RpcClient::fsmTryingAnyMsgSentEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event ANY MSG SENT");
@@ -344,7 +343,7 @@ void RpcClient::fsmTryingAnyMsgSentEvent()
 
 void RpcClient::fsmTryingStopEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event STOP");
@@ -364,13 +363,13 @@ void RpcClient::fsmUp()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-    m_state = Up;
+    m_state = State::Up;
     emit stateChanged(m_state);
 }
 
 void RpcClient::fsmUpHeartbeatTimeoutEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TIMEOUT");
@@ -389,7 +388,7 @@ void RpcClient::fsmUpHeartbeatTimeoutEvent()
 
 void RpcClient::fsmUpHeartbeatTickEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TICK");
@@ -401,7 +400,7 @@ void RpcClient::fsmUpHeartbeatTickEvent()
 
 void RpcClient::fsmUpAnyMsgReceivedEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event ANY MSG RECEIVED");
@@ -413,7 +412,7 @@ void RpcClient::fsmUpAnyMsgReceivedEvent()
 
 void RpcClient::fsmUpAnyMsgSentEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event ANY MSG SENT");
@@ -425,7 +424,7 @@ void RpcClient::fsmUpAnyMsgSentEvent()
 
 void RpcClient::fsmUpStopEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event STOP");
@@ -443,7 +442,7 @@ void RpcClient::fsmUpStopEvent()
 /** start trigger function */
 void RpcClient::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownStart(QPrivateSignal());
     }
 }
@@ -451,10 +450,10 @@ void RpcClient::start()
 /** stop trigger function */
 void RpcClient::stop()
 {
-    if (m_state == Trying) {
+    if (m_state == State::Trying) {
         emit fsmTryingStop(QPrivateSignal());
     }
-    else if (m_state == Up) {
+    else if (m_state == State::Up) {
         emit fsmUpStop(QPrivateSignal());
     }
 }

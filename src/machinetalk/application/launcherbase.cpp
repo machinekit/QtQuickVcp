@@ -27,8 +27,8 @@ LauncherBase::LauncherBase(QObject *parent)
     , m_debugName("Launcher Base")
     , m_launchercmdChannel(nullptr)
     , m_launcherChannel(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
 {
     // initialize launchercmd channel
@@ -201,13 +201,13 @@ void LauncherBase::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void LauncherBase::fsmDownConnectEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECT");
@@ -226,13 +226,13 @@ void LauncherBase::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void LauncherBase::fsmTryingLaunchercmdUpEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event LAUNCHERCMD UP");
@@ -248,7 +248,7 @@ void LauncherBase::fsmTryingLaunchercmdUpEvent()
 
 void LauncherBase::fsmTryingDisconnectEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -268,13 +268,13 @@ void LauncherBase::fsmSyncing()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCING");
 #endif
-    m_state = Syncing;
+    m_state = State::Syncing;
     emit stateChanged(m_state);
 }
 
 void LauncherBase::fsmSyncingLaunchercmdTryingEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event LAUNCHERCMD TRYING");
@@ -290,7 +290,7 @@ void LauncherBase::fsmSyncingLaunchercmdTryingEvent()
 
 void LauncherBase::fsmSyncingLauncherUpEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event LAUNCHER UP");
@@ -305,7 +305,7 @@ void LauncherBase::fsmSyncingLauncherUpEvent()
 
 void LauncherBase::fsmSyncingDisconnectEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -325,7 +325,7 @@ void LauncherBase::fsmSynced()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCED");
 #endif
-    m_state = Synced;
+    m_state = State::Synced;
     emit stateChanged(m_state);
 }
 void LauncherBase::fsmSyncedEntry()
@@ -339,7 +339,7 @@ void LauncherBase::fsmSyncedExit()
 
 void LauncherBase::fsmSyncedLauncherTryingEvent()
 {
-    if (m_state == Synced)
+    if (m_state == State::Synced)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event LAUNCHER TRYING");
@@ -354,7 +354,7 @@ void LauncherBase::fsmSyncedLauncherTryingEvent()
 
 void LauncherBase::fsmSyncedLaunchercmdTryingEvent()
 {
-    if (m_state == Synced)
+    if (m_state == State::Synced)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event LAUNCHERCMD TRYING");
@@ -370,7 +370,7 @@ void LauncherBase::fsmSyncedLaunchercmdTryingEvent()
 
 void LauncherBase::fsmSyncedDisconnectEvent()
 {
-    if (m_state == Synced)
+    if (m_state == State::Synced)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -388,21 +388,21 @@ void LauncherBase::fsmSyncedDisconnectEvent()
 void LauncherBase::launchercmdChannelStateChanged(common::RpcClient::State state)
 {
 
-    if (state == common::RpcClient::Trying)
+    if (state == common::RpcClient::State::Trying)
     {
-        if (m_state == Syncing)
+        if (m_state == State::Syncing)
         {
             emit fsmSyncingLaunchercmdTrying(QPrivateSignal());
         }
-        else if (m_state == Synced)
+        else if (m_state == State::Synced)
         {
             emit fsmSyncedLaunchercmdTrying(QPrivateSignal());
         }
     }
 
-    else if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::State::Up)
     {
-        if (m_state == Trying)
+        if (m_state == State::Trying)
         {
             emit fsmTryingLaunchercmdUp(QPrivateSignal());
         }
@@ -412,17 +412,17 @@ void LauncherBase::launchercmdChannelStateChanged(common::RpcClient::State state
 void LauncherBase::launcherChannelStateChanged(application::LauncherSubscribe::State state)
 {
 
-    if (state == application::LauncherSubscribe::Trying)
+    if (state == application::LauncherSubscribe::State::Trying)
     {
-        if (m_state == Synced)
+        if (m_state == State::Synced)
         {
             emit fsmSyncedLauncherTrying(QPrivateSignal());
         }
     }
 
-    else if (state == application::LauncherSubscribe::Up)
+    else if (state == application::LauncherSubscribe::State::Up)
     {
-        if (m_state == Syncing)
+        if (m_state == State::Syncing)
         {
             emit fsmSyncingLauncherUp(QPrivateSignal());
         }
@@ -432,7 +432,7 @@ void LauncherBase::launcherChannelStateChanged(application::LauncherSubscribe::S
 /** start trigger function */
 void LauncherBase::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownConnect(QPrivateSignal());
     }
 }
@@ -440,13 +440,13 @@ void LauncherBase::start()
 /** stop trigger function */
 void LauncherBase::stop()
 {
-    if (m_state == Trying) {
+    if (m_state == State::Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Syncing) {
+    else if (m_state == State::Syncing) {
         emit fsmSyncingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Synced) {
+    else if (m_state == State::Synced) {
         emit fsmSyncedDisconnect(QPrivateSignal());
     }
 }

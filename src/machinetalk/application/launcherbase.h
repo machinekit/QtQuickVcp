@@ -33,10 +33,10 @@ class LauncherBase
     Q_ENUMS(State)
 
 public:
-    explicit LauncherBase(QObject *parent = 0);
+    explicit LauncherBase(QObject *parent = nullptr);
     ~LauncherBase();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Syncing = 2,

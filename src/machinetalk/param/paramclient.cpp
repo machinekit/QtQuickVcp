@@ -27,8 +27,8 @@ ParamClient::ParamClient(QObject *parent)
     , m_debugName("Param Client")
     , m_paramcmdChannel(nullptr)
     , m_paramChannel(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
 {
     // initialize paramcmd channel
@@ -162,13 +162,13 @@ void ParamClient::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void ParamClient::fsmDownConnectEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECT");
@@ -188,13 +188,13 @@ void ParamClient::fsmConnecting()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State CONNECTING");
 #endif
-    m_state = Connecting;
+    m_state = State::Connecting;
     emit stateChanged(m_state);
 }
 
 void ParamClient::fsmConnectingParamcmdUpEvent()
 {
-    if (m_state == Connecting)
+    if (m_state == State::Connecting)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event PARAMCMD UP");
@@ -209,7 +209,7 @@ void ParamClient::fsmConnectingParamcmdUpEvent()
 
 void ParamClient::fsmConnectingParamUpEvent()
 {
-    if (m_state == Connecting)
+    if (m_state == State::Connecting)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event PARAM UP");
@@ -224,7 +224,7 @@ void ParamClient::fsmConnectingParamUpEvent()
 
 void ParamClient::fsmConnectingDisconnectEvent()
 {
-    if (m_state == Connecting)
+    if (m_state == State::Connecting)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -245,13 +245,13 @@ void ParamClient::fsmSyncing()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCING");
 #endif
-    m_state = Syncing;
+    m_state = State::Syncing;
     emit stateChanged(m_state);
 }
 
 void ParamClient::fsmSyncingParamUpEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event PARAM UP");
@@ -266,7 +266,7 @@ void ParamClient::fsmSyncingParamUpEvent()
 
 void ParamClient::fsmSyncingParamcmdTryingEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event PARAMCMD TRYING");
@@ -281,7 +281,7 @@ void ParamClient::fsmSyncingParamcmdTryingEvent()
 
 void ParamClient::fsmSyncingDisconnectEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -302,13 +302,13 @@ void ParamClient::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void ParamClient::fsmTryingParamcmdUpEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event PARAMCMD UP");
@@ -323,7 +323,7 @@ void ParamClient::fsmTryingParamcmdUpEvent()
 
 void ParamClient::fsmTryingParamTryingEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event PARAM TRYING");
@@ -338,7 +338,7 @@ void ParamClient::fsmTryingParamTryingEvent()
 
 void ParamClient::fsmTryingDisconnectEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -359,7 +359,7 @@ void ParamClient::fsmUp()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-    m_state = Up;
+    m_state = State::Up;
     emit stateChanged(m_state);
 }
 void ParamClient::fsmUpEntry()
@@ -374,7 +374,7 @@ void ParamClient::fsmUpExit()
 
 void ParamClient::fsmUpParamcmdTryingEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event PARAMCMD TRYING");
@@ -389,7 +389,7 @@ void ParamClient::fsmUpParamcmdTryingEvent()
 
 void ParamClient::fsmUpParamTryingEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event PARAM TRYING");
@@ -404,7 +404,7 @@ void ParamClient::fsmUpParamTryingEvent()
 
 void ParamClient::fsmUpDisconnectEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -423,25 +423,25 @@ void ParamClient::fsmUpDisconnectEvent()
 void ParamClient::paramcmdChannelStateChanged(common::RpcClient::State state)
 {
 
-    if (state == common::RpcClient::Trying)
+    if (state == common::RpcClient::State::Trying)
     {
-        if (m_state == Syncing)
+        if (m_state == State::Syncing)
         {
             emit fsmSyncingParamcmdTrying(QPrivateSignal());
         }
-        else if (m_state == Up)
+        else if (m_state == State::Up)
         {
             emit fsmUpParamcmdTrying(QPrivateSignal());
         }
     }
 
-    else if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::State::Up)
     {
-        if (m_state == Trying)
+        if (m_state == State::Trying)
         {
             emit fsmTryingParamcmdUp(QPrivateSignal());
         }
-        else if (m_state == Connecting)
+        else if (m_state == State::Connecting)
         {
             emit fsmConnectingParamcmdUp(QPrivateSignal());
         }
@@ -451,25 +451,25 @@ void ParamClient::paramcmdChannelStateChanged(common::RpcClient::State state)
 void ParamClient::paramChannelStateChanged(common::Subscribe::State state)
 {
 
-    if (state == common::Subscribe::Trying)
+    if (state == common::Subscribe::State::Trying)
     {
-        if (m_state == Trying)
+        if (m_state == State::Trying)
         {
             emit fsmTryingParamTrying(QPrivateSignal());
         }
-        else if (m_state == Up)
+        else if (m_state == State::Up)
         {
             emit fsmUpParamTrying(QPrivateSignal());
         }
     }
 
-    else if (state == common::Subscribe::Up)
+    else if (state == common::Subscribe::State::Up)
     {
-        if (m_state == Syncing)
+        if (m_state == State::Syncing)
         {
             emit fsmSyncingParamUp(QPrivateSignal());
         }
-        else if (m_state == Connecting)
+        else if (m_state == State::Connecting)
         {
             emit fsmConnectingParamUp(QPrivateSignal());
         }
@@ -479,7 +479,7 @@ void ParamClient::paramChannelStateChanged(common::Subscribe::State state)
 /** start trigger function */
 void ParamClient::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownConnect(QPrivateSignal());
     }
 }
@@ -487,16 +487,16 @@ void ParamClient::start()
 /** stop trigger function */
 void ParamClient::stop()
 {
-    if (m_state == Connecting) {
+    if (m_state == State::Connecting) {
         emit fsmConnectingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Syncing) {
+    else if (m_state == State::Syncing) {
         emit fsmSyncingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Trying) {
+    else if (m_state == State::Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Up) {
+    else if (m_state == State::Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }

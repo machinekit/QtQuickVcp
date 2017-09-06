@@ -26,8 +26,8 @@ ConfigBase::ConfigBase(QObject *parent)
     , m_ready(false)
     , m_debugName("Config Base")
     , m_configChannel(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
 {
     // initialize config channel
@@ -95,7 +95,7 @@ void ConfigBase::processConfigChannelMessage(const Container &rx)
     if (rx.type() == MT_DESCRIBE_APPLICATION)
     {
 
-        if (m_state == Listing)
+        if (m_state == State::Listing)
         {
             emit fsmListingApplicationRetrieved(QPrivateSignal());
         }
@@ -106,7 +106,7 @@ void ConfigBase::processConfigChannelMessage(const Container &rx)
     else if (rx.type() == MT_APPLICATION_DETAIL)
     {
 
-        if (m_state == Loading)
+        if (m_state == State::Loading)
         {
             emit fsmLoadingApplicationLoaded(QPrivateSignal());
         }
@@ -135,7 +135,7 @@ void ConfigBase::sendConfigMessage(ContainerType type, Container &tx)
     if (type == MT_RETRIEVE_APPLICATION)
     {
 
-        if (m_state == Up)
+        if (m_state == State::Up)
         {
             emit fsmUpLoadApplication(QPrivateSignal());
         }
@@ -158,13 +158,13 @@ void ConfigBase::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void ConfigBase::fsmDownConnectEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECT");
@@ -183,13 +183,13 @@ void ConfigBase::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void ConfigBase::fsmTryingConfigUpEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONFIG UP");
@@ -205,7 +205,7 @@ void ConfigBase::fsmTryingConfigUpEvent()
 
 void ConfigBase::fsmTryingDisconnectEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -224,13 +224,13 @@ void ConfigBase::fsmListing()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State LISTING");
 #endif
-    m_state = Listing;
+    m_state = State::Listing;
     emit stateChanged(m_state);
 }
 
 void ConfigBase::fsmListingApplicationRetrievedEvent()
 {
-    if (m_state == Listing)
+    if (m_state == State::Listing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event APPLICATION RETRIEVED");
@@ -245,7 +245,7 @@ void ConfigBase::fsmListingApplicationRetrievedEvent()
 
 void ConfigBase::fsmListingConfigTryingEvent()
 {
-    if (m_state == Listing)
+    if (m_state == State::Listing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONFIG TRYING");
@@ -260,7 +260,7 @@ void ConfigBase::fsmListingConfigTryingEvent()
 
 void ConfigBase::fsmListingDisconnectEvent()
 {
-    if (m_state == Listing)
+    if (m_state == State::Listing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -279,7 +279,7 @@ void ConfigBase::fsmUp()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-    m_state = Up;
+    m_state = State::Up;
     emit stateChanged(m_state);
 }
 void ConfigBase::fsmUpEntry()
@@ -293,7 +293,7 @@ void ConfigBase::fsmUpExit()
 
 void ConfigBase::fsmUpConfigTryingEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONFIG TRYING");
@@ -308,7 +308,7 @@ void ConfigBase::fsmUpConfigTryingEvent()
 
 void ConfigBase::fsmUpLoadApplicationEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event LOAD APPLICATION");
@@ -323,7 +323,7 @@ void ConfigBase::fsmUpLoadApplicationEvent()
 
 void ConfigBase::fsmUpDisconnectEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -342,13 +342,13 @@ void ConfigBase::fsmLoading()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State LOADING");
 #endif
-    m_state = Loading;
+    m_state = State::Loading;
     emit stateChanged(m_state);
 }
 
 void ConfigBase::fsmLoadingApplicationLoadedEvent()
 {
-    if (m_state == Loading)
+    if (m_state == State::Loading)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event APPLICATION LOADED");
@@ -363,7 +363,7 @@ void ConfigBase::fsmLoadingApplicationLoadedEvent()
 
 void ConfigBase::fsmLoadingConfigTryingEvent()
 {
-    if (m_state == Loading)
+    if (m_state == State::Loading)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONFIG TRYING");
@@ -378,7 +378,7 @@ void ConfigBase::fsmLoadingConfigTryingEvent()
 
 void ConfigBase::fsmLoadingDisconnectEvent()
 {
-    if (m_state == Loading)
+    if (m_state == State::Loading)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -395,25 +395,25 @@ void ConfigBase::fsmLoadingDisconnectEvent()
 void ConfigBase::configChannelStateChanged(common::RpcClient::State state)
 {
 
-    if (state == common::RpcClient::Trying)
+    if (state == common::RpcClient::State::Trying)
     {
-        if (m_state == Listing)
+        if (m_state == State::Listing)
         {
             emit fsmListingConfigTrying(QPrivateSignal());
         }
-        else if (m_state == Up)
+        else if (m_state == State::Up)
         {
             emit fsmUpConfigTrying(QPrivateSignal());
         }
-        else if (m_state == Loading)
+        else if (m_state == State::Loading)
         {
             emit fsmLoadingConfigTrying(QPrivateSignal());
         }
     }
 
-    else if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::State::Up)
     {
-        if (m_state == Trying)
+        if (m_state == State::Trying)
         {
             emit fsmTryingConfigUp(QPrivateSignal());
         }
@@ -423,7 +423,7 @@ void ConfigBase::configChannelStateChanged(common::RpcClient::State state)
 /** start trigger function */
 void ConfigBase::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownConnect(QPrivateSignal());
     }
 }
@@ -431,16 +431,16 @@ void ConfigBase::start()
 /** stop trigger function */
 void ConfigBase::stop()
 {
-    if (m_state == Trying) {
+    if (m_state == State::Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Listing) {
+    else if (m_state == State::Listing) {
         emit fsmListingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Up) {
+    else if (m_state == State::Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
-    else if (m_state == Loading) {
+    else if (m_state == State::Loading) {
         emit fsmLoadingDisconnect(QPrivateSignal());
     }
 }

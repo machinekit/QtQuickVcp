@@ -27,8 +27,8 @@ ParamServer::ParamServer(QObject *parent)
     , m_debugName("Param Server")
     , m_paramcmdChannel(nullptr)
     , m_paramChannel(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
 {
     // initialize paramcmd channel
@@ -78,31 +78,31 @@ void ParamServer::stopParamChannel()
 }
 
 /** Processes all message received on paramcmd */
-void ParamServer::processParamcmdChannelMessage(const Container &rx)
+void ParamServer::processParamcmdChannelMessage(const QByteArray &topic, const Container &rx)
 {
 
     // react to incremental update message
     if (rx.type() == MT_INCREMENTAL_UPDATE)
     {
-        incrementalUpdateReceived(rx);
+        incrementalUpdateReceived(topic, rx);
     }
 
-    emit paramcmdMessageReceived(rx);
+    emit paramcmdMessageReceived(topic, rx);
 }
 
-void ParamServer::sendParamMessage(ContainerType type, Container &tx)
+void ParamServer::sendParamMessage(const QByteArray &topic, ContainerType type, Container &tx)
 {
-    m_paramChannel->sendSocketMessage(type, tx);
+    m_paramChannel->sendSocketMessage(topic, type, tx);
 }
 
-void ParamServer::sendFullUpdate(Container &tx)
+void ParamServer::sendFullUpdate(const QByteArray &topic, Container &tx)
 {
-    sendParamMessage(MT_FULL_UPDATE, tx);
+    sendParamMessage(topic, MT_FULL_UPDATE, tx);
 }
 
-void ParamServer::sendIncrementalUpdate(Container &tx)
+void ParamServer::sendIncrementalUpdate(const QByteArray &topic, Container &tx)
 {
-    sendParamMessage(MT_INCREMENTAL_UPDATE, tx);
+    sendParamMessage(topic, MT_INCREMENTAL_UPDATE, tx);
 }
 
 void ParamServer::fsmDown()
@@ -110,13 +110,13 @@ void ParamServer::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void ParamServer::fsmDownConnectEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECT");
@@ -136,13 +136,13 @@ void ParamServer::fsmUp()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-    m_state = Up;
+    m_state = State::Up;
     emit stateChanged(m_state);
 }
 
 void ParamServer::fsmUpDisconnectEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");

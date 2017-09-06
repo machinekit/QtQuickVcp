@@ -30,10 +30,10 @@ class StatusBase
     Q_ENUMS(State)
 
 public:
-    explicit StatusBase(QObject *parent = 0);
+    explicit StatusBase(QObject *parent = nullptr);
     ~StatusBase();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Syncing = 2,

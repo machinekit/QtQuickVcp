@@ -27,8 +27,8 @@ RemoteComponentBase::RemoteComponentBase(QObject *parent)
     , m_debugName("Remote Component Base")
     , m_halrcmdChannel(nullptr)
     , m_halrcompChannel(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
 {
     // initialize halrcmd channel
@@ -156,7 +156,7 @@ void RemoteComponentBase::processHalrcmdChannelMessage(const Container &rx)
     if (rx.type() == MT_HALRCOMP_BIND_CONFIRM)
     {
 
-        if (m_state == Binding)
+        if (m_state == State::Binding)
         {
             emit fsmBindingBindConfirmed(QPrivateSignal());
         }
@@ -174,7 +174,7 @@ void RemoteComponentBase::processHalrcmdChannelMessage(const Container &rx)
         }
         emit errorStringChanged(m_errorString);
 
-        if (m_state == Binding)
+        if (m_state == State::Binding)
         {
             emit fsmBindingBindRejected(QPrivateSignal());
         }
@@ -192,7 +192,7 @@ void RemoteComponentBase::processHalrcmdChannelMessage(const Container &rx)
         }
         emit errorStringChanged(m_errorString);
 
-        if (m_state == Synced)
+        if (m_state == State::Synced)
         {
             emit fsmSyncedSetRejected(QPrivateSignal());
         }
@@ -229,7 +229,7 @@ void RemoteComponentBase::processHalrcompChannelMessage(const QByteArray &topic,
         }
         emit errorStringChanged(m_errorString);
 
-        if (m_state == Syncing)
+        if (m_state == State::Syncing)
         {
             emit fsmSyncingSyncFailed(QPrivateSignal());
         }
@@ -245,7 +245,7 @@ void RemoteComponentBase::sendHalrcmdMessage(ContainerType type, Container &tx)
     if (type == MT_HALRCOMP_BIND)
     {
 
-        if (m_state == Bind)
+        if (m_state == State::Bind)
         {
             emit fsmBindHalrcompBindMsgSent(QPrivateSignal());
         }
@@ -253,7 +253,7 @@ void RemoteComponentBase::sendHalrcmdMessage(ContainerType type, Container &tx)
     else if (type == MT_HALRCOMP_SET)
     {
 
-        if (m_state == Synced)
+        if (m_state == State::Synced)
         {
             emit fsmSyncedHalrcompSetMsgSent(QPrivateSignal());
         }
@@ -275,7 +275,7 @@ void RemoteComponentBase::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 void RemoteComponentBase::fsmDownEntry()
@@ -289,7 +289,7 @@ void RemoteComponentBase::fsmDownExit()
 
 void RemoteComponentBase::fsmDownConnectEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECT");
@@ -309,13 +309,13 @@ void RemoteComponentBase::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void RemoteComponentBase::fsmTryingHalrcmdUpEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HALRCMD UP");
@@ -331,7 +331,7 @@ void RemoteComponentBase::fsmTryingHalrcmdUpEvent()
 
 void RemoteComponentBase::fsmTryingDisconnectEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -352,13 +352,13 @@ void RemoteComponentBase::fsmBind()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State BIND");
 #endif
-    m_state = Bind;
+    m_state = State::Bind;
     emit stateChanged(m_state);
 }
 
 void RemoteComponentBase::fsmBindHalrcompBindMsgSentEvent()
 {
-    if (m_state == Bind)
+    if (m_state == State::Bind)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HALRCOMP BIND MSG SENT");
@@ -373,7 +373,7 @@ void RemoteComponentBase::fsmBindHalrcompBindMsgSentEvent()
 
 void RemoteComponentBase::fsmBindNoBindEvent()
 {
-    if (m_state == Bind)
+    if (m_state == State::Bind)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event NO BIND");
@@ -392,13 +392,13 @@ void RemoteComponentBase::fsmBinding()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State BINDING");
 #endif
-    m_state = Binding;
+    m_state = State::Binding;
     emit stateChanged(m_state);
 }
 
 void RemoteComponentBase::fsmBindingBindConfirmedEvent()
 {
-    if (m_state == Binding)
+    if (m_state == State::Binding)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event BIND CONFIRMED");
@@ -414,7 +414,7 @@ void RemoteComponentBase::fsmBindingBindConfirmedEvent()
 
 void RemoteComponentBase::fsmBindingBindRejectedEvent()
 {
-    if (m_state == Binding)
+    if (m_state == State::Binding)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event BIND REJECTED");
@@ -430,7 +430,7 @@ void RemoteComponentBase::fsmBindingBindRejectedEvent()
 
 void RemoteComponentBase::fsmBindingHalrcmdTryingEvent()
 {
-    if (m_state == Binding)
+    if (m_state == State::Binding)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HALRCMD TRYING");
@@ -445,7 +445,7 @@ void RemoteComponentBase::fsmBindingHalrcmdTryingEvent()
 
 void RemoteComponentBase::fsmBindingDisconnectEvent()
 {
-    if (m_state == Binding)
+    if (m_state == State::Binding)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -466,13 +466,13 @@ void RemoteComponentBase::fsmSyncing()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCING");
 #endif
-    m_state = Syncing;
+    m_state = State::Syncing;
     emit stateChanged(m_state);
 }
 
 void RemoteComponentBase::fsmSyncingHalrcmdTryingEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HALRCMD TRYING");
@@ -488,7 +488,7 @@ void RemoteComponentBase::fsmSyncingHalrcmdTryingEvent()
 
 void RemoteComponentBase::fsmSyncingHalrcompUpEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HALRCOMP UP");
@@ -503,7 +503,7 @@ void RemoteComponentBase::fsmSyncingHalrcompUpEvent()
 
 void RemoteComponentBase::fsmSyncingSyncFailedEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event SYNC FAILED");
@@ -520,7 +520,7 @@ void RemoteComponentBase::fsmSyncingSyncFailedEvent()
 
 void RemoteComponentBase::fsmSyncingDisconnectEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -541,13 +541,13 @@ void RemoteComponentBase::fsmSync()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNC");
 #endif
-    m_state = Sync;
+    m_state = State::Sync;
     emit stateChanged(m_state);
 }
 
 void RemoteComponentBase::fsmSyncPinsSyncedEvent()
 {
-    if (m_state == Sync)
+    if (m_state == State::Sync)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event PINS SYNCED");
@@ -565,7 +565,7 @@ void RemoteComponentBase::fsmSynced()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCED");
 #endif
-    m_state = Synced;
+    m_state = State::Synced;
     emit stateChanged(m_state);
 }
 void RemoteComponentBase::fsmSyncedEntry()
@@ -575,7 +575,7 @@ void RemoteComponentBase::fsmSyncedEntry()
 
 void RemoteComponentBase::fsmSyncedHalrcompTryingEvent()
 {
-    if (m_state == Synced)
+    if (m_state == State::Synced)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HALRCOMP TRYING");
@@ -592,7 +592,7 @@ void RemoteComponentBase::fsmSyncedHalrcompTryingEvent()
 
 void RemoteComponentBase::fsmSyncedHalrcmdTryingEvent()
 {
-    if (m_state == Synced)
+    if (m_state == State::Synced)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HALRCMD TRYING");
@@ -610,7 +610,7 @@ void RemoteComponentBase::fsmSyncedHalrcmdTryingEvent()
 
 void RemoteComponentBase::fsmSyncedSetRejectedEvent()
 {
-    if (m_state == Synced)
+    if (m_state == State::Synced)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event SET REJECTED");
@@ -627,7 +627,7 @@ void RemoteComponentBase::fsmSyncedSetRejectedEvent()
 
 void RemoteComponentBase::fsmSyncedHalrcompSetMsgSentEvent()
 {
-    if (m_state == Synced)
+    if (m_state == State::Synced)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HALRCOMP SET MSG SENT");
@@ -638,7 +638,7 @@ void RemoteComponentBase::fsmSyncedHalrcompSetMsgSentEvent()
 
 void RemoteComponentBase::fsmSyncedDisconnectEvent()
 {
-    if (m_state == Synced)
+    if (m_state == State::Synced)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -659,7 +659,7 @@ void RemoteComponentBase::fsmError()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State ERROR");
 #endif
-    m_state = Error;
+    m_state = State::Error;
     emit stateChanged(m_state);
 }
 void RemoteComponentBase::fsmErrorEntry()
@@ -669,7 +669,7 @@ void RemoteComponentBase::fsmErrorEntry()
 
 void RemoteComponentBase::fsmErrorDisconnectEvent()
 {
-    if (m_state == Error)
+    if (m_state == State::Error)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -688,25 +688,25 @@ void RemoteComponentBase::fsmErrorDisconnectEvent()
 void RemoteComponentBase::halrcmdChannelStateChanged(common::RpcClient::State state)
 {
 
-    if (state == common::RpcClient::Trying)
+    if (state == common::RpcClient::State::Trying)
     {
-        if (m_state == Syncing)
+        if (m_state == State::Syncing)
         {
             emit fsmSyncingHalrcmdTrying(QPrivateSignal());
         }
-        else if (m_state == Synced)
+        else if (m_state == State::Synced)
         {
             emit fsmSyncedHalrcmdTrying(QPrivateSignal());
         }
-        else if (m_state == Binding)
+        else if (m_state == State::Binding)
         {
             emit fsmBindingHalrcmdTrying(QPrivateSignal());
         }
     }
 
-    else if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::State::Up)
     {
-        if (m_state == Trying)
+        if (m_state == State::Trying)
         {
             emit fsmTryingHalrcmdUp(QPrivateSignal());
         }
@@ -716,17 +716,17 @@ void RemoteComponentBase::halrcmdChannelStateChanged(common::RpcClient::State st
 void RemoteComponentBase::halrcompChannelStateChanged(halremote::HalrcompSubscribe::State state)
 {
 
-    if (state == halremote::HalrcompSubscribe::Trying)
+    if (state == halremote::HalrcompSubscribe::State::Trying)
     {
-        if (m_state == Synced)
+        if (m_state == State::Synced)
         {
             emit fsmSyncedHalrcompTrying(QPrivateSignal());
         }
     }
 
-    else if (state == halremote::HalrcompSubscribe::Up)
+    else if (state == halremote::HalrcompSubscribe::State::Up)
     {
-        if (m_state == Syncing)
+        if (m_state == State::Syncing)
         {
             emit fsmSyncingHalrcompUp(QPrivateSignal());
         }
@@ -736,7 +736,7 @@ void RemoteComponentBase::halrcompChannelStateChanged(halremote::HalrcompSubscri
 /** no bind trigger function */
 void RemoteComponentBase::noBind()
 {
-    if (m_state == Bind) {
+    if (m_state == State::Bind) {
         emit fsmBindNoBind(QPrivateSignal());
     }
 }
@@ -744,7 +744,7 @@ void RemoteComponentBase::noBind()
 /** pins synced trigger function */
 void RemoteComponentBase::pinsSynced()
 {
-    if (m_state == Sync) {
+    if (m_state == State::Sync) {
         emit fsmSyncPinsSynced(QPrivateSignal());
     }
 }
@@ -752,7 +752,7 @@ void RemoteComponentBase::pinsSynced()
 /** start trigger function */
 void RemoteComponentBase::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownConnect(QPrivateSignal());
     }
 }
@@ -760,19 +760,19 @@ void RemoteComponentBase::start()
 /** stop trigger function */
 void RemoteComponentBase::stop()
 {
-    if (m_state == Trying) {
+    if (m_state == State::Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Binding) {
+    else if (m_state == State::Binding) {
         emit fsmBindingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Syncing) {
+    else if (m_state == State::Syncing) {
         emit fsmSyncingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Synced) {
+    else if (m_state == State::Synced) {
         emit fsmSyncedDisconnect(QPrivateSignal());
     }
-    else if (m_state == Error) {
+    else if (m_state == State::Error) {
         emit fsmErrorDisconnect(QPrivateSignal());
     }
 }
