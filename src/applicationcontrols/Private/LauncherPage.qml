@@ -130,6 +130,15 @@ Item {
                                 visible: item.running
                             }
 
+                            StarButton {
+                                anchors.left: parent.left
+                                anchors.top: parent.top
+                                width: root.viewMode === "list" ? parent.height : parent.width * 0.2
+                                height: width
+                                liked: item.importance !== 0
+                                onClicked: applicationLauncher.setImportance(item.index, !item.importance)
+                            }
+
                             Button {
                                 anchors.right: parent.right
                                 anchors.top: parent.top
@@ -177,11 +186,12 @@ Item {
                     var items = applicationLauncher.launchers;
                     var running = false;
 
+                    // move running and important items to the front
                     for (var i = 0; i < items.length; ++i) {
                         items[i].index = i;  // store the original index
-                        if (items[i].running) {
+                        if (items[i].running || (items[i].importance > 0)) {
                             running = true;
-                            var item = items[i];  // move the running items to the front
+                            var item = items[i];
                             items.splice(i, 1);
                             items.unshift(item);
                         }

@@ -6,7 +6,8 @@ PRIVATE_QML_FILES += \
     $$PWD/ConfigPage.qml \
     $$PWD/AppPage.qml \
     $$PWD/LoadingPage.qml \
-    $$PWD/ErrorPage.qml
+    $$PWD/ErrorPage.qml \
+    $$PWD/StarButton.qml
 
 QML_FILES += $$PRIVATE_QML_FILES
 

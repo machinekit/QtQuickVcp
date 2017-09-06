@@ -6,3 +6,4 @@ ConfigPage 1.0 ConfigPage.qml
 AppPage 1.0 AppPage.qml
 LoadingPage 1.0 LoadingPage.qml
 ErrorPage 1.0 ErrorPage.qml
+StarButton 1.0 StarButton.qml
