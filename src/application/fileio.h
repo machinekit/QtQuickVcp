@@ -11,7 +11,7 @@ namespace qtquickvcp {
 class FileIO : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QUrl fileUrl READ fileUrl WRITE setFileName NOTIFY fileNameChanged)
+    Q_PROPERTY(QUrl fileUrl READ fileUrl WRITE setFileUrl NOTIFY fileUrlChanged)
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
     Q_PROPERTY(bool working READ working NOTIFY workingChanged)
 
@@ -38,13 +38,13 @@ public slots:
     void write();
     void read();
 
-    void setFileName(const QUrl &fileName)
+    void setFileUrl(const QUrl &fileUrl)
     {
-        if (m_fileUrl == fileName)
+        if (m_fileUrl == fileUrl)
             return;
 
-        m_fileUrl = fileName;
-        emit fileNameChanged(fileName);
+        m_fileUrl = fileUrl;
+        emit fileUrlChanged(fileUrl);
     }
 
     void setText(const QString &text)
@@ -62,7 +62,7 @@ signals:
     void writingCompleted();
     void readingCompleted();
     void error(const QString &error);
-    void fileNameChanged(const QUrl &fileUrl);
+    void fileUrlChanged(const QUrl &fileUrl);
     void textChanged(const QString &text);
     void workingChanged(bool working);
 
