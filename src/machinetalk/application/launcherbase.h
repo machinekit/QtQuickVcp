@@ -159,6 +159,7 @@ public slots:
     void sendLauncherWriteStdin(Container &tx);
     void sendLauncherCall(Container &tx);
     void sendLauncherShutdown(Container &tx);
+    void sendLauncherSet(Container &tx);
     void addLauncherTopic(const QString &name);
     void removeLauncherTopic(const QString &name);
     void clearLauncherTopics();

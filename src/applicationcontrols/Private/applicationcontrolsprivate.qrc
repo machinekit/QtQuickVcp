@@ -7,5 +7,6 @@
         <file>ErrorPage.qml</file>
         <file>ConfigPage.qml</file>
         <file>AppPage.qml</file>
+        <file>StarButton.qml</file>
     </qresource>
 </RCC>

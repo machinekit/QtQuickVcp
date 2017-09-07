@@ -84,6 +84,19 @@ void ApplicationLauncher::shutdown()
     sendLauncherShutdown(m_tx);
 }
 
+void ApplicationLauncher::setImportance(int index, int importance)
+{
+    if (!m_synced) {
+        return;
+    }
+
+    auto launcher = m_tx.add_launcher();
+    launcher->set_index(index);
+    launcher->set_importance(static_cast<google::protobuf::uint32>(importance));
+
+    sendLauncherSet(m_tx);
+}
+
 void ApplicationLauncher::launcherFullUpdateReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
