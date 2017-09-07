@@ -19,42 +19,16 @@ public:
     explicit FileIO(QObject *parent = 0);
     ~FileIO();
 
-    QUrl fileUrl() const
-    {
-        return m_fileUrl;
-    }
-
-    QString text() const
-    {
-        return m_text;
-    }
-
-    bool working() const
-    {
-        return m_working;
-    }
+    QUrl fileUrl() const;
+    QString text() const;
+    bool working() const;
 
 public slots:
     void write();
     void read();
 
-    void setFileUrl(const QUrl &fileUrl)
-    {
-        if (m_fileUrl == fileUrl)
-            return;
-
-        m_fileUrl = fileUrl;
-        emit fileUrlChanged(fileUrl);
-    }
-
-    void setText(const QString &text)
-    {
-        if (m_text == text)
-            return;
-
-        m_text = text;
-        emit textChanged(text);
-    }
+    void setFileUrl(const QUrl &fileUrl);
+    void setText(const QString &text);
 
     QUrl createTempFile(const QString &fileName);
 
@@ -72,14 +46,7 @@ private:
     bool m_working;
     std::unique_ptr<QTemporaryDir> m_temporaryDir;
 
-    void setWorking(bool working)
-    {
-        if (m_working == working)
-            return;
-
-        m_working = working;
-        emit workingChanged(working);
-    }
+    void setWorking(bool working);
 
 }; // class FileIO
 } // namespace qtquickvcp
