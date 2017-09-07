@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QUrl>
 #include <QTemporaryDir>
+#include <memory>
 
 namespace qtquickvcp {
 
@@ -69,7 +70,7 @@ private:
     QUrl m_fileUrl;
     QString m_text;
     bool m_working;
-    QTemporaryDir *m_temporaryDir;
+    std::unique_ptr<QTemporaryDir> m_temporaryDir;
 
     void setWorking(bool working)
     {

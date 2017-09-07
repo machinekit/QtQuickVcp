@@ -16,10 +16,6 @@ FileIO::FileIO(QObject *parent) :
 
 FileIO::~FileIO()
 {
-    if (m_temporaryDir != nullptr)
-    {
-        m_temporaryDir->remove();
-    }
 }
 
 /* Write text to file */
@@ -78,14 +74,15 @@ void FileIO::read()
 
 QUrl FileIO::createTempFile(const QString &fileName)
 {
-    if (m_temporaryDir == nullptr)
+    if (!m_temporaryDir)
     {
-        m_temporaryDir = new QTemporaryDir();
+        m_temporaryDir = std::make_unique<QTemporaryDir>();
+        m_temporaryDir->setAutoRemove(true);
     }
 
     if (!m_temporaryDir->isValid())
     {
-        return QString();
+        return QUrl();
     }
 
     return QUrl::fromLocalFile(m_temporaryDir->path() + "/" + fileName);

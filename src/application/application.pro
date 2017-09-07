@@ -1,6 +1,6 @@
 TEMPLATE = lib
 QT += qml quick network
-CONFIG += c++11
+CONFIG += c++14
 
 uri = Machinekit.Application
 include(../plugin.pri)
