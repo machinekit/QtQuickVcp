@@ -87,7 +87,7 @@ public:
 public slots:
     void setName(QString name)
     {
-        if (this->state() != Down) {
+        if (this->state() != State::Down) {
             return;
         }
 

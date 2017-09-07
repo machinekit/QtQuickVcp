@@ -33,10 +33,10 @@ class RemoteComponentBase
     Q_ENUMS(State)
 
 public:
-    explicit RemoteComponentBase(QObject *parent = 0);
+    explicit RemoteComponentBase(QObject *parent = nullptr);
     ~RemoteComponentBase();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Bind = 2,

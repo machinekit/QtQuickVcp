@@ -26,8 +26,8 @@ StatusBase::StatusBase(QObject *parent)
     , m_ready(false)
     , m_debugName("Status Base")
     , m_statusChannel(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
 {
     // initialize status channel
@@ -121,13 +121,13 @@ void StatusBase::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void StatusBase::fsmDownConnectEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECT");
@@ -147,13 +147,13 @@ void StatusBase::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void StatusBase::fsmTryingStatusUpEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event STATUS UP");
@@ -168,7 +168,7 @@ void StatusBase::fsmTryingStatusUpEvent()
 
 void StatusBase::fsmTryingDisconnectEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -187,13 +187,13 @@ void StatusBase::fsmSyncing()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State SYNCING");
 #endif
-    m_state = Syncing;
+    m_state = State::Syncing;
     emit stateChanged(m_state);
 }
 
 void StatusBase::fsmSyncingChannelsSyncedEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CHANNELS SYNCED");
@@ -208,7 +208,7 @@ void StatusBase::fsmSyncingChannelsSyncedEvent()
 
 void StatusBase::fsmSyncingStatusTryingEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event STATUS TRYING");
@@ -223,7 +223,7 @@ void StatusBase::fsmSyncingStatusTryingEvent()
 
 void StatusBase::fsmSyncingDisconnectEvent()
 {
-    if (m_state == Syncing)
+    if (m_state == State::Syncing)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -242,7 +242,7 @@ void StatusBase::fsmUp()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-    m_state = Up;
+    m_state = State::Up;
     emit stateChanged(m_state);
 }
 void StatusBase::fsmUpEntry()
@@ -256,7 +256,7 @@ void StatusBase::fsmUpExit()
 
 void StatusBase::fsmUpStatusTryingEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event STATUS TRYING");
@@ -271,7 +271,7 @@ void StatusBase::fsmUpStatusTryingEvent()
 
 void StatusBase::fsmUpDisconnectEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -288,25 +288,25 @@ void StatusBase::fsmUpDisconnectEvent()
 void StatusBase::statusChannelStateChanged(application::StatusSubscribe::State state)
 {
 
-    if (state == application::StatusSubscribe::Trying)
+    if (state == application::StatusSubscribe::State::Trying)
     {
-        if (m_state == Up)
+        if (m_state == State::Up)
         {
             emit fsmUpStatusTrying(QPrivateSignal());
         }
     }
 
-    else if (state == application::StatusSubscribe::Trying)
+    else if (state == application::StatusSubscribe::State::Trying)
     {
-        if (m_state == Syncing)
+        if (m_state == State::Syncing)
         {
             emit fsmSyncingStatusTrying(QPrivateSignal());
         }
     }
 
-    else if (state == application::StatusSubscribe::Up)
+    else if (state == application::StatusSubscribe::State::Up)
     {
-        if (m_state == Trying)
+        if (m_state == State::Trying)
         {
             emit fsmTryingStatusUp(QPrivateSignal());
         }
@@ -316,7 +316,7 @@ void StatusBase::statusChannelStateChanged(application::StatusSubscribe::State s
 /** start trigger function */
 void StatusBase::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownConnect(QPrivateSignal());
     }
 }
@@ -324,10 +324,10 @@ void StatusBase::start()
 /** stop trigger function */
 void StatusBase::stop()
 {
-    if (m_state == Trying) {
+    if (m_state == State::Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Up) {
+    else if (m_state == State::Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }
@@ -335,7 +335,7 @@ void StatusBase::stop()
 /** channels synced trigger function */
 void StatusBase::channelsSynced()
 {
-    if (m_state == Syncing) {
+    if (m_state == State::Syncing) {
         emit fsmSyncingChannelsSynced(QPrivateSignal());
     }
 }

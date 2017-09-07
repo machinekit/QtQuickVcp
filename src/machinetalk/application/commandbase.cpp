@@ -26,8 +26,8 @@ CommandBase::CommandBase(QObject *parent)
     , m_ready(false)
     , m_debugName("Command Base")
     , m_commandChannel(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
 {
     // initialize command channel
@@ -360,13 +360,13 @@ void CommandBase::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void CommandBase::fsmDownConnectEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECT");
@@ -385,13 +385,13 @@ void CommandBase::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void CommandBase::fsmTryingCommandUpEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event COMMAND UP");
@@ -406,7 +406,7 @@ void CommandBase::fsmTryingCommandUpEvent()
 
 void CommandBase::fsmTryingDisconnectEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -426,7 +426,7 @@ void CommandBase::fsmUp()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-    m_state = Up;
+    m_state = State::Up;
     emit stateChanged(m_state);
 }
 void CommandBase::fsmUpEntry()
@@ -440,7 +440,7 @@ void CommandBase::fsmUpExit()
 
 void CommandBase::fsmUpCommandTryingEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event COMMAND TRYING");
@@ -455,7 +455,7 @@ void CommandBase::fsmUpCommandTryingEvent()
 
 void CommandBase::fsmUpDisconnectEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -473,17 +473,17 @@ void CommandBase::fsmUpDisconnectEvent()
 void CommandBase::commandChannelStateChanged(common::RpcClient::State state)
 {
 
-    if (state == common::RpcClient::Trying)
+    if (state == common::RpcClient::State::Trying)
     {
-        if (m_state == Up)
+        if (m_state == State::Up)
         {
             emit fsmUpCommandTrying(QPrivateSignal());
         }
     }
 
-    else if (state == common::RpcClient::Up)
+    else if (state == common::RpcClient::State::Up)
     {
-        if (m_state == Trying)
+        if (m_state == State::Trying)
         {
             emit fsmTryingCommandUp(QPrivateSignal());
         }
@@ -493,7 +493,7 @@ void CommandBase::commandChannelStateChanged(common::RpcClient::State state)
 /** start trigger function */
 void CommandBase::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownConnect(QPrivateSignal());
     }
 }
@@ -501,10 +501,10 @@ void CommandBase::start()
 /** stop trigger function */
 void CommandBase::stop()
 {
-    if (m_state == Trying) {
+    if (m_state == State::Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Up) {
+    else if (m_state == State::Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }

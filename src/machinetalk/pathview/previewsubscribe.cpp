@@ -26,8 +26,8 @@ PreviewSubscribe::PreviewSubscribe(QObject *parent)
     , m_socketUri("")
     , m_context(nullptr)
     , m_socket(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
 {
     // state machine
@@ -90,7 +90,7 @@ bool PreviewSubscribe::startSocket()
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        //updateState(SocketError, errorString); TODO
+        qCritical() << m_debugName << ":" << errorString;
         return false;
     }
 
@@ -133,8 +133,8 @@ void PreviewSubscribe::processSocketMessage(const QList<QByteArray> &messageList
     }
 
     // we only handle the first two messges
-    topic = messageList.at(0);
-    rx.ParseFromArray(messageList.at(1).data(), messageList.at(1).size());
+    topic = messageList.first();
+    rx.ParseFromArray(messageList.last().data(), messageList.last().size());
 
 #ifdef QT_DEBUG
     std::string s;
@@ -144,7 +144,7 @@ void PreviewSubscribe::processSocketMessage(const QList<QByteArray> &messageList
 
     // react to any incoming message
 
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
         emit fsmUpMessageReceived(QPrivateSignal());
     }
@@ -163,13 +163,13 @@ void PreviewSubscribe::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void PreviewSubscribe::fsmDownConnectEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECT");
@@ -189,13 +189,13 @@ void PreviewSubscribe::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void PreviewSubscribe::fsmTryingConnectedEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECTED");
@@ -210,7 +210,7 @@ void PreviewSubscribe::fsmTryingConnectedEvent()
 
 void PreviewSubscribe::fsmTryingDisconnectEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -229,13 +229,13 @@ void PreviewSubscribe::fsmUp()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-    m_state = Up;
+    m_state = State::Up;
     emit stateChanged(m_state);
 }
 
 void PreviewSubscribe::fsmUpMessageReceivedEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event MESSAGE RECEIVED");
@@ -246,7 +246,7 @@ void PreviewSubscribe::fsmUpMessageReceivedEvent()
 
 void PreviewSubscribe::fsmUpDisconnectEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -263,7 +263,7 @@ void PreviewSubscribe::fsmUpDisconnectEvent()
 /** start trigger function */
 void PreviewSubscribe::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownConnect(QPrivateSignal());
     }
 }
@@ -271,7 +271,7 @@ void PreviewSubscribe::start()
 /** stop trigger function */
 void PreviewSubscribe::stop()
 {
-    if (m_state == Up) {
+    if (m_state == State::Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }
@@ -279,7 +279,7 @@ void PreviewSubscribe::stop()
 /** connected trigger function */
 void PreviewSubscribe::connected()
 {
-    if (m_state == Trying) {
+    if (m_state == State::Trying) {
         emit fsmTryingConnected(QPrivateSignal());
     }
 }

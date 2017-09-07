@@ -192,7 +192,7 @@ void HalRemoteComponent::pinChange(QVariant value)
     HalPin *pin;
     Pin *halPin;
 
-    if (state() != Synced) // only accept pin changes if we are connected
+    if (state() != State::Synced) // only accept pin changes if we are connected
     {
         return;
     }

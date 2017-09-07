@@ -27,10 +27,10 @@ class RpcClient
     Q_ENUMS(State)
 
 public:
-    explicit RpcClient(QObject *parent = 0);
+    explicit RpcClient(QObject *parent = nullptr);
     ~RpcClient();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Up = 2,
@@ -136,7 +136,7 @@ private:
     State         m_previousState;
     QString       m_errorString;
 
-    QTimer     *m_heartbeatTimer;
+    QTimer      m_heartbeatTimer;
     int         m_heartbeatInterval;
     int         m_heartbeatLiveness;
     int         m_heartbeatResetLiveness;

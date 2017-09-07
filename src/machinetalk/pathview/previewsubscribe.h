@@ -25,10 +25,10 @@ class PreviewSubscribe
     Q_ENUMS(State)
 
 public:
-    explicit PreviewSubscribe(QObject *parent = 0);
+    explicit PreviewSubscribe(QObject *parent = nullptr);
     ~PreviewSubscribe();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Up = 2,

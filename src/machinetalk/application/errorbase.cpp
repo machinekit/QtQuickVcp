@@ -26,8 +26,8 @@ ErrorBase::ErrorBase(QObject *parent)
     , m_ready(false)
     , m_debugName("Error Base")
     , m_errorChannel(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
 {
     // initialize error channel
@@ -139,13 +139,13 @@ void ErrorBase::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void ErrorBase::fsmDownConnectEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event CONNECT");
@@ -165,13 +165,13 @@ void ErrorBase::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void ErrorBase::fsmTryingErrorUpEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event ERROR UP");
@@ -186,7 +186,7 @@ void ErrorBase::fsmTryingErrorUpEvent()
 
 void ErrorBase::fsmTryingDisconnectEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -205,7 +205,7 @@ void ErrorBase::fsmUp()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-    m_state = Up;
+    m_state = State::Up;
     emit stateChanged(m_state);
 }
 void ErrorBase::fsmUpEntry()
@@ -219,7 +219,7 @@ void ErrorBase::fsmUpExit()
 
 void ErrorBase::fsmUpErrorTryingEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event ERROR TRYING");
@@ -234,7 +234,7 @@ void ErrorBase::fsmUpErrorTryingEvent()
 
 void ErrorBase::fsmUpDisconnectEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event DISCONNECT");
@@ -251,17 +251,17 @@ void ErrorBase::fsmUpDisconnectEvent()
 void ErrorBase::errorChannelStateChanged(application::ErrorSubscribe::State state)
 {
 
-    if (state == application::ErrorSubscribe::Trying)
+    if (state == application::ErrorSubscribe::State::Trying)
     {
-        if (m_state == Up)
+        if (m_state == State::Up)
         {
             emit fsmUpErrorTrying(QPrivateSignal());
         }
     }
 
-    else if (state == application::ErrorSubscribe::Up)
+    else if (state == application::ErrorSubscribe::State::Up)
     {
-        if (m_state == Trying)
+        if (m_state == State::Trying)
         {
             emit fsmTryingErrorUp(QPrivateSignal());
         }
@@ -271,7 +271,7 @@ void ErrorBase::errorChannelStateChanged(application::ErrorSubscribe::State stat
 /** start trigger function */
 void ErrorBase::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownConnect(QPrivateSignal());
     }
 }
@@ -279,10 +279,10 @@ void ErrorBase::start()
 /** stop trigger function */
 void ErrorBase::stop()
 {
-    if (m_state == Trying) {
+    if (m_state == State::Trying) {
         emit fsmTryingDisconnect(QPrivateSignal());
     }
-    else if (m_state == Up) {
+    else if (m_state == State::Up) {
         emit fsmUpDisconnect(QPrivateSignal());
     }
 }

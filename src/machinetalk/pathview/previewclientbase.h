@@ -31,10 +31,10 @@ class PreviewClientBase
     Q_ENUMS(State)
 
 public:
-    explicit PreviewClientBase(QObject *parent = 0);
+    explicit PreviewClientBase(QObject *parent = nullptr);
     ~PreviewClientBase();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Previewtrying = 2,

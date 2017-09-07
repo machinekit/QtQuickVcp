@@ -26,17 +26,16 @@ LauncherSubscribe::LauncherSubscribe(QObject *parent)
     , m_socketUri("")
     , m_context(nullptr)
     , m_socket(nullptr)
-    , m_state(Down)
-    , m_previousState(Down)
+    , m_state(State::Down)
+    , m_previousState(State::Down)
     , m_errorString("")
-    , m_heartbeatTimer(new QTimer(this))
     , m_heartbeatInterval(2500)
     , m_heartbeatLiveness(0)
     , m_heartbeatResetLiveness(5)
 {
 
-    m_heartbeatTimer->setSingleShot(true);
-    connect(m_heartbeatTimer, &QTimer::timeout, this, &LauncherSubscribe::heartbeatTimerTick);
+    m_heartbeatTimer.setSingleShot(true);
+    connect(&m_heartbeatTimer, &QTimer::timeout, this, &LauncherSubscribe::heartbeatTimerTick);
     // state machine
     connect(this, &LauncherSubscribe::fsmDownStart,
             this, &LauncherSubscribe::fsmDownStartEvent);
@@ -101,7 +100,7 @@ bool LauncherSubscribe::startSocket()
     catch (const zmq::error_t &e) {
         QString errorString;
         errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
-        //updateState(SocketError, errorString); TODO
+        qCritical() << m_debugName << ":" << errorString;
         return false;
     }
 
@@ -139,15 +138,15 @@ void LauncherSubscribe::resetHeartbeatLiveness()
 
 void LauncherSubscribe::resetHeartbeatTimer()
 {
-    if (m_heartbeatTimer->isActive())
+    if (m_heartbeatTimer.isActive())
     {
-        m_heartbeatTimer->stop();
+        m_heartbeatTimer.stop();
     }
 
     if (m_heartbeatInterval > 0)
     {
-        m_heartbeatTimer->setInterval(m_heartbeatInterval);
-        m_heartbeatTimer->start();
+        m_heartbeatTimer.setInterval(m_heartbeatInterval);
+        m_heartbeatTimer.start();
     }
 }
 
@@ -158,7 +157,7 @@ void LauncherSubscribe::startHeartbeatTimer()
 
 void LauncherSubscribe::stopHeartbeatTimer()
 {
-    m_heartbeatTimer->stop();
+    m_heartbeatTimer.stop();
 }
 
 void LauncherSubscribe::heartbeatTimerTick()
@@ -166,13 +165,13 @@ void LauncherSubscribe::heartbeatTimerTick()
     m_heartbeatLiveness -= 1;
     if (m_heartbeatLiveness == 0)
     {
-         if (m_state == Up)
+         if (m_state == State::Up)
          {
              emit fsmUpHeartbeatTimeout(QPrivateSignal());
          }
          return;
     }
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
         emit fsmUpHeartbeatTick(QPrivateSignal());
     }
@@ -190,8 +189,8 @@ void LauncherSubscribe::processSocketMessage(const QList<QByteArray> &messageLis
     }
 
     // we only handle the first two messges
-    topic = messageList.at(0);
-    rx.ParseFromArray(messageList.at(1).data(), messageList.at(1).size());
+    topic = messageList.first();
+    rx.ParseFromArray(messageList.last().data(), messageList.last().size());
 
 #ifdef QT_DEBUG
     std::string s;
@@ -201,7 +200,7 @@ void LauncherSubscribe::processSocketMessage(const QList<QByteArray> &messageLis
 
     // react to any incoming message
 
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
         emit fsmUpAnyMsgReceived(QPrivateSignal());
     }
@@ -221,7 +220,7 @@ void LauncherSubscribe::processSocketMessage(const QList<QByteArray> &messageLis
             m_heartbeatInterval = pparams.keepalive_timer();
         }
 
-        if (m_state == Trying)
+        if (m_state == State::Trying)
         {
             emit fsmTryingFullUpdateReceived(QPrivateSignal());
         }
@@ -241,13 +240,13 @@ void LauncherSubscribe::fsmDown()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State DOWN");
 #endif
-    m_state = Down;
+    m_state = State::Down;
     emit stateChanged(m_state);
 }
 
 void LauncherSubscribe::fsmDownStartEvent()
 {
-    if (m_state == Down)
+    if (m_state == State::Down)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event START");
@@ -266,13 +265,13 @@ void LauncherSubscribe::fsmTrying()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State TRYING");
 #endif
-    m_state = Trying;
+    m_state = State::Trying;
     emit stateChanged(m_state);
 }
 
 void LauncherSubscribe::fsmTryingFullUpdateReceivedEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event FULL UPDATE RECEIVED");
@@ -289,7 +288,7 @@ void LauncherSubscribe::fsmTryingFullUpdateReceivedEvent()
 
 void LauncherSubscribe::fsmTryingStopEvent()
 {
-    if (m_state == Trying)
+    if (m_state == State::Trying)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event STOP");
@@ -309,13 +308,13 @@ void LauncherSubscribe::fsmUp()
 #ifdef QT_DEBUG
     DEBUG_TAG(1, m_debugName, "State UP");
 #endif
-    m_state = Up;
+    m_state = State::Up;
     emit stateChanged(m_state);
 }
 
 void LauncherSubscribe::fsmUpHeartbeatTimeoutEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TIMEOUT");
@@ -333,7 +332,7 @@ void LauncherSubscribe::fsmUpHeartbeatTimeoutEvent()
 
 void LauncherSubscribe::fsmUpHeartbeatTickEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event HEARTBEAT TICK");
@@ -345,7 +344,7 @@ void LauncherSubscribe::fsmUpHeartbeatTickEvent()
 
 void LauncherSubscribe::fsmUpAnyMsgReceivedEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event ANY MSG RECEIVED");
@@ -358,7 +357,7 @@ void LauncherSubscribe::fsmUpAnyMsgReceivedEvent()
 
 void LauncherSubscribe::fsmUpStopEvent()
 {
-    if (m_state == Up)
+    if (m_state == State::Up)
     {
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_debugName, "Event STOP");
@@ -376,7 +375,7 @@ void LauncherSubscribe::fsmUpStopEvent()
 /** start trigger function */
 void LauncherSubscribe::start()
 {
-    if (m_state == Down) {
+    if (m_state == State::Down) {
         emit fsmDownStart(QPrivateSignal());
     }
 }
@@ -384,10 +383,10 @@ void LauncherSubscribe::start()
 /** stop trigger function */
 void LauncherSubscribe::stop()
 {
-    if (m_state == Trying) {
+    if (m_state == State::Trying) {
         emit fsmTryingStop(QPrivateSignal());
     }
-    else if (m_state == Up) {
+    else if (m_state == State::Up) {
         emit fsmUpStop(QPrivateSignal());
     }
 }

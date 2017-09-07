@@ -27,10 +27,10 @@ class HalrcompSubscribe
     Q_ENUMS(State)
 
 public:
-    explicit HalrcompSubscribe(QObject *parent = 0);
+    explicit HalrcompSubscribe(QObject *parent = nullptr);
     ~HalrcompSubscribe();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Up = 2,
@@ -138,7 +138,7 @@ private:
     State         m_previousState;
     QString       m_errorString;
 
-    QTimer     *m_heartbeatTimer;
+    QTimer      m_heartbeatTimer;
     int         m_heartbeatInterval;
     int         m_heartbeatLiveness;
     int         m_heartbeatResetLiveness;

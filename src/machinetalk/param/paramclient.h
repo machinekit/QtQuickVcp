@@ -33,10 +33,10 @@ class ParamClient
     Q_ENUMS(State)
 
 public:
-    explicit ParamClient(QObject *parent = 0);
+    explicit ParamClient(QObject *parent = nullptr);
     ~ParamClient();
 
-    enum State {
+    enum class State {
         Down = 0,
         Connecting = 1,
         Syncing = 2,

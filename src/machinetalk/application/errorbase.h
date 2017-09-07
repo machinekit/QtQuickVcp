@@ -30,10 +30,10 @@ class ErrorBase
     Q_ENUMS(State)
 
 public:
-    explicit ErrorBase(QObject *parent = 0);
+    explicit ErrorBase(QObject *parent = nullptr);
     ~ErrorBase();
 
-    enum State {
+    enum class State {
         Down = 0,
         Trying = 1,
         Up = 2,
