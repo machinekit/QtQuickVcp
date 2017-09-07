@@ -159,8 +159,3 @@ deploy:
   version: $(appveyor_build_version)
   on:
     appveyor_repo_tag: true
-
-notifications:
-  on_build_success: false
-  on_build_failure: false
-  on_build_status_changed: false
