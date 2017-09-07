@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("Machinekit Project");
     app.setOrganizationDomain("machinekit.io");
     app.setApplicationName("MachinekitClient");
+    app.setWindowIcon(QIcon(":/icons/machinekit"));
 #ifdef Q_OS_WIN
     app.setAttribute(Qt::AA_UseOpenGLES);
 #endif

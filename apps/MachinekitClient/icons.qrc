@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="machinekit">icons/machinekit.iconset/icon_512x512.png</file>
+    </qresource>
+</RCC>

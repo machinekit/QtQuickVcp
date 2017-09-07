@@ -10,7 +10,9 @@ release: {
 
 SOURCES += main.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += \
+    qml.qrc \
+    icons.qrc
 
 QML_FILES = $$PWD/init.qml \
     $$PWD/main.qml \
