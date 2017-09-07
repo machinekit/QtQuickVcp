@@ -1,77 +1,83 @@
+#include <catch.hpp>
+#include <trompeloeil.hpp>
+
 #include <QString>
 #include <QtTest>
 #include <halpin.h>
 
 using namespace qtquickvcp;
 
-class HalPinTest : public QObject
+TEST_CASE("HAL pin tests", "[hal]")
 {
-    Q_OBJECT
+    SECTION("syncing works") {
+        GIVEN("we have HAL pin of type bit and with direction out") {
+            HalPin pin;
+            pin.setType(HalPin::Bit);
+            pin.setDirection(HalPin::Out);
 
-public:
-    HalPinTest();
+            WHEN("we set the pin to true without sync") {
+                pin.setValue(QVariant(true), false);
 
-private Q_SLOTS:
-    void testSyncing_data();
-    void testDefaults();
-    void testSyncing();
-    void testSyncSequence();
-};
+                THEN("the pin should still by out of sync") {
+                    REQUIRE(pin.synced() == false);
+                }
+            }
 
-HalPinTest::HalPinTest()
-{
+            WHEN("we set the pin to false without sync") {
+                pin.setValue(QVariant(false), false);
+
+                THEN("the pin should still be out of sync") {
+                    REQUIRE(pin.synced() == false);
+                }
+            }
+
+            WHEN("we set the pin to true with sync") {
+                pin.setValue(QVariant(true), true);
+
+                THEN("the pin should be synced") {
+                    REQUIRE(pin.synced() == true);
+                }
+            }
+
+            WHEN("we set the pin to 1.4 without sync") {
+                pin.setValue(QVariant(1.4), false);
+
+                THEN("the pin should still be out of sync") {
+                    REQUIRE(pin.synced() == false);
+                }
+            }
+
+            WHEN("we set the pin to true with sync") {
+                pin.setValue(true, true);
+
+                THEN("the pin should be in sync") {
+                    REQUIRE(pin.synced() == true);
+                }
+
+                AND_WHEN("we set the pin to false without sync") {
+                    pin.setValue(false, false);
+
+                    THEN("the pin should not be synced") {
+                        REQUIRE(pin.synced() == false);
+                    }
+
+                    AND_WHEN("we set the pin to true again without sync") {
+                        pin.setValue(true, false);
+
+                        THEN("the pin should restore the last sync data") {
+                            REQUIRE(pin.synced() == true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    SECTION("defaults are correct") {
+        HalPin pin;
+        REQUIRE(pin.type() == HalPin::Bit);
+        REQUIRE(pin.direction() == HalPin::Out);
+        REQUIRE(pin.synced() == false);
+        REQUIRE(pin.enabled() == true);
+    }
 }
-
-void HalPinTest::testSyncing_data()
-{
-    QTest::addColumn<QVariant>("value");
-    QTest::addColumn<bool>("synced");
-    QTest::addColumn<bool>("result");
-
-    QTest::newRow("0") << QVariant(true) << false << false;
-    QTest::newRow("1") << QVariant(false) << false << false;
-    QTest::newRow("2") << QVariant(true) << true << true;
-    QTest::newRow("3") << QVariant(1.4) << false << false; // note we don't check the type yet
-}
-
-void HalPinTest::testDefaults()
-{
-    HalPin pin;
-    QVERIFY2(pin.type() == HalPin::Bit, "defaut type wrong");
-    QVERIFY2(pin.direction() == HalPin::Out, "default direction wrong");
-    QVERIFY2(pin.synced() == false, "should not be synced per default");
-    QVERIFY2(pin.enabled() == true, "should be enabled per default");
-}
-
-void HalPinTest::testSyncing()
-{
-    QFETCH(QVariant, value);
-    QFETCH(bool, synced);
-    QFETCH(bool, result);
-
-    HalPin pin;
-    pin.setType(HalPin::Bit);
-    pin.setDirection(HalPin::Out);
-    pin.setValue(value, synced);
-    QVERIFY2(pin.synced() == result, "problem with sync");
-}
-
-void HalPinTest::testSyncSequence()
-{
-    HalPin pin;
-    pin.setType(HalPin::Bit);
-    pin.setDirection(HalPin::Out);
-
-    pin.setValue(true, true);
-    QVERIFY2(pin.synced() == true, "should be synced");
-
-    pin.setValue(false, false);
-    QVERIFY2(pin.synced() == false, "should not be synced");
-
-    pin.setValue(true, false);
-    QVERIFY2(pin.synced() == true, "should have stored last sync data");
-}
-
-QTEST_APPLESS_MAIN(HalPinTest)
-
-#include "tst_halpintest.moc"

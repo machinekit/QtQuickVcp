@@ -612,6 +612,11 @@ If you are new to Qt and/or QtQuick I would recommend you to read the Qt documen
 ### Coding Style Guidelines
 If you want to contribute to the project please respect the coding style guidelines of the project outlined in the [.editorconfig](.editorconfig) file.
 
+### Testing
+Unit testing in this project is powered by [Catch](https://github.com/philsquared/Catch) and [Trompeloeil](https://github.com/rollbear/trompeloeil).
+
+Please take a look at the provided links for more information on how to use the unit testing and mocking frameworks.
+
 ### Choosing the right QML module
 QtQuickVcp is split into several QML modules:
 
