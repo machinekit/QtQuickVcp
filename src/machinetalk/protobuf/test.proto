@@ -1,9 +1,10 @@
+syntax = "proto2";
 // use any of the below for testing and experimentation.
 
 import "machinetalk/protobuf/emcclass.proto";
 import "machinetalk/protobuf/nanopb.proto";
 
-package pb;
+package machinetalk;
 
 // see README.msgid
 // msgid base: 1300

@@ -1,8 +1,9 @@
+syntax = "proto2";
 import "machinetalk/protobuf/nanopb.proto";
 // see README.msgid
 // msgid base: 900
 
-package pb;
+package machinetalk;
 
 message RTAPICommand {
 

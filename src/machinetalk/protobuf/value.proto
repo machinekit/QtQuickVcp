@@ -1,3 +1,4 @@
+syntax = "proto2";
 import "machinetalk/protobuf/nanopb.proto";
 
 import "machinetalk/protobuf/emcclass.proto";
@@ -6,7 +7,7 @@ import "machinetalk/protobuf/types.proto";
 // see README.msgid
 // msgid base: 1500
 
-package pb;
+package machinetalk;
 
 
 // a value for 'passing around'.
