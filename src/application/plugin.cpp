@@ -35,6 +35,7 @@
 #include "applicationtranslator.h"
 #include "localsettings.h"
 #include "fileio.h"
+#include "filewatcher.h"
 #include "revisionsingleton.h"
 
 static void initResources()
@@ -82,6 +83,7 @@ void MachinekitApplicationPlugin::registerTypes(const char *uri)
     qmlRegisterType<qtquickvcp::ApplicationPluginItem>(uri, 1, 0, "ApplicationPluginItem");
     qmlRegisterType<qtquickvcp::ApplicationTranslator>(uri, 1, 0, "ApplicationTranslator");
     qmlRegisterType<qtquickvcp::FileIO>(uri, 1, 0, "FileIO");
+    qmlRegisterType<qtquickvcp::FileWatcher>(uri, 1, 0, "FileWatcher");
     qmlRegisterSingletonType<qtquickvcp::RevisionSingleton>(uri, 1, 0, "Revision", &qtquickvcp::RevisionSingleton::qmlInstance);
 
     const QString filesLocation = fileLocation();

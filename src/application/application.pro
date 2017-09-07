@@ -30,7 +30,8 @@ SOURCES += \
     applicationplugins.cpp \
     applicationstatus.cpp \
     localsettings.cpp \
-    applicationtranslator.cpp
+    applicationtranslator.cpp \
+    filewatcher.cpp
 
 HEADERS += \
     plugin.h \
@@ -51,7 +52,8 @@ HEADERS += \
     applicationplugins.h \
     applicationstatus.h \
     localsettings.h \
-    applicationtranslator.h
+    applicationtranslator.h \
+    filewatcher.h
 
 RESOURCES += \
     application.qrc

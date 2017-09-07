@@ -7,7 +7,7 @@
 
 using namespace qtquickvcp;
 
-TEST_CASE("HAL pin tests", "[hal]")
+TEST_CASE("HAL pin tests", "[halremote]")
 {
     SECTION("syncing works") {
         GIVEN("we have HAL pin of type bit and with direction out") {
