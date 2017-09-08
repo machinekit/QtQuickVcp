@@ -73,7 +73,8 @@ CONTROLS_QML_FILES = \
     $$PWD/SpindleOverrideAction.qml \
     $$PWD/EstopPowerAction.qml \
     $$PWD/RapidrateHandler.qml \
-    $$PWD/RapidrateSlider.qml
+    $$PWD/RapidrateSlider.qml \
+    $$PWD/EditWithSystemEditorAction.qml
 
 lupdate_only {
     SOURCES = $$CONTROLS_QML_FILES
