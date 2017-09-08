@@ -1,5 +1,6 @@
 #include "filewatcher.h"
 #include <QDebug>
+#include <QFile>
 
 namespace qtquickvcp {
 
@@ -34,8 +35,9 @@ void FileWatcher::setFileUrl(const QUrl &fileUrl)
 
 void FileWatcher::setEnabled(bool enabled)
 {
-    if (m_enabled == enabled)
+    if (m_enabled == enabled) {
         return;
+    }
 
     m_enabled = enabled;
     emit enabledChanged(m_enabled);
@@ -52,7 +54,10 @@ void FileWatcher::updateWatchedFile()
     }
 
     if (m_fileUrl.isLocalFile()) {
-        m_fileSystemWatcher.addPath(m_fileUrl.toLocalFile());
+        const auto &localFile = m_fileUrl.toLocalFile();
+        if (QFile::exists(localFile)) {
+            m_fileSystemWatcher.addPath(localFile);
+        }
     }
     else {
         qWarning() << "Can only watch local files";
