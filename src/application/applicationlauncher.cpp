@@ -9,15 +9,16 @@ namespace qtquickvcp {
 ApplicationLauncher::ApplicationLauncher(QObject *parent) :
     application::LauncherBase(parent),
     m_launchers(QJsonValue(QJsonArray())),
-    m_synced(false)
+    m_synced(false),
+    m_temporaryDir(nullptr)
 {
     initializeObject();
+    createTemporaryDir();
     addLauncherTopic("launcher");
 }
 
 ApplicationLauncher::~ApplicationLauncher()
 {
-    MachinetalkService::removeTempPath("launcher"); // clean up dir created by json
 }
 
 void ApplicationLauncher::start(int index)
@@ -101,14 +102,14 @@ void ApplicationLauncher::launcherFullUpdateReceived(const QByteArray &topic, co
 {
     Q_UNUSED(topic);
     m_launchers = QJsonValue(QJsonArray()); // clear old value
-    MachinetalkService::updateValue(rx, m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
+    MachinetalkService::updateValue(rx, m_launchers, "launcher", m_temporaryDir->path()); // launcher protobuf value, launcher temp path
     emit launchersChanged(m_launchers);
 }
 
 void ApplicationLauncher::launcherIncrementalUpdateReceived(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
-    MachinetalkService::updateValue(rx, m_launchers, "launcher", "launcher"); // launcher protobuf value, launcher temp path
+    MachinetalkService::updateValue(rx, m_launchers, "launcher", m_temporaryDir->path()); // launcher protobuf value, launcher temp path
     emit launchersChanged(m_launchers);
 }
 
@@ -129,6 +130,15 @@ void ApplicationLauncher::initializeObject()
 {
     m_launchers = QJsonValue(QJsonArray());
     emit launchersChanged(m_launchers);
+}
+
+void ApplicationLauncher::createTemporaryDir()
+{
+    m_temporaryDir = std::make_unique<QTemporaryDir>();
+    m_temporaryDir->setAutoRemove(true);
+    if (!m_temporaryDir->isValid()) {
+        qWarning() << "Cannot create temporary directory for application launcher";
+    }
 }
 
 } // namespace qtquickvcp

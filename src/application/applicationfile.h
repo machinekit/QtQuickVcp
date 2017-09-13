@@ -25,6 +25,8 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QFile>
+#include <QTemporaryDir>
+#include <memory>
 #include "qftp.h"
 #include "applicationfilemodel.h"
 
@@ -86,22 +88,22 @@ public:
 
     QString localFilePath() const
     {
-        return m_localFilePath;
+        return m_localFilePath.toString();
     }
 
     QString remoteFilePath() const
     {
-        return m_remoteFilePath;
+        return m_remoteFilePath.toString();
     }
 
     QString localPath() const
     {
-        return m_localPath;
+        return m_localPath.toString();
     }
 
     QString remotePath() const
     {
-        return m_remotePath;
+        return m_remotePath.toString();
     }
 
     double progress() const
@@ -209,10 +211,10 @@ public slots:
 
 private:
     QString         m_uri;
-    QString         m_localFilePath;
-    QString         m_remoteFilePath;
-    QString         m_localPath;
-    QString         m_remotePath;
+    QUrl            m_localFilePath;
+    QUrl            m_remoteFilePath;
+    QUrl            m_localPath;
+    QUrl            m_remotePath;
     QString         m_serverDirectory;
     TransferState   m_transferState;
     TransferError   m_error;
@@ -223,15 +225,14 @@ private:
     bool m_ready;
 
     QNetworkAccessManager   *m_networkManager;
-    QFile                   *m_file;
+    std::unique_ptr<QFile>  m_file;
     QFtp                    *m_ftp;
+    std::unique_ptr<QTemporaryDir> m_temporaryDir;
 
     void start() {}
     void stop() {}
     void updateState(TransferState state);
     void updateError(TransferError error, const QString &errorString);
-    QString generateTempPath() const;
-    void cleanupTempPath();
     QString applicationFilePath(const QString &fileName, const QString &serverDirectory) const;
     void initializeFtp();
     void cleanupFtp();

@@ -32,8 +32,8 @@ namespace qtquickvcp {
 ApplicationFile::ApplicationFile(QObject *parent) :
     QObject(parent),
     m_uri(""),
-    m_localFilePath(""),
-    m_remoteFilePath(""),
+    m_localFilePath("file://"),
+    m_remoteFilePath("file://"),
     m_localPath(""),
     m_remotePath(""),
     m_serverDirectory(""),
@@ -48,7 +48,9 @@ ApplicationFile::ApplicationFile(QObject *parent) :
     m_file(nullptr),
     m_ftp(nullptr)
 {
-    m_localPath = generateTempPath();
+    m_temporaryDir = std::make_unique<QTemporaryDir>();
+    m_temporaryDir->setAutoRemove(true);
+    m_localPath = QUrl::fromLocalFile(m_temporaryDir->path());
 
     m_model = new ApplicationFileModel(this);
 
@@ -64,7 +66,6 @@ ApplicationFile::ApplicationFile(QObject *parent) :
 
 ApplicationFile::~ApplicationFile()
 {
-    cleanupTempPath();
     cleanupFtp();
     cleanupFile();
     m_networkManager->deleteLater();
@@ -74,7 +75,7 @@ ApplicationFile::~ApplicationFile()
 void ApplicationFile::startUpload()
 {
     QUrl url;
-    QFileInfo fileInfo(QUrl(m_localFilePath).toLocalFile());
+    QFileInfo fileInfo(m_localFilePath.toLocalFile());
     QString remotePath;
 
     if (!ready() || (m_transferState != NoTransfer))
@@ -83,16 +84,16 @@ void ApplicationFile::startUpload()
     }
 
     url.setUrl(m_uri);
-    remotePath = QUrl(m_remotePath).toLocalFile();
+    remotePath = m_remotePath.toLocalFile();
     if (!m_serverDirectory.isEmpty())
     {
         remotePath.append("/");
         remotePath.append(m_serverDirectory);
     }
     m_remoteFilePath = QUrl::fromLocalFile(QDir(remotePath).filePath(fileInfo.fileName())).toString();
-    emit remoteFilePathChanged(m_remoteFilePath);
+    emit remoteFilePathChanged(m_remoteFilePath.toString());
 
-    m_file = new QFile(fileInfo.filePath(), this);
+    m_file = std::make_unique<QFile>(fileInfo.filePath(), this);
 
     if (m_file->open(QIODevice::ReadOnly))
     {
@@ -102,7 +103,7 @@ void ApplicationFile::startUpload()
         {
             m_ftp->cd(m_serverDirectory);
         }
-        m_ftp->put(m_file, fileInfo.fileName(), QFtp::Binary);
+        m_ftp->put(m_file.get(), fileInfo.fileName(), QFtp::Binary);
         m_ftp->close();
 
         m_progress = 0.0;
@@ -131,8 +132,8 @@ void ApplicationFile::startDownload()
         return;
     }
 
-    remoteFilePath = QUrl(m_remoteFilePath).toLocalFile();
-    remotePath = QUrl(m_remotePath).toLocalFile();
+    remoteFilePath = m_remoteFilePath.toLocalFile();
+    remotePath = m_remotePath.toLocalFile();
     fileName = remoteFilePath.mid(remotePath.length() + 1);
 
     int i = fileName.indexOf("/");
@@ -146,8 +147,8 @@ void ApplicationFile::startDownload()
     url.setUrl(m_uri);
 
     localFilePath = applicationFilePath(fileName, m_serverDirectory);
-    m_localFilePath = QUrl::fromLocalFile(localFilePath).toString();
-    emit localFilePathChanged(m_localFilePath);
+    m_localFilePath = QUrl::fromLocalFile(localFilePath);
+    emit localFilePathChanged(m_localFilePath.toString());
 
     QFileInfo fileInfo(localFilePath);
 
@@ -158,7 +159,7 @@ void ApplicationFile::startDownload()
         return;
     }
 
-    m_file = new QFile(localFilePath, this);
+    m_file = std::make_unique<QFile>(localFilePath, this);
 
     if (m_file->open(QIODevice::WriteOnly))
     {
@@ -168,7 +169,7 @@ void ApplicationFile::startDownload()
         {
             m_ftp->cd(m_serverDirectory);
         }
-        m_ftp->get(fileName, m_file, QFtp::Binary);
+        m_ftp->get(fileName, m_file.get(), QFtp::Binary);
         m_ftp->close();
         m_progress = 0.0;
         emit progressChanged(m_progress);
@@ -304,22 +305,10 @@ void ApplicationFile::updateError(ApplicationFile::TransferError error, const QS
     }
 }
 
-QString ApplicationFile::generateTempPath() const
-{
-    return QUrl::fromLocalFile(QString("%1/machinekit-%2").arg(QDir::tempPath())
-            .arg(QCoreApplication::applicationPid())).toString();
-}
-
-void ApplicationFile::cleanupTempPath()
-{
-    QDir dir(m_localPath);
-
-    dir.removeRecursively();
-}
-
 QString ApplicationFile::applicationFilePath(const QString &fileName, const QString &serverDirectory) const
 {
-    return QDir(QUrl(m_localPath).toLocalFile() + "/" + serverDirectory).filePath(fileName);
+    const auto serverPath = QDir(m_localPath.toLocalFile()).filePath(serverDirectory);
+    return QDir(serverPath).filePath(fileName);
 }
 
 void ApplicationFile::initializeFtp()
@@ -353,14 +342,13 @@ void ApplicationFile::cleanupFtp()
 
 void ApplicationFile::cleanupFile()
 {
-    if (m_file == nullptr)
+    if (!m_file)
     {
         return;
     }
 
     m_file->close();
-    m_file->deleteLater();
-    m_file = nullptr;
+    m_file.release();
 }
 
 void ApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)
