@@ -116,7 +116,7 @@ void GLView::setBackgroundColor(const QColor &t)
 
 void GLView::readPixel(int x, int y)
 {
-    m_selectionPoint = QPoint(x, window()->height() - y);
+    m_selectionPoint = QPoint(x, static_cast<int>(height()) - y);
     m_selectionModeActive = true;
     update();
 }
@@ -880,7 +880,7 @@ void GLView::drawTexts()
     m_textVertexBuffer->release();
 }
 
-void GLView::prepareTextTexture(const QStaticText &staticText, QFont font)
+void GLView::prepareTextTexture(const QStaticText &staticText, const QFont &font)
 {
     if (m_textTextList.contains(staticText))
     {
@@ -1491,9 +1491,10 @@ void *GLView::arc(float x, float y, float radius, float startAngle, float endAng
     }
 }
 
-void GLView::text(QString text, TextAlignment alignment , QFont font)
+void GLView::text(const QString &text, TextAlignment alignment , const QFont &baseFont)
 {
     QStaticText staticText(text);
+    QFont font = baseFont;
     font.setPixelSize(100);
     staticText.prepare(QTransform(), font);
 
