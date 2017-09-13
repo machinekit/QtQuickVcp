@@ -144,7 +144,7 @@ public slots:
     void *arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset = 0.0f, int arcDivison = 16);
 
     // text functions
-    void text(QString text, TextAlignment alignment = AlignLeft, QFont font = QFont());
+    void text(const QString &text, TextAlignment alignment = AlignLeft, const QFont &baseFont = QFont());
 
     // grouping functions
     void beginUnion();
@@ -375,7 +375,7 @@ private:
     void drawLines();
 
     void drawTexts();
-    void prepareTextTexture(const QStaticText &staticText, QFont font);
+    void prepareTextTexture(const QStaticText &staticText, const QFont &font);
     void createTextTexture(TextParameters *textParameters);
     void clearTextTextures();
 
