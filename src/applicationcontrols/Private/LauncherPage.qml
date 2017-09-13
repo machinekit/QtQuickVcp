@@ -20,6 +20,45 @@ Item {
     width: 600
     height: 400
 
+    function _filterLaunchers(launchers) {
+        var items = launchers;
+        var running = false;
+
+        function moveItemToFront(index) {
+            var item = items[index];
+            items.splice(index, 1);
+            items.unshift(item);
+        }
+
+        // move running and important items to the front
+        for (var i = 0; i < items.length; ++i) {
+            items[i].index = i;  // store the original index
+            if (items[i].running) {
+                running = true;
+                moveItemToFront(i);
+            }
+            else if (items[i].importance > 0) {
+                moveItemToFront(i);
+            }
+        }
+
+        // create a new launcher element if a configserver is running
+        // but none of our launchers is running
+        if (configService.ready && !running) {
+            var launcher = {};
+            launcher.name = configService.name;
+            launcher.running = true;
+            launcher.terminating = false;
+            launcher.local = true;
+            launcher.index = -1;
+            launcher.importance = 0;
+
+            items.unshift(launcher);
+        }
+
+        return items;
+    }
+
     Label {
         id: dummyText
         visible: false
@@ -182,36 +221,7 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
             GridView {
-                property var launchers: {
-                    var items = applicationLauncher.launchers;
-                    var running = false;
-
-                    // move running and important items to the front
-                    for (var i = 0; i < items.length; ++i) {
-                        items[i].index = i;  // store the original index
-                        if (items[i].running || (items[i].importance > 0)) {
-                            running = true;
-                            var item = items[i];
-                            items.splice(i, 1);
-                            items.unshift(item);
-                        }
-                    }
-
-                    // create a new launcher element if a configserver is running
-                    // but none of our launchers is running
-                    if (configService.ready && !running) {
-                        var launcher = {};
-                        launcher.name = configService.name;
-                        launcher.running = true;
-                        launcher.terminating = false;
-                        launcher.local = true;
-                        launcher.index = -1;
-
-                        items.unshift(launcher);
-                    }
-
-                    return items;
-                }
+                property var launchers: root._filterLaunchers(applicationLauncher.launchers)
 
                 id: launcherListView
                 cellWidth: width * (root.viewMode === "big" ? 0.333 : (root.viewMode === "small" ? 0.199 : 1.0))
