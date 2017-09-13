@@ -24,6 +24,8 @@
 
 #include <QObject>
 #include <QQmlListProperty>
+#include <QTemporaryDir>
+#include <memory>
 #include <machinetalk/protobuf/message.pb.h>
 #include <application/configbase.h>
 #include "applicationconfigitem.h"
@@ -99,12 +101,10 @@ private:
     ApplicationConfigItem *m_selectedConfig;
     QList<ApplicationConfigItem*> m_configs;
     ApplicationConfigFilter *m_filter;
-    QString m_tmpPath;
+    std::unique_ptr<QTemporaryDir> m_temporaryDir;
 
     // more efficient to reuse a protobuf Message
     machinetalk::Container m_tx;
-
-    void cleanupFiles();
 
 private slots:
     void describeApplicationReceived(const machinetalk::Container &rx);

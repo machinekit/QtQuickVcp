@@ -22,7 +22,6 @@
 #include "applicationconfig.h"
 #include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/types.pb.h>
-#include "machinetalkservice.h"
 
 using namespace machinetalk;
 
@@ -169,22 +168,12 @@ ApplicationConfig::ApplicationConfig(QObject *parent)
     , m_synced(false)
     , m_selectedConfig(new ApplicationConfigItem(this))
     , m_filter(new ApplicationConfigFilter(this))
-    , m_tmpPath("")
+    , m_temporaryDir(nullptr)
 {
 }
 
 ApplicationConfig::~ApplicationConfig()
 {
-    cleanupFiles();
-}
-
-void ApplicationConfig::cleanupFiles()
-{
-    if (!m_selectedConfig->name().isEmpty())
-    {
-        QDir dir(m_tmpPath);
-        dir.removeRecursively();
-    }
 }
 
 void ApplicationConfig::describeApplicationReceived(const Container &rx)
@@ -229,7 +218,7 @@ void ApplicationConfig::applicationDetailReceived(const Container &rx)
 
         ApplicationConfigItem::ApplicationType type;
 
-        type = (ApplicationConfigItem::ApplicationType)app.type();
+        type = static_cast<ApplicationConfigItem::ApplicationType>(app.type());
 
         if (m_filter->type() == type)     // detail comes when application was already filtered, so we only check the type to make sure it is compatible
         {
@@ -247,12 +236,13 @@ void ApplicationConfig::applicationDetailReceived(const Container &rx)
             m_selectedConfig->setType(type);
 
             // update the tmp path and use it to store the config, UUID enforces reload of UI
-            m_tmpPath = MachinetalkService::applicationTempPath(m_selectedConfig->name() + "-" + QUuid::createUuid().toString().remove('{').remove('}'));
-            baseFilePath = m_tmpPath;
-            if (!dir.mkpath(baseFilePath))
+            m_temporaryDir = std::make_unique<QTemporaryDir>();
+            m_temporaryDir->setAutoRemove(true);
+            if (!m_temporaryDir->isValid())
             {
-                qWarning() << "unable to create directory " << baseFilePath;
+                qWarning() << "unable to create temporary directory";
             }
+            baseFilePath = m_temporaryDir->path();
 
 #ifdef QT_DEBUG
             qDebug() << "base file path:" << baseFilePath;
@@ -260,12 +250,8 @@ void ApplicationConfig::applicationDetailReceived(const Container &rx)
 
             for (int j = 0; j < app.file_size(); ++j)
             {
-                File file;
-                QString filePath;
-                QByteArray data;
-
-                file = app.file(j);
-                filePath = baseFilePath + QString::fromStdString(file.name());
+                const auto file = app.file(j);
+                const QString filePath = QDir(baseFilePath).filePath(QString::fromStdString(file.name()));
 
                 QFileInfo fileInfo(filePath);
                 if (!dir.mkpath(fileInfo.absolutePath()))
@@ -280,23 +266,27 @@ void ApplicationConfig::applicationDetailReceived(const Container &rx)
                     continue;
                 }
 
-                data = QByteArray(file.blob().data(), file.blob().size());
+                const QByteArray data = QByteArray::fromRawData(file.blob().data(), static_cast<int>(file.blob().size()));
 
                 if (file.encoding() == ZLIB)
                 {
-                    quint32 test = ((quint32)data.at(0) << 24) + ((quint32)data.at(1) << 16) + ((quint32)data.at(2) << 8) + ((quint32)data.at(3) << 0);
-                    qDebug() << test << (quint8)data.at(0) << (quint8)data.at(1) << (quint8)data.at(2) << (quint8)data.at(3);   // TODO
-                    data = qUncompress(data);
+                    quint32 test = (static_cast<quint32>(data.at(0)) << 24) + (static_cast<quint32>(data.at(1)) << 16) + (static_cast<quint32>(data.at(2)) << 8) + (static_cast<quint32>(data.at(3)) << 0);
+                    qDebug() << test << static_cast<quint8>(data.at(0)) << static_cast<quint8>(data.at(1)) << static_cast<quint8>(data.at(2)) << static_cast<quint8>(data.at(3));   // TODO
+                    QByteArray uncompressedData = qUncompress(data);
+                    localFile.write(uncompressedData);
+                    localFile.close();
                 }
-                else if (file.encoding() != CLEARTEXT)
+                else if (file.encoding() == CLEARTEXT)
                 {
-                    qDebug() << "unknown encoding";
+                    localFile.write(data);
+                    localFile.close();
+                }
+                else
+                {
+                    qWarning() << "received file with unknown encoding";
                     localFile.close();
                     continue;
                 }
-
-                localFile.write(data);
-                localFile.close();
 
                 fileList.append(filePath);
 
@@ -348,7 +338,7 @@ void ApplicationConfig::selectConfig(QString name)
 
 void ApplicationConfig::unselectConfig()
 {
-    cleanupFiles();
+    m_temporaryDir.release();
 
     m_selectedConfig->setName("");
     m_selectedConfig->setDescription("");

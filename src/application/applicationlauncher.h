@@ -24,6 +24,8 @@
 
 #include <QObject>
 #include <QJsonValue>
+#include <QTemporaryDir>
+#include <memory>
 #include <machinetalk/protobuf/message.pb.h>
 #include <application/launcherbase.h>
 
@@ -62,10 +64,12 @@ private:
     QJsonValue m_launchers;
     bool m_synced;
 
+    std::unique_ptr<QTemporaryDir> m_temporaryDir;
     // more efficient to reuse a protobuf Message
     machinetalk::Container   m_tx;
 
     void initializeObject();
+    void createTemporaryDir();
 
 private slots:
     void launcherFullUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);

@@ -14,19 +14,6 @@ MachinetalkService::MachinetalkService(QObject *parent) : QObject(parent)
 
 }
 
-QString MachinetalkService::applicationTempPath(const QString &name)
-{
-    return QString("%1/machinekit-%2/%3/").arg(QDir::tempPath())
-            .arg(QCoreApplication::applicationPid())
-            .arg(name);
-}
-
-bool MachinetalkService::removeTempPath(const QString &name)
-{
-    QDir dir(applicationTempPath(name));
-    return dir.removeRecursively();
-}
-
 QString MachinetalkService::enumNameToCamelCase(const QString &name)
 {
     QStringList partList;
@@ -264,7 +251,6 @@ void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject &
 {
     QDir dir;
     QString fileName;
-    QString tmpPath;
     QString filePath;
     QString uuid;
     QByteArray data;
@@ -274,17 +260,10 @@ void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject &
     }
 
     fileName = QString::fromStdString(file.name());
-    tmpPath = applicationTempPath(tempDir);
     uuid = QUuid::createUuid().toString();
     uuid = uuid.replace('{', '_').replace('}', '_');
-    filePath = tmpPath + uuid + fileName;
+    filePath = QDir(tempDir).filePath(uuid + fileName);
     QFile localFile(filePath);
-
-    if (!dir.mkpath(tmpPath))
-    {
-        qWarning() << "not able to create directory";
-        return;
-    }
 
     if (!localFile.open(QIODevice::WriteOnly))
     {
@@ -292,22 +271,27 @@ void MachinetalkService::fileToJson(const machinetalk::File &file, QJsonObject &
         return;
     }
 
-    data = QByteArray(file.blob().data(), file.blob().size());
+    data = QByteArray::fromRawData(file.blob().data(), static_cast<int>(file.blob().size()));
 
     if (file.encoding() == machinetalk::ZLIB)
     {
         qWarning() << "zlib encoding may not work";
-        data = qUncompress(data); // TODO: zlib uncompress not working correctly
+        QByteArray uncompressedData = qUncompress(data); // TODO: zlib uncompress not working correctly
+        localFile.write(uncompressedData);
+        localFile.close();
     }
-    else if (file.encoding() != machinetalk::CLEARTEXT)
+    else if (file.encoding() == machinetalk::CLEARTEXT) {
+
+        localFile.write(data);
+        localFile.close();
+    }
+    else
     {
-        qWarning() << "unknown encoding";
+        qWarning() << "unknown file encoding";
         localFile.close();
         return;
     }
 
-    localFile.write(data);
-    localFile.close();
 
     object.insert("url", QUrl::fromLocalFile(filePath).toString());
 }

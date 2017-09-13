@@ -50,8 +50,6 @@ public:
         ServiceError = 5
     };
 
-    static QString applicationTempPath(const QString &name);
-    static bool removeTempPath(const QString &name);
     static QString enumNameToCamelCase(const QString &name);
     static void recurseDescriptor(const google::protobuf::Descriptor *descriptor,
                                   QJsonObject &object);
