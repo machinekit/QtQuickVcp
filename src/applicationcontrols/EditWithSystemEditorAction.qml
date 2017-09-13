@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2014 Alexander Rössler
+** Copyright (C) 2017 Alexander Rössler
 ** License: LGPL version 2.1
 **
 ** This file is part of QtQuickVcp.
@@ -16,7 +16,7 @@
 ** Lesser General Public License for more details.
 **
 ** Contributors:
-** Alexander Rössler @ The Cool Tool GmbH <mail DOT aroessler AT gmail DOT com>
+** Alexander Rössler <alexander AT roessler DOT systems>
 **
 ****************************************************************************/
 
@@ -25,23 +25,20 @@ import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
 
 ApplicationAction {
-    property bool _ready: status.synced && command.connected && file.ready
+    property bool _localFileValid: file.localFilePath !== "file://"
+    property bool _fileReady: file.transferState === ApplicationFile.NoTransfer
+    property bool _ready: status.synced && file.ready && _localFileValid && _fileReady
 
-    id: openAction
-    text: qsTr("Reopen file")
-    //iconName: "document-open"
-    iconSource: "qrc:Machinekit/Application/Controls/icons/view-refresh"
-    shortcut: "Ctrl+R"
-    tooltip: qsTr("Reopen current file [%1]").arg(shortcut)
+    id: root
+    text: qsTr("&Edit File with System Editor...")
+    iconSource: "qrc:Machinekit/Application/Controls/icons/document-edit"
+    shortcut: "Ctrl+E"
+    tooltip: qsTr("Edit G-Code file with System Editor [%1]").arg(shortcut)
     onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
-            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
+        if (_ready)
+        {
+            ApplicationHelpers.openUrlWithDefaultApplication(file.localFilePath);
         }
-        core.ignoreNextFileChange();
-        command.resetProgram('execute');
-        command.openProgram('execute', file.remoteFilePath);
     }
-    enabled: _ready
-             && (status.task.file !== "")
-             && !status.running
+    enabled: _ready && !status.running
 }

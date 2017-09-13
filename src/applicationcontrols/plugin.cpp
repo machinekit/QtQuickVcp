@@ -89,7 +89,8 @@ static const struct {
     { "SpindleOverrideAction", 1, 0 },
     { "EstopPowerAction", 1, 0},
     { "RapidrateHandler", 1, 0},
-    { "RapidrateSlider", 1, 0}
+    { "RapidrateSlider", 1, 0},
+    { "EditWithSystemEditorAction", 1, 0}
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)

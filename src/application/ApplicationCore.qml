@@ -39,26 +39,35 @@ Item {
     id: applicationCore
 
     Component.onCompleted: {
-        status.onTaskChanged.connect(statusTaskChanged);
-        status.onConfigChanged.connect(statusConfigChanged);
-        file.onUploadFinished.connect(fileUploadFinished);
-        error.onMessageReceived.connect(errorMessageReceived);
-        file.onErrorChanged.connect(fileError);
-        status.onErrorStringChanged.connect(statusError);
-        command.onErrorStringChanged.connect(commandError);
-        error.onErrorStringChanged.connect(errorError);
+        status.onTaskChanged.connect(_statusTaskChanged);
+        status.onConfigChanged.connect(_statusConfigChanged);
+        file.onUploadFinished.connect(_fileUploadFinished);
+        error.onMessageReceived.connect(_errorMessageReceived);
+        file.onErrorChanged.connect(_fileServiceError);
+        status.onErrorStringChanged.connect(_statusServiceError);
+        command.onErrorStringChanged.connect(_commandServiceError);
+        error.onErrorStringChanged.connect(_errorServiceError);
     }
 
-    function statusTaskChanged() {
-        checkFile();
+    QtObject {
+        id: d
+        property bool ignoreNextFileChange: false // helper to prevent downloading file we just uploaded
     }
 
-    function statusConfigChanged() {
+    function ignoreNextFileChange() {
+        d.ignoreNextFileChange = true;
+    }
+
+    function _statusTaskChanged() {
+        _checkRemoteFile();
+    }
+
+    function _statusConfigChanged() {
         applicationFile.remotePath = "file://" + status.config.remotePath;
-        checkFile();
+        _checkRemoteFile();
     }
 
-    function checkFile() {
+    function _checkRemoteFile() {
         var remoteFile = "file://" + status.task.file;
         var remotePath = "file://" + status.config.remotePath;
 
@@ -75,14 +84,19 @@ Item {
         }
         else if (remoteFile.indexOf(remotePath) === 0) {
             file.remoteFilePath = remoteFile;
-            file.startDownload(); // only start download when program is open
+            if (!d.ignoreNextFileChange) {
+                file.startDownload(); // only start download when program is open
+            }
+            else {
+                d.ignoreNextFileChange = false;
+            }
         }
         else {
             return; // remoteFilePaths stays unchanged (subprogram)
         }
     }
 
-    function fileUploadFinished() {
+    function _fileUploadFinished() {
         if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
             command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
         }
@@ -92,38 +106,43 @@ Item {
         var fileName = file.localFilePath.split('/').reverse()[0];
         var newPath = file.remotePath + '/' + fileName;
         file.remoteFilePath = newPath;
+        ignoreNextFileChange()
         command.resetProgram('execute');
         command.openProgram('execute', newPath);
     }
 
-    function errorMessageReceived(type, text) {
+    function _localFileChanged() {
+        file.startUpload();
+    }
+
+    function _errorMessageReceived(type, text) {
         if (notifications !== null) {
             notifications.addNotification(type, text);
         }
     }
 
-    function fileError() {
+    function _fileServiceError() {
         if (file.error !== ApplicationFile.NoError) {
-            console.log("file error: " + file.errorString);
+            console.warn("file service error: " + file.errorString);
             file.clearError();  // ignore errors from FTP
         }
     }
 
-    function statusError(note) {
+    function _statusServiceError(note) {
         if (note !== "") {
-            console.log("status error: " + note);
+            console.warn("status service error: " + note);
         }
     }
 
-    function commandError(note) {
+    function _commandServiceError(note) {
         if (note !== "") {
-            console.log("command error: " + note);
+            console.warn("command service error: " + note);
         }
     }
 
-    function errorError(note) {
+    function _errorServiceError(note) {
         if (note !== "") {
-            console.log("error error: " + note);
+            console.warn("error service error: " + note);
         }
     }
 
@@ -185,6 +204,13 @@ Item {
         id: applicationFile
         uri: fileService.uri
         ready: fileService.ready
+    }
+
+    FileWatcher {
+        id: fileWatcher
+        fileUrl: enabled ? applicationFile.localFilePath : ""
+        enabled: applicationFile.transferState === ApplicationFile.NoTransfer
+        onFileChanged: _localFileChanged()
     }
 
     ApplicationHelper {

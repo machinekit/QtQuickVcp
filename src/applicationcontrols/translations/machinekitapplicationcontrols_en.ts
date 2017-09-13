@@ -165,6 +165,17 @@
     </message>
 </context>
 <context>
+    <name>EditWithSystemEditorAction</name>
+    <message>
+        <source>Edit G-Code file with System Editor [%1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit File with System Editor...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>EstopAction</name>
     <message>
         <source>Estop</source>

@@ -96,7 +96,7 @@ void ApplicationFile::startUpload()
 
     if (m_file->open(QIODevice::ReadOnly))
     {
-        m_ftp->connectToHost(url.host(), url.port());
+        m_ftp->connectToHost(url.host(), static_cast<quint16>(url.port()));
         m_ftp->login();
         if (!m_serverDirectory.isEmpty())
         {
@@ -162,7 +162,7 @@ void ApplicationFile::startDownload()
 
     if (m_file->open(QIODevice::WriteOnly))
     {
-        m_ftp->connectToHost(url.host(), url.port());
+        m_ftp->connectToHost(url.host(), static_cast<quint16>(url.port()));
         m_ftp->login();
         if (!m_serverDirectory.isEmpty())
         {
@@ -192,7 +192,7 @@ void ApplicationFile::refreshFiles()
     }
 
     m_model->clear();
-    m_ftp->connectToHost(url.host(), url.port());
+    m_ftp->connectToHost(url.host(), static_cast<quint16>(url.port()));
     m_ftp->login();
     if (!m_serverDirectory.isEmpty())
     {
@@ -212,7 +212,7 @@ void ApplicationFile::removeFile(const QString &name)
         return;
     }
 
-    m_ftp->connectToHost(url.host(), url.port());
+    m_ftp->connectToHost(url.host(), static_cast<quint16>(url.port()));
     m_ftp->login();
     if (!m_serverDirectory.isEmpty())
     {
@@ -232,7 +232,7 @@ void ApplicationFile::removeDirectory(const QString &name)
         return;
     }
 
-    m_ftp->connectToHost(url.host(), url.port());
+    m_ftp->connectToHost(url.host(), static_cast<quint16>(url.port()));
     m_ftp->login();
     if (!m_serverDirectory.isEmpty())
     {
@@ -252,7 +252,7 @@ void ApplicationFile::createDirectory(const QString &name)
         return;
     }
 
-    m_ftp->connectToHost(url.host(), url.port());
+    m_ftp->connectToHost(url.host(), static_cast<quint16>(url.port()));
     m_ftp->login();
     if (!m_serverDirectory.isEmpty())
     {

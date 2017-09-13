@@ -16,10 +16,21 @@ FileIO::FileIO(QObject *parent) :
 
 FileIO::~FileIO()
 {
-    if (m_temporaryDir != nullptr)
-    {
-        m_temporaryDir->remove();
-    }
+}
+
+QUrl FileIO::fileUrl() const
+{
+    return m_fileUrl;
+}
+
+QString FileIO::text() const
+{
+    return m_text;
+}
+
+bool FileIO::working() const
+{
+    return m_working;
 }
 
 /* Write text to file */
@@ -76,19 +87,49 @@ void FileIO::read()
     emit readingCompleted();
 }
 
+void FileIO::setFileUrl(const QUrl &fileUrl)
+{
+    if (m_fileUrl == fileUrl) {
+        return;
+    }
+
+    m_fileUrl = fileUrl;
+    emit fileUrlChanged(fileUrl);
+}
+
+void FileIO::setText(const QString &text)
+{
+    if (m_text == text) {
+        return;
+    }
+
+    m_text = text;
+    emit textChanged(text);
+}
+
 QUrl FileIO::createTempFile(const QString &fileName)
 {
-    if (m_temporaryDir == nullptr)
+    if (!m_temporaryDir)
     {
-        m_temporaryDir = new QTemporaryDir();
+        m_temporaryDir = std::make_unique<QTemporaryDir>();
+        m_temporaryDir->setAutoRemove(true);
     }
 
     if (!m_temporaryDir->isValid())
     {
-        return QString();
+        return QUrl();
     }
 
     return QUrl::fromLocalFile(m_temporaryDir->path() + "/" + fileName);
+}
+
+void FileIO::setWorking(bool working)
+{
+    if (m_working == working)
+        return;
+
+    m_working = working;
+    emit workingChanged(working);
 }
 
 } // namespace qtquickvcp

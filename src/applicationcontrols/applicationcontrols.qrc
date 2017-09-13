@@ -81,5 +81,9 @@
         <file alias="machinekit">icons/machinekit.png</file>
         <file alias="star-black">icons/ic_star_black_48dp.png</file>
         <file alias="star-border-black">icons/ic_star_border_black_48dp.png</file>
+        <file alias="document-edit">icons/document-edit.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>EditWithSystemEditorAction.qml</file>
     </qresource>
 </RCC>
