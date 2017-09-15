@@ -142,7 +142,7 @@ void GLView::handleWindowChanged(QQuickWindow *win)
 
 void GLView::updatePerspectiveAspectRatio()
 {
-    if ((width() > 0.0) && (height() > 0)) // avoid division by zero
+    if ((width() > 0.0) && (height() > 0.0)) // avoid division by zero
     {
         m_projectionAspectRatio = static_cast<float>(width() / height());
     }
