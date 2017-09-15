@@ -105,11 +105,13 @@ GLView::~GLView()
     qDeleteAll(m_drawableMap);
 }
 
-void GLView::setBackgroundColor(const QColor &t)
+void GLView::setBackgroundColor(const QColor &color)
 {
-    if (t == m_backgroundColor)
+    if (color == m_backgroundColor) {
         return;
-    m_backgroundColor = t;
+    }
+
+    m_backgroundColor = color;
     emit backgroundColorChanged();
     update();
 }
@@ -140,7 +142,7 @@ void GLView::handleWindowChanged(QQuickWindow *win)
 
 void GLView::updatePerspectiveAspectRatio()
 {
-    if ((width() > 0.0) && (height() > 0)) // avoid division by zero
+    if ((width() > 0.0) && (height() > 0.0)) // avoid division by zero
     {
         m_projectionAspectRatio = static_cast<float>(width() / height());
     }
@@ -410,7 +412,7 @@ void GLView::setupLineVertexBuffer()
 
 void GLView::setupTextVertexBuffer()
 {
-    static const TextVertex vertices[] = {
+    const TextVertex vertices[] = {
         {{0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
         {{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
         {{1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
@@ -437,7 +439,7 @@ void GLView::setupTextVertexBuffer()
 
 void GLView::setupCube()
 {
-    static const ModelVertex vertices[] = {
+    const ModelVertex vertices[] = {
         // Front face
         {{0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
         {{0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},

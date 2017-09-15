@@ -64,7 +64,7 @@ public:
     };
 
     QColor backgroundColor() const { return m_backgroundColor; }
-    void setBackgroundColor(const QColor &backgroundColor);
+    void setBackgroundColor(const QColor &color);
 
     Q_INVOKABLE void readPixel(int x, int y);
 
