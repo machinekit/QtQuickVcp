@@ -412,7 +412,7 @@ void GLView::setupLineVertexBuffer()
 
 void GLView::setupTextVertexBuffer()
 {
-    static const TextVertex vertices[] = {
+    const TextVertex vertices[] = {
         {{0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
         {{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
         {{1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
@@ -439,7 +439,7 @@ void GLView::setupTextVertexBuffer()
 
 void GLView::setupCube()
 {
-    static const ModelVertex vertices[] = {
+    const ModelVertex vertices[] = {
         // Front face
         {{0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
         {{0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
