@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QFile>
+#include <QUrl>
 #include <QTemporaryDir>
 #include <memory>
 #include "qftp.h"
