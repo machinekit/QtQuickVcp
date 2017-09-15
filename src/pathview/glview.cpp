@@ -105,11 +105,13 @@ GLView::~GLView()
     qDeleteAll(m_drawableMap);
 }
 
-void GLView::setBackgroundColor(const QColor &t)
+void GLView::setBackgroundColor(const QColor &color)
 {
-    if (t == m_backgroundColor)
+    if (color == m_backgroundColor) {
         return;
-    m_backgroundColor = t;
+    }
+
+    m_backgroundColor = color;
     emit backgroundColorChanged();
     update();
 }
