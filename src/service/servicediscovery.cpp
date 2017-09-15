@@ -959,7 +959,7 @@ void ServiceDiscovery::removeItem(const QString &name, const QString &type)
             serviceDiscoveryItems.erase(iterator);
             m_serviceItemsMap.insert(type, serviceDiscoveryItems);
             updateServiceType(type);
-            return;
+            break;  // make sure to break the loop since iterator is now invalid
         }
     }
 }
@@ -1007,9 +1007,9 @@ void ServiceDiscovery::purgeAllItems(const QString &serviceType)
             {
                 stopItemQueries(item);
                 item->deleteLater();
-                serviceDiscoveryItems.erase(iterator);
+                iterator = serviceDiscoveryItems.erase(iterator);
                 modified = true;
-                continue; // make sure we do not update the iterator
+                continue; // make sure we do not update the iterator again
             }
         }
         else
