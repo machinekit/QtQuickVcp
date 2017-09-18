@@ -4,8 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += network testlib
-
+QT       += network testlib qml
 QT       -= gui
 
 TARGET = applicationtests
@@ -29,15 +28,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+include(../../src/zeromq.pri)
 include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)
+include(../../src/common/common.pri)
+include(../../src/machinetalk/machinetalk.pri)
+include(../../src/protobuf.pri)
 
 APPLICATION_PATH = $$PWD/../../src/application/
 INCLUDEPATH += $$APPLICATION_PATH
-HEADERS += $$APPLICATION_PATH/filewatcher.h
-SOURCES += $$APPLICATION_PATH/filewatcher.cpp
+HEADERS += $$APPLICATION_PATH/filewatcher.h \
+    $$APPLICATION_PATH/applicationlog.h \
+    $$APPLICATION_PATH/applicationlogmessage.h \
+    logservice.h
 
+SOURCES += $$APPLICATION_PATH/filewatcher.cpp \
+    $$APPLICATION_PATH/applicationlog.cpp \
+    $$APPLICATION_PATH/applicationlogmessage.cpp \
+    logservice.cpp
 
 SOURCES += \
     test_filewatcher.cpp \
+    test_applicationlog.cpp \
     main.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"

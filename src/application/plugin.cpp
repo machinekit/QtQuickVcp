@@ -33,6 +33,8 @@
 #include "applicationplugins.h"
 #include "applicationpluginitem.h"
 #include "applicationtranslator.h"
+#include "applicationlog.h"
+#include "applicationlogmessage.h"
 #include "localsettings.h"
 #include "fileio.h"
 #include "filewatcher.h"
@@ -83,6 +85,8 @@ void MachinekitApplicationPlugin::registerTypes(const char *uri)
     qmlRegisterType<qtquickvcp::ApplicationPlugins>(uri, 1, 0, "ApplicationPlugins");
     qmlRegisterType<qtquickvcp::ApplicationPluginItem>(uri, 1, 0, "ApplicationPluginItem");
     qmlRegisterType<qtquickvcp::ApplicationTranslator>(uri, 1, 0, "ApplicationTranslator");
+    qmlRegisterType<qtquickvcp::ApplicationLog>(uri, 1, 0, "ApplicationLog");
+    qmlRegisterType<qtquickvcp::ApplicationLogMessage>(uri, 1, 0, "ApplicationLogMessage");
     qmlRegisterType<qtquickvcp::FileIO>(uri, 1, 0, "FileIO");
     qmlRegisterType<qtquickvcp::FileWatcher>(uri, 1, 0, "FileWatcher");
     qmlRegisterSingletonType<qtquickvcp::RevisionSingleton>(uri, 1, 0, "Revision", &qtquickvcp::RevisionSingleton::qmlInstance);
