@@ -37,9 +37,9 @@ ApplicationError::ApplicationError(QObject *parent) :
 
 void ApplicationError::errorMessageReceived(const Container &rx)
 {
-    for (int i = 0; i < rx.note_size(); ++i)
+    for (const std::string &note: rx.note())
     {
-        messageReceived(static_cast<ErrorType>(rx.type()), QString::fromStdString(rx.note(i)));
+        messageReceived(static_cast<ErrorType>(rx.type()), QString::fromStdString(note));
     }
 }
 
