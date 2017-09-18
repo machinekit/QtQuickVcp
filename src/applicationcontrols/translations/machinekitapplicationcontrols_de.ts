@@ -17,7 +17,7 @@
     <name>ApplicationFileDialog</name>
     <message>
         <source>Please choose a file</source>
-        <translation>Datei auswählen</translation>
+        <translation type="vanished">Datei auswählen</translation>
     </message>
     <message>
         <source>All machinable files (%1)</source>
@@ -30,6 +30,10 @@
     <message>
         <source>All files (*)</source>
         <translation>Alle Dateien (*)</translation>
+    </message>
+    <message>
+        <source>Open File</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -51,7 +55,7 @@
     <name>ApplicationRemoteFileDialog</name>
     <message>
         <source>Remote files</source>
-        <translation>Netzwerkdateien</translation>
+        <translation type="vanished">Netzwerkdateien</translation>
     </message>
     <message>
         <source>Name</source>
@@ -96,6 +100,10 @@
     <message>
         <source>Close</source>
         <translation>Schließen</translation>
+    </message>
+    <message>
+        <source>Remote Files</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -394,7 +402,11 @@
     <name>MdiHistoryTable</name>
     <message>
         <source>Clear list</source>
-        <translation>Liste leeren</translation>
+        <translation type="vanished">Liste leeren</translation>
+    </message>
+    <message>
+        <source>Clear History</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -412,22 +424,30 @@
     <name>OpenAction</name>
     <message>
         <source>Open file</source>
-        <translation>Datei öffnen</translation>
+        <translation type="vanished">Datei öffnen</translation>
     </message>
     <message>
         <source>Open G-Code file [%1]</source>
         <translation>GCode Datei öffen [%1]</translation>
+    </message>
+    <message>
+        <source>Open File...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>OptionalStopAction</name>
     <message>
         <source>Optional stop (M1)</source>
-        <translation>Optionaler Stop (M1)</translation>
+        <translation type="vanished">Optionaler Stop (M1)</translation>
     </message>
     <message>
         <source>Optional stop [%1]</source>
         <translation>Optionaler Stop [%1]</translation>
+    </message>
+    <message>
+        <source>Optional Stop (M1)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -475,11 +495,15 @@
     <name>ReopenAction</name>
     <message>
         <source>Reopen file</source>
-        <translation>Datei wieder öffnen</translation>
+        <translation type="vanished">Datei wieder öffnen</translation>
     </message>
     <message>
         <source>Reopen current file [%1]</source>
         <translation>Aktuelle Datei wieder öffnen [%1]</translation>
+    </message>
+    <message>
+        <source>Reopen File</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -612,11 +636,15 @@
     <name>TeleopAction</name>
     <message>
         <source>Teleop mode</source>
-        <translation>Teleop Modus</translation>
+        <translation type="vanished">Teleop Modus</translation>
     </message>
     <message>
         <source>Enable teleop mode [%1]</source>
         <translation>Teleop Modus aktivieren [%1]</translation>
+    </message>
+    <message>
+        <source>Teleop Mode</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

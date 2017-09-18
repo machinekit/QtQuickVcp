@@ -53,7 +53,7 @@ Dialog {
     SystemPalette { id: systemPalette }
 
     id: dialog
-    title: qsTr("Remote files")
+    title: qsTr("Remote Files")
 
     contentItem: Rectangle {
         id: root

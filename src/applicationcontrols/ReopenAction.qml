@@ -28,7 +28,7 @@ ApplicationAction {
     property bool _ready: status.synced && command.connected && file.ready
 
     id: openAction
-    text: qsTr("Reopen file")
+    text: qsTr("Reopen File")
     //iconName: "document-open"
     iconSource: "qrc:Machinekit/Application/Controls/icons/view-refresh"
     shortcut: "Ctrl+R"
