@@ -29,7 +29,7 @@ ApplicationAction {
     property bool _enabled: _ready && (status.motion.motionMode === ApplicationStatus.TeleopMode)
 
     id: root
-    text: qsTr("Teleop mode")
+    text: qsTr("Teleop Mode")
     shortcut: "$"
     tooltip: qsTr("Enable teleop mode [%1]").arg(shortcut)
     checked: _enabled

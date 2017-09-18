@@ -69,7 +69,7 @@ TableView {
         MenuItem { action: clearListAction }
         Action {
             id: clearListAction
-            text: qsTr("Clear list")
+            text: qsTr("Clear History")
             onTriggered: history.clear()
         }
     }

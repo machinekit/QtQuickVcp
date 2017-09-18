@@ -30,7 +30,7 @@ FileDialog {
     property var file: core === null ? {"localPath":"", "remotePath":"", "localFilePath":"", "ready":false} : core.file
 
     id: fileDialog
-    title: qsTr("Please choose a file")
+    title: qsTr("Open File")
     onAccepted: {
         file.localFilePath = fileUrl;
         file.startUpload();

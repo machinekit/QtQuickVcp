@@ -28,7 +28,7 @@ ApplicationAction {
     property bool _ready: status.synced && command.connected
 
     id: root
-    text: qsTr("Optional stop (M1)")
+    text: qsTr("Optional Stop (M1)")
     iconSource: "qrc:Machinekit/Application/Controls/icons/go-pause"
     shortcut: "Alt+M"
     tooltip: qsTr("Optional stop [%1]").arg(shortcut)
