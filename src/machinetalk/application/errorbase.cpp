@@ -98,37 +98,37 @@ void ErrorBase::processErrorChannelMessage(const QByteArray &topic, const Contai
     // react to emc nml error message
     if (rx.type() == MT_EMC_NML_ERROR)
     {
-        emcNmlErrorReceived(topic, rx);
+        handleEmcNmlErrorMessage(topic, rx);
     }
 
     // react to emc nml text message
     else if (rx.type() == MT_EMC_NML_TEXT)
     {
-        emcNmlTextReceived(topic, rx);
+        handleEmcNmlTextMessage(topic, rx);
     }
 
     // react to emc nml display message
     else if (rx.type() == MT_EMC_NML_DISPLAY)
     {
-        emcNmlDisplayReceived(topic, rx);
+        handleEmcNmlDisplayMessage(topic, rx);
     }
 
     // react to emc operator text message
     else if (rx.type() == MT_EMC_OPERATOR_TEXT)
     {
-        emcOperatorTextReceived(topic, rx);
+        handleEmcOperatorTextMessage(topic, rx);
     }
 
     // react to emc operator error message
     else if (rx.type() == MT_EMC_OPERATOR_ERROR)
     {
-        emcOperatorErrorReceived(topic, rx);
+        handleEmcOperatorErrorMessage(topic, rx);
     }
 
     // react to emc operator display message
     else if (rx.type() == MT_EMC_OPERATOR_DISPLAY)
     {
-        emcOperatorDisplayReceived(topic, rx);
+        handleEmcOperatorDisplayMessage(topic, rx);
     }
 
     emit errorMessageReceived(topic, rx);

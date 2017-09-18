@@ -213,8 +213,8 @@ private slots:
     void fsmSyncedLaunchercmdTryingEvent();
     void fsmSyncedDisconnectEvent();
 
-    virtual void launcherFullUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void launcherIncrementalUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleLauncherFullUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleLauncherIncrementalUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
     virtual void syncStatus() = 0;
     virtual void unsyncStatus() = 0;
 

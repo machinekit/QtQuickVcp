@@ -99,7 +99,7 @@ void ConfigBase::processConfigChannelMessage(const Container &rx)
         {
             emit fsmListingApplicationRetrieved(QPrivateSignal());
         }
-        describeApplicationReceived(rx);
+        handleDescribeApplicationMessage(rx);
     }
 
     // react to application detail message
@@ -110,7 +110,7 @@ void ConfigBase::processConfigChannelMessage(const Container &rx)
         {
             emit fsmLoadingApplicationLoaded(QPrivateSignal());
         }
-        applicationDetailReceived(rx);
+        handleApplicationDetailMessage(rx);
     }
 
     // react to error message

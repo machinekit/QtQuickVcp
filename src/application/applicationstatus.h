@@ -243,8 +243,8 @@ private:
 
 
 private slots:
-    void emcstatFullUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void emcstatIncrementalUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleEmcstatFullUpdateMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleEmcstatIncrementalUpdateMessage(const QByteArray &topic, const machinetalk::Container &rx);
     void syncStatus();
     void unsyncStatus();
     void updateTopics();

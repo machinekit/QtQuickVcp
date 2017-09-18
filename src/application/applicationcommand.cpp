@@ -629,12 +629,12 @@ void ApplicationCommand::clearConnected()
     emit connectedChanged(m_connected);
 }
 
-void ApplicationCommand::emccmdExecutedReceived(const Container &rx)
+void ApplicationCommand::handleEmccmdExecutedMessage(const Container &rx)
 {
     Q_UNUSED(rx); // message currently unused
 }
 
-void ApplicationCommand::emccmdCompletedReceived(const Container &rx)
+void ApplicationCommand::handleEmccmdCompletedMessage(const Container &rx)
 {
     Q_UNUSED(rx); // message currently unused
 }

@@ -167,12 +167,12 @@ private slots:
     void fsmUpErrorTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void emcNmlErrorReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcNmlTextReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcNmlDisplayReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcOperatorTextReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcOperatorErrorReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcOperatorDisplayReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcNmlErrorMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcNmlTextMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcNmlDisplayMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcOperatorTextMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcOperatorErrorMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcOperatorDisplayMessage(const QByteArray &topic, const Container &rx) = 0;
     virtual void updateTopics() = 0;
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;

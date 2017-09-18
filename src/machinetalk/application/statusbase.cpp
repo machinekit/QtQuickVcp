@@ -104,13 +104,13 @@ void StatusBase::processStatusChannelMessage(const QByteArray &topic, const Cont
     // react to emcstat full update message
     if (rx.type() == MT_EMCSTAT_FULL_UPDATE)
     {
-        emcstatFullUpdateReceived(topic, rx);
+        handleEmcstatFullUpdateMessage(topic, rx);
     }
 
     // react to emcstat incremental update message
     else if (rx.type() == MT_EMCSTAT_INCREMENTAL_UPDATE)
     {
-        emcstatIncrementalUpdateReceived(topic, rx);
+        handleEmcstatIncrementalUpdateMessage(topic, rx);
     }
 
     emit statusMessageReceived(topic, rx);

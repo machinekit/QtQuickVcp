@@ -168,9 +168,9 @@ private slots:
     void addPins();
     void removePins();
     void unsyncPins();
-    void halrcompFullUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void halrcompIncrementalUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void halrcompErrorReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleHalrcompFullUpdateMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleHalrcompIncrementalUpdateMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleHalrcompErrorMessage(const QByteArray &topic, const machinetalk::Container &rx);
     void bindComponent();
     void setConnected();
     void setError();

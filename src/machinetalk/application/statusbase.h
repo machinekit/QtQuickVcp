@@ -173,8 +173,8 @@ private slots:
     void fsmUpStatusTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void emcstatFullUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcstatIncrementalUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcstatFullUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcstatIncrementalUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
     virtual void syncStatus() = 0;
     virtual void unsyncStatus() = 0;
     virtual void updateTopics() = 0;

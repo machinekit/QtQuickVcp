@@ -191,8 +191,8 @@ private slots:
     void fsmUpStatusTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void previewReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void interpStatReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handlePreviewMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleInterpStatMessage(const QByteArray &topic, const Container &rx) = 0;
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;
 

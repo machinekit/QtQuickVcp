@@ -84,7 +84,7 @@ void ParamServer::processParamcmdChannelMessage(const QByteArray &topic, const C
     // react to incremental update message
     if (rx.type() == MT_INCREMENTAL_UPDATE)
     {
-        incrementalUpdateReceived(topic, rx);
+        handleIncrementalUpdateMessage(topic, rx);
     }
 
     emit paramcmdMessageReceived(topic, rx);

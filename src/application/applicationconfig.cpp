@@ -176,7 +176,7 @@ ApplicationConfig::~ApplicationConfig()
 {
 }
 
-void ApplicationConfig::describeApplicationReceived(const Container &rx)
+void ApplicationConfig::handleDescribeApplicationMessage(const Container &rx)
 {
     for (int i = 0; i < rx.app_size(); ++i)
     {
@@ -208,7 +208,7 @@ void ApplicationConfig::describeApplicationReceived(const Container &rx)
     }
 }
 
-void ApplicationConfig::applicationDetailReceived(const Container &rx)
+void ApplicationConfig::handleApplicationDetailMessage(const Container &rx)
 {
     for (int i = 0; i < rx.app_size(); ++i)
     {

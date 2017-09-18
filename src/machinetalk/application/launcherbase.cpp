@@ -149,13 +149,13 @@ void LauncherBase::processLauncherChannelMessage(const QByteArray &topic, const 
     // react to launcher full update message
     if (rx.type() == MT_LAUNCHER_FULL_UPDATE)
     {
-        launcherFullUpdateReceived(topic, rx);
+        handleLauncherFullUpdateMessage(topic, rx);
     }
 
     // react to launcher incremental update message
     else if (rx.type() == MT_LAUNCHER_INCREMENTAL_UPDATE)
     {
-        launcherIncrementalUpdateReceived(topic, rx);
+        handleLauncherIncrementalUpdateMessage(topic, rx);
     }
 
     emit launcherMessageReceived(topic, rx);

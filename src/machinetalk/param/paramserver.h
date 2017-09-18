@@ -174,7 +174,7 @@ private slots:
     void fsmUp();
     void fsmUpDisconnectEvent();
 
-    virtual void incrementalUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleIncrementalUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
 
 signals:
     void paramcmdUriChanged(const QString &uri);

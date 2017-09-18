@@ -424,7 +424,7 @@ void HalRemoteComponent::unsyncPins()
     }
 }
 
-void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic,const Container &rx)
+void HalRemoteComponent::handleHalrcompFullUpdateMessage(const QByteArray &topic,const Container &rx)
 {
     Q_UNUSED(topic);
     bool pinsAdded = false;
@@ -461,7 +461,7 @@ void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic,cons
     pinsSynced(); // accept that pins have been synced
 }
 
-void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &topic, const Container &rx)
+void HalRemoteComponent::handleHalrcompIncrementalUpdateMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
 
@@ -476,7 +476,7 @@ void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &top
     }
 }
 
-void HalRemoteComponent::halrcompErrorReceived(const QByteArray &topic, const Container &rx)
+void HalRemoteComponent::handleHalrcompErrorMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     Q_UNUSED(rx);

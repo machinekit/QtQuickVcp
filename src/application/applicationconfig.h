@@ -107,8 +107,8 @@ private:
     machinetalk::Container m_tx;
 
 private slots:
-    void describeApplicationReceived(const machinetalk::Container &rx);
-    void applicationDetailReceived(const machinetalk::Container &rx);
+    void handleDescribeApplicationMessage(const machinetalk::Container &rx);
+    void handleApplicationDetailMessage(const machinetalk::Container &rx);
     void syncConfig();
     void unsyncConfig();
 

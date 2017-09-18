@@ -135,13 +135,13 @@ void ParamClient::processParamChannelMessage(const QByteArray &topic, const Cont
     // react to full update message
     if (rx.type() == MT_FULL_UPDATE)
     {
-        fullUpdateReceived(topic, rx);
+        handleFullUpdateMessage(topic, rx);
     }
 
     // react to incremental update message
     else if (rx.type() == MT_INCREMENTAL_UPDATE)
     {
-        incrementalUpdateReceived(topic, rx);
+        handleIncrementalUpdateMessage(topic, rx);
     }
 
     emit paramMessageReceived(topic, rx);

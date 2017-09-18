@@ -211,8 +211,8 @@ private slots:
     void fsmUpParamTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void fullUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void incrementalUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleFullUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleIncrementalUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
     virtual void removeKeys() = 0;
     virtual void unsyncKeys() = 0;
     virtual void setSynced() = 0;

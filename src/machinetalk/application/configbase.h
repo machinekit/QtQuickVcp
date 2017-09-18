@@ -179,8 +179,8 @@ private slots:
     void fsmLoadingConfigTryingEvent();
     void fsmLoadingDisconnectEvent();
 
-    virtual void describeApplicationReceived(const Container &rx) = 0;
-    virtual void applicationDetailReceived(const Container &rx) = 0;
+    virtual void handleDescribeApplicationMessage(const Container &rx) = 0;
+    virtual void handleApplicationDetailMessage(const Container &rx) = 0;
     virtual void syncConfig() = 0;
     virtual void unsyncConfig() = 0;
 

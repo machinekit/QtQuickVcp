@@ -149,7 +149,7 @@ void PreviewClientBase::processPreviewChannelMessage(const QByteArray &topic, co
     // react to preview message
     if (rx.type() == MT_PREVIEW)
     {
-        previewReceived(topic, rx);
+        handlePreviewMessage(topic, rx);
     }
 
     emit previewMessageReceived(topic, rx);
@@ -162,7 +162,7 @@ void PreviewClientBase::processPreviewstatusChannelMessage(const QByteArray &top
     // react to interp stat message
     if (rx.type() == MT_INTERP_STAT)
     {
-        interpStatReceived(topic, rx);
+        handleInterpStatMessage(topic, rx);
     }
 
     emit previewstatusMessageReceived(topic, rx);

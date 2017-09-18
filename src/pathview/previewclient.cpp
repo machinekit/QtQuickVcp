@@ -43,7 +43,7 @@ PreviewClient::PreviewClient(QObject *parent) :
     addPreviewstatusTopic("status");
 }
 
-void PreviewClient::previewReceived(const QByteArray &topic, const Container &rx)
+void PreviewClient::handlePreviewMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
 
@@ -90,7 +90,7 @@ void PreviewClient::previewReceived(const QByteArray &topic, const Container &rx
     }
 }
 
-void PreviewClient::interpStatReceived(const QByteArray &topic, const Container &rx)
+void PreviewClient::handleInterpStatMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     QStringList notes;

@@ -72,8 +72,8 @@ private:
     void createTemporaryDir();
 
 private slots:
-    void launcherFullUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void launcherIncrementalUpdateReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleLauncherFullUpdateMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleLauncherIncrementalUpdateMessage(const QByteArray &topic, const machinetalk::Container &rx);
     void syncStatus();
     void unsyncStatus();
 
