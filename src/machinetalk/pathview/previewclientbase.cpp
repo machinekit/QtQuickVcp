@@ -87,13 +87,13 @@ PreviewClientBase::~PreviewClientBase()
 }
 
 /** Add a topic that should be subscribed **/
-void PreviewClientBase::addPreviewTopic(const QString &name)
+void PreviewClientBase::addPreviewTopic(const QByteArray &name)
 {
     m_previewChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void PreviewClientBase::removePreviewTopic(const QString &name)
+void PreviewClientBase::removePreviewTopic(const QByteArray &name)
 {
     m_previewChannel->removeSocketTopic(name);
 }
@@ -105,13 +105,13 @@ void PreviewClientBase::clearPreviewTopics()
 }
 
 /** Add a topic that should be subscribed **/
-void PreviewClientBase::addPreviewstatusTopic(const QString &name)
+void PreviewClientBase::addPreviewstatusTopic(const QByteArray &name)
 {
     m_previewstatusChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void PreviewClientBase::removePreviewstatusTopic(const QString &name)
+void PreviewClientBase::removePreviewstatusTopic(const QByteArray &name)
 {
     m_previewstatusChannel->removeSocketTopic(name);
 }

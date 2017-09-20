@@ -57,6 +57,24 @@ ParamServer::~ParamServer()
 {
 }
 
+/** Add a topic that should be subscribed **/
+void ParamServer::addParamTopic(const QByteArray &name)
+{
+    m_paramChannel->addSocketTopic(name);
+}
+
+/** Removes a topic from the list of topics that should be subscribed **/
+void ParamServer::removeParamTopic(const QByteArray &name)
+{
+    m_paramChannel->removeSocketTopic(name);
+}
+
+/** Clears the the topics that should be subscribed **/
+void ParamServer::clearParamTopics()
+{
+    m_paramChannel->clearSocketTopics();
+}
+
 void ParamServer::startParamcmdChannel()
 {
     m_paramcmdChannel->setReady(true);

@@ -111,13 +111,13 @@ RemoteComponentBase::~RemoteComponentBase()
 }
 
 /** Add a topic that should be subscribed **/
-void RemoteComponentBase::addHalrcompTopic(const QString &name)
+void RemoteComponentBase::addHalrcompTopic(const QByteArray &name)
 {
     m_halrcompChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void RemoteComponentBase::removeHalrcompTopic(const QString &name)
+void RemoteComponentBase::removeHalrcompTopic(const QByteArray &name)
 {
     m_halrcompChannel->removeSocketTopic(name);
 }

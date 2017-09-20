@@ -159,8 +159,8 @@ public slots:
     void sendHalrcmdMessage(ContainerType type, Container &tx);
     void sendHalrcompBind(Container &tx);
     void sendHalrcompSet(Container &tx);
-    void addHalrcompTopic(const QString &name);
-    void removeHalrcompTopic(const QString &name);
+    void addHalrcompTopic(const QByteArray &name);
+    void removeHalrcompTopic(const QByteArray &name);
     void clearHalrcompTopics();
 
 protected:
@@ -175,7 +175,7 @@ private:
     QString m_debugName;
 
     common::RpcClient *m_halrcmdChannel;
-    QSet<QString> m_halrcompTopics;  // the topics we are interested in
+    QSet<QByteArray> m_halrcompTopics;  // the topics we are interested in
     halremote::HalrcompSubscribe *m_halrcompChannel;
 
     State         m_state;

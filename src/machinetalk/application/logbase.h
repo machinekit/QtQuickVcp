@@ -116,8 +116,8 @@ public slots:
         }
     }
 
-    void addLogTopic(const QString &name);
-    void removeLogTopic(const QString &name);
+    void addLogTopic(const QByteArray &name);
+    void removeLogTopic(const QByteArray &name);
     void clearLogTopics();
 
 protected:
@@ -129,7 +129,7 @@ private:
     bool m_ready;
     QString m_debugName;
 
-    QSet<QString> m_logTopics;      // the topics we are interested in
+    QSet<QByteArray> m_logTopics;      // the topics we are interested in
     common::SimpleSubscribe *m_logChannel;
 
     State         m_state;

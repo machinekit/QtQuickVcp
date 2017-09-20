@@ -1,4 +1,4 @@
-MACHINETALK_PATH = $$OUT_PWD/../machinetalk
+MACHINETALK_PATH = $$OUT_PWD/../../src/machinetalk
 INCLUDEPATH += $$PWD
 
 !win32 {

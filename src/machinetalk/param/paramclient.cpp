@@ -91,13 +91,13 @@ ParamClient::~ParamClient()
 }
 
 /** Add a topic that should be subscribed **/
-void ParamClient::addParamTopic(const QString &name)
+void ParamClient::addParamTopic(const QByteArray &name)
 {
     m_paramChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void ParamClient::removeParamTopic(const QString &name)
+void ParamClient::removeParamTopic(const QByteArray &name)
 {
     m_paramChannel->removeSocketTopic(name);
 }

@@ -64,13 +64,13 @@ ErrorBase::~ErrorBase()
 }
 
 /** Add a topic that should be subscribed **/
-void ErrorBase::addErrorTopic(const QString &name)
+void ErrorBase::addErrorTopic(const QByteArray &name)
 {
     m_errorChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void ErrorBase::removeErrorTopic(const QString &name)
+void ErrorBase::removeErrorTopic(const QByteArray &name)
 {
     m_errorChannel->removeSocketTopic(name);
 }

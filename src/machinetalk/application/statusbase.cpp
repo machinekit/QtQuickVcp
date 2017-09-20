@@ -70,13 +70,13 @@ StatusBase::~StatusBase()
 }
 
 /** Add a topic that should be subscribed **/
-void StatusBase::addStatusTopic(const QString &name)
+void StatusBase::addStatusTopic(const QByteArray &name)
 {
     m_statusChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void StatusBase::removeStatusTopic(const QString &name)
+void StatusBase::removeStatusTopic(const QByteArray &name)
 {
     m_statusChannel->removeSocketTopic(name);
 }

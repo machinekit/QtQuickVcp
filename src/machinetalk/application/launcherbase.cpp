@@ -85,13 +85,13 @@ LauncherBase::~LauncherBase()
 }
 
 /** Add a topic that should be subscribed **/
-void LauncherBase::addLauncherTopic(const QString &name)
+void LauncherBase::addLauncherTopic(const QByteArray &name)
 {
     m_launcherChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void LauncherBase::removeLauncherTopic(const QString &name)
+void LauncherBase::removeLauncherTopic(const QByteArray &name)
 {
     m_launcherChannel->removeSocketTopic(name);
 }

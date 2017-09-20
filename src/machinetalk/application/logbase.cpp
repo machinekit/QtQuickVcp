@@ -59,13 +59,13 @@ LogBase::~LogBase()
 }
 
 /** Add a topic that should be subscribed **/
-void LogBase::addLogTopic(const QString &name)
+void LogBase::addLogTopic(const QByteArray &name)
 {
     m_logChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void LogBase::removeLogTopic(const QString &name)
+void LogBase::removeLogTopic(const QByteArray &name)
 {
     m_logChannel->removeSocketTopic(name);
 }

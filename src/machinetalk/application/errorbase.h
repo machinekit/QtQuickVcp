@@ -127,8 +127,8 @@ public slots:
         }
     }
 
-    void addErrorTopic(const QString &name);
-    void removeErrorTopic(const QString &name);
+    void addErrorTopic(const QByteArray &name);
+    void removeErrorTopic(const QByteArray &name);
     void clearErrorTopics();
 
 protected:
@@ -140,7 +140,7 @@ private:
     bool m_ready;
     QString m_debugName;
 
-    QSet<QString> m_errorTopics;    // the topics we are interested in
+    QSet<QByteArray> m_errorTopics;    // the topics we are interested in
     application::ErrorSubscribe *m_errorChannel;
 
     State         m_state;

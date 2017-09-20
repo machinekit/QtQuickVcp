@@ -128,8 +128,8 @@ public slots:
         }
     }
 
-    void addStatusTopic(const QString &name);
-    void removeStatusTopic(const QString &name);
+    void addStatusTopic(const QByteArray &name);
+    void removeStatusTopic(const QByteArray &name);
     void clearStatusTopics();
 
 protected:
@@ -142,7 +142,7 @@ private:
     bool m_ready;
     QString m_debugName;
 
-    QSet<QString> m_statusTopics;   // the topics we are interested in
+    QSet<QByteArray> m_statusTopics;   // the topics we are interested in
     application::StatusSubscribe *m_statusChannel;
 
     State         m_state;
