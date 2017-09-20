@@ -215,8 +215,8 @@ private slots:
     void fsmUpCommandTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void emccmdExecutedReceived(const Container &rx) = 0;
-    virtual void emccmdCompletedReceived(const Container &rx) = 0;
+    virtual void handleEmccmdExecutedMessage(const Container &rx) = 0;
+    virtual void handleEmccmdCompletedMessage(const Container &rx) = 0;
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;
 

@@ -372,7 +372,7 @@ void HalRemoteComponent::addPins()
     }
 
     clearHalrcompTopics();
-    addHalrcompTopic(m_name);
+    addHalrcompTopic(m_name.toLocal8Bit());
 
     halObjects = recurseObjects(m_containerItem->children());
     for (QObject *object: halObjects)
@@ -417,14 +417,12 @@ void HalRemoteComponent::removePins()
 /** Sets synced of all pins to false */
 void HalRemoteComponent::unsyncPins()
 {
-    QMapIterator<QString, HalPin*> i(m_pinsByName);
-    while (i.hasNext()) {
-        i.next();
-        i.value()->setSynced(false);
+    for (HalPin *pin: m_pinsByName) {
+        pin->setSynced(false);
     }
 }
 
-void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic,const Container &rx)
+void HalRemoteComponent::handleHalrcompFullUpdateMessage(const QByteArray &topic,const Container &rx)
 {
     Q_UNUSED(topic);
     bool pinsAdded = false;
@@ -435,9 +433,8 @@ void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic,cons
     }
 
     Component component = rx.comp(0);  // shouldnt we check the name?
-    for (int i = 0; i < component.pin_size(); ++i)
+    for (const Pin &remotePin: component.pin())
     {
-        const Pin &remotePin = component.pin(i);
         QString name = QString::fromStdString(remotePin.name());
         name = splitPinFromHalName(name);
 
@@ -461,13 +458,12 @@ void HalRemoteComponent::halrcompFullUpdateReceived(const QByteArray &topic,cons
     pinsSynced(); // accept that pins have been synced
 }
 
-void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &topic, const Container &rx)
+void HalRemoteComponent::handleHalrcompIncrementalUpdateMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
 
-    for (int i = 0; i < rx.pin_size(); ++i)
+    for (const Pin &remotePin: rx.pin())
     {
-        Pin remotePin = rx.pin(i);
         HalPin *localPin = m_pinsByHandle.value(static_cast<int>(remotePin.handle()), nullptr);
         if (localPin != nullptr) // in case we received a wrong pin handle
         {
@@ -476,7 +472,7 @@ void HalRemoteComponent::halrcompIncrementalUpdateReceived(const QByteArray &top
     }
 }
 
-void HalRemoteComponent::halrcompErrorReceived(const QByteArray &topic, const Container &rx)
+void HalRemoteComponent::handleHalrcompErrorMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     Q_UNUSED(rx);

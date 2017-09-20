@@ -111,13 +111,13 @@ RemoteComponentBase::~RemoteComponentBase()
 }
 
 /** Add a topic that should be subscribed **/
-void RemoteComponentBase::addHalrcompTopic(const QString &name)
+void RemoteComponentBase::addHalrcompTopic(const QByteArray &name)
 {
     m_halrcompChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void RemoteComponentBase::removeHalrcompTopic(const QString &name)
+void RemoteComponentBase::removeHalrcompTopic(const QByteArray &name)
 {
     m_halrcompChannel->removeSocketTopic(name);
 }
@@ -208,13 +208,13 @@ void RemoteComponentBase::processHalrcompChannelMessage(const QByteArray &topic,
     // react to halrcomp full update message
     if (rx.type() == MT_HALRCOMP_FULL_UPDATE)
     {
-        halrcompFullUpdateReceived(topic, rx);
+        handleHalrcompFullUpdateMessage(topic, rx);
     }
 
     // react to halrcomp incremental update message
     else if (rx.type() == MT_HALRCOMP_INCREMENTAL_UPDATE)
     {
-        halrcompIncrementalUpdateReceived(topic, rx);
+        handleHalrcompIncrementalUpdateMessage(topic, rx);
     }
 
     // react to halrcomp error message
@@ -233,7 +233,7 @@ void RemoteComponentBase::processHalrcompChannelMessage(const QByteArray &topic,
         {
             emit fsmSyncingSyncFailed(QPrivateSignal());
         }
-        halrcompErrorReceived(topic, rx);
+        handleHalrcompErrorMessage(topic, rx);
     }
 
     emit halrcompMessageReceived(topic, rx);

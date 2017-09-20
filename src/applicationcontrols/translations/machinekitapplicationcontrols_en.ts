@@ -514,6 +514,14 @@
         <source>Process exited with return code %1. See the log for details.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Application Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Machinekit Log</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ServiceWindow</name>

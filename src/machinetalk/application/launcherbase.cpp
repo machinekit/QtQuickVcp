@@ -85,13 +85,13 @@ LauncherBase::~LauncherBase()
 }
 
 /** Add a topic that should be subscribed **/
-void LauncherBase::addLauncherTopic(const QString &name)
+void LauncherBase::addLauncherTopic(const QByteArray &name)
 {
     m_launcherChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void LauncherBase::removeLauncherTopic(const QString &name)
+void LauncherBase::removeLauncherTopic(const QByteArray &name)
 {
     m_launcherChannel->removeSocketTopic(name);
 }
@@ -149,13 +149,13 @@ void LauncherBase::processLauncherChannelMessage(const QByteArray &topic, const 
     // react to launcher full update message
     if (rx.type() == MT_LAUNCHER_FULL_UPDATE)
     {
-        launcherFullUpdateReceived(topic, rx);
+        handleLauncherFullUpdateMessage(topic, rx);
     }
 
     // react to launcher incremental update message
     else if (rx.type() == MT_LAUNCHER_INCREMENTAL_UPDATE)
     {
-        launcherIncrementalUpdateReceived(topic, rx);
+        handleLauncherIncrementalUpdateMessage(topic, rx);
     }
 
     emit launcherMessageReceived(topic, rx);

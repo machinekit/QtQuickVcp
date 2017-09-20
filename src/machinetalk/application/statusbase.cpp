@@ -70,13 +70,13 @@ StatusBase::~StatusBase()
 }
 
 /** Add a topic that should be subscribed **/
-void StatusBase::addStatusTopic(const QString &name)
+void StatusBase::addStatusTopic(const QByteArray &name)
 {
     m_statusChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void StatusBase::removeStatusTopic(const QString &name)
+void StatusBase::removeStatusTopic(const QByteArray &name)
 {
     m_statusChannel->removeSocketTopic(name);
 }
@@ -104,13 +104,13 @@ void StatusBase::processStatusChannelMessage(const QByteArray &topic, const Cont
     // react to emcstat full update message
     if (rx.type() == MT_EMCSTAT_FULL_UPDATE)
     {
-        emcstatFullUpdateReceived(topic, rx);
+        handleEmcstatFullUpdateMessage(topic, rx);
     }
 
     // react to emcstat incremental update message
     else if (rx.type() == MT_EMCSTAT_INCREMENTAL_UPDATE)
     {
-        emcstatIncrementalUpdateReceived(topic, rx);
+        handleEmcstatIncrementalUpdateMessage(topic, rx);
     }
 
     emit statusMessageReceived(topic, rx);

@@ -80,13 +80,13 @@ void CommandBase::processCommandChannelMessage(const Container &rx)
     // react to emccmd executed message
     if (rx.type() == MT_EMCCMD_EXECUTED)
     {
-        emccmdExecutedReceived(rx);
+        handleEmccmdExecutedMessage(rx);
     }
 
     // react to emccmd completed message
     else if (rx.type() == MT_EMCCMD_COMPLETED)
     {
-        emccmdCompletedReceived(rx);
+        handleEmccmdCompletedMessage(rx);
     }
 
     // react to error message

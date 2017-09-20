@@ -130,11 +130,11 @@ public slots:
         }
     }
 
-    void addPreviewTopic(const QString &name);
-    void removePreviewTopic(const QString &name);
+    void addPreviewTopic(const QByteArray &name);
+    void removePreviewTopic(const QByteArray &name);
     void clearPreviewTopics();
-    void addPreviewstatusTopic(const QString &name);
-    void removePreviewstatusTopic(const QString &name);
+    void addPreviewstatusTopic(const QByteArray &name);
+    void removePreviewstatusTopic(const QByteArray &name);
     void clearPreviewstatusTopics();
 
 protected:
@@ -146,9 +146,9 @@ private:
     bool m_ready;
     QString m_debugName;
 
-    QSet<QString> m_previewTopics;  // the topics we are interested in
+    QSet<QByteArray> m_previewTopics;  // the topics we are interested in
     pathview::PreviewSubscribe *m_previewChannel;
-    QSet<QString> m_previewstatusTopics;  // the topics we are interested in
+    QSet<QByteArray> m_previewstatusTopics;  // the topics we are interested in
     pathview::PreviewSubscribe *m_previewstatusChannel;
 
     State         m_state;
@@ -191,8 +191,8 @@ private slots:
     void fsmUpStatusTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void previewReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void interpStatReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handlePreviewMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleInterpStatMessage(const QByteArray &topic, const Container &rx) = 0;
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;
 

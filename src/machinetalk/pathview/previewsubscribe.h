@@ -100,8 +100,8 @@ public slots:
         }
     }
 
-    void addSocketTopic(const QString &name);
-    void removeSocketTopic(const QString &name);
+    void addSocketTopic(const QByteArray &name);
+    void removeSocketTopic(const QByteArray &name);
     void clearSocketTopics();
 
 protected:
@@ -113,7 +113,7 @@ private:
     bool m_ready;
     QString m_debugName;
 
-    QSet<QString> m_socketTopics;   // the topics we are interested in
+    QSet<QByteArray> m_socketTopics;   // the topics we are interested in
     QString m_socketUri;
     nzmqt::PollingZMQContext *m_context;
     nzmqt::ZMQSocket *m_socket;

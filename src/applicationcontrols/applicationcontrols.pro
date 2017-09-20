@@ -1,6 +1,5 @@
 TEMPLATE = lib
 QT += qml quick
-CONFIG += c++11
 
 uri = Machinekit.Application.Controls
 include(../plugin.pri)

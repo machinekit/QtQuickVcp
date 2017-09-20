@@ -98,7 +98,7 @@ void ApplicationLauncher::setImportance(int index, int importance)
     sendLauncherSet(m_tx);
 }
 
-void ApplicationLauncher::launcherFullUpdateReceived(const QByteArray &topic, const Container &rx)
+void ApplicationLauncher::handleLauncherFullUpdateMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     m_launchers = QJsonValue(QJsonArray()); // clear old value
@@ -106,7 +106,7 @@ void ApplicationLauncher::launcherFullUpdateReceived(const QByteArray &topic, co
     emit launchersChanged(m_launchers);
 }
 
-void ApplicationLauncher::launcherIncrementalUpdateReceived(const QByteArray &topic, const Container &rx)
+void ApplicationLauncher::handleLauncherIncrementalUpdateMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     MachinetalkService::updateValue(rx, m_launchers, "launcher", m_temporaryDir->path()); // launcher protobuf value, launcher temp path

@@ -37,43 +37,43 @@ ApplicationError::ApplicationError(QObject *parent) :
 
 void ApplicationError::errorMessageReceived(const Container &rx)
 {
-    for (int i = 0; i < rx.note_size(); ++i)
+    for (const std::string &note: rx.note())
     {
-        messageReceived(static_cast<ErrorType>(rx.type()), QString::fromStdString(rx.note(i)));
+        messageReceived(static_cast<ErrorType>(rx.type()), QString::fromStdString(note));
     }
 }
 
-void ApplicationError::emcNmlErrorReceived(const QByteArray &topic, const Container &rx)
+void ApplicationError::handleEmcNmlErrorMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcNmlTextReceived(const QByteArray &topic, const Container &rx)
+void ApplicationError::handleEmcNmlTextMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcNmlDisplayReceived(const QByteArray &topic, const Container &rx)
+void ApplicationError::handleEmcNmlDisplayMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcOperatorTextReceived(const QByteArray &topic, const Container &rx)
+void ApplicationError::handleEmcOperatorTextMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcOperatorErrorReceived(const QByteArray &topic, const Container &rx)
+void ApplicationError::handleEmcOperatorErrorMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);
 }
 
-void ApplicationError::emcOperatorDisplayReceived(const QByteArray &topic, const Container &rx)
+void ApplicationError::handleEmcOperatorDisplayMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
     errorMessageReceived(rx);

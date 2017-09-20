@@ -93,14 +93,14 @@ void ApplicationStatus::updateInterpObject(const EmcStatusInterp &interp)
     emit interpChanged(m_interp);
 }
 
-void ApplicationStatus::emcstatFullUpdateReceived(const QByteArray &topic, const Container &rx)
+void ApplicationStatus::handleEmcstatFullUpdateMessage(const QByteArray &topic, const Container &rx)
 {
     StatusChannel channel = m_channelMap.value(topic, NoChannel);
     emcstatUpdateReceived(channel, rx);
     updateSync(channel);
 }
 
-void ApplicationStatus::emcstatIncrementalUpdateReceived(const QByteArray &topic, const Container &rx)
+void ApplicationStatus::handleEmcstatIncrementalUpdateMessage(const QByteArray &topic, const Container &rx)
 {
     StatusChannel channel = m_channelMap.value(topic, NoChannel);
     emcstatUpdateReceived(channel, rx);

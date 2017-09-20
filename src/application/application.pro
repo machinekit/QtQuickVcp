@@ -1,6 +1,5 @@
 TEMPLATE = lib
 QT += qml quick network
-CONFIG += c++14
 
 uri = Machinekit.Application
 include(../plugin.pri)
@@ -32,7 +31,9 @@ SOURCES += \
     localsettings.cpp \
     applicationtranslator.cpp \
     filewatcher.cpp \
-    applicationhelpers.cpp
+    applicationhelpers.cpp \
+    applicationlog.cpp \
+    applicationlogmessage.cpp
 
 HEADERS += \
     plugin.h \
@@ -55,7 +56,9 @@ HEADERS += \
     localsettings.h \
     applicationtranslator.h \
     filewatcher.h \
-    applicationhelpers.h
+    applicationhelpers.h \
+    applicationlog.h \
+    applicationlogmessage.h
 
 RESOURCES += \
     application.qrc

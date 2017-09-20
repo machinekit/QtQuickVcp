@@ -137,8 +137,8 @@ private:
 private slots:
     void setConnected();
     void clearConnected();
-    void emccmdExecutedReceived(const machinetalk::Container &rx);
-    void emccmdCompletedReceived(const machinetalk::Container &rx);
+    void handleEmccmdExecutedMessage(const machinetalk::Container &rx);
+    void handleEmccmdCompletedMessage(const machinetalk::Container &rx);
 
 signals:
     void connectedChanged(bool arg);

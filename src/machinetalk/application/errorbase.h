@@ -127,8 +127,8 @@ public slots:
         }
     }
 
-    void addErrorTopic(const QString &name);
-    void removeErrorTopic(const QString &name);
+    void addErrorTopic(const QByteArray &name);
+    void removeErrorTopic(const QByteArray &name);
     void clearErrorTopics();
 
 protected:
@@ -140,7 +140,7 @@ private:
     bool m_ready;
     QString m_debugName;
 
-    QSet<QString> m_errorTopics;    // the topics we are interested in
+    QSet<QByteArray> m_errorTopics;    // the topics we are interested in
     application::ErrorSubscribe *m_errorChannel;
 
     State         m_state;
@@ -167,12 +167,12 @@ private slots:
     void fsmUpErrorTryingEvent();
     void fsmUpDisconnectEvent();
 
-    virtual void emcNmlErrorReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcNmlTextReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcNmlDisplayReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcOperatorTextReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcOperatorErrorReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void emcOperatorDisplayReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcNmlErrorMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcNmlTextMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcNmlDisplayMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcOperatorTextMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcOperatorErrorMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleEmcOperatorDisplayMessage(const QByteArray &topic, const Container &rx) = 0;
     virtual void updateTopics() = 0;
     virtual void setConnected() = 0;
     virtual void clearConnected() = 0;

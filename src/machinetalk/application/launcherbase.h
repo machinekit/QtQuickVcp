@@ -160,8 +160,8 @@ public slots:
     void sendLauncherCall(Container &tx);
     void sendLauncherShutdown(Container &tx);
     void sendLauncherSet(Container &tx);
-    void addLauncherTopic(const QString &name);
-    void removeLauncherTopic(const QString &name);
+    void addLauncherTopic(const QByteArray &name);
+    void removeLauncherTopic(const QByteArray &name);
     void clearLauncherTopics();
 
 protected:
@@ -174,7 +174,7 @@ private:
     QString m_debugName;
 
     common::RpcClient *m_launchercmdChannel;
-    QSet<QString> m_launcherTopics;  // the topics we are interested in
+    QSet<QByteArray> m_launcherTopics;  // the topics we are interested in
     application::LauncherSubscribe *m_launcherChannel;
 
     State         m_state;
@@ -213,8 +213,8 @@ private slots:
     void fsmSyncedLaunchercmdTryingEvent();
     void fsmSyncedDisconnectEvent();
 
-    virtual void launcherFullUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void launcherIncrementalUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleLauncherFullUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleLauncherIncrementalUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
     virtual void syncStatus() = 0;
     virtual void unsyncStatus() = 0;
 

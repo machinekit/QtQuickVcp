@@ -83,12 +83,12 @@ private:
     void errorMessageReceived(const machinetalk::Container &rx);
 
 private slots:
-    void emcNmlErrorReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void emcNmlTextReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void emcNmlDisplayReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void emcOperatorTextReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void emcOperatorErrorReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void emcOperatorDisplayReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleEmcNmlErrorMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleEmcNmlTextMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleEmcNmlDisplayMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleEmcOperatorTextMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleEmcOperatorErrorMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleEmcOperatorDisplayMessage(const QByteArray &topic, const machinetalk::Container &rx);
     void updateTopics();
     void setConnected();
     void clearConnected();

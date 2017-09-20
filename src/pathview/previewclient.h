@@ -100,8 +100,8 @@ private:
     PreviewStatus m_previewStatus;
     bool m_previewUpdated;
 
-    void previewReceived(const QByteArray &topic, const machinetalk::Container &rx);
-    void interpStatReceived(const QByteArray &topic, const machinetalk::Container &rx);
+    void handlePreviewMessage(const QByteArray &topic, const machinetalk::Container &rx);
+    void handleInterpStatMessage(const QByteArray &topic, const machinetalk::Container &rx);
     void setConnected();
     void clearConnected();
 

@@ -61,13 +61,13 @@ PreviewSubscribe::~PreviewSubscribe()
 }
 
 /** Add a topic that should be subscribed **/
-void PreviewSubscribe::addSocketTopic(const QString &name)
+void PreviewSubscribe::addSocketTopic(const QByteArray &name)
 {
     m_socketTopics.insert(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void PreviewSubscribe::removeSocketTopic(const QString &name)
+void PreviewSubscribe::removeSocketTopic(const QByteArray &name)
 {
     m_socketTopics.remove(name);
 }
@@ -88,8 +88,7 @@ bool PreviewSubscribe::startSocket()
         m_socket->connectTo(m_socketUri);
     }
     catch (const zmq::error_t &e) {
-        QString errorString;
-        errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
+        const QString errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
         qCritical() << m_debugName << ":" << errorString;
         return false;
     }
@@ -98,9 +97,9 @@ bool PreviewSubscribe::startSocket()
             this, &PreviewSubscribe::processSocketMessage);
 
 
-    for (const QString &topic: m_socketTopics)
+    for (const auto &topic: m_socketTopics)
     {
-        m_socket->subscribeTo(topic.toLocal8Bit());
+        m_socket->subscribeTo(topic);
     }
 
 #ifdef QT_DEBUG
@@ -125,7 +124,6 @@ void PreviewSubscribe::stopSocket()
 void PreviewSubscribe::processSocketMessage(const QList<QByteArray> &messageList)
 {
     Container &rx = m_socketRx;
-    QByteArray topic;
 
     if (messageList.length() < 2)  // in case we received insufficient data
     {
@@ -133,13 +131,13 @@ void PreviewSubscribe::processSocketMessage(const QList<QByteArray> &messageList
     }
 
     // we only handle the first two messges
-    topic = messageList.first();
+    const auto &topic = messageList.first();
     rx.ParseFromArray(messageList.last().data(), messageList.last().size());
 
 #ifdef QT_DEBUG
     std::string s;
     gpb::TextFormat::PrintToString(rx, &s);
-    DEBUG_TAG(3, m_debugName, "server message" << QString::fromStdString(s));
+    DEBUG_TAG(3, m_debugName, "received message" << QString::fromStdString(s));
 #endif
 
     // react to any incoming message
@@ -154,8 +152,8 @@ void PreviewSubscribe::processSocketMessage(const QList<QByteArray> &messageList
 
 void PreviewSubscribe::socketError(int errorNum, const QString &errorMsg)
 {
-    QString errorString;
-    errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
+    const QString errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
+    qCritical() << errorString;
 }
 
 void PreviewSubscribe::fsmDown()

@@ -142,6 +142,9 @@ public slots:
     void sendParamMessage(const QByteArray &topic, ContainerType type, Container &tx);
     void sendFullUpdate(const QByteArray &topic, Container &tx);
     void sendIncrementalUpdate(const QByteArray &topic, Container &tx);
+    void addParamTopic(const QByteArray &name);
+    void removeParamTopic(const QByteArray &name);
+    void clearParamTopics();
 
 protected:
 
@@ -151,6 +154,7 @@ private:
     QString m_debugName;
 
     common::RpcService *m_paramcmdChannel;
+    QSet<QByteArray> m_paramTopics;    // the topics we are interested in
     common::Publish *m_paramChannel;
 
     State         m_state;
@@ -174,7 +178,7 @@ private slots:
     void fsmUp();
     void fsmUpDisconnectEvent();
 
-    virtual void incrementalUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleIncrementalUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
 
 signals:
     void paramcmdUriChanged(const QString &uri);

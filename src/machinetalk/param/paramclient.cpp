@@ -91,13 +91,13 @@ ParamClient::~ParamClient()
 }
 
 /** Add a topic that should be subscribed **/
-void ParamClient::addParamTopic(const QString &name)
+void ParamClient::addParamTopic(const QByteArray &name)
 {
     m_paramChannel->addSocketTopic(name);
 }
 
 /** Removes a topic from the list of topics that should be subscribed **/
-void ParamClient::removeParamTopic(const QString &name)
+void ParamClient::removeParamTopic(const QByteArray &name)
 {
     m_paramChannel->removeSocketTopic(name);
 }
@@ -135,13 +135,13 @@ void ParamClient::processParamChannelMessage(const QByteArray &topic, const Cont
     // react to full update message
     if (rx.type() == MT_FULL_UPDATE)
     {
-        fullUpdateReceived(topic, rx);
+        handleFullUpdateMessage(topic, rx);
     }
 
     // react to incremental update message
     else if (rx.type() == MT_INCREMENTAL_UPDATE)
     {
-        incrementalUpdateReceived(topic, rx);
+        handleIncrementalUpdateMessage(topic, rx);
     }
 
     emit paramMessageReceived(topic, rx);

@@ -159,8 +159,8 @@ public slots:
     void sendHalrcmdMessage(ContainerType type, Container &tx);
     void sendHalrcompBind(Container &tx);
     void sendHalrcompSet(Container &tx);
-    void addHalrcompTopic(const QString &name);
-    void removeHalrcompTopic(const QString &name);
+    void addHalrcompTopic(const QByteArray &name);
+    void removeHalrcompTopic(const QByteArray &name);
     void clearHalrcompTopics();
 
 protected:
@@ -175,7 +175,7 @@ private:
     QString m_debugName;
 
     common::RpcClient *m_halrcmdChannel;
-    QSet<QString> m_halrcompTopics;  // the topics we are interested in
+    QSet<QByteArray> m_halrcompTopics;  // the topics we are interested in
     halremote::HalrcompSubscribe *m_halrcompChannel;
 
     State         m_state;
@@ -231,9 +231,9 @@ private slots:
     void fsmErrorEntry();
     void fsmErrorDisconnectEvent();
 
-    virtual void halrcompFullUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void halrcompIncrementalUpdateReceived(const QByteArray &topic, const Container &rx) = 0;
-    virtual void halrcompErrorReceived(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleHalrcompFullUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleHalrcompIncrementalUpdateMessage(const QByteArray &topic, const Container &rx) = 0;
+    virtual void handleHalrcompErrorMessage(const QByteArray &topic, const Container &rx) = 0;
     virtual void bindComponent() = 0;
     virtual void addPins() = 0;
     virtual void removePins() = 0;
