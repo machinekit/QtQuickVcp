@@ -372,7 +372,7 @@ void HalRemoteComponent::addPins()
     }
 
     clearHalrcompTopics();
-    addHalrcompTopic(m_name);
+    addHalrcompTopic(m_name.toLocal8Bit());
 
     halObjects = recurseObjects(m_containerItem->children());
     for (QObject *object: halObjects)
@@ -433,7 +433,7 @@ void HalRemoteComponent::handleHalrcompFullUpdateMessage(const QByteArray &topic
     }
 
     Component component = rx.comp(0);  // shouldnt we check the name?
-    for (const Pin &remotePin: rx.pin())
+    for (const Pin &remotePin: component.pin())
     {
         QString name = QString::fromStdString(remotePin.name());
         name = splitPinFromHalName(name);
