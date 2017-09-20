@@ -44,7 +44,7 @@ class HalRemoteComponent : public machinetalk::halremote::RemoteComponentBase
     Q_ENUMS(ConnectionError)
 
 public:
-    explicit HalRemoteComponent(QObject *parent  = 0);
+    explicit HalRemoteComponent(QObject *parent  = nullptr);
 
     enum ConnectionError {
         NoError = 0,
