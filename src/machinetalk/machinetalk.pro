@@ -7,7 +7,7 @@
 QT       += qml network
 QT       -= gui
 CONFIG += static
-CONFIG += c++11
+CONFIG += c++14
 
 TARGET = machinetalk
 TEMPLATE = lib
