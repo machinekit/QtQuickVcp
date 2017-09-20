@@ -16,7 +16,7 @@ void writeTestFile(const QString filePath)
     file.close();
 }
 
-TEST_CASE("File watcher tests", "[application]")
+TEST_CASE("FileWatcher Tests", "[application]")
 {
     QTemporaryDir tempDir;
     FileWatcher watcher;
