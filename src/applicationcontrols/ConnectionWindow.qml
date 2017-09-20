@@ -496,6 +496,7 @@ Rectangle {
 
         launcher: (launcherPage.selectedLauncher < applicationLauncher.launchers.length) ?
                    applicationLauncher.launchers[launcherPage.selectedLauncher] : undefined
+        applicationLog: applicationLog
         onGoBack: mainWindow.goBack()
     }
 
@@ -585,6 +586,14 @@ Rectangle {
         }
     }
 
+    ApplicationLog {
+        id: applicationLog
+        logLevel: ApplicationLog.Debug
+        ready: ((mainWindow.state === "launcher") || (mainWindow.state === "launcher-selected"))
+            && logService.ready
+        logUri: logService.uri
+    }
+
     ServiceDiscovery {
         id: serviceDiscovery
 
@@ -608,6 +617,10 @@ Rectangle {
                     Service {
                         id: launchercmdService
                         type: "launchercmd"
+                    },
+                    Service {
+                        id: logService
+                        type: "log"
                     }
                 ]
             },
