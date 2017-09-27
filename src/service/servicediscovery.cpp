@@ -436,11 +436,7 @@ void ServiceDiscovery::networkSessionError(QNetworkSession::SessionError error)
 void ServiceDiscovery::unicastLookup()
 {
     deinitializeMdns(false);
-    initializeMdns();
-    for (const auto &key: m_serviceItemsMap.keys())
-    {
-        refreshQuery(key);
-    }
+    initializeMdns(); // automatically refreshes all existing queries
 }
 
 QQmlListProperty<ServiceList> ServiceDiscovery::serviceLists()
