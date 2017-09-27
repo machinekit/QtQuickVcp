@@ -238,11 +238,10 @@ ServiceDiscovery::ServiceDiscovery(QObject *parent) :
     m_networkSession(nullptr),
     m_networkConfigManager(nullptr),
     m_networkConfigTimer(new QTimer(this)),
-    m_jdns(nullptr),
-    m_unicastLookupTimer(new QTimer(this))
+    m_jdns(nullptr)
 {
-    m_unicastLookupTimer->setInterval(m_unicastLookupInterval);
-    connect(m_unicastLookupTimer, &QTimer::timeout,
+    m_unicastLookupTimer.setInterval(m_unicastLookupInterval);
+    connect(&m_unicastLookupTimer, &QTimer::timeout,
             this, &ServiceDiscovery::unicastLookup);
 
     connect(this, &ServiceDiscovery::nameServersChanged,
@@ -358,7 +357,7 @@ bool ServiceDiscovery::initializeMdns()
 
             if (m_lookupMode == UnicastDNS)
             {
-                m_unicastLookupTimer->start();
+                m_unicastLookupTimer.start();
             }
         }
 
@@ -381,7 +380,7 @@ void ServiceDiscovery::deinitializeMdns(bool cleanup)
     {
         if (m_lookupMode == UnicastDNS)
         {
-            m_unicastLookupTimer->stop();
+            m_unicastLookupTimer.stop();
         }
 
         removeAllServiceTypes();
@@ -437,11 +436,7 @@ void ServiceDiscovery::networkSessionError(QNetworkSession::SessionError error)
 void ServiceDiscovery::unicastLookup()
 {
     deinitializeMdns(false);
-    initializeMdns();
-    for (const auto &key: m_serviceItemsMap.keys())
-    {
-        refreshQuery(key);
-    }
+    initializeMdns(); // automatically refreshes all existing queries
 }
 
 QQmlListProperty<ServiceList> ServiceDiscovery::serviceLists()
@@ -521,14 +516,14 @@ void ServiceDiscovery::setRunning(bool arg)
 
             if (m_lookupMode == UnicastDNS)
             {
-                m_unicastLookupTimer->start();
+                m_unicastLookupTimer.start();
             }
         }
         else
         {
             if (m_lookupMode == UnicastDNS)
             {
-                m_unicastLookupTimer->stop();
+                m_unicastLookupTimer.stop();
             }
 
             stopAllQueries();
@@ -631,7 +626,7 @@ void ServiceDiscovery::setUnicastLookupInterval(int arg)
         m_unicastLookupInterval = arg;
         emit unicastLookupIntervalChanged(arg);
 
-        m_unicastLookupTimer->setInterval(arg);
+        m_unicastLookupTimer.setInterval(arg);
     }
 }
 

@@ -123,7 +123,7 @@ private:
     QMap<QString, QList<ServiceDiscoveryItem*> > m_serviceItemsMap; // serviceType > items
     QMap<QString, QJDns::Type> m_serviceTypeMap; // serviceType > queryType
 
-    QPointer<QTimer> m_unicastLookupTimer;
+    QTimer m_unicastLookupTimer;
 
     void initializeNetworkSession();
     static bool networkConfigIsQualified(const QNetworkConfiguration &config);
