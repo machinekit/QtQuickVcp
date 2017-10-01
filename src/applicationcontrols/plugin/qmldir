@@ -73,3 +73,6 @@ EstopPowerAction 1.0 EstopPowerAction.qml
 RapidrateHandler 1.0 RapidrateHandler.qml
 RapidrateSlider 1.0 RapidrateSlider.qml
 EditWithSystemEditorAction 1.0 EditWithSystemEditorAction.qml
+ToolTableEditor 1.0 ToolTableEditor.qml
+ToolTableEditorDialog 1.0 ToolTableEditorDialog.qml
+EditToolTableAction 1.0 EditToolTableAction.qml
