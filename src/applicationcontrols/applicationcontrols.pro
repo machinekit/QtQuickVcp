@@ -73,7 +73,10 @@ CONTROLS_QML_FILES = \
     $$PWD/EstopPowerAction.qml \
     $$PWD/RapidrateHandler.qml \
     $$PWD/RapidrateSlider.qml \
-    $$PWD/EditWithSystemEditorAction.qml
+    $$PWD/EditWithSystemEditorAction.qml \
+    $$PWD/ToolTableEditor.qml \
+    $$PWD/ToolTableEditorDialog.qml \
+    $$PWD/EditToolTableAction.qml
 
 lupdate_only {
     SOURCES = $$CONTROLS_QML_FILES
