@@ -24,6 +24,7 @@ QML_FILES = \
     $$PWD/Led.qml \
     $$PWD/LogChart.qml \
     $$PWD/RoundGauge.qml \
+    $$PWD/ScaleContainer.qml \
     $$PWD/SlideView.qml \
     $$PWD/SlidePage.qml \
     $$PWD/TemperatureSelector.qml \
