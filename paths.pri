@@ -54,8 +54,12 @@ win32-g++ {
     PROTOBUF_PROTOC =  $$(HOMEDRIVE)$$(HOMEPATH)\bin\MinGW\bin\protoc.exe
 }
 linux: !android: {
-    # protobuf is installed in system include path, do not add /usr/include here or builds with gcc6 fail
-    PROTOBUF_INCLUDE_PATH =
+	equals(QMAKE_CXX, g++) \
+	: system(g++ -dumpversion | grep ^6 ) {
+		PROTOBUF_INCLUDE_PATH =
+	} else {
+		PROTOBUF_INCLUDE_PATH = /usr/include
+	}
 }
 
 # Qt SDK directory - autodetected based on qmake path
