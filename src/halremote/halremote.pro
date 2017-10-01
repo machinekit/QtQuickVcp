@@ -11,18 +11,18 @@ include(../machinetalk/machinetalk.pri)
 
 # Input
 SOURCES += \
-    plugin.cpp \
+    plugin/plugin.cpp \
     halpin.cpp \
     halremotecomponent.cpp \
     halsignal.cpp
 
 HEADERS += \
-    plugin.h \
+    plugin/plugin.h \
     halpin.h \
     halremotecomponent.h \
     halsignal.h
 
 QML_INFRA_FILES = \
-    qmldir
+    plugin/qmldir
 
 include(../deployment.pri)

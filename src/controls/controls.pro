@@ -8,10 +8,10 @@ include(../plugin.pri)
 SOURCES +=
 
 HEADERS += \
-    plugin.h
+    plugin/plugin.h
 
 SOURCES += \
-    plugin.cpp
+    plugin/plugin.cpp
 
 RESOURCES += \
     controls.qrc
@@ -37,10 +37,10 @@ include(Private/private.pri)
 
 QML_INFRA_FILES = \
     $$QML_FILES \
-    qmldir
+    $$PWD/plugin/qmldir
 
 QML_DESIGNER_FILES = \
-    designer
+    $$PWD/designer
 
 QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/DialSpecifics.qml \

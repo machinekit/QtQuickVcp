@@ -6,10 +6,10 @@ include(../plugin.pri)
 
 # Input
 SOURCES += \
-    plugin.cpp
+    plugin/plugin.cpp
 
 HEADERS += \
-    plugin.h
+    plugin/plugin.h
 
 RESOURCES += \
     applicationcontrols.qrc
@@ -85,10 +85,10 @@ include(Private/private.pri)
 
 QML_INFRA_FILES += \
     $$CONTROLS_QML_FILES \
-    qmldir
+    $$PWD/plugin/qmldir
 
 QML_DESIGNER_FILES = \
-    designer
+    $$PWD/designer
 
 QML_PROPERTY_EDITOR_FILES = 
 

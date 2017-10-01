@@ -12,7 +12,7 @@ include(../../3rdparty/jdns/jdns.pri)
 
 # Input
 SOURCES += \
-    plugin.cpp \
+    plugin/plugin.cpp \
     nameserver.cpp \
     service.cpp \
     servicediscovery.cpp \
@@ -22,7 +22,7 @@ SOURCES += \
     servicelist.cpp
 
 HEADERS += \
-    plugin.h \
+    plugin/plugin.h \
     nameserver.h \
     service.h \
     servicediscovery.h \
@@ -32,7 +32,7 @@ HEADERS += \
     servicelist.h
 
 QML_INFRA_FILES = \
-    qmldir
+    plugin/qmldir
 
 include(../deployment.pri)
 
