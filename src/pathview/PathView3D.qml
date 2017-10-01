@@ -40,7 +40,7 @@ GLView3D {
         "cone_xy": Qt.rgba(0.0, 1.0, 0.0, 1.0),
         "cone_uv": Qt.rgba(0.0, 0.0, 1.0, 1.0),
         "axis_x": Qt.rgba(0.2, 1.0, 0.2, 1.0),
-        "axis_y": Qt.rgba(1.0, 1.0, 0.2, 1.0),
+        "axis_y": Qt.rgba(1.0, 0.2, 0.2, 1.0),
         "axis_z": Qt.rgba(0.2, 0.2, 1.0, 1.0),
         "label_ok": Qt.rgba(1.0, 0.51, 0.53, 1.0),
         "label_limit": Qt.rgba(1.0, 0.21, 0.23, 1.0),
