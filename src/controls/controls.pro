@@ -8,10 +8,10 @@ include(../plugin.pri)
 SOURCES +=
 
 HEADERS += \
-    plugin.h
+    plugin/plugin.h
 
 SOURCES += \
-    plugin.cpp
+    plugin/plugin.cpp
 
 RESOURCES += \
     controls.qrc
@@ -24,6 +24,7 @@ QML_FILES = \
     $$PWD/Led.qml \
     $$PWD/LogChart.qml \
     $$PWD/RoundGauge.qml \
+    $$PWD/ScaleContainer.qml \
     $$PWD/SlideView.qml \
     $$PWD/SlidePage.qml \
     $$PWD/TemperatureSelector.qml \
@@ -37,10 +38,10 @@ include(Private/private.pri)
 
 QML_INFRA_FILES = \
     $$QML_FILES \
-    qmldir
+    $$PWD/plugin/qmldir
 
 QML_DESIGNER_FILES = \
-    designer
+    $$PWD/designer
 
 QML_PROPERTY_EDITOR_FILES = \
     propertyEditorQmlSources/DialSpecifics.qml \

@@ -11,7 +11,7 @@ include(../machinetalk/machinetalk.pri)
 
 # Input
 SOURCES += \
-    plugin.cpp \
+    plugin/plugin.cpp \
     qglcamera.cpp \
     gcodeprogramitem.cpp \
     gcodeprogramloader.cpp \
@@ -27,7 +27,7 @@ SOURCES += \
     previewclient.cpp
 
 HEADERS += \
-    plugin.h \
+    plugin/plugin.h \
     gcodeprogramitem.h \
     gcodeprogramloader.h \
     gcodeprogrammodel.h \
@@ -64,7 +64,7 @@ QML_FILES = \
 
 QML_INFRA_FILES = \
     $$QML_FILES \
-    qmldir
+    plugin/qmldir
 
 OTHER_FILES += \
     SimpleVertex.glsl \

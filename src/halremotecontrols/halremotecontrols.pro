@@ -6,10 +6,10 @@ include(../plugin.pri)
 
 # Input
 SOURCES += \
-    plugin.cpp
+    plugin/plugin.cpp
 
 HEADERS += \
-    plugin.h
+    plugin/plugin.h
 
 RESOURCES += \
     halremotecontrols.qrc
@@ -37,7 +37,7 @@ QML_FILES = \
 
 QML_INFRA_FILES = \
     $$QML_FILES \
-    qmldir
+    plugin/qmldir
 
 QML_DESIGNER_FILES = \
     designer

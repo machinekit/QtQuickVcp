@@ -39,6 +39,7 @@ static const struct {
     { "Led", 1, 0 },
     { "LogChart", 1, 0 },
     { "RoundGauge", 1, 0 },
+    { "ScaleContainer", 1, 0 },
     { "SlideView", 1, 0 },
     { "SlidePage", 1, 0 },
     { "TemperatureSelector", 1, 0 },

@@ -174,6 +174,17 @@
     </message>
 </context>
 <context>
+    <name>EditToolTableAction</name>
+    <message>
+        <source>Edit &amp;Tool Table...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Tool Table [%1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>EditWithSystemEditorAction</name>
     <message>
         <source>Edit G-Code file with System Editor [%1]</source>
@@ -653,6 +664,108 @@
     <message>
         <source>Teleop Mode</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ToolTableEditor</name>
+    <message>
+        <source>Tool ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pocket</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>X</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Z</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>B</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>C</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>U</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>W</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Front Angle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Back Angle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Orientation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ToolTableEditorDialog</name>
+    <message>
+        <source>Tool Table Editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error in tool table.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tool table has modifications.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Row</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Row</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset Modifications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update Tool Table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">Schließen</translation>
     </message>
 </context>
 <context>

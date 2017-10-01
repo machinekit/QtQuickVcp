@@ -232,9 +232,8 @@ void ApplicationCommand::updateToolTable(const QJsonArray &toolTable)
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
     for (int i = 0; i < toolTable.size(); ++i)
     {
-        QJsonValue value = toolTable.at(i);
-        QJsonObject object = value.toObject();
-        EmcToolData *toolData = commandParams->add_tool_table();
+        const QJsonObject object = toolTable.at(i).toObject();
+        auto toolData = commandParams->add_tool_table();
         toolData->set_index(i);
         toolData->set_id(object.value("id").toInt(0));
         toolData->set_pocket(object.value("pocket").toInt(0));
@@ -244,8 +243,8 @@ void ApplicationCommand::updateToolTable(const QJsonArray &toolTable)
         toolData->set_orientation(object.value("orientation").toInt(0));
         toolData->set_comment(object.value("comment").toString().toStdString());
 
-        Position *offset = toolData->mutable_offset();
-        QJsonObject offsetObject = object.value("offset").toObject();
+        const QJsonObject offsetObject = object.value("offset").toObject();
+        auto offset = toolData->mutable_offset();
         offset->set_x(offsetObject.value("x").toDouble(0.0));
         offset->set_y(offsetObject.value("y").toDouble(0.0));
         offset->set_z(offsetObject.value("z").toDouble(0.0));

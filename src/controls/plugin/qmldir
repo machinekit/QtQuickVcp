@@ -19,6 +19,7 @@ Led 1.0 Led.qml
 ColorPicker 1.0 ColorPicker.qml
 LogChart 1.0 LogChart.qml
 RoundGauge 1.0 RoundGauge.qml
+ScaleContainer 1.0 ScaleContainer.qml
 SlideView 1.0 SlideView.qml
 SlidePage 1.0 SlidePage.qml
 TemperatureSelector 1.0 TemperatureSelector.qml

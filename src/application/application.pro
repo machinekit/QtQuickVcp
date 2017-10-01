@@ -13,7 +13,7 @@ include(../machinetalk/machinetalk.pri)
 
 # Input
 SOURCES += \
-    plugin.cpp \
+    plugin/plugin.cpp \
     fileio.cpp \
     applicationcommand.cpp \
     applicationconfig.cpp \
@@ -36,7 +36,7 @@ SOURCES += \
     applicationlogmessage.cpp
 
 HEADERS += \
-    plugin.h \
+    plugin/plugin.h \
     fileio.h \
     revisionsingleton.h \
     revision.h \
@@ -76,6 +76,6 @@ QML_FILES = \
 
 QML_INFRA_FILES = \
     $$QML_FILES \
-    qmldir
+    plugin/qmldir
 
 include(../deployment.pri)

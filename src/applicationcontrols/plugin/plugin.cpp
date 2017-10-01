@@ -90,7 +90,10 @@ static const struct {
     { "EstopPowerAction", 1, 0},
     { "RapidrateHandler", 1, 0},
     { "RapidrateSlider", 1, 0},
-    { "EditWithSystemEditorAction", 1, 0}
+    { "EditWithSystemEditorAction", 1, 0},
+    { "ToolTableEditor", 1, 0},
+    { "ToolTableEditorDialog", 1, 0},
+    { "EditToolTableAction", 1, 0}
 };
 
 void MachinekitApplicationControlsPlugin::registerTypes(const char *uri)

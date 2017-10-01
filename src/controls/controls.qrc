@@ -17,5 +17,6 @@
         <file>Private/KnobPie.qml</file>
         <file>Knob.qml</file>
         <file>TooltipArea.qml</file>
+        <file>ScaleContainer.qml</file>
     </qresource>
 </RCC>

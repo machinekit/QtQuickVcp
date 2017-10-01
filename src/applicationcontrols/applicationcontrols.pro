@@ -6,10 +6,10 @@ include(../plugin.pri)
 
 # Input
 SOURCES += \
-    plugin.cpp
+    plugin/plugin.cpp
 
 HEADERS += \
-    plugin.h
+    plugin/plugin.h
 
 RESOURCES += \
     applicationcontrols.qrc
@@ -73,7 +73,10 @@ CONTROLS_QML_FILES = \
     $$PWD/EstopPowerAction.qml \
     $$PWD/RapidrateHandler.qml \
     $$PWD/RapidrateSlider.qml \
-    $$PWD/EditWithSystemEditorAction.qml
+    $$PWD/EditWithSystemEditorAction.qml \
+    $$PWD/ToolTableEditor.qml \
+    $$PWD/ToolTableEditorDialog.qml \
+    $$PWD/EditToolTableAction.qml
 
 lupdate_only {
     SOURCES = $$CONTROLS_QML_FILES
@@ -85,10 +88,10 @@ include(Private/private.pri)
 
 QML_INFRA_FILES += \
     $$CONTROLS_QML_FILES \
-    qmldir
+    $$PWD/plugin/qmldir
 
 QML_DESIGNER_FILES = \
-    designer
+    $$PWD/designer
 
 QML_PROPERTY_EDITOR_FILES = 
 
