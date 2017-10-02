@@ -130,7 +130,10 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: selected = !selected
+                        onClicked: {
+                            selected = !selected;
+                            listView.currentIndex = index;
+                        }
                     }
             }
         }
@@ -146,6 +149,17 @@ Item {
 
     Menu {
         id: contextMenu
+        MenuItem {
+            action: runProgramAction
+            text: qsTr("Run Program from Line %1").arg(runProgramAction.programStartLine)
+            enabled: runProgramAction.enabled && (listView.currentIndex > -1)
+        }
+        RunProgramAction {
+            id: runProgramAction
+            programStartLine: listView.currentIndex + 1
+            shortcut: ""
+        }
+        MenuSeparator {}
         MenuItem { action: editAction }
         EditWithSystemEditorAction {
             id: editAction
