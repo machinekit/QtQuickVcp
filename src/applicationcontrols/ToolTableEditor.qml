@@ -30,7 +30,7 @@ ApplicationItem {
     property color modifiedColor: "#FFFF99"
     property color errorColor: "#FF9999"
 
-    readonly property bool errored: d.verifyToolId(d.updatedToolTable)
+    readonly property alias errored: d.errored
     readonly property alias modified: d.modified
     readonly property bool itemSelected: table.selection.count > 0
 
@@ -62,6 +62,48 @@ ApplicationItem {
         property var changeMatrix: []
         property var toolIdErrors: []
         property bool modified: false
+        property bool errored: false
+
+        property var cellReferenceTable: []
+        property bool cellReferenceTableNeedsUpdate: false
+
+        function addCellReference(row, column, reference) {
+            d.ensureCellReferenceTableSize(row, column, d.cellReferenceTable);
+            d.cellReferenceTable[row][column] = reference;
+            d.cellReferenceTableNeedsUpdate = true;
+        }
+
+        function getCellReference(row, column) {
+            if ((row === -1) || (column === -1)) {
+                return null;
+            }
+
+            var table = d.cellReferenceTable;
+            if ((table.length <= row) ||
+                    !table[row] || (table[row].length <= column)) {
+                return null;
+            }
+
+            return d.cellReferenceTable[row][column];
+        }
+
+        function ensureCellReferenceTableSize(row, column, table) {
+            while ((table.length - 1) < row) {
+                table.push([]);
+            }
+
+            var currentRow = table[row];
+            while (currentRow.length - 1 < column) {
+                currentRow.push(null);
+            }
+        }
+
+        function activateCellReferenceTable() {
+            if (d.cellReferenceTableNeedsUpdate) {
+                d.cellReferenceTable = d.cellReferenceTable;
+                d.cellReferenceTableNeedsUpdate = false;
+            }
+        }
 
         function updateToolTableCopy(origin) {
             d.updatedToolTable = JSON.parse(JSON.stringify(origin));
@@ -93,9 +135,9 @@ ApplicationItem {
             var oldData = updatedToolTable[row][role];
             if (data != oldData) {
                 updatedToolTable[row][role] = data;
-                updatedToolTable = updatedToolTable; // trigger update
                 markCellAsModified(row, column);
             }
+            d.checkToolTableIngredity();
         }
 
         function updateAxisToolData(row, column, data, axis) {
@@ -103,15 +145,16 @@ ApplicationItem {
             var oldData = updatedToolTable[row][role][axis];
             if (data != oldData) {
                 updatedToolTable[row][role][axis] = data;
-                updatedToolTable = updatedToolTable; // trigger update
                 markCellAsModified(row, column);
             }
+            d.checkToolTableIngredity();
         }
 
         function markCellAsModified(row, column) {
             d.changeMatrix[row][column] = true;
             d.changeMatrix = d.changeMatrix; // trigger update
             d.modified = true;
+            d.checkToolTableIngredity();
         }
 
         function verifyToolId(data) {
@@ -129,6 +172,11 @@ ApplicationItem {
             }
             toolIdErrors = newToolIdErrors;
             return error;
+        }
+
+        function checkToolTableIngredity()
+        {
+            d.errored = verifyToolId(d.updatedToolTable);
         }
 
         function prepareUpdatedToolTable() {
@@ -149,6 +197,8 @@ ApplicationItem {
         function selectRow(row) {
             table.selection.clear();
             table.selection.select(row);
+            // we must update the reference table here for performance reasons
+            d.activateCellReferenceTable();
         }
 
         function addRow() {
@@ -165,6 +215,7 @@ ApplicationItem {
             d.updateChangeMatrix(d.updatedToolTable);
             d.updatedToolTable = d.updatedToolTable;
             d.modified = true;
+            d.checkToolTableIngredity();
         }
 
         function deleteRow() {
@@ -178,6 +229,7 @@ ApplicationItem {
                 d.updatedToolTable = d.updatedToolTable;
             });
             d.modified = true;
+            d.checkToolTableIngredity();
 
             if (table.rowCount > 0) {
                 table.selection.select(table.rowCount - 1);
@@ -320,13 +372,22 @@ ApplicationItem {
             color: hasError ? root.errorColor : (hasChanged ? root.modifiedColor : "transparent")
 
             TextInput {
+                id: textInput
                 anchors.fill: parent
                 text: styleData.value
                 color: styleData.textColor
                 validator: IntValidator { bottom: d.minimumToolId; top: d.maximumToolId }
 
                 onEditingFinished: d.updateToolData(styleData.row, styleData.column, Number(text));
-                onActiveFocusChanged: if (activeFocus) { d.selectRow(styleData.row); }
+                onActiveFocusChanged: if (activeFocus) {
+                                          d.selectRow(styleData.row); textInput.selectAll();
+                                      }
+
+                KeyNavigation.tab: d.getCellReference(styleData.row, styleData.column + 1)
+                KeyNavigation.backtab: d.getCellReference(styleData.row - 1, table.columnCount - 1)
+                KeyNavigation.up: d.getCellReference(styleData.row - 1, styleData.column)
+                KeyNavigation.down: d.getCellReference(styleData.row + 1, styleData.column)
+                Component.onCompleted: d.addCellReference(styleData.row, styleData.column, textInput)
             }
         }
     }
@@ -338,13 +399,22 @@ ApplicationItem {
             color: (d.changeMatrix[styleData.row] && d.changeMatrix[styleData.row][styleData.column]) ? root.modifiedColor : "transparent"
 
             TextInput {
+                id: textInput
                 anchors.fill: parent
                 text: styleData.value
                 color: styleData.textColor
                 validator: IntValidator { bottom: d.minimumPocketId; top: d.maximumPocketId }
 
                 onEditingFinished: d.updateToolData(styleData.row, styleData.column, Number(text));
-                onActiveFocusChanged: if (activeFocus) { d.selectRow(styleData.row); }
+                onActiveFocusChanged: if (activeFocus) {
+                                          d.selectRow(styleData.row); textInput.selectAll();
+                                      }
+
+                KeyNavigation.tab: d.getCellReference(styleData.row, styleData.column + 1)
+                KeyNavigation.backtab: d.getCellReference(styleData.row, styleData.column - 1)
+                KeyNavigation.up: d.getCellReference(styleData.row - 1, styleData.column)
+                KeyNavigation.down: d.getCellReference(styleData.row + 1, styleData.column)
+                Component.onCompleted: d.addCellReference(styleData.row, styleData.column, textInput)
             }
         }
     }
@@ -356,6 +426,7 @@ ApplicationItem {
             color: (d.changeMatrix[styleData.row] && d.changeMatrix[styleData.row][styleData.column]) ? root.modifiedColor : "transparent"
 
             TextInput {
+                id: textInput
                 anchors.fill: parent
                 readonly property int offset: 2
                 readonly property int axis: styleData.column - offset
@@ -364,7 +435,15 @@ ApplicationItem {
                 validator: DoubleValidator { }
 
                 onEditingFinished: d.updateAxisToolData(styleData.row, styleData.column, Number(text), axis)
-                onActiveFocusChanged: if (activeFocus) { d.selectRow(styleData.row); }
+                onActiveFocusChanged: if (activeFocus) {
+                                          d.selectRow(styleData.row); textInput.selectAll();
+                                      }
+
+                KeyNavigation.tab: d.getCellReference(styleData.row, styleData.column + 1)
+                KeyNavigation.backtab: d.getCellReference(styleData.row, styleData.column - 1)
+                KeyNavigation.up: d.getCellReference(styleData.row - 1, styleData.column)
+                KeyNavigation.down: d.getCellReference(styleData.row + 1, styleData.column)
+                Component.onCompleted: d.addCellReference(styleData.row, styleData.column, textInput)
             }
         }
     }
@@ -376,13 +455,22 @@ ApplicationItem {
             color: (d.changeMatrix[styleData.row] && d.changeMatrix[styleData.row][styleData.column]) ? root.modifiedColor : "transparent"
 
             TextInput {
+                id: textInput
                 anchors.fill: parent
                 text: styleData.value
                 color: styleData.textColor
                 validator: DoubleValidator { bottom: 0.0 }
 
                 onEditingFinished: d.updateToolData(styleData.row, styleData.column, Number(text))
-                onActiveFocusChanged: if (activeFocus) { d.selectRow(styleData.row); }
+                onActiveFocusChanged: if (activeFocus) {
+                                          d.selectRow(styleData.row); textInput.selectAll();
+                                      }
+
+                KeyNavigation.tab: d.getCellReference(styleData.row, styleData.column + 1)
+                KeyNavigation.backtab: d.getCellReference(styleData.row, styleData.column - 1)
+                KeyNavigation.up: d.getCellReference(styleData.row - 1, styleData.column)
+                KeyNavigation.down: d.getCellReference(styleData.row + 1, styleData.column)
+                Component.onCompleted: d.addCellReference(styleData.row, styleData.column, textInput)
             }
         }
     }
@@ -394,13 +482,22 @@ ApplicationItem {
             color: (d.changeMatrix[styleData.row] && d.changeMatrix[styleData.row][styleData.column]) ? root.modifiedColor : "transparent"
 
             TextInput {
+                id: textInput
                 anchors.fill: parent
                 text: styleData.value
                 color: styleData.textColor
                 validator: IntValidator { bottom: d.minimumPosition; top: d.maximumPosition }
 
                 onEditingFinished: d.updateToolData(styleData.row, styleData.column, Number(text))
-                onActiveFocusChanged: if (activeFocus) { d.selectRow(styleData.row); }
+                onActiveFocusChanged: if (activeFocus) {
+                                          d.selectRow(styleData.row); textInput.selectAll();
+                                      }
+
+                KeyNavigation.tab: d.getCellReference(styleData.row, styleData.column + 1)
+                KeyNavigation.backtab: d.getCellReference(styleData.row, styleData.column - 1)
+                KeyNavigation.up: d.getCellReference(styleData.row - 1, styleData.column)
+                KeyNavigation.down: d.getCellReference(styleData.row + 1, styleData.column)
+                Component.onCompleted: d.addCellReference(styleData.row, styleData.column, textInput)
             }
         }
     }
@@ -411,12 +508,21 @@ ApplicationItem {
             color: (d.changeMatrix[styleData.row] && d.changeMatrix[styleData.row][styleData.column]) ? root.modifiedColor : "transparent"
 
             TextInput {
+                id: textInput
                 anchors.fill: parent
                 text: styleData.value
                 color: styleData.textColor
 
                 onEditingFinished: d.updateToolData(styleData.row, styleData.column, text)
-                onActiveFocusChanged: if (activeFocus) { d.selectRow(styleData.row); }
+                onActiveFocusChanged: if (activeFocus) {
+                                          d.selectRow(styleData.row); textInput.selectAll();
+                                      }
+
+                KeyNavigation.tab: d.getCellReference(styleData.row + 1, 0)
+                KeyNavigation.backtab: d.getCellReference(styleData.row, styleData.column - 1)
+                KeyNavigation.up: d.getCellReference(styleData.row - 1, styleData.column)
+                KeyNavigation.down: d.getCellReference(styleData.row + 1, styleData.column)
+                Component.onCompleted: d.addCellReference(styleData.row, styleData.column, textInput)
             }
         }
     }
