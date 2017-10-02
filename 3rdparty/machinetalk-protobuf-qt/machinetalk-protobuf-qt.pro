@@ -43,6 +43,7 @@ PROTOS += \
     $$PROTO_DIR/test.proto
 
 PROTOPATH += $$MACHINETALK_DIR
+PROTOPATH += /usr/include
 include(../../src/protobuf.pri)
 
 win32: target.path = $$[QT_INSTALL_BINS]
