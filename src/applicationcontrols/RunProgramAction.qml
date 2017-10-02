@@ -43,7 +43,7 @@ ApplicationAction {
             command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
         }
         command.runProgram('execute', programStartLine);
-        programStartLine = programResetLine;
+        programResetLine = programStartLine;
     }
     enabled: _ready
              && _fileValid
