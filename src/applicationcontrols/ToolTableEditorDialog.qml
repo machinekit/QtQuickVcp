@@ -43,6 +43,12 @@ Dialog
         readonly property bool ready: status.synced && command.connected
     }
 
+    onVisibleChanged: {
+        if (!visible && editor.modified) {
+            editor.resetModifications();
+        }
+    }
+
     contentItem: Item {
         id: container
 
