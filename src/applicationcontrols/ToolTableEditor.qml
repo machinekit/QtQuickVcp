@@ -26,7 +26,8 @@ import QtQuick.Layouts 1.3
 import Machinekit.Application 1.0
 
 ApplicationItem {
-    property var toolTable: status.io.toolTable
+    property var toolTable: d.ready ? status.io.toolTable : []
+    property int decimals: (d.distanceUnits === "mm") ? 3 : 4
     property color modifiedColor: "#FFFF99"
     property color errorColor: "#FF9999"
 
@@ -47,6 +48,9 @@ ApplicationItem {
 
     QtObject {
         id: d
+        readonly property bool ready: root.status.synced
+        property string distanceUnits: root.helper.ready ? root.helper.distanceUnits: "mm"
+
         readonly property int toolIdColumnWidth: 60
         readonly property int offsetColumnWidth: 45
         readonly property int parameterWidth: 90
@@ -205,7 +209,7 @@ ApplicationItem {
             var newRow = {}
             newRow["id"] = 0;
             newRow["pocket"] = 1;
-            newRow["offset"] = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 }
+            newRow["offset"] = { 0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0 }
             newRow["diameter"] = 0.0;
             newRow["frontangle"] = 0.0
             newRow["backangle"] = 0.0;
@@ -374,11 +378,11 @@ ApplicationItem {
             TextInput {
                 id: textInput
                 anchors.fill: parent
-                text: styleData.value
+                text: Number(styleData.value).toLocaleString(Qt.locale(), 'f', 0)
                 color: styleData.textColor
                 validator: IntValidator { bottom: d.minimumToolId; top: d.maximumToolId }
 
-                onEditingFinished: d.updateToolData(styleData.row, styleData.column, Number(text));
+                onEditingFinished: d.updateToolData(styleData.row, styleData.column,  Number.fromLocaleString(Qt.locale(), text));
                 onActiveFocusChanged: if (activeFocus) {
                                           d.selectRow(styleData.row); textInput.selectAll();
                                       }
@@ -401,11 +405,11 @@ ApplicationItem {
             TextInput {
                 id: textInput
                 anchors.fill: parent
-                text: styleData.value
+                text: Number(styleData.value).toLocaleString(Qt.locale, 'f', 0)
                 color: styleData.textColor
                 validator: IntValidator { bottom: d.minimumPocketId; top: d.maximumPocketId }
 
-                onEditingFinished: d.updateToolData(styleData.row, styleData.column, Number(text));
+                onEditingFinished: d.updateToolData(styleData.row, styleData.column,  Number.fromLocaleString(Qt.locale(), text));
                 onActiveFocusChanged: if (activeFocus) {
                                           d.selectRow(styleData.row); textInput.selectAll();
                                       }
@@ -430,11 +434,11 @@ ApplicationItem {
                 anchors.fill: parent
                 readonly property int offset: 2
                 readonly property int axis: styleData.column - offset
-                text: styleData.value[axis]
+                text: Number(styleData.value[axis]).toLocaleString(Qt.locale(), 'f', root.decimals)
                 color: styleData.textColor
                 validator: DoubleValidator { }
 
-                onEditingFinished: d.updateAxisToolData(styleData.row, styleData.column, Number(text), axis)
+                onEditingFinished: d.updateAxisToolData(styleData.row, styleData.column, Number.fromLocaleString(Qt.locale(), text), axis)
                 onActiveFocusChanged: if (activeFocus) {
                                           d.selectRow(styleData.row); textInput.selectAll();
                                       }
@@ -457,11 +461,11 @@ ApplicationItem {
             TextInput {
                 id: textInput
                 anchors.fill: parent
-                text: styleData.value
+                text: Number(styleData.value).toLocaleString(Qt.locale(), 'f', root.decimals)
                 color: styleData.textColor
                 validator: DoubleValidator { bottom: 0.0 }
 
-                onEditingFinished: d.updateToolData(styleData.row, styleData.column, Number(text))
+                onEditingFinished: d.updateToolData(styleData.row, styleData.column, Number.fromLocaleString(Qt.locale(), text))
                 onActiveFocusChanged: if (activeFocus) {
                                           d.selectRow(styleData.row); textInput.selectAll();
                                       }
@@ -484,11 +488,11 @@ ApplicationItem {
             TextInput {
                 id: textInput
                 anchors.fill: parent
-                text: styleData.value
+                text: Number(styleData.value).toLocaleString(Qt.locale(), 'f', 0)
                 color: styleData.textColor
                 validator: IntValidator { bottom: d.minimumPosition; top: d.maximumPosition }
 
-                onEditingFinished: d.updateToolData(styleData.row, styleData.column, Number(text))
+                onEditingFinished: d.updateToolData(styleData.row, styleData.column,  Number.fromLocaleString(Qt.locale(), text))
                 onActiveFocusChanged: if (activeFocus) {
                                           d.selectRow(styleData.row); textInput.selectAll();
                                       }
