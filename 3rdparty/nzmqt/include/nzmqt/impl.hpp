@@ -185,7 +185,8 @@ NZMQT_INLINE bool ZMQSocket::sendMessage(ZMQMessage& msg_, SendFlags flags_)
 NZMQT_INLINE bool ZMQSocket::sendMessage(const QByteArray& bytes_, SendFlags flags_)
 {
     ZMQMessage msg(bytes_);
-    return send(msg, flags_);
+    bool result = send(msg, flags_);
+    return result;
 }
 
 NZMQT_INLINE bool ZMQSocket::sendMessage(const QList<QByteArray>& msg_, SendFlags flags_)
