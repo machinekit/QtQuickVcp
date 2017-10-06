@@ -54,6 +54,7 @@ public:
 public slots:
     void addItem(ApplicationFileItem *item);
     QString getName(int row);
+    bool getIsDir(int row);
     void clear();
     void beginUpdate();
     void endUpdate();

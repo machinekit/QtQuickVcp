@@ -96,6 +96,26 @@
         <source>Remote Files</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Directory Name</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BlockDeleteAction</name>

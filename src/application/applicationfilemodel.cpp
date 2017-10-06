@@ -90,6 +90,11 @@ QString ApplicationFileModel::getName(int row)
     return data(createIndex(row, 0), NameRole).toString();
 }
 
+bool ApplicationFileModel::getIsDir(int row)
+{
+    return data(createIndex(row, 0), DirRole).toBool();
+}
+
 void ApplicationFileModel::clear()
 {
     if (m_items.count() == 0)

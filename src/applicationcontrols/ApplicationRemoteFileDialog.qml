@@ -11,57 +11,124 @@ Dialog {
     property var command: core === null ? {"ready": false} : core.command
     property var file: core === null ? {"localPath":"", "remotePath":"", "localFilePath":"", "ready":false} : core.file
     property var fileDialog: null
-    property alias width: root.implicitWidth
-    property alias height: root.implicitHeight
+    property alias width: content.implicitWidth
+    property alias height: content.implicitHeight
 
     property bool _ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
 
-    function _openFile(row) {
-        if (row < 0) {
-            return;
+    QtObject {
+        id: d
+        property string rootFolder: ""
+        property string currentFolder: ""
+        readonly property string serverFolder: rootFolder + currentFolder
+
+        readonly property bool directorySelected: (tableView.currentRow > -1) && tableView.model.getIsDir(tableView.currentRow)
+
+        onServerFolderChanged: {
+            if (root.file !== undefined) {
+                root.file.serverDirectory = serverFolder;
+                if (root.file.refreshFiles) {
+                    root.file.refreshFiles();
+                }
+            }
         }
 
-        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
-            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
-        }
-        command.resetProgram('execute');
-        var fileName = tableView.model.getName(row);
-        var newPath = file.remotePath + '/' + fileName;
-        command.openProgram('execute', newPath);
-        dialog.close();
-    }
+        function folderUp(folder) {
+            var pos = folder.lastIndexOf("/", folder.length-2);
+            if (pos > -1) {
+                folder = folder.slice(0, pos+1);
+            }
+            else if (folder !== "") {
+                folder = "";
+            }
 
-    function _removeFile(row) {
-        if (row < 0) {
-            return;
+            return folder;
         }
 
-        var fileName = tableView.model.getName(row);
-        file.removeFile(fileName);
-    }
+        function openFile(row) {
+            if (row < 0) {
+                return;
+            }
 
-    function _uploadFileDialog() {
-        dialog.close();
-        fileDialog.open();
-    }
+            if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
+                command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
+            }
+            command.resetProgram('execute');
+            var dir = tableView.model.getIsDir(row);
+            var fileName = tableView.model.getName(row);
+            if (dir) {
+                d.currentFolder += fileName + "/";
+                deselectRow();
+            }
+            else {
+                var newPath = file.remotePath + '/' + file.serverDirectory + '/' + fileName;
+                command.openProgram('execute', newPath);
+                root.close();
+            }
+        }
 
-    function _uploadFile(url) {
-        file.localFilePath = url;
-        file.startUpload();
+        function removeFile(row) {
+            if (row < 0) {
+                return;
+            }
+
+            var fileName = tableView.model.getName(row);
+            var dir = tableView.model.getIsDir(row);
+            if (!dir) {
+                file.removeFile(fileName);
+            }
+            else {
+                file.removeDirectory(fileName);
+            }
+            deselectRow();
+        }
+
+        function createDirectory(name) {
+            file.createDirectory(name);
+            deselectRow();
+        }
+
+        function uploadFileDialog() {
+            root.close();
+            fileDialog.open();
+        }
+
+        function uploadFile(url) {
+            file.localFilePath = url;
+            file.startUpload();
+        }
+
+        function deselectRow() {
+            tableView.currentRow = -1;
+        }
     }
 
     SystemPalette { id: systemPalette }
 
-    id: dialog
+    id: root
     title: qsTr("Remote Files")
 
     contentItem: Rectangle {
-        id: root
+        id: content
         color: systemPalette.window
 
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Screen.pixelDensity
+
+        RowLayout {
+            id: header
+
+            Button {
+                text: qsTr("Up")
+                iconName: "go-up"
+                onClicked: d.currentFolder = d.folderUp(d.currentFolder);
+            }
+
+            Label {
+                text: (".../" + d.currentFolder).split("/").join(" / ")
+            }
+        }
 
         TableView {
             id: tableView
@@ -73,23 +140,23 @@ Dialog {
             TableViewColumn {
                 role: "name"
                 title: qsTr("Name")
-                width: dialog.width * 0.4
+                width: root.width * 0.4
             }
             TableViewColumn {
                 role: "size"
                 title: qsTr("Size")
-                width: dialog.width * 0.2
+                width: root.width * 0.2
             }
             TableViewColumn {
                 role: "lastModified"
                 title: qsTr("Last Modified")
-                width: dialog.width * 0.3
+                width: root.width * 0.3
             }
 
-            onDoubleClicked: _openFile(row)
+            onDoubleClicked: d.openFile(row)
             onPressAndHold: fileMenu.popup()
-            Keys.onReturnPressed: _openFile(currentRow)
-            Keys.onDeletePressed: _removeFile(currentRow)
+            Keys.onReturnPressed: d.openFile(currentRow)
+            Keys.onDeletePressed: d.removeFile(currentRow)
 
             MouseArea {
                 anchors.fill: parent
@@ -103,7 +170,7 @@ Dialog {
                 anchors.fill: parent
                 onDropped: {
                     if (drop.hasUrls) {
-                        _uploadFile(drop.urls[0]);
+                        d.uploadFile(drop.urls[0]);
                     }
                 }
             }
@@ -111,19 +178,27 @@ Dialog {
             Menu {
                 id: fileMenu
                 MenuItem {
-                    text: qsTr("Remove file")
+                    text: d.directorySelected ? qsTr("Open directory") : qsTr("Open file")
                     enabled: _ready && (tableView.currentRow > -1)
-                    onTriggered: _removeFile(tableView.currentRow)
+                    onTriggered: d.openFile(tableView.currentRow)
                 }
+
                 MenuItem {
-                    text: qsTr("Open file")
+                    text: d.directorySelected ? qsTr("Remove directory") : qsTr("Remove file")
                     enabled: _ready && (tableView.currentRow > -1)
-                    onTriggered: _openFile(tableView.currentRow)
+                    onTriggered: d.removeFile(tableView.currentRow)
                 }
+
                 MenuItem {
                     text: qsTr("Upload file...")
                     enabled: _ready
-                    onTriggered: _uploadFileDialog()
+                    onTriggered: d.uploadFileDialog()
+                }
+
+                MenuItem {
+                    text: qsTr("Create directory")
+                    enabled: _ready
+                    onTriggered: directoryNameDialog.open()
                 }
             }
         }
@@ -148,30 +223,50 @@ Dialog {
                 text: qsTr("Upload...")
                 enabled: _ready
                 iconName: "document-open"
-                onClicked: _uploadFileDialog()
+                onClicked: d.uploadFileDialog()
             }
 
             Button {
                 text: qsTr("Remove")
                 iconName: "edit-delete"
                 enabled: _ready && (tableView.currentRow > -1)
-                onClicked: _removeFile(tableView.currentRow)
+                onClicked: d.removeFile(tableView.currentRow)
             }
 
             Button {
                 text: qsTr("Open")
                 iconName: "document-open-remote"
                 enabled: _ready && (tableView.currentRow > -1)
-                onClicked: _openFile(tableView.currentRow)
+                onClicked: d.openFile(tableView.currentRow)
             }
 
             Button {
                 text: qsTr("Close")
                 iconName: "dialog-close"
-                onClicked: dialog.close()
+                onClicked: root.close()
             }
         }
     }
+    }
+
+    Dialog {
+        id: directoryNameDialog
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+        title: qsTr("Enter Directory Name")
+
+        onVisibleChanged: {
+            if (visible) {
+                textField.text = "";
+                textField.forceActiveFocus();
+            }
+        }
+
+        TextField {
+            id: textField
+            anchors.fill: parent
+        }
+
+        onAccepted: d.createDirectory(textField.text)
     }
 
     onVisibleChanged: {
