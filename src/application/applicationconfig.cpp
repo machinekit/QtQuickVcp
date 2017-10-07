@@ -22,6 +22,7 @@
 #include "applicationconfig.h"
 #include <google/protobuf/text_format.h>
 #include <machinetalk/protobuf/types.pb.h>
+#include <QDebug>
 
 using namespace machinetalk;
 

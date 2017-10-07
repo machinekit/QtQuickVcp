@@ -3,10 +3,10 @@
 
 # This define will "move" nzmqt class method
 # implementations to nzmqt.cpp file.
-#DEFINES += NZMQT_LIB
+DEFINES += NZMQT_LIB
 
-#SOURCES += \
-#    $$PWD/src/nzmqt/nzmqt.cpp
+SOURCES += \
+    $$PWD/src/nzmqt/nzmqt.cpp
 
 HEADERS += \
     $$PWD/include/nzmqt/global.hpp \

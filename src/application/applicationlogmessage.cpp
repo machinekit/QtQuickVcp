@@ -21,6 +21,7 @@
 ****************************************************************************/
 
 #include "applicationlogmessage.h"
+#include <QVariant>
 
 namespace qtquickvcp {
 
