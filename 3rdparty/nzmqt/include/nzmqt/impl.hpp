@@ -219,7 +219,7 @@ NZMQT_INLINE QList<QByteArray> ZMQSocket::receiveMessage(ReceiveFlags flags_)
         try {
             msg.rebuild();
         }
-        catch (error_t) {}
+        catch (zmq::error_t) {}
 
         if (!hasMoreMessageParts()) {
             break;
