@@ -1,0 +1,18 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: QtQuickVcp
+Source: https://github.com/qtquickvcp/QtQuickVcp
+
+Files: *
+Copyright: 2017 Alexander Rössler
+License: LGPL-2
+
+Files: debian/*
+Copyright: 2007-2012 Fathi Boudra <fabo@debian.org>
+           2007-2012 Sune Vuorela <debian@pusling.com>
+           2008-2012 Modestas Vainius <modax@debian.org>
+           2007-2009 Ana Beatriz Guerrero Lopez <ana@debian.org>
+           2005-2007 Brian Nelson <pyro@debian.org>
+           2012-2013 Timo Jyrinki <timo.jyrinki@canonical.com>
+           2013-2014 Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>
+           2013-2016 Dmitry Shachnev <mitya57@debian.org>
+License: LGPL-3 or GPL-2

@@ -1,0 +1,6 @@
+/.debhelper/
+/files
+/Tools/
+/qml-module-qtquick-vcp/
+/qml-module-qtquick-vcp.substvars
+/qml-module-qtquick-vcp.debhelper.log
