@@ -1,0 +1,30 @@
+Source: qtquickvcp
+Section: libs
+Priority: optional
+Maintainer: John Morris <john@zultron.com>
+Build-Depends: debhelper (>= 9),
+               dpkg-dev (>= 1.16.1),
+               qml-module-qt-labs-folderlistmodel,
+               qml-module-qt-labs-settings,
+               qml-module-qtquick-dialogs,
+               qml-module-qtquick-extras,
+               qtdeclarative5-dev,
+               qtdeclarative5-dev-tools
+Build-Depends-Indep: qttools5-dev-tools (>= 5.7.1~20161021~)
+Standards-Version: 3.9.8
+Homepage: https://github.com/qtquickvcp/QtQuickVcp
+Vcs-Git: https://github.com/qtquickvcp/QtQuickVcp.git
+Vcs-Browser: https://anonscm.debian.org/git/pkg-kde/qt/qtquickcontrols
+
+Package: qml-module-qtquick-vcp
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: qml-module-qtquick-dialogs
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: Qt 5 Quick VCP module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ The Qt Quick VCP module provides a virtual control panel for Machinekit.

@@ -1,0 +1,28 @@
+#!/usr/bin/make -f
+
+# Prepare source for packaging:
+# git archive HEAD | bzip2 -z > ../qtquickvcp_${VERSION}.orig.tar.bz2
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QT_SELECT := qt5
+
+%:
+	dh $@ --parallel
+
+override_dh_auto_clean:
+	dh_auto_clean
+    # These are regenerated during the build
+	rm -f apps/MachinekitClient/MachinekitClient.ServiceDisplay/translations/*
+
+# override_dh_auto_install-arch:
+# 	dh_auto_install
+
+# override_dh_install:
+# 	dh_install --fail-missing
