@@ -660,16 +660,6 @@ void ServiceDiscovery::setLookupMode(ServiceDiscovery::LookupMode arg)
     }
 }
 
-void ServiceDiscovery::setFilter(ServiceDiscoveryFilter *arg)
-{
-    if (m_filter != arg) {
-        m_filter = arg;
-        emit filterChanged(arg);
-
-        updateAllServiceTypes();
-    }
-}
-
 void ServiceDiscovery::startAllQueries()
 {
     for (const auto &key: m_serviceItemsMap.keys())
