@@ -9,6 +9,7 @@
 #include <QCoreApplication>
 #include <QUuid>
 #include <QUrl>
+#include <QQmlEngine>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
@@ -17,53 +18,30 @@
 
 namespace qtquickvcp {
 
-class MachinetalkService : public QObject
+namespace MachinetalkService
 {
-    Q_OBJECT
-    Q_ENUMS(SocketState)
-    Q_ENUMS(State)
-    Q_ENUMS(ConnectionError)
+    QString enumNameToCamelCase(const QString &name);
+    void recurseDescriptor(const google::protobuf::Descriptor *descriptor, QJsonObject &object);
+    QObject * recurseDescriptor(const google::protobuf::Descriptor *descriptor, QQmlEngine *engine, QObject *parent);
+    int recurseMessage(const google::protobuf::Message &message, QJsonObject &object,
+                       const QString &fieldFilter = QString(), const QString &tempDir = QString("json"));
+    int recurseMessage(const google::protobuf::Message &message, QQmlEngine *engine, QObject *object,
+                       const QString &tempDir = QString("json"), const QString &fieldFilter = QString());
+    void updateValue(const google::protobuf::Message &message, QJsonValue &value,
+                     const QString &field, const QString &tempDir = QString("json"));
 
-public:
-    explicit MachinetalkService(QObject *parent = 0);
+    void updateSimpleRepeatedField(QObject *object, const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field);
+    void updateComplexRepeatedField(QObject *object, const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field,
+                                    QQmlEngine *engine, const QString &tempDir);
+    QVariant simpleFieldValueToVariant(const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field);
 
-    enum SocketState {
-        Down = 1,
-        Trying = 2,
-        Up = 3
-    };
+    /** Converts a protobuf File object to a json file descriptor
+     *  stores the data to a temporary directory
+     **/
+    void fileToJson(const machinetalk::File &file, QJsonObject &object, const QString &tempDir);
+    void fileToObject(const machinetalk::File &file, QObject *object, const QString &tempDir);
 
-    enum State {
-        Disconnected = 0,
-        Connecting = 1,
-        Connected = 2,
-        Timeout = 3,
-        Error = 4
-    };
-
-    enum ConnectionError {
-        NoError = 0,
-        BindError = 1,
-        PinChangeError = 2,
-        CommandError = 3,
-        SocketError = 4,
-        ServiceError = 5
-    };
-
-    static QString enumNameToCamelCase(const QString &name);
-    static void recurseDescriptor(const google::protobuf::Descriptor *descriptor,
-                                  QJsonObject &object);
-    static int recurseMessage(const google::protobuf::Message &message,
-                              QJsonObject &object,
-                              const QString &fieldFilter = QString(),
-                              const QString &tempDir = QString("json"));
-    static void updateValue(const google::protobuf::Message &message,
-                            QJsonValue &value,
-                            const QString &field,
-                            const QString &tempDir = QString("json"));
-    static void fileToJson(const machinetalk::File &file,
-                           QJsonObject &object,
-                           const QString tempDir);
+    QByteArray recurseDescriptor(const google::protobuf::Descriptor *descriptor, QByteArray &qmlCode);
 };
 } // namespace qtquickvcp
 
