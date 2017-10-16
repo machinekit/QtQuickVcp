@@ -58,13 +58,12 @@ Item {
         localVisible: true
         autoSelectInstance: false
         autoSelectApplication: false
-        instanceFilter: ServiceDiscoveryFilter{ name: "" }
-        applicationFilter: ApplicationConfigFilter { name: "" }
-        applications: [
-            ApplicationDescription {
-                sourceDir: "./MachinekitClient.ServiceDisplay"
-            }
-        ]
+        instanceFilter { name: "" }
+        applicationFilter { name: "" }
+
+        ApplicationDescription {
+            sourceDir: "./MachinekitClient.ServiceDisplay"
+        }
     }
 
     Component.onCompleted: {

@@ -180,7 +180,7 @@ Rectangle {
 
     /*! This property holds the list of local applications.
     */
-    property list<ApplicationDescription> applications
+    default property list<ApplicationDescription> applications
 
     /*!
         \qmlproperty Item toolBar
@@ -598,37 +598,34 @@ Rectangle {
         id: serviceDiscovery
 
         running: true
-        filter: ServiceDiscoveryFilter {
+        filter {
             id: serviceDiscoveryFilter
             name: ""
         }
 
-        serviceLists: [
-            ServiceList {
-                services: [
-                    Service {
-                        id: configService
-                        type: "config"
-                    },
-                    Service {
-                        id: launcherService
-                        type: "launcher"
-                    },
-                    Service {
-                        id: launchercmdService
-                        type: "launchercmd"
-                    },
-                    Service {
-                        id: logService
-                        type: "log"
-                    }
-                ]
-            },
-            ServiceList {
-                id: applicationServiceList
-                services: []
+        ServiceList {
+            Service {
+                id: configService
+                type: "config"
             }
-        ]
+            Service {
+                id: launcherService
+                type: "launcher"
+            }
+            Service {
+                id: launchercmdService
+                type: "launchercmd"
+            }
+            Service {
+                id: logService
+                type: "log"
+            }
+        }
+
+        ServiceList {
+            id: applicationServiceList
+            services: []
+        }
     }
 
     LocalSettings {

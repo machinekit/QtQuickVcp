@@ -432,7 +432,7 @@ void HalRemoteComponent::handleHalrcompFullUpdateMessage(const QByteArray &topic
         return;
     }
 
-    Component component = rx.comp(0);  // shouldnt we check the name?
+    const Component &component = rx.comp(0);  // shouldnt we check the name?
     for (const Pin &remotePin: component.pin())
     {
         QString name = QString::fromStdString(remotePin.name());

@@ -41,12 +41,13 @@ class ServiceDiscovery : public QObject, public QQmlParserStatus
     Q_PROPERTY(bool running READ isRunning WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(bool networkReady READ isNetworkReady NOTIFY networkReadyChanged)
     Q_PROPERTY(bool lookupReady READ isLookupReady NOTIFY lookupReadyChanged)
-    Q_PROPERTY(ServiceDiscoveryFilter *filter READ filter WRITE setFilter NOTIFY filterChanged)
+    Q_PROPERTY(ServiceDiscoveryFilter *filter READ filter CONSTANT)
     Q_PROPERTY(QQmlListProperty<qtquickvcp::ServiceList> serviceLists READ serviceLists)
     Q_PROPERTY(LookupMode lookupMode READ lookupMode WRITE setLookupMode NOTIFY lookupModeChanged)
     Q_PROPERTY(int unicastLookupInterval READ unicastLookupInterval WRITE setUnicastLookupInterval NOTIFY unicastLookupIntervalChanged)
     Q_PROPERTY(int unicastErrorThreshold READ unicastErrorThreshold WRITE setUnicastErrorThreshold NOTIFY unicastErrorThresholdChanged)
     Q_PROPERTY(QQmlListProperty<qtquickvcp::NameServer> nameServers READ nameServers NOTIFY nameServersChanged)
+    Q_CLASSINFO("DefaultProperty", "serviceLists")
 
     Q_ENUMS(LookupMode)
 
@@ -79,7 +80,6 @@ public:
 
 public slots:
     void setRunning(bool arg);
-    void setFilter(ServiceDiscoveryFilter *arg);
     void setLookupMode(LookupMode arg);
     void setUnicastLookupInterval(int arg);
     void setUnicastErrorThreshold(int unicastErrorThreshold);
@@ -93,7 +93,6 @@ public slots:
 signals:
     void runningChanged(bool arg);
     void networkReadyChanged(bool arg);
-    void filterChanged(ServiceDiscoveryFilter *arg);
     void lookupReadyChanged(bool arg);
     void lookupModeChanged(LookupMode arg);
     void unicastLookupIntervalChanged(int arg);
