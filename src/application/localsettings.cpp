@@ -138,7 +138,7 @@ QJsonValue LocalSettings::value(const QString &key)
     return QJsonValue();
 }
 
-void LocalSettings::setFilePath(QString arg)
+void LocalSettings::setFilePath(const QString &arg)
 {
     if (m_filePath == arg)
         return;
@@ -163,7 +163,7 @@ void LocalSettings::setValue(const QString &key, const QJsonValue &value, bool o
 
     for (int i = 0; i < heritanceList.size(); ++i)
     {
-        QString keyName = heritanceList.at(i);
+        const QString &keyName = heritanceList.at(i);
         QJsonValueRef valueRef = (*parentObject)[keyName];
         bool isValueKey = (i == (heritanceList.size() - 1));
 
@@ -201,7 +201,7 @@ void LocalSettings::setValue(const QString &key, const QJsonValue &value, bool o
     emit valuesChanged(m_values);
 }
 
-void LocalSettings::setValues(QJsonObject arg)
+void LocalSettings::setValues(const QJsonObject &arg)
 {
     if (m_values == arg)
         return;
@@ -210,7 +210,7 @@ void LocalSettings::setValues(QJsonObject arg)
     emit valuesChanged(arg);
 }
 
-void LocalSettings::setApplication(QString arg)
+void LocalSettings::setApplication(const QString &arg)
 {
     if (m_application == arg)
         return;
@@ -220,7 +220,7 @@ void LocalSettings::setApplication(QString arg)
     updateFilePath();
 }
 
-void LocalSettings::setName(QString arg)
+void LocalSettings::setName(const QString &arg)
 {
     if (m_name == arg)
         return;

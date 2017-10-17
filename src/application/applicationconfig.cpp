@@ -178,21 +178,13 @@ ApplicationConfig::~ApplicationConfig()
 
 void ApplicationConfig::handleDescribeApplicationMessage(const Container &rx)
 {
-    for (int i = 0; i < rx.app_size(); ++i)
+    for (const auto &app: rx.app())
     {
-        Application app;
+        const auto type = app.type();
+        const QString &name = QString::fromStdString(app.name());
+        const QString &description = QString::fromStdString(app.description());
 
-        app = rx.app(i);
-
-        ApplicationConfigItem::ApplicationType type;
-        QString name;
-        QString description;
-
-        type = static_cast<ApplicationConfigItem::ApplicationType>(app.type());
-        name = QString::fromStdString(app.name());
-        description = QString::fromStdString(app.description());
-
-        if ((m_filter->type() == type)
+        if ((m_filter->type() == static_cast<ApplicationConfigFilter::ApplicationType>(type))
              && (m_filter->name().isEmpty() || (name == m_filter->name()))
              && (m_filter->description().isEmpty() || description.contains(m_filter->description())))
         {
@@ -201,7 +193,7 @@ void ApplicationConfig::handleDescribeApplicationMessage(const Container &rx)
             appConfigItem = new ApplicationConfigItem(this);
             appConfigItem->setName(name);
             appConfigItem->setDescription(description);
-            appConfigItem->setType(type);
+            appConfigItem->setType(static_cast<ApplicationConfigItem::ApplicationType>(type));
             m_configs.append(appConfigItem);
             emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
         }
@@ -210,19 +202,12 @@ void ApplicationConfig::handleDescribeApplicationMessage(const Container &rx)
 
 void ApplicationConfig::handleApplicationDetailMessage(const Container &rx)
 {
-    for (int i = 0; i < rx.app_size(); ++i)
+    for (const auto &app: rx.app())
     {
-        Application app;
+        const auto type = app.type();
 
-        app = rx.app(i);
-
-        ApplicationConfigItem::ApplicationType type;
-
-        type = static_cast<ApplicationConfigItem::ApplicationType>(app.type());
-
-        if (m_filter->type() == type)     // detail comes when application was already filtered, so we only check the type to make sure it is compatible
+        if (m_filter->type() == static_cast<ApplicationConfigFilter::ApplicationType>(type))     // detail comes when application was already filtered, so we only check the type to make sure it is compatible
         {
-            QString baseFilePath;
             QStringList fileList;
             QDir dir;
 
@@ -233,7 +218,7 @@ void ApplicationConfig::handleApplicationDetailMessage(const Container &rx)
 
             m_selectedConfig->setName(QString::fromStdString(app.name()));
             m_selectedConfig->setDescription(QString::fromStdString(app.description()));
-            m_selectedConfig->setType(type);
+            m_selectedConfig->setType(static_cast<ApplicationConfigItem::ApplicationType>(type));
 
             // update the tmp path and use it to store the config, UUID enforces reload of UI
             m_temporaryDir = std::make_unique<QTemporaryDir>();
@@ -242,16 +227,15 @@ void ApplicationConfig::handleApplicationDetailMessage(const Container &rx)
             {
                 qWarning() << "unable to create temporary directory";
             }
-            baseFilePath = m_temporaryDir->path();
+            const QString &baseFilePath = m_temporaryDir->path();
 
 #ifdef QT_DEBUG
             qDebug() << "base file path:" << baseFilePath;
 #endif
 
-            for (int j = 0; j < app.file_size(); ++j)
+            for (const auto &file: app.file())
             {
-                const auto file = app.file(j);
-                const QString filePath = QDir(baseFilePath).filePath(QString::fromStdString(file.name()));
+                const QString &filePath = QDir(baseFilePath).filePath(QString::fromStdString(file.name()));
 
                 QFileInfo fileInfo(filePath);
                 if (!dir.mkpath(fileInfo.absolutePath()))
@@ -266,7 +250,7 @@ void ApplicationConfig::handleApplicationDetailMessage(const Container &rx)
                     continue;
                 }
 
-                const QByteArray data = QByteArray::fromRawData(file.blob().data(), static_cast<int>(file.blob().size()));
+                const QByteArray &data = QByteArray::fromRawData(file.blob().data(), static_cast<int>(file.blob().size()));
 
                 if (file.encoding() == ZLIB)
                 {

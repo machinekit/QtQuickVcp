@@ -312,6 +312,36 @@ Rectangle {
     }
 
     /*! \internal */
+    function _evaluateState() {
+        if (d.errorActive) {
+            return "error";
+        }
+        else if (appPage.status === Loader.Ready) {
+            return "app-loaded";
+        }
+        else if (applicationConfig.selectedConfig.loading
+                 || (appPage.active && (appPage.status === Loader.Loading)))
+        {
+            return "app-loading";
+        }
+        else if (d.instanceSelected)
+        {
+            if (configService.ready && !d.holdLauncher) {
+                return "config";
+            }
+            else if (d.holdLauncher || d.freshStart) {
+                return "launcher";
+            }
+            else {
+                return "launcher-selected";
+            }
+        }
+        else {
+            return "instance";
+        }
+        }
+
+    /*! \internal */
     function setError(errorType, errorText)
     {
         d.errorType = errorType;
@@ -642,34 +672,7 @@ Rectangle {
         NameServer { }
     }
 
-    state: {
-        if (d.errorActive) {
-            return "error";
-        }
-        else if (appPage.status === Loader.Ready) {
-            return "app-loaded";
-        }
-        else if (applicationConfig.selectedConfig.loading
-                 || (appPage.active && (appPage.status === Loader.Loading)))
-        {
-            return "app-loading";
-        }
-        else if (d.instanceSelected)
-        {
-            if (configService.ready && !d.holdLauncher) {
-                return "config";
-            }
-            else if (d.holdLauncher || d.freshStart) {
-                return "launcher";
-            }
-            else {
-                return "launcher-selected";
-            }
-        }
-        else {
-            return "instance";
-        }
-    }
+    state: _evaluateState()
 
     states: [
         State {

@@ -64,9 +64,54 @@ namespace qtquickvcp {
 
 ApplicationConfigFilter::ApplicationConfigFilter(QObject *parent) :
     QObject(parent),
-    m_type(ApplicationConfigItem::Qt5QmlApplication),
+    m_type(Qt5QmlApplication),
     m_name(""),
     m_description("")
 {
+}
+
+ApplicationConfigFilter::ApplicationType ApplicationConfigFilter::type() const
+{
+    return m_type;
+}
+
+QString ApplicationConfigFilter::name() const
+{
+    return m_name;
+}
+
+QString ApplicationConfigFilter::description() const
+{
+    return m_description;
+}
+
+void ApplicationConfigFilter::setType(ApplicationConfigFilter::ApplicationType arg)
+{
+    if (m_type == arg) {
+        return;
+    }
+
+    m_type = arg;
+    emit typeChanged(arg);
+}
+
+void ApplicationConfigFilter::setName(const QString &arg)
+{
+    if (m_name == arg) {
+        return;
+    }
+
+    m_name = arg;
+    emit nameChanged(arg);
+}
+
+void ApplicationConfigFilter::setDescription(const QString &arg)
+{
+    if (m_description == arg) {
+        return;
+    }
+
+    m_description = arg;
+    emit descriptionChanged(arg);
 }
 } // namespace qtquickvcp
