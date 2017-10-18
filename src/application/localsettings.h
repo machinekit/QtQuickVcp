@@ -60,17 +60,17 @@ public:
     }
 
 signals:
-    void valuesChanged(QJsonObject arg);
-    void applicatioChanged(QString arg);
-    void nameChanged(QString arg);
-    void filePathChanged(QString arg);
+    void valuesChanged(const QJsonObject &arg);
+    void applicatioChanged(const QString &arg);
+    void nameChanged(const QString &arg);
+    void filePathChanged(const QString &arg);
 
 public slots:
-    void setValues(QJsonObject arg);
+    void setValues(const QJsonObject &arg);
     void setValue(const QString &key, const QJsonValue &value, bool overwrite);
-    void setApplication(QString arg);
-    void setName(QString arg);
-    void setFilePath(QString arg);
+    void setApplication(const QString &arg);
+    void setName(const QString &arg);
+    void setFilePath(const QString &arg);
     void save();
     void load();
     void setValue(const QString &key, const QJsonValue &value);

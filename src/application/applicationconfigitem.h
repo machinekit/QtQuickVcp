@@ -34,14 +34,13 @@ class ApplicationConfigItem : public QObject
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
-    Q_PROPERTY(ApplicationType type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(ApplicationConfigItem::ApplicationType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(QUrl webUri READ webUri WRITE setWebUri NOTIFY webUriChanged)
     Q_PROPERTY(bool loaded READ isLoaded WRITE setLoaded NOTIFY loadedChanged)
     Q_PROPERTY(bool loading READ isLoading WRITE setLoading NOTIFY loadingChanged)
     Q_PROPERTY(QStringList files READ files WRITE setFiles NOTIFY filesChanged)
     Q_PROPERTY(QUrl mainFile READ mainFile WRITE setMainFile NOTIFY mainFileChanged)
     Q_PROPERTY(QUrl translationsPath READ translationsPath WRITE setTranslationsPath NOTIFY translationsPathChanged)
-    Q_ENUMS(ApplicationType)
 
 public:
     explicit ApplicationConfigItem(QObject *parent = 0);
@@ -51,121 +50,29 @@ public:
         GladeVcpApplication = machinetalk::GLADEVCP,
         JavaScriptApplication = machinetalk::JAVASCRIPT
     };
+    Q_ENUM(ApplicationType)
 
-    QString name() const
-    {
-        return m_name;
-    }
-
-    QString description() const
-    {
-        return m_description;
-    }
-
-    ApplicationType type() const
-    {
-        return m_type;
-    }
-
-    QUrl webUri() const
-    {
-        return m_webUri;
-    }
-
-    bool isLoaded() const
-    {
-        return m_loaded;
-    }
-
-    QStringList files() const
-    {
-        return m_files;
-    }
-
-    QUrl mainFile() const
-    {
-        return m_mainFile;
-    }
-
-    bool isLoading() const
-    {
-        return m_loading;
-    }
-
-    QUrl translationsPath() const
-    {
-        return m_translationsPath;
-    }
+    QString name() const;
+    QString description() const;
+    ApplicationType type() const;
+    QUrl webUri() const;
+    bool isLoaded() const;
+    QStringList files() const;
+    QUrl mainFile() const;
+    bool isLoading() const;
+    QUrl translationsPath() const;
 
 public slots:
 
-    void setName(const QString &arg)
-    {
-        if (m_name != arg) {
-            m_name = arg;
-            emit nameChanged(arg);
-        }
-    }
-    void setDescription(const QString &arg)
-    {
-        if (m_description != arg) {
-            m_description = arg;
-            emit descriptionChanged(arg);
-        }
-    }
-    void setType(ApplicationType arg)
-    {
-        if (m_type != arg) {
-            m_type = arg;
-            emit typeChanged(arg);
-        }
-    }
-    void setWebUri(const QUrl &arg)
-    {
-        if (m_webUri != arg) {
-            m_webUri = arg;
-            emit webUriChanged(arg);
-        }
-    }
-    void setLoaded(bool arg)
-    {
-        if (m_loaded != arg) {
-            m_loaded = arg;
-            emit loadedChanged(arg);
-        }
-    }
-    void setFiles(const QStringList &arg)
-    {
-        if (m_files != arg) {
-            m_files = arg;
-            emit filesChanged(arg);
-        }
-    }
-    void setMainFile(const QUrl &arg)
-    {
-        if (m_mainFile != arg) {
-            m_mainFile = arg;
-            emit mainFileChanged(arg);
-        }
-    }
-
-    void setLoading(bool arg)
-    {
-        if (m_loading == arg)
-            return;
-
-        m_loading = arg;
-        emit loadingChanged(arg);
-    }
-
-    void setTranslationsPath(QUrl translationsPath)
-    {
-        if (m_translationsPath == translationsPath)
-            return;
-
-        m_translationsPath = translationsPath;
-        emit translationsPathChanged(translationsPath);
-    }
+    void setName(const QString &arg);
+    void setDescription(const QString &arg);
+    void setType(ApplicationType arg);
+    void setWebUri(const QUrl &arg);
+    void setLoaded(bool arg);
+    void setFiles(const QStringList &arg);
+    void setMainFile(const QUrl &arg);
+    void setLoading(bool arg);
+    void setTranslationsPath(const QUrl &translationsPath);
 
 private:
     QString m_name;
@@ -188,7 +95,7 @@ signals:
     void filesChanged(const QStringList &arg);
     void mainFileChanged(const QUrl &arg);
     void loadingChanged(bool arg);
-    void translationsPathChanged(QUrl translationsPath);
+    void translationsPathChanged(const QUrl &translationsPath);
 
 }; // class ApplicationConfigItem
 } // namespace qtquickvcp

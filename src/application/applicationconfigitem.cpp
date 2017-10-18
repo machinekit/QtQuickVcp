@@ -125,4 +125,123 @@ ApplicationConfigItem::ApplicationConfigItem(QObject *parent) :
 {
 
 }
+
+QString ApplicationConfigItem::name() const
+{
+    return m_name;
+}
+
+QString ApplicationConfigItem::description() const
+{
+    return m_description;
+}
+
+ApplicationConfigItem::ApplicationType ApplicationConfigItem::type() const
+{
+    return m_type;
+}
+
+QUrl ApplicationConfigItem::webUri() const
+{
+    return m_webUri;
+}
+
+bool ApplicationConfigItem::isLoaded() const
+{
+    return m_loaded;
+}
+
+QStringList ApplicationConfigItem::files() const
+{
+    return m_files;
+}
+
+QUrl ApplicationConfigItem::mainFile() const
+{
+    return m_mainFile;
+}
+
+bool ApplicationConfigItem::isLoading() const
+{
+    return m_loading;
+}
+
+QUrl ApplicationConfigItem::translationsPath() const
+{
+    return m_translationsPath;
+}
+
+void ApplicationConfigItem::setName(const QString &arg)
+{
+    if (m_name != arg) {
+        m_name = arg;
+        emit nameChanged(arg);
+    }
+}
+
+void ApplicationConfigItem::setDescription(const QString &arg)
+{
+    if (m_description != arg) {
+        m_description = arg;
+        emit descriptionChanged(arg);
+    }
+}
+
+void ApplicationConfigItem::setType(ApplicationType arg)
+{
+    if (m_type != arg) {
+        m_type = arg;
+        emit typeChanged(arg);
+    }
+}
+
+void ApplicationConfigItem::setWebUri(const QUrl &arg)
+{
+    if (m_webUri != arg) {
+        m_webUri = arg;
+        emit webUriChanged(arg);
+    }
+}
+
+void ApplicationConfigItem::setLoaded(bool arg)
+{
+    if (m_loaded != arg) {
+        m_loaded = arg;
+        emit loadedChanged(arg);
+    }
+}
+
+void ApplicationConfigItem::setFiles(const QStringList &arg)
+{
+    if (m_files != arg) {
+        m_files = arg;
+        emit filesChanged(arg);
+    }
+}
+
+void ApplicationConfigItem::setMainFile(const QUrl &arg)
+{
+    if (m_mainFile != arg) {
+        m_mainFile = arg;
+        emit mainFileChanged(arg);
+    }
+}
+
+void ApplicationConfigItem::setLoading(bool arg)
+{
+    if (m_loading == arg)
+        return;
+
+    m_loading = arg;
+    emit loadingChanged(arg);
+}
+
+void ApplicationConfigItem::setTranslationsPath(const QUrl &translationsPath)
+{
+    if (m_translationsPath == translationsPath)
+        return;
+
+    m_translationsPath = translationsPath;
+    emit translationsPathChanged(translationsPath);
+}
 } // namespace qtquickvcp

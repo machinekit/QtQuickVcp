@@ -30,63 +30,37 @@ namespace qtquickvcp {
 class ApplicationConfigFilter : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(ApplicationConfigItem::ApplicationType type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(ApplicationType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
 
 public:
+    enum ApplicationType {
+        Qt5QmlApplication = ApplicationConfigItem::Qt5QmlApplication,
+        GladeVcpApplication = ApplicationConfigItem::GladeVcpApplication,
+        JavaScriptApplication = ApplicationConfigItem::JavaScriptApplication
+    };
+    Q_ENUM(ApplicationType)
+
     explicit ApplicationConfigFilter(QObject *parent = 0);
 
-    ApplicationConfigItem::ApplicationType type() const
-    {
-        return m_type;
-    }
-
-    QString name() const
-    {
-        return m_name;
-    }
-
-    QString description() const
-    {
-        return m_description;
-    }
+    ApplicationType type() const;
+    QString name() const;
+    QString description() const;
 
 public slots:
 
-    void setType(ApplicationConfigItem::ApplicationType arg)
-    {
-        if (m_type != arg) {
-            m_type = arg;
-            emit typeChanged(arg);
-        }
-    }
-
-    void setName(const QString &arg)
-    {
-        if (m_name == arg)
-            return;
-
-        m_name = arg;
-        emit nameChanged(arg);
-    }
-
-    void setDescription(const QString &arg)
-    {
-        if (m_description == arg)
-            return;
-
-        m_description = arg;
-        emit descriptionChanged(arg);
-    }
+    void setType(ApplicationType arg);
+    void setName(const QString &arg);
+    void setDescription(const QString &arg);
 
 private:
-    ApplicationConfigItem::ApplicationType m_type;
+    ApplicationType m_type;
     QString m_name;
     QString m_description;
 
 signals:
-    void typeChanged(ApplicationConfigItem::ApplicationType arg);
+    void typeChanged(ApplicationType arg);
     void nameChanged(const QString &arg);
     void descriptionChanged(const QString &arg);
 
