@@ -374,7 +374,7 @@ GLView3D {
     ProgramExtents3D {
         id: programExtents
         visible: pathView.programVisible && pathView.programExtentsVisible
-        position: Qt.vector3d(0.0, 0.0, 0.0)
+        position: Qt.vector3d(coordinates.g5xOffset.x, coordinates.g5xOffset.y, coordinates.g5xOffset.z)
         axes: pathView.axes
         maximum: path.maximumExtents
         minimum: path.minimumExtents
@@ -461,7 +461,7 @@ GLView3D {
     Path3D {
         id: path
         visible: pathView.programVisible
-        position: Qt.vector3d(0.0, 0.0, 0.0)
+        position: Qt.vector3d(coordinates.g5xOffset.x, coordinates.g5xOffset.y, coordinates.g5xOffset.z)
         arcFeedColor: pathView.colors["arc_feed"]
         straightFeedColor: pathView.colors["straight_feed"]
         traverseColor: pathView.colors["traverse"]
