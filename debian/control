@@ -20,7 +20,9 @@ Package: qml-module-qtquick-vcp
 Architecture: any
 Multi-Arch: same
 Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
-Depends: qml-module-qtquick-dialogs
+Depends: qml-module-qtquick-dialogs,
+         qml-module-qtquick-xmllistmodel,
+         qml-module-qtquick-particles2,
          ${misc:Depends},
          ${shlibs:Depends}
 Description: Qt 5 Quick VCP module
