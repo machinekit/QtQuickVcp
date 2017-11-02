@@ -105,12 +105,14 @@ Using the generic MachinekitClient is the easiest way to use QtQuickVcp. However
 ## Showcase Applications and Examples<a name="showcase" ></a>
 
 ### Full-featured UIs
-* [Machineface](https://github.com/qtquickvcp/Machineface)
-* [Cetus](https://github.com/qtquickvcp/Cetus)
+* [Machineface - 3D printer UI](https://github.com/qtquickvcp/Machineface)
+* [Cetus - CNC UI](https://github.com/qtquickvcp/Cetus)
 
 Please add your awesome QtQuickVcp application here!
 
 ### Examples
+* [anddemo](https://github.com/qtquickvcp/anddemo)
+* [BasicQtQuickVcp](https://github.com/qtquickvcp/BasicQtQuickVcp)
 
 ## Getting Started<a name="getting_started" ></a>
 A good way to get started is to watch the video tutorials on YouTube.
