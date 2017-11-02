@@ -30,7 +30,8 @@ Loader {
     onStatusChanged: {
         if (status === Loader.Error)
         {
-            setError(qsTr("QML Error:"), qsTr("Loading QML file failed"));
+            var msg = applicationLoader.sourceComponent.errorString();
+            setError(qsTr("QML Error:"), qsTr("Loading QML file failed:\n" + msg));
         }
     }
 
