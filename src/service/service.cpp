@@ -268,11 +268,10 @@ void Service::updateServiceQuery()
                                 m_protocol));
 }
 
-const QString Service::composeSdString(QString type, QString domain, QString protocol)
+const QString Service::composeSdString(const QString &type, const QString &domain, const QString &protocol)
 {
-    QString sdString;
+    QString sdString = type;
 
-    sdString = type;
     if (!protocol.isEmpty()) {
         sdString.prepend("_");
         sdString.append("._" + protocol);
@@ -282,7 +281,7 @@ const QString Service::composeSdString(QString type, QString domain, QString pro
     return sdString;
 }
 
-const QString Service::composeSdString(QString subType, QString type, QString domain, QString protocol)
+const QString Service::composeSdString(const QString &subType, const QString &type, const QString &domain, const QString &protocol)
 {
     if (subType.isEmpty())
     {
@@ -305,7 +304,7 @@ void Service::updateUri()
     else
     {
         QUrl url = QUrl(m_rawUri);
-        QString host = url.host();
+        const QString &host = url.host();
 
         if (m_hostName.contains(host, Qt::CaseInsensitive))  // hostname is in form .local. and host in .local
         {
