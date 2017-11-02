@@ -62,6 +62,8 @@ wget -O qtquickvcp.${extension} ${url}
 
 **[What is the MachinekitClient?](#machinekitclient)**
 
+**[Showcase Applications and Examples](#showcase)**
+
 **[Getting Started](#getting_started)**
 
 * [Hello World in QtQuickVcp](#hello_world_video)
@@ -96,14 +98,24 @@ in mind. A UI is designed once for a specific form factor and can then be deploy
 or desktop device over the network.
 
 ## What is the MachinekitClient?<a name="machinekitclient" ></a>
-The MachinekitClient application is intended to be used as generic client for QtQuickVcp based user interfaces. MachinekitClient serves as client for remote distribution of QtQuickVcp-based user interfaces.
+The MachinekitClient application is intended to be used as a generic client for QtQuickVcp based user interfaces. MachinekitClient serves as client for remote distribution of QtQuickVcp-based user interfaces.
 
 Using the generic MachinekitClient is the easiest way to use QtQuickVcp. However, you can also build QtQuickVcp UIs as standalone applications.
+
+## Showcase Applications and Examples<a name="showcase" ></a>
+
+### Full-featured UIs
+* [Machineface](https://github.com/qtquickvcp/Machineface)
+* [Cetus](https://github.com/qtquickvcp/Cetus)
+
+Please add your awesome QtQuickVcp application here!
+
+### Examples
 
 ## Getting Started<a name="getting_started" ></a>
 A good way to get started is to watch the video tutorials on YouTube.
 
-Another resource for learning about QtQuickVcp, Machinekit and other
+Another resource for learning about QtQuickVcp, Machinekit, and other
 machine control related stuff is [Machine Koder Blog](http://machinekoder.com)
 
 ### HelloWorld in QtQuickVcp<a name="hello_world_video" ></a>
@@ -139,7 +151,7 @@ If you already have Machinekit installed make sure it is up to date:
     sudo apt-get update
     sudo apt-get upgrade
 
-In some cases you need a `dist-upgrade` to upgrade packages from non-debian repositories.
+In some cases, you need a `dist-upgrade` to upgrade packages from non-debian repositories.
 
     sudo apt-get dist-upgrade
 
@@ -212,7 +224,7 @@ while True:
 ```
 
 ##### Modifications for 3D Printers
-The Machineface user interface is especially designed for controlling 3D printers. Therefore it features some additional controls for heatbed, extruder temperature and more. It implements following a set of [MCodes](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.ini#L86) as well as a few [HAL signals](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.hal#L610). You may also want to take a look at the source code of Machineface: [DisplayPanel.qml](https://github.com/qtquickvcp/Machineface/blob/master/Machineface/DisplayPanel.qml#L54)
+The [Machineface user interface](https://github.com/qtquickvcp/Machineface) is especially designed for controlling 3D printers. Therefore it features some additional controls for heatbed, extruder temperature and more. It implements following a set of [MCodes](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.ini#L86) as well as a few [HAL signals](https://github.com/machinekoder/TCT3D/blob/revision2/UNIPRINT-3D.hal#L610). You may also want to take a look at the source code of Machineface: [DisplayPanel.qml](https://github.com/qtquickvcp/Machineface/blob/master/Machineface/DisplayPanel.qml#L54)
 
 #### Cloning the User Interfaces
 At the moment two user interfaces based on QtQuickVcp exist:
