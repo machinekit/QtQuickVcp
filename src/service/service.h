@@ -129,7 +129,7 @@ public:
     }
 
 public slots:
-    void setType(QString arg)
+    void setType(const QString &arg)
     {
         if (m_type != arg) {
             m_type = arg;
@@ -137,28 +137,31 @@ public slots:
         }
     }
 
-    void setDomain(QString domain)
+    void setDomain(const QString &domain)
     {
-        if (m_domain == domain)
+        if (m_domain == domain) {
             return;
+        }
 
         m_domain = domain;
         emit domainChanged(domain);
     }
 
-    void setBaseType(QString baseType)
+    void setBaseType(const QString &baseType)
     {
-        if (m_baseType == baseType)
+        if (m_baseType == baseType) {
             return;
+        }
 
         m_baseType = baseType;
         emit baseTypeChanged(baseType);
     }
 
-    void setProtocol(QString protocol)
+    void setProtocol(const QString &protocol)
     {
-        if (m_protocol == protocol)
+        if (m_protocol == protocol) {
             return;
+        }
 
         m_protocol = protocol;
         emit protocolChanged(protocol);
@@ -176,8 +179,9 @@ public slots:
 
     void setRequired(bool arg)
     {
-        if (m_required == arg)
+        if (m_required == arg) {
             return;
+        }
 
         m_required = arg;
         emit requiredChanged(arg);
@@ -204,8 +208,8 @@ private:
     QString m_hostName;       // the hostname that is queried
     QString m_hostAddress;    // the address that was resolved
 
-    const QString composeSdString(QString type, QString domain, QString protocol);
-    const QString composeSdString(QString subType, QString type, QString domain, QString protocol);
+    const QString composeSdString(const QString &type, const QString &domain, const QString &protocol);
+    const QString composeSdString(const QString &subType, const QString &type, const QString &domain, const QString &protocol);
 
 private slots:
     void updateUri();
@@ -213,21 +217,21 @@ private slots:
     void serviceQueryItemsUpdated(QQmlListProperty<ServiceDiscoveryItem> newItems);
 
 signals:
-    void uriChanged(QString arg);
+    void uriChanged(const QString &arg);
     void versionChanged(int arg);
     void readyChanged(bool arg);
-    void typeChanged(QString arg);
-    void domainChanged(QString domain);
-    void baseTypeChanged(QString baseType);
-    void protocolChanged(QString protocol);
-    void nameChanged(QString arg);
+    void typeChanged(const QString &arg);
+    void domainChanged(const QString &domain);
+    void baseTypeChanged(const QString &baseType);
+    void protocolChanged(const QString &protocol);
+    void nameChanged(const QString &arg);
     void itemsChanged(QQmlListProperty<ServiceDiscoveryItem> arg);
     void filterChanged(ServiceDiscoveryFilter *arg);
-    void uuidChanged(QString arg);
+    void uuidChanged(const QString &arg);
     void requiredChanged(bool arg);
     void queriesChanged();
-    void hostNameChanged(QString hostName);
-    void hostAddressChanged(QString hostAddress);
+    void hostNameChanged(const QString &hostName);
+    void hostAddressChanged(const QString &hostAddress);
 
 }; // class Service
 } // namespace qtquickvcp
