@@ -264,20 +264,7 @@ Rectangle {
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
             font.pointSize: dummyText.font.pointSize * 1.1
-            text: {
-                var headerText;
-
-                switch (remoteComponent.error)
-                {
-                case HalRemoteComponent.BindError: headerText = qsTr("Bind rejected error:"); break;
-                case HalRemoteComponent.PinChange: headerText = qsTr("Pin change rejected error:"); break;
-                case HalRemoteComponent.CommandError: headerText = qsTr("Command error:"); break;
-                case HalRemoteComponent.SocketError: headerText = qsTr("Socket error:"); break;
-                default: headerText = qsTr("No error"); break;
-                }
-
-                return headerText + "\n" + remoteComponent.errorString;
-            }
+            text: qsTr("HAL component error:") + "\n" + remoteComponent.errorString
         }
     }
 

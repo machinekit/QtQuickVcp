@@ -126,11 +126,7 @@ namespace qtquickvcp {
 
     \list
     \li HalRemoteComponent.NoError - No error happened.
-    \li HalRemoteComponent.BindError - Binding the remote component failed.
-    \li HalRemoteComponent.PinChangeError - A pin change was rejected.
-    \li HalRemoteComponent.CommandError - A command was rejected.
-    \li HalRemoteComponent.TimeoutError - The connection timed out.
-    \li HalRemoteComponent.SocketError - An error related to the sockets happened.
+    \li HalRemoteComponent.ComponentError - An error happened.
     \endlist
 
     \sa errorString
@@ -499,6 +495,11 @@ void HalRemoteComponent::setConnected()
 
 void HalRemoteComponent::setError()
 {
+    if (m_error != ComponentError) {
+        m_error = ComponentError;
+        emit errorChanged(m_error);
+    }
+
     if (m_connected)
     {
         m_connected = false;
@@ -508,6 +509,11 @@ void HalRemoteComponent::setError()
 
 void HalRemoteComponent::setDisconnected()
 {
+    if (m_error != NoError) {
+        m_error = NoError;
+        emit errorChanged(m_error);
+    }
+
     if (m_connected)
     {
         m_connected = false;

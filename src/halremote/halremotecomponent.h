@@ -48,10 +48,7 @@ public:
 
     enum ConnectionError {
         NoError = 0,
-        BindError = 1,
-        PinChangeError = 2,
-        CommandError = 3,
-        SocketError = 4
+        ComponentError  = 1
     };
 
     QString name() const
