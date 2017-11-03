@@ -303,7 +303,7 @@ void Service::updateUri()
     }
     else
     {
-        QUrl url = QUrl(m_rawUri);
+        QUrl url(m_rawUri);
         const QString &host = url.host();
 
         if (m_hostName.contains(host, Qt::CaseInsensitive))  // hostname is in form .local. and host in .local

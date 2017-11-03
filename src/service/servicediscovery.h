@@ -139,7 +139,7 @@ private:
     void updateServiceType(const QString &serviceType);
     void removeAllServiceTypes();
     void updateAllServiceTypes();
-    static QList<ServiceDiscoveryItem *> filterServiceDiscoveryItems(QList<ServiceDiscoveryItem *> serviceDiscoveryItems, ServiceDiscoveryFilter *primaryFilter, ServiceDiscoveryFilter *secondaryFilter);
+    static QList<ServiceDiscoveryItem *> filterServiceDiscoveryItems(const QList<ServiceDiscoveryItem *> serviceDiscoveryItems, const ServiceDiscoveryFilter *primaryFilter = nullptr, const ServiceDiscoveryFilter *secondaryFilter = nullptr);
     ServiceDiscoveryItem *addItem(const QString &name, const QString &type);
     ServiceDiscoveryItem *getItem(const QString &name, const QString &type);
     void updateItem(const QString &name, const QString &type);

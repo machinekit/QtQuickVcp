@@ -831,7 +831,7 @@ void ServiceDiscovery::updateServiceType(const QString &serviceType)
                 {
                     if (query->queryType() == QJDns::A) // do not filter hostname resolve queries
                     {
-                        query->setItems(serviceDiscoveryItems);
+                        query->setItems(filterServiceDiscoveryItems(serviceDiscoveryItems));
                     }
                     else
                     {
@@ -859,16 +859,25 @@ void ServiceDiscovery::updateAllServiceTypes()
     }
 }
 
-QList<ServiceDiscoveryItem *> ServiceDiscovery::filterServiceDiscoveryItems(QList<ServiceDiscoveryItem *> serviceDiscoveryItems, ServiceDiscoveryFilter *primaryFilter, ServiceDiscoveryFilter *secondaryFilter)
+QList<ServiceDiscoveryItem *> ServiceDiscovery::filterServiceDiscoveryItems(const QList<ServiceDiscoveryItem *> serviceDiscoveryItems, const ServiceDiscoveryFilter *primaryFilter, const ServiceDiscoveryFilter *secondaryFilter)
 {
     QList<ServiceDiscoveryItem*> newServiceDiscoveryItems;
 
     for (ServiceDiscoveryItem *item: serviceDiscoveryItems)
     {
-        if (primaryFilter->apply(*item) && secondaryFilter->apply(*item))
-        {
-            newServiceDiscoveryItems.append(item);
+        if (item->hasOutstandingRequests()) {
+            continue;
         }
+
+        if ((primaryFilter != nullptr) && !primaryFilter->apply(*item)) {
+            continue;
+        }
+
+        if ((secondaryFilter != nullptr) && !secondaryFilter->apply(*item)) {
+            continue;
+        }
+
+        newServiceDiscoveryItems.append(item);
     }
 
     return newServiceDiscoveryItems;
