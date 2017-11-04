@@ -7,10 +7,6 @@
         <source>QML Error:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Loading QML file failed</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ApplicationFileDialog</name>
