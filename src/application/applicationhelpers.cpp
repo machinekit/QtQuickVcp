@@ -3,8 +3,9 @@
 
 namespace qtquickvcp {
 
-ApplicationHelpers::ApplicationHelpers(QObject *parent)
+ApplicationHelpers::ApplicationHelpers(QQmlEngine *engine, QObject *parent)
     : QObject(parent)
+    , m_engine(engine)
 {
 
 }
@@ -12,6 +13,11 @@ ApplicationHelpers::ApplicationHelpers(QObject *parent)
 bool ApplicationHelpers::openUrlWithDefaultApplication(const QUrl &url) const
 {
     return QDesktopServices::openUrl(url);
+}
+
+void ApplicationHelpers::clearQmlComponentCache() const
+{
+    m_engine->clearComponentCache();
 }
 
 } // namespace qtquickvcp
