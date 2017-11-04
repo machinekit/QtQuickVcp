@@ -64,6 +64,10 @@ Item {
         ApplicationDescription {
             sourceDir: "./MachinekitClient.ServiceDisplay"
         }
+
+        ApplicationDescription {
+            sourceDir: "./MachinekitClient.LiveCoding"
+        }
     }
 
     Component.onCompleted: {
