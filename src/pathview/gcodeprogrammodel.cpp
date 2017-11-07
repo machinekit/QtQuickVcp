@@ -275,6 +275,22 @@ void GCodeProgramModel::clearPreview(bool update)
     }
 }
 
+void GCodeProgramModel::clearSelectionAndSelectLine(const QString &fileName, int lineNumber)
+{
+    clearSelectionAndSelectLine(index(fileName, lineNumber));
+}
+
+void GCodeProgramModel::clearSelectionAndSelectLine(const QModelIndex &index)
+{
+    for (auto item: m_items) {
+        if (item->selected()) {
+            item->setSelected(false);
+            setData(item->fileName(), item->lineNumber(), false, SelectedRole);
+        }
+    }
+    setData(index, true, SelectedRole);
+}
+
 void GCodeProgramModel::beginUpdate()
 {
     beginResetModel();

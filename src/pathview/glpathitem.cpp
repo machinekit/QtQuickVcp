@@ -47,7 +47,6 @@ GLPathItem::GLPathItem(QQuickItem *parent)
     , m_traverseLineStippleLength(1.0)
     , m_arcDivision(16)
     , m_activePlane(XYPlane)
-    , m_previousSelectedDrawable(nullptr)
     , m_needsFullUpdate(true)
     , m_minimumExtents(QVector3D(0, 0, 0))
     , m_maximumExtents(QVector3D(0, 0, 0))
@@ -272,19 +271,7 @@ void GLPathItem::selectDrawable(void *pointer)
     if (mappedPathItem != nullptr)
     {
         mappedModelIndex = mappedPathItem->modelIndex;
-        m_model->setData(mappedModelIndex, true, GCodeProgramModel::SelectedRole);
-    }
-
-    if (m_previousSelectedDrawable != pointer)
-    {
-        mappedPathItem = m_drawablePathMap.value(m_previousSelectedDrawable);
-        if (mappedPathItem != nullptr)
-        {
-            mappedModelIndex = mappedPathItem->modelIndex;
-            m_model->setData(mappedModelIndex, false, GCodeProgramModel::SelectedRole);
-        }
-
-        m_previousSelectedDrawable = pointer;
+        m_model->clearSelectionAndSelectLine(mappedModelIndex);
     }
 }
 
@@ -923,7 +910,6 @@ void GLPathItem::drawPath()
 
     m_modelPathMap.clear();
     m_drawablePathMap.clear();
-    m_previousSelectedDrawable = nullptr;
 
     QLinkedList<GCodeProgramModel::PreviewItem> previewItems = m_model->previewItems();
     QLinkedListIterator<GCodeProgramModel::PreviewItem> i(previewItems);
