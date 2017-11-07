@@ -16,6 +16,14 @@ void writeTestFile(const QString filePath)
     file.close();
 }
 
+QString createTestDir(const QString &rootPath, const QString &name)
+{
+    QDir dir(rootPath);
+    dir.mkdir(name);
+
+    return dir.filePath(name);
+}
+
 TEST_CASE("FileWatcher Tests", "[application]")
 {
     QTemporaryDir tempDir;
@@ -41,7 +49,7 @@ TEST_CASE("FileWatcher Tests", "[application]")
             }
         }
 
-        WHEN("the watch is not disabled") {
+        WHEN("the watch is not enabled") {
             watcher.setEnabled(false);
 
             AND_WHEN("the file is modified") {
@@ -51,6 +59,59 @@ TEST_CASE("FileWatcher Tests", "[application]")
                     changedSpy.wait(100);
 
                     REQUIRE(changedSpy.count() == 0);
+                }
+            }
+        }
+    }
+
+    GIVEN ("we watch an existing directory with recursive option") {
+        watcher.setFileUrl(QUrl::fromLocalFile(tempDir.path()));
+        watcher.setRecursive(true);
+
+        WHEN("the file watch is enabled") {
+            watcher.setEnabled(true);
+
+            AND_WHEN("a file is created") {
+                const auto &filePath = tempDir.filePath("testfile.txt");
+                writeTestFile(filePath);
+
+                THEN ("we receive a file changed signal") {
+                    changedSpy.wait(100);
+
+                    REQUIRE(changedSpy.count() == 1);
+
+                    AND_WHEN("the file is changed") {
+                        changedSpy.clear();
+                        writeTestFile(filePath);
+
+                        THEN("we receive a file changed signal") {
+                            changedSpy.wait(100);
+
+                            REQUIRE(changedSpy.count() == 1);
+                        }
+                    }
+                }
+            }
+
+            AND_WHEN("a directory is created") {
+                const auto &dirPath = createTestDir(tempDir.path(), "testdir");
+
+                THEN ("we receive a file changed signal") {
+                    changedSpy.wait(100);
+
+                    REQUIRE(changedSpy.count() == 1);
+
+                    AND_WHEN("a file is created") {
+                        changedSpy.clear();
+                        const auto &filePath = QDir(dirPath).filePath("testfile.txt");
+                        writeTestFile(filePath);
+
+                        THEN("we receive a file changed signal") {
+                            changedSpy.wait(100);
+
+                            REQUIRE(changedSpy.count() == 1);
+                        }
+                    }
                 }
             }
         }

@@ -13,7 +13,7 @@ QJDns::~QJDns()
 {
 }
 
-bool QJDns::init(Mode mode, const QHostAddress &address)
+bool QJDns::init(Mode, const QHostAddress &)
 {
     return true;
 }
@@ -28,16 +28,16 @@ QJDns::SystemInfo QJDns::systemInfo()
     return SystemInfo();
 }
 
-void QJDns::setNameServers(const QList<NameServer> &list)
+void QJDns::setNameServers(const QList<NameServer> &)
 {
 
 }
 
-int QJDns::queryStart(const QByteArray &name, int type)
+int QJDns::queryStart(const QByteArray &, int)
 {
     return 0;
 }
 
-void QJDns::queryCancel(int id)
+void QJDns::queryCancel(int)
 {
 }

@@ -10,5 +10,7 @@
         <file>MachinekitClient.ServiceDisplay/translations/servicedisplay_de.qm</file>
         <file>MachinekitClient.ServiceDisplay/translations/servicedisplay_en.qm</file>
         <file>MachinekitClient.ServiceDisplay/translations/servicedisplay_ru.qm</file>
+        <file>MachinekitClient.LiveCoding/description.ini</file>
+        <file>MachinekitClient.LiveCoding/LiveCoding.qml</file>
     </qresource>
 </RCC>

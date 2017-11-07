@@ -210,6 +210,7 @@ Item {
         id: fileWatcher
         fileUrl: enabled ? applicationFile.localFilePath : ""
         enabled: applicationFile.transferState === ApplicationFile.NoTransfer
+        recursive: false
         onFileChanged: _localFileChanged()
     }
 

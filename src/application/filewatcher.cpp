@@ -1,6 +1,30 @@
+/****************************************************************************
+**
+** Copyright (C) 2017 Alexander Rössler
+** License: LGPL version 2.1
+**
+** This file is part of QtQuickVcp.
+**
+** All rights reserved. This program and the accompanying materials
+** are made available under the terms of the GNU Lesser General Public License
+** (LGPL) version 2.1 which accompanies this distribution, and is available at
+** http://www.gnu.org/licenses/lgpl-2.1.html
+**
+** This library is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+** Lesser General Public License for more details.
+**
+** Contributors:
+** Alexander Rössler <alexander AT roessler DOT systems>
+**
+****************************************************************************/
+
 #include "filewatcher.h"
 #include <QDebug>
 #include <QFile>
+#include <QDir>
+#include <QDirIterator>
 
 namespace qtquickvcp {
 
@@ -8,9 +32,13 @@ FileWatcher::FileWatcher(QObject *parent)
     : QObject(parent)
     , m_fileUrl("")
     , m_enabled(true)
+    , m_recursive(false)
 {
     connect(this, &FileWatcher::fileUrlChanged, this, &FileWatcher::updateWatchedFile);
+    connect(this, &FileWatcher::enabledChanged, this, &FileWatcher::updateWatchedFile);
+    connect(this, &FileWatcher::recursiveChanged, this, &FileWatcher::updateWatchedFile);
     connect(&m_fileSystemWatcher, &QFileSystemWatcher::fileChanged, this, &FileWatcher::onWatchedFileChanged);
+    connect(&m_fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, &FileWatcher::onWatchedDirectoryChanged);
 }
 
 QUrl FileWatcher::fileUrl() const
@@ -21,6 +49,11 @@ QUrl FileWatcher::fileUrl() const
 bool FileWatcher::enabled() const
 {
     return m_enabled;
+}
+
+bool FileWatcher::recursive() const
+{
+    return m_recursive;
 }
 
 void FileWatcher::setFileUrl(const QUrl &fileUrl)
@@ -43,24 +76,48 @@ void FileWatcher::setEnabled(bool enabled)
     emit enabledChanged(m_enabled);
 }
 
+void FileWatcher::setRecursive(bool recursive)
+{
+    if (m_recursive == recursive)
+        return;
+
+    m_recursive = recursive;
+    emit recursiveChanged(m_recursive);
+}
+
 void FileWatcher::updateWatchedFile()
 {
-    for (const auto &file: m_fileSystemWatcher.files()) {
-        m_fileSystemWatcher.removePath(file);
+    const auto &files = m_fileSystemWatcher.files();
+    if (files.length() > 0) {
+        m_fileSystemWatcher.removePaths(files);
+    }
+    const auto &directories = m_fileSystemWatcher.directories();
+    if (directories.length() > 0) {
+        m_fileSystemWatcher.removePaths(directories);
     }
 
-    if (!m_fileUrl.isValid()) {
+     if (!m_fileUrl.isValid() || !m_enabled) {
         return;
     }
 
-    if (m_fileUrl.isLocalFile()) {
-        const auto &localFile = m_fileUrl.toLocalFile();
-        if (QFile::exists(localFile)) {
-            m_fileSystemWatcher.addPath(localFile);
+    if (!m_fileUrl.isLocalFile()) {
+        qWarning() << "Can only watch local files";
+        return;
+    }
+
+    const auto &localFile = m_fileUrl.toLocalFile();
+    if (m_recursive && QDir(localFile).exists()) {
+        QDirIterator it(localFile, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            const auto &file = it.next();
+            m_fileSystemWatcher.addPath(file);
         }
     }
+    else if (QFile::exists(localFile)) {
+        m_fileSystemWatcher.addPath(localFile);
+    }
     else {
-        qWarning() << "Can only watch local files";
+        qWarning() << "File to watch does not exist" << localFile;
     }
 }
 
@@ -69,6 +126,12 @@ void FileWatcher::onWatchedFileChanged()
     if (m_enabled) {
         emit fileChanged();
     }
+}
+
+void FileWatcher::onWatchedDirectoryChanged(const QString &)
+{
+    updateWatchedFile();
+    onWatchedFileChanged(); // propagate event
 }
 
 } // namespace qtquickvcp

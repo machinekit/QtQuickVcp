@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>Loading QML file failed</source>
-        <translation>Laden der QML Datei fehlgeschlagen
+        <translation type="vanished">Laden der QML Datei fehlgeschlagen
 </translation>
     </message>
 </context>
