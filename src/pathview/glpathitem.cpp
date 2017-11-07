@@ -137,11 +137,8 @@ void GLPathItem::paint(GLView *glView)
     }
     else
     {
-        for (int i = 0; i < m_modifiedPathItems.size(); ++i)
+        for (PathItem *pathItem: m_modifiedPathItems)
         {
-            PathItem *pathItem;
-
-            pathItem = m_modifiedPathItems.at(i);
             if (pathItem != nullptr)
             {
                 QColor color;
@@ -259,20 +256,19 @@ QColor GLPathItem::backplotTraverseColor() const
 
 void GLPathItem::selectDrawable(void *pointer)
 {
-    PathItem *mappedPathItem;
-    QModelIndex mappedModelIndex;
-
-    if (m_model == nullptr)
-    {
+    if (m_model == nullptr) {
         return;
     }
 
-    mappedPathItem = m_drawablePathMap.value(pointer, nullptr);
-    if (mappedPathItem != nullptr)
-    {
-        mappedModelIndex = mappedPathItem->modelIndex;
-        m_model->clearSelectionAndSelectLine(mappedModelIndex);
+    PathItem *mappedPathItem = m_drawablePathMap.value(pointer, nullptr);
+    if (mappedPathItem == nullptr) {
+        return;
     }
+
+    const QModelIndex &mappedModelIndex = mappedPathItem->modelIndex;
+    m_model->clearSelectionAndSelectLine(mappedModelIndex);
+    m_modifiedPathItems.append(mappedPathItem);
+    emit needsUpdate();
 }
 
 void GLPathItem::setModel(GCodeProgramModel *arg)
@@ -894,7 +890,6 @@ QVector3D GLPathItem::positionToVector3D(const GLPathItem::Position &position) c
 
 void GLPathItem::drawPath()
 {
-
     if (m_model == nullptr)
     {
         return;
@@ -947,5 +942,6 @@ void GLPathItem::modelDataChanged(const QModelIndex &topLeft, const QModelIndex 
 void GLPathItem::triggerFullUpdate()
 {
     m_needsFullUpdate = true;
+    emit needsUpdate();
 }
 } // namespace qtquickvcp
