@@ -37,7 +37,6 @@ ApplicationAction {
         if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
             command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
         }
-        core.ignoreNextFileChange();
         command.resetProgram('execute');
         command.openProgram('execute', file.remoteFilePath);
     }
