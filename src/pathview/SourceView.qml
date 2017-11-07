@@ -73,68 +73,72 @@ Item {
             id: listView
             anchors.fill: parent
             model: object.gcodeProgramModel
-            delegate:
+            delegate: Item {
+                readonly property bool lineActive: Boolean(active)
+
+                anchors.left: parent ? parent.left : undefined
+                anchors.right: parent ? parent.right : undefined
+                height: dummyLabel.height
+
+                /*onLineActiveChanged: {
+                    if (lineActive) {
+                        listView.positionViewAtIndex(index, ListView.Center)
+                    }
+                }*/
+
                 Item {
-                    property bool lineActive: Boolean(active)
+                    id: lineNumberRect
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    width: lineNumberBackground.width
 
-                    anchors.left: parent ? parent.left : undefined
-                    anchors.right: parent ? parent.right : undefined
-                    height: dummyLabel.height
-
-                    /*onLineActiveChanged: {
-                        if (lineActive) {
-                            listView.positionViewAtIndex(index, ListView.Center)
-                        }
-                    }*/
-
-                    Item {
-                        id: lineNumberRect
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        width: lineNumberBackground.width
-
-                        Label {
-                            anchors.fill: parent
-                            anchors.rightMargin: 5
-                            verticalAlignment: Text.AlignVCenter
-                            wrapMode: Text.NoWrap
-                            elide: Text.ElideRight
-                            maximumLineCount: 1
-                            horizontalAlignment: Text.AlignRight
-                            color: selected ? "white" : label.color
-                            font: dummyLabel.font
-                            text: String(lineNumber)
-                        }
-                    }
-
-                    Rectangle {
-                        color: selected ? root.selectedColor : (active ? root.activeColor : (executed ? root.executedColor : "transparent"))
-                        anchors.left: lineNumberRect.right
-                        anchors.top: parent.top
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-
-
-                        Label {
-                            id: label
-                            anchors.fill: parent
-                            anchors.leftMargin: 5
-                            verticalAlignment: Text.AlignVCenter
-                            wrapMode: Text.NoWrap
-                            elide: Text.ElideRight
-                            maximumLineCount: 1
-                            font: dummyLabel.font
-                            text: String(gcode).trim()
-                        }
-                    }
-
-                    MouseArea {
+                    Label {
                         anchors.fill: parent
-                        onClicked: {
-                            selected = !selected;
-                            listView.currentIndex = index;
-                        }
+                        anchors.rightMargin: 5
+                        verticalAlignment: Text.AlignVCenter
+                        wrapMode: Text.NoWrap
+                        elide: Text.ElideRight
+                        maximumLineCount: 1
+                        horizontalAlignment: Text.AlignRight
+                        color: selected ? "white" : label.color
+                        font: dummyLabel.font
+                        text: String(lineNumber)
                     }
+                }
+
+                Rectangle {
+                    color: selected ? root.selectedColor : (active ? root.activeColor : (executed ? root.executedColor : "transparent"))
+                    anchors.left: lineNumberRect.right
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+
+
+                    Label {
+                        id: label
+                        anchors.fill: parent
+                        anchors.leftMargin: 5
+                        verticalAlignment: Text.AlignVCenter
+                        wrapMode: Text.NoWrap
+                        elide: Text.ElideRight
+                        maximumLineCount: 1
+                        font: dummyLabel.font
+                        text: String(gcode).trim()
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        if (!(mouse.modifiers & Qt.ControlModifier)) {
+                            object.gcodeProgramModel.clearSelectionAndSelectLine(fileName, lineNumber);
+                        }
+                        else {
+                            selected = !selected;
+                        }
+                        listView.currentIndex = index;
+                    }
+                }
             }
         }
     }

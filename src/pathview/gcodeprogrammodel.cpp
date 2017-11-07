@@ -22,6 +22,7 @@
 
 #include "gcodeprogrammodel.h"
 #include <QDebug>
+#include <QDir>
 
 using namespace machinetalk;
 
@@ -55,13 +56,14 @@ QVariant GCodeProgramModel::getData(const QModelIndex &index, int role) const
 QModelIndex GCodeProgramModel::index(const QString &fileName, int lineNumber) const
 {
     FileIndex fileIndex;
+    const QString &cleanPath = QDir::cleanPath(fileName);
 
-    if (!m_fileIndices.contains(fileName))
+    if (!m_fileIndices.contains(cleanPath))
     {
         return QModelIndex();
     }
 
-    fileIndex = m_fileIndices.value(fileName);
+    fileIndex = m_fileIndices.value(cleanPath);
 
     if (lineNumber > fileIndex.count)
     {
@@ -116,10 +118,11 @@ QLinkedList<GCodeProgramModel::PreviewItem> GCodeProgramModel::previewItems() co
 void GCodeProgramModel::prepareFile(const QString &fileName, int lineCount)
 {
     FileIndex fileIndex;
+    const QString &cleanPath = QDir::cleanPath(fileName);
 
-    if (m_fileIndices.contains(fileName))
+    if (m_fileIndices.contains(cleanPath))
     {
-        fileIndex = m_fileIndices.value(fileName);
+        fileIndex = m_fileIndices.value(cleanPath);
     }
     else
     {
@@ -134,7 +137,7 @@ void GCodeProgramModel::prepareFile(const QString &fileName, int lineCount)
     beginInsertRows(QModelIndex(), firstRow, lastRow);
     for (int i = firstRow; i <= lastRow; ++i)
     {
-        m_items.insert(i, new GCodeProgramItem(fileName, (i - fileIndex.index + 1)));
+        m_items.insert(i, new GCodeProgramItem(cleanPath, (i - fileIndex.index + 1)));
     }
     endInsertRows();
 
@@ -150,7 +153,7 @@ void GCodeProgramModel::prepareFile(const QString &fileName, int lineCount)
     }
 
     fileIndex.count = lineCount;
-    m_fileIndices.insert(fileName, fileIndex);
+    m_fileIndices.insert(cleanPath, fileIndex);
 }
 
 void GCodeProgramModel::removeFile(const QString &fileName)
@@ -273,6 +276,22 @@ void GCodeProgramModel::clearPreview(bool update)
     {
         endUpdate();
     }
+}
+
+void GCodeProgramModel::clearSelectionAndSelectLine(const QString &fileName, int lineNumber)
+{
+    clearSelectionAndSelectLine(index(fileName, lineNumber));
+}
+
+void GCodeProgramModel::clearSelectionAndSelectLine(const QModelIndex &index)
+{
+    for (auto item: m_items) {
+        if (item->selected()) {
+            item->setSelected(false);
+            setData(item->fileName(), item->lineNumber(), false, SelectedRole);
+        }
+    }
+    setData(index, true, SelectedRole);
 }
 
 void GCodeProgramModel::beginUpdate()

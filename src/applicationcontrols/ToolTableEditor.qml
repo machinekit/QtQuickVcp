@@ -28,7 +28,7 @@ import Machinekit.Application 1.0
 ApplicationItem {
     property var toolTable: d.ready ? status.io.toolTable : []
     property int decimals: (d.distanceUnits === "mm") ? 3 : 4
-    property color modifiedColor: "#FFFF99"
+    property color modifiedColor: "orange"
     property color errorColor: "#FF9999"
 
     readonly property alias errored: d.errored

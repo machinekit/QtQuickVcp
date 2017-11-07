@@ -190,7 +190,6 @@ private:
     QModelIndex m_currentModelIndex;
     QMultiMap<QModelIndex, PathItem*> m_modelPathMap;  // for mapping the model to internal items
     QMap<void*, PathItem*> m_drawablePathMap;  // for mapping GL views drawables to internal items
-    void* m_previousSelectedDrawable;
 
     bool m_needsFullUpdate;
     QList<PathItem*> m_modifiedPathItems;

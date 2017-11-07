@@ -72,6 +72,8 @@ public slots:
     bool setData(const QString &fileName, int lineNumber, const QVariant &value, int role);
     void clear();
     void clearPreview(bool update = true);
+    void clearSelectionAndSelectLine(const QString &fileName, int lineNumber);
+    void clearSelectionAndSelectLine(const QModelIndex &index);
     void beginUpdate();
     void endUpdate();
 

@@ -26,11 +26,11 @@ import Machinekit.Application 1.0
 
 ComboBox {
     property alias axis: handler.axis
-    property double distance: handler.distanceModel[root.currentIndex]
+    property double distance: handler.distanceModelReverse[root.currentIndex]
     property alias continuousVisible: handler.continuousVisible
     property alias continuousText: handler.continuousText
     id: root
-    model: handler.incrementsModel
+    model: handler.incrementsModelReverse
 
     JogDistanceHandler {
         id: handler
