@@ -254,6 +254,11 @@ Rectangle {
             }
         }
 
+        MouseArea {
+            // steal the clicks from the check boxes
+            anchors.fill: serviceCheckColumn
+        }
+
         Label {
             id: errorLabel
 
