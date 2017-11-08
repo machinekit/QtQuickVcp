@@ -17,23 +17,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bind rejected error:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pin change rejected error:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command error:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Socket error:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No error</source>
+        <source>HAL component error:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

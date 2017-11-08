@@ -18,23 +18,27 @@
     </message>
     <message>
         <source>Bind rejected error:</source>
-        <translation>Signatur abgelehnt Fehler:</translation>
+        <translation type="vanished">Signatur abgelehnt Fehler:</translation>
     </message>
     <message>
         <source>Pin change rejected error:</source>
-        <translation>Pin aktualisierung abgelehnt Fehler: </translation>
+        <translation type="vanished">Pin aktualisierung abgelehnt Fehler: </translation>
     </message>
     <message>
         <source>Command error:</source>
-        <translation>Kommando Fehler:</translation>
+        <translation type="vanished">Kommando Fehler:</translation>
     </message>
     <message>
         <source>Socket error:</source>
-        <translation>Socket Fehler:</translation>
+        <translation type="vanished">Socket Fehler:</translation>
     </message>
     <message>
         <source>No error</source>
-        <translation>Kein Fehler</translation>
+        <translation type="vanished">Kein Fehler</translation>
+    </message>
+    <message>
+        <source>HAL component error:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
