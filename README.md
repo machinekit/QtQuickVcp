@@ -321,7 +321,7 @@ To automatically start `videoserver` from you `run.py` you can use following sni
 ```python
 if os.path.exists('/dev/video0'):  # automatically start videoserver
     launcher.start_process('videoserver -i video.ini Webcam1')
-    ```
+```
 
 
 ## Building and installing<a name="build_and_install" ></a>
