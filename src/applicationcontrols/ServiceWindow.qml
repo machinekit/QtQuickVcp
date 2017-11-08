@@ -245,6 +245,7 @@ Rectangle {
             }
 
             Column {
+                id: serviceCheckColumn
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: connectingIndicator.bottom
                 anchors.topMargin: Screen.pixelDensity
@@ -262,6 +263,11 @@ Rectangle {
                         }
                     }
                 }
+            }
+
+            MouseArea {
+                // steal the clicks from the check boxes
+                anchors.fill: serviceCheckColumn
             }
         }
     }
