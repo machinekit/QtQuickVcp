@@ -72,7 +72,7 @@ wget -O qtquickvcp.${extension} ${url}
 * [QtQuick Module Overview](#module_overview)
 * [Using mkwrapper](#using_mkwrapper)
 * [Using mklauncher](#using_mklauncher)
-* [Using videoserver](#using videoserver)
+* [Using videoserver](#using_videoserver)
 
 **[Building and Installing](#build_and_install)**
 
