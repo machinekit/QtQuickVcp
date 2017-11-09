@@ -47,6 +47,10 @@ Item {
             ApplicationHelpers.clearQmlComponentCache();
             loader.source = fileDialog.file;
         }
+
+        function openWithSystemEditor() {
+            ApplicationHelpers.openUrlWithDefaultApplication(fileDialog.file);
+        }
     }
 
     Label {
@@ -61,6 +65,11 @@ Item {
             Button {
                 text: qsTr("Open")
                 onClicked: fileDialog.open()
+            }
+
+            Button {
+                text: qsTr("Edit")
+                onClicked: d.openWithSystemEditor()
             }
 
             Button {
