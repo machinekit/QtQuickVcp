@@ -33,11 +33,11 @@ namespace qtquickvcp {
 class ApplicationStatus : public machinetalk::application::StatusBase
 {
     Q_OBJECT
-    Q_PROPERTY(QJsonObject config READ config NOTIFY configChanged)
-    Q_PROPERTY(QJsonObject motion READ motion NOTIFY motionChanged)
-    Q_PROPERTY(QJsonObject io READ io NOTIFY ioChanged)
-    Q_PROPERTY(QJsonObject task READ task NOTIFY taskChanged)
-    Q_PROPERTY(QJsonObject interp READ interp NOTIFY interpChanged)
+    Q_PROPERTY(QObject* config READ config NOTIFY configChanged)
+    Q_PROPERTY(QObject* motion READ motion NOTIFY motionChanged)
+    Q_PROPERTY(QObject* io READ io NOTIFY ioChanged)
+    Q_PROPERTY(QObject* task READ task NOTIFY taskChanged)
+    Q_PROPERTY(QObject* interp READ interp NOTIFY interpChanged)
     Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
     Q_PROPERTY(StatusChannels channels READ channels WRITE setChannels NOTIFY channelsChanged)
@@ -170,27 +170,29 @@ public:
     };
     Q_DECLARE_FLAGS(StatusChannels, StatusChannel)
 
-    QJsonObject config() const
+    void componentComplete();
+
+    QObject* config() const
     {
         return m_config;
     }
 
-    QJsonObject motion() const
+    QObject* motion() const
     {
         return m_motion;
     }
 
-    QJsonObject io() const
+    QObject* io() const
     {
         return m_io;
     }
 
-    QJsonObject task() const
+    QObject* task() const
     {
         return m_task;
     }
 
-    QJsonObject interp() const
+    QObject* interp() const
     {
         return m_interp;
     }
@@ -221,11 +223,11 @@ public slots:
     }
 
 private:
-    QJsonObject     m_config;
-    QJsonObject     m_motion;
-    QJsonObject     m_io;
-    QJsonObject     m_task;
-    QJsonObject     m_interp;
+    QObject     *m_config;
+    QObject     *m_motion;
+    QObject     *m_io;
+    QObject     *m_task;
+    QObject     *m_interp;
     bool            m_running;
     bool            m_synced;
     StatusChannels  m_syncedChannels;
@@ -249,14 +251,14 @@ private slots:
     void unsyncStatus();
     void updateTopics();
 
-    void updateRunning(const QJsonObject &object);
+    void updateRunning();
 
 signals:
-    void configChanged(const QJsonObject &arg);
-    void motionChanged(const QJsonObject &arg);
-    void ioChanged(const QJsonObject &arg);
-    void taskChanged(const QJsonObject &arg);
-    void interpChanged(const QJsonObject &arg);
+    void configChanged();
+    void motionChanged();
+    void ioChanged();
+    void taskChanged();
+    void interpChanged();
     void channelsChanged(StatusChannels arg);
     void runningChanged(bool arg);
     void syncedChanged(bool arg);
