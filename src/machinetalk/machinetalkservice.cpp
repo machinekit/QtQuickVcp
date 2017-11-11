@@ -174,6 +174,9 @@ QByteArray MachinetalkService::recurseDescriptor(const google::protobuf::Descrip
 
 QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descriptor *descriptor, QQmlEngine *engine, QObject *parent)
 {
+    Q_ASSERT(descriptor != nullptr);
+    Q_ASSERT(engine != nullptr);
+
     QByteArray qmlCode;
 
     qmlCode.append("import QtQuick 2.0\n");
@@ -332,6 +335,7 @@ int MachinetalkService::recurseMessage(const gpb::Message &message, QJsonObject 
 int MachinetalkService::recurseMessage(const google::protobuf::Message &message, QQmlEngine *engine, QObject *object, const QString &tempDir, const QString &fieldFilter)
 {
     Q_ASSERT(object != nullptr);
+    Q_ASSERT(engine != nullptr);
 
     const bool filterEnabled = !fieldFilter.isEmpty();
     bool isPosition = false;
