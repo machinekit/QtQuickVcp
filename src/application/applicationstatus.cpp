@@ -76,31 +76,31 @@ void ApplicationStatus::updateSync(ApplicationStatus::StatusChannel channel)
 
 void ApplicationStatus::updateMotionObject(const EmcStatusMotion &motion)
 {
-    MachinetalkService::recurseMessage(motion, qmlEngine(this), m_motion);
+    MachinetalkService::recurseMessage(motion, m_motion);
     emit motionChanged();
 }
 
 void ApplicationStatus::updateConfigObject(const EmcStatusConfig &config)
 {
-    MachinetalkService::recurseMessage(config, qmlEngine(this), m_config);
+    MachinetalkService::recurseMessage(config, m_config);
     emit configChanged();
 }
 
 void ApplicationStatus::updateIoObject(const EmcStatusIo &io)
 {
-    MachinetalkService::recurseMessage(io, qmlEngine(this), m_io);
+    MachinetalkService::recurseMessage(io, m_io);
     emit ioChanged();
 }
 
 void ApplicationStatus::updateTaskObject(const EmcStatusTask &task)
 {
-    MachinetalkService::recurseMessage(task, qmlEngine(this), m_task);
+    MachinetalkService::recurseMessage(task, m_task);
     emit taskChanged();
 }
 
 void ApplicationStatus::updateInterpObject(const EmcStatusInterp &interp)
 {
-    MachinetalkService::recurseMessage(interp, qmlEngine(this), m_interp);
+    MachinetalkService::recurseMessage(interp, m_interp);
     emit interpChanged();
 }
 
@@ -196,29 +196,27 @@ void ApplicationStatus::updateRunning()
 
 void ApplicationStatus::initializeObject(ApplicationStatus::StatusChannel channel)
 {
-    QQmlEngine *engine = qmlEngine(this);
-
     switch (channel)
     {
     case MotionChannel:
         m_motion->deleteLater();
-        m_motion = MachinetalkService::recurseDescriptor(EmcStatusMotion::descriptor(), engine, this);
+        m_motion = MachinetalkService::recurseDescriptor(EmcStatusMotion::descriptor(), this);
         emit motionChanged();
         break;
     case ConfigChannel:
-        m_config = MachinetalkService::recurseDescriptor(EmcStatusConfig::descriptor(), engine, m_config);
+        m_config = MachinetalkService::recurseDescriptor(EmcStatusConfig::descriptor(), m_config);
         emit configChanged();
         break;
     case IoChannel:
-        m_io = MachinetalkService::recurseDescriptor(EmcStatusIo::descriptor(), engine, m_io);
+        m_io = MachinetalkService::recurseDescriptor(EmcStatusIo::descriptor(), m_io);
         emit ioChanged();
         break;
     case TaskChannel:
-        m_task = MachinetalkService::recurseDescriptor(EmcStatusTask::descriptor(), engine, m_task);
+        m_task = MachinetalkService::recurseDescriptor(EmcStatusTask::descriptor(), m_task);
         emit taskChanged();
         break;
     case InterpChannel:
-        m_interp = MachinetalkService::recurseDescriptor(EmcStatusInterp::descriptor(), engine, m_interp);
+        m_interp = MachinetalkService::recurseDescriptor(EmcStatusInterp::descriptor(), m_interp);
         emit interpChanged();
         break;
     case NoChannel:
