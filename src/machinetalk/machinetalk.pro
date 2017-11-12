@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += qml network
+QT       += core-private # required for dynamicobject
 QT       -= gui
 CONFIG += static
 CONFIG += c++14
@@ -32,7 +33,8 @@ SOURCES += $$PWD/common/rpcclient.cpp \
            $$PWD/application/logservicebase.cpp \
            $$PWD/pathview/previewclientbase.cpp \
            $$PWD/pathview/previewsubscribe.cpp \
-           $$PWD/machinetalkservice.cpp
+           $$PWD/machinetalkservice.cpp \
+           $$PWD/dynamicobject.cpp
 
 HEADERS += $$PWD/common/rpcclient.h \
            $$PWD/common/subscribe.h \
@@ -52,7 +54,7 @@ HEADERS += $$PWD/common/rpcclient.h \
            $$PWD/application/logservicebase.h \
            $$PWD/pathview/previewclientbase.h \
            $$PWD/pathview/previewsubscribe.h \
-           $$PWD/machinetalkservice.h
+           $$PWD/machinetalkservice.h \\
            $$PWD/machinetalk_global.h
 
 include(../../paths.pri)
