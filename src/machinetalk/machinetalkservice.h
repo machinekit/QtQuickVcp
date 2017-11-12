@@ -22,10 +22,13 @@ namespace MachinetalkService
 {
     QString enumNameToCamelCase(const QString &name);
     void recurseDescriptor(const google::protobuf::Descriptor *descriptor, QJsonObject &object);
-    QObject * recurseDescriptor(const google::protobuf::Descriptor *descriptor, QQmlEngine *engine, QObject *parent);
+    QObject* recurseDescriptor(const google::protobuf::Descriptor *descriptor, QQmlEngine *engine, QObject *parent);
+    QObject* recurseDescriptor(const google::protobuf::Descriptor *descriptor, QObject *parent);
     int recurseMessage(const google::protobuf::Message &message, QJsonObject &object,
                        const QString &fieldFilter = QString(), const QString &tempDir = QString("json"));
     int recurseMessage(const google::protobuf::Message &message, QQmlEngine *engine, QObject *object,
+                       const QString &tempDir = QString("json"), const QString &fieldFilter = QString());
+    int recurseMessage(const google::protobuf::Message &message, QObject *object,
                        const QString &tempDir = QString("json"), const QString &fieldFilter = QString());
     void updateValue(const google::protobuf::Message &message, QJsonValue &value,
                      const QString &field, const QString &tempDir = QString("json"));
@@ -33,6 +36,8 @@ namespace MachinetalkService
     void updateSimpleRepeatedField(QObject *object, const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field);
     void updateComplexRepeatedField(QObject *object, const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field,
                                     QQmlEngine *engine, const QString &tempDir);
+    void updateComplexRepeatedField(QObject *object, const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field,
+                                    const QString &tempDir);
     QVariant simpleFieldValueToVariant(const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field);
 
     /** Converts a protobuf File object to a json file descriptor

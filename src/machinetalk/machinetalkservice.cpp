@@ -1,6 +1,7 @@
 #include "machinetalkservice.h"
 #include <QDebug>
 #include <QQmlComponent>
+#include <dynamicobject.h>
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;
@@ -196,6 +197,84 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
     childItem->setParent(parent);
 
     return childItem;
+}
+
+QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descriptor *descriptor, QObject *parent)
+{
+    int count = 0;
+    auto object = new DynamicObject(parent);
+
+    if (descriptor == machinetalk::Position::descriptor())  // add indexes to position messages
+    {
+        for (int i = 0; i < 9; ++i)
+        {
+            object->addProperty(QString::number(i).toLocal8Bit(), "double", QVariant::fromValue(0.0));
+            count++;
+        }
+    }
+
+    for (int i = 0; i < descriptor->field_count(); ++i)
+    {
+        const gpb::FieldDescriptor *field = descriptor->field(i);
+        const auto &name = QByteArray::fromStdString(field->camelcase_name());
+        QByteArray type;
+        QVariant value;
+
+        if (name == "index") {
+            continue;
+        }
+
+        if (field->is_repeated()) {
+            object->addProperty(name, "QVariant", QVariant::fromValue(QList<QVariant>()));
+            count++;
+            continue;
+        }
+
+        switch (field->cpp_type())
+        {
+        case gpb::FieldDescriptor::CPPTYPE_BOOL:
+            type = "bool";
+            value = QVariant::fromValue(false);
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_DOUBLE:
+        case gpb::FieldDescriptor::CPPTYPE_FLOAT:
+            type = "double";
+            value = QVariant::fromValue(0.0);
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_INT32:
+        case gpb::FieldDescriptor::CPPTYPE_INT64:
+        case gpb::FieldDescriptor::CPPTYPE_UINT32:
+        case gpb::FieldDescriptor::CPPTYPE_UINT64:
+            type = "int";
+            value = QVariant::fromValue(0);
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_STRING:
+            type = "QString";
+            value = QVariant::fromValue(QString(""));
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_ENUM:
+            type = "int";
+            value = QVariant::fromValue(QString::number(field->enum_type()->value(0)->number(), 10).toLocal8Bit());
+            break;
+        case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
+            QObject* subObject = recurseDescriptor(field->message_type(), parent);
+            type = "QObject*";
+            value = QVariant::fromValue(subObject);
+            break;
+        }
+
+        object->addProperty(name, type, value);
+        count++;
+    }
+
+    if (count == 1) {
+        object->deleteLater();
+        return nullptr;
+    }
+    else {
+        object->ready();
+        return object;
+    }
 }
 
 int MachinetalkService::recurseMessage(const gpb::Message &message, QJsonObject &object, const QString &fieldFilter, const QString &tempDir)
@@ -397,6 +476,68 @@ int MachinetalkService::recurseMessage(const google::protobuf::Message &message,
     return static_cast<int>(output.size());
 }
 
+int MachinetalkService::recurseMessage(const google::protobuf::Message &message, QObject *object, const QString &tempDir, const QString &fieldFilter)
+{
+    Q_ASSERT(object != nullptr);
+
+    const bool filterEnabled = !fieldFilter.isEmpty();
+    bool isPosition = false;
+    const gpb::Reflection *reflection = message.GetReflection();
+    gpb::vector< const gpb::FieldDescriptor * > output;
+    reflection->ListFields(message, &output);
+
+    if (message.GetDescriptor() == machinetalk::File::descriptor())  // handle files with binary data
+    {
+        machinetalk::File file;
+        file.MergeFrom(message);
+        fileToObject(file, object, tempDir);
+        return static_cast<int>(output.size());
+    }
+    else if (message.GetDescriptor() == machinetalk::Position::descriptor()) // handle position vectors
+    {
+        isPosition = true;
+    }
+
+    for (const gpb::FieldDescriptor *field: output)
+    {
+        const auto &name = QByteArray::fromStdString(field->camelcase_name());
+
+        if ((name == "index") || (filterEnabled && (name != fieldFilter))) {
+            continue;
+        }
+
+        if (!field->is_repeated())
+        {
+            if (field->cpp_type() != gpb::FieldDescriptor::CPPTYPE_MESSAGE)
+            {
+                const auto &value = simpleFieldValueToVariant(message, field);
+                object->setProperty(name, value);
+                if (isPosition) {
+                    object->setProperty(QString::number(field->index()).toLocal8Bit(), value);
+                }
+            }
+            else {
+                QObject *memberObject = qvariant_cast<QObject *>(object->property(name));
+                Q_ASSERT(memberObject != nullptr);
+                recurseMessage(reflection->GetMessage(message, field), memberObject, tempDir);
+            }
+
+        }
+        else if (field->cpp_type() == gpb::FieldDescriptor::CPPTYPE_MESSAGE)
+        {
+            if (field->message_type()->field_count() != 2) // not only index and value field
+            {
+                updateComplexRepeatedField(object, message, field, tempDir);
+            }
+            else {
+                updateSimpleRepeatedField(object, message, field);
+            }
+        }
+    }
+
+    return static_cast<int>(output.size());
+}
+
 void MachinetalkService::updateSimpleRepeatedField(QObject *object, const gpb::Message &message, const gpb::FieldDescriptor *field)
 {
     const auto &name = QByteArray::fromStdString(field->camelcase_name());
@@ -473,6 +614,56 @@ void MachinetalkService::updateComplexRepeatedField(QObject *object, const googl
         QObject *item = qvariant_cast<QObject*>(list.at(index));
         Q_ASSERT(item != nullptr);
         if (recurseMessage(subMessage, engine, item, tempDir) <= 1) // only index -> remove object
+        {
+            removeList.append(index);
+        }
+    }
+
+    // remove marked items
+    if (removeList.length() > 0)
+    {
+        std::sort(removeList.begin(), removeList.end());
+        for (int k = (removeList.length() - 1); k >= 0; k--)
+        {
+            QObject *item = qvariant_cast<QObject*>(list.takeAt(removeList[k]));
+            Q_ASSERT(item != nullptr);
+            item->deleteLater();
+        }
+        lengthChanged = true;
+    }
+
+    if (lengthChanged) // we need to notify property bindings about changes in length
+    {
+        object->setProperty(name, QVariant::fromValue(list));
+    }
+}
+
+void MachinetalkService::updateComplexRepeatedField(QObject *object, const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field, const QString &tempDir)
+{
+    const auto &name = QByteArray::fromStdString(field->camelcase_name());
+    const gpb::Reflection *reflection = message.GetReflection();
+    auto list = qvariant_cast<QVariant>(object->property(name)).toList();
+
+    QList<int> removeList; // store index of items to remove
+    bool lengthChanged = false;
+    for (int i = 0; i < reflection->FieldSize(message, field); ++i)
+    {
+        const gpb::Message &subMessage = reflection->GetRepeatedMessage(message, field, i);
+        const gpb::Descriptor *subDescriptor = subMessage.GetDescriptor();
+        const gpb::FieldDescriptor *subField = subDescriptor->FindFieldByName("index");
+        const gpb::Reflection *subReflection = subMessage.GetReflection();
+        const int index = subReflection->GetInt32(subMessage, subField);
+
+        while (list.size() < (index + 1))
+        {
+            QObject *newObject = recurseDescriptor(subDescriptor, object);
+            list.append(QVariant::fromValue(newObject));
+            lengthChanged = true;
+        }
+
+        QObject *item = qvariant_cast<QObject*>(list.at(index));
+        Q_ASSERT(item != nullptr);
+        if (recurseMessage(subMessage, item, tempDir) <= 1) // only index -> remove object
         {
             removeList.append(index);
         }
