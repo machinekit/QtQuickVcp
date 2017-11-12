@@ -23,11 +23,12 @@ namespace MachinetalkService
     QString enumNameToCamelCase(const QString &name);
     void recurseDescriptor(const google::protobuf::Descriptor *descriptor, QJsonObject &object);
     QObject* recurseDescriptor(const google::protobuf::Descriptor *descriptor, QQmlEngine *engine, QObject *parent);
-    QObject* recurseDescriptor(const google::protobuf::Descriptor *descriptor, QObject *parent);
     int recurseMessage(const google::protobuf::Message &message, QJsonObject &object,
                        const QString &fieldFilter = QString(), const QString &tempDir = QString("json"));
     int recurseMessage(const google::protobuf::Message &message, QQmlEngine *engine, QObject *object,
                        const QString &tempDir = QString("json"), const QString &fieldFilter = QString());
+    QObject* recurseDescriptor(const google::protobuf::Descriptor *descriptor, QObject *parent,
+                               const QString &fieldFilter = QString());
     int recurseMessage(const google::protobuf::Message &message, QObject *object,
                        const QString &tempDir = QString("json"), const QString &fieldFilter = QString());
     void updateValue(const google::protobuf::Message &message, QJsonValue &value,

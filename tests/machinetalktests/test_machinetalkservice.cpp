@@ -4,6 +4,7 @@
 #include <QtTest>
 #include <QTemporaryDir>
 #include <machinetalkservice.h>
+#include <machinetalk/protobuf/message.pb.h>
 #include <machinetalk/protobuf/status.pb.h>
 
 using namespace machinetalk;
@@ -189,6 +190,14 @@ TEST_CASE("MachinetalkService Tests", "[machinetalk]")
 
         REQUIRE(output != nullptr);
 
+        SECTION("converting File field works") {
+            const auto &value = output->property("image");
+            QObject *object = qvariant_cast<QObject *>(value);
+
+            REQUIRE(object != nullptr);
+            checkValue(object, "url", QVariant::String);
+        }
+
         SECTION("updating File object creates temporary file") {
             QTemporaryDir tempDir;
             tempDir.setAutoRemove(true);
@@ -202,12 +211,43 @@ TEST_CASE("MachinetalkService Tests", "[machinetalk]")
 
             QObject *object = qvariant_cast<QObject *>(output->property("image"));
             REQUIRE(object != nullptr);
-            REQUIRE(object->property("url").isValid());
+            REQUIRE(object->property("name").toString().toStdString() == "test.txt");
             const auto &url = object->property("url").toString();
             QFile file(QUrl(url).toLocalFile());
             REQUIRE(file.open(QIODevice::Text | QIODevice::ReadOnly));
             REQUIRE(file.readAll().toStdString() == "very long and important data");
             file.close();
         }
+    }
+
+    SECTION("creating Container object with filter works") {
+        QObject *output = MachinetalkService::recurseDescriptor(Container::descriptor(), &parent, "launcher");
+
+         REQUIRE(output != nullptr);
+
+         SECTION("launcher property exists") {
+             checkValue(output, "launcher", QVariant::List);
+         }
+
+         SECTION("type property doesn't exist") {
+             REQUIRE(!output->property("type").isValid());
+         }
+
+         SECTION("updating Container object with filter updates property") {
+             Container message;
+             auto launcher = message.add_launcher();
+
+             launcher->set_index(0);
+             launcher->set_name("Test Launcher");
+             launcher->set_description("A test launcher");
+             MachinetalkService::recurseMessage(message, output, QString(), "launcher");
+
+             auto list = output->property("launcher").toList();
+             REQUIRE(list.count() == 1);
+             QObject *object = qvariant_cast<QObject *>(list[0]);
+             REQUIRE(object != nullptr);
+             REQUIRE(object->property("name").toString().toStdString() == "Test Launcher");
+             REQUIRE(object->property("description").toString().toStdString() == "A test launcher");
+         }
     }
 }

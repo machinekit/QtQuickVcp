@@ -199,9 +199,10 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
     return childItem;
 }
 
-QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descriptor *descriptor, QObject *parent)
+QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descriptor *descriptor, QObject *parent, const QString &fieldFilter)
 {
     int count = 0;
+    const bool filterEnabled = !fieldFilter.isEmpty();
     auto object = new DynamicObject(parent);
 
     if (descriptor == machinetalk::Position::descriptor())  // add indexes to position messages
@@ -212,6 +213,11 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
             count++;
         }
     }
+    else if (descriptor == machinetalk::File::descriptor())
+    {
+        object->addProperty("url", "QString", QVariant::fromValue(QString("")));
+        count++;
+    }
 
     for (int i = 0; i < descriptor->field_count(); ++i)
     {
@@ -220,7 +226,7 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
         QByteArray type;
         QVariant value;
 
-        if (name == "index") {
+        if ((name == "index") || (filterEnabled && (name != fieldFilter))) {
             continue;
         }
 
@@ -267,9 +273,9 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
         count++;
     }
 
-    if (count == 1) {
+    if ((count == 1) && !filterEnabled) {
         object->deleteLater();
-        return nullptr;
+        return nullptr; // object had only the index field
     }
     else {
         object->ready();
@@ -819,7 +825,8 @@ void MachinetalkService::fileToObject(const machinetalk::File &file, QObject *ob
         return;
     }
 
-    object->setProperty("url", QUrl::fromLocalFile(filePath).toString());
+    object->setProperty("name", QVariant::fromValue(fileName));
+    object->setProperty("url", QVariant::fromValue(QUrl::fromLocalFile(filePath).toString()));
 }
 
 } // namespace qtquickvcp
