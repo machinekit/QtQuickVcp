@@ -5,7 +5,7 @@ import QtQuick.Window 2.0
 
 Item {
     property var launcher: undefined
-    property var applicationLog: {"connected": false}
+    property QtObject applicationLog: QtObject { property bool connected: false }
 
     signal goBack()
 
