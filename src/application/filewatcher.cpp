@@ -104,8 +104,11 @@ void FileWatcher::updateWatchedFile()
         qWarning() << "Can only watch local files";
         return;
     }
-
     const auto &localFile = m_fileUrl.toLocalFile();
+    if (localFile.isEmpty()) {
+        return;
+    }
+
     if (m_recursive && QDir(localFile).exists()) {
         QDirIterator it(localFile, QDirIterator::Subdirectories);
         while (it.hasNext()) {
