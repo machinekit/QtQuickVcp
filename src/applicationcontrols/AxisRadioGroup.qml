@@ -29,7 +29,7 @@ RowLayout {
     property alias core: object.core
     property alias status: object.status
     property alias helper: object.helper
-    property int axis: axisGroup.currentIndex
+    property alias axis: axisGroup.currentIndex
     property var axisNames:helper.ready ? helper.axisNamesUpper: ["X", "Y", "Z"]
     property int axes: axisNames.length
 
@@ -44,13 +44,19 @@ RowLayout {
     Repeater {
         model: axes
         RadioButton {
+            id: radioButton
             exclusiveGroup: axisGroup
             text: root.axisNames[index]
-            checked: index === 0
             onCheckedChanged: {
                 if (checked) {
                     axisGroup.currentIndex = index;
                 }
+            }
+
+            Binding {
+                target: radioButton
+                property: "checked"
+                value: index === axisGroup.currentIndex
             }
         }
     }
