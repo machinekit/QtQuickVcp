@@ -36,7 +36,7 @@ Dialog {
         function folderUp(folder) {
             var pos = folder.lastIndexOf("/", folder.length-2);
             if (pos > -1) {
-                folder = folder.slice(0, pos+1);
+                folder = folder.slice(0, pos);
             }
             else if (folder !== "") {
                 folder = "";
@@ -57,7 +57,13 @@ Dialog {
             var dir = tableView.model.getIsDir(row);
             var fileName = tableView.model.getName(row);
             if (dir) {
-                d.currentFolder += fileName + "/";
+                if (currentFolder !== "") {
+                    d.currentFolder += "/" + fileName;
+                }
+                else {
+                    d.currentFolder = fileName;
+                }
+
                 deselectRow();
             }
             else {
