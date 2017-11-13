@@ -16,6 +16,9 @@ Dialog {
 
     property bool _ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
 
+    id: root
+    title: qsTr("Remote Files")
+
     QtObject {
         id: d
         property string rootFolder: ""
@@ -109,10 +112,13 @@ Dialog {
         }
     }
 
-    SystemPalette { id: systemPalette }
+    Binding {
+        target: d
+        property: "currentFolder"
+        value: file.serverDirectory
+    }
 
-    id: root
-    title: qsTr("Remote Files")
+    SystemPalette { id: systemPalette }
 
     contentItem: Rectangle {
         id: content
