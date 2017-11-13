@@ -278,6 +278,23 @@ void GCodeProgramModel::clearPreview(bool update)
     }
 }
 
+void GCodeProgramModel::clearBackplot(bool update)
+{
+    if (update)
+    {
+        beginUpdate();
+    }
+    for (auto item: m_items) {
+        item->setExecuted(false);
+        item->setActive(false);
+        item->setSelected(false);
+    }
+    if (update)
+    {
+        endUpdate();
+    }
+}
+
 void GCodeProgramModel::clearSelectionAndSelectLine(const QString &fileName, int lineNumber)
 {
     clearSelectionAndSelectLine(index(fileName, lineNumber));

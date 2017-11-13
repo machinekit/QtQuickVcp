@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>ClearBackplotAction</name>
+    <message>
+        <source>Clear Backplot</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SourceView</name>
     <message>
         <source>Run Program from Line %1</source>

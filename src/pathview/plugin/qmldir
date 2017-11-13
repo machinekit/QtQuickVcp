@@ -14,10 +14,12 @@ depends Machinekit.Service 1.0
 # Workaround: inform Qt Creator about QML files
 # typeinfo plugins.qmltypes does not work
 BoundingBox3D 1.0 BoundingBox3D.qml
+ClearBackplotAction 1.0 ClearBackplotAction.qml
 Coordinate3D 1.0 Coordinate3D.qml
 GCodeSync 1.0 GCodeSync.qml
 Grid3D 1.0 Grid3D.qml
 PathView3D 1.0 PathView3D.qml
+PathViewAction 1.0 PathViewAction.qml
 PathViewCore 1.0 PathViewCore.qml
 PathViewObject 1.0 PathViewObject.qml
 ProgramExtents3D 1.0 ProgramExtents3D.qml

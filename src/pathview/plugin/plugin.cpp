@@ -44,9 +44,11 @@ static const struct {
 } qmldir [] = {
     { "BoundingBox3D", 1, 0 },
     { "Coordinate3D", 1, 0 },
+    { "ClearBackplotAction", 1, 0 },
     { "GCodeSync", 1, 0 },
     { "Grid3D", 1, 0 },
     { "PathView3D", 1, 0 },
+    { "PathViewAction", 1, 0 },
     { "PathViewCore", 1, 0 },
     { "PathViewObject", 1, 0 },
     { "ProgramExtents3D", 1, 0 },
