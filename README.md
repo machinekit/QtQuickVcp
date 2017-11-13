@@ -112,9 +112,18 @@ Using the generic MachinekitClient is the easiest way to use QtQuickVcp. However
 
 Please add your awesome QtQuickVcp application here!
 
-### Examples
-* [anddemo](https://github.com/qtquickvcp/anddemo)
-* [BasicQtQuickVcp](https://github.com/qtquickvcp/BasicQtQuickVcp)
+### Example UIs
+* [anddemo - Simple HAL Remote Example](https://github.com/qtquickvcp/anddemo)
+* [BasicQtQuickVcp - Custom CNC application example](https://github.com/qtquickvcp/BasicQtQuickVcp)
+
+### Machinekit configurations
+* [mkwrapper-sim - CNC Simulator](https://github.com/qtquickvcp/mkwrapper-sim)
+* [anddemo - Simple HAL Remote example](https://github.com/qtquickvcp/anddemo)
+* [Fabrikator-Mini_CRAMPS - Cartesian 3D printer](https://github.com/machinekit/machinekit/tree/master/configs/ARM/BeagleBone/Fabrikator-Mini-CRAMPS)
+* [MendelMax-CRAMPS - Cartesian 3D printer](https://github.com/machinekit/machinekit/tree/master/configs/ARM/BeagleBone/MendelMax-CRAMPS)
+* [Arcus-3D-C1-BeBoPr - Cable 3D printer](https://github.com/machinekoder/Arcus-3D-C1-BeBoPr)
+* [Rostock-CRAMPS - Delta 3D printer](https://github.com/machinekoder/Rostock-CRAMPS)
+* [TheCoolTool machinekit-configs - CNC and 3D printer](https://github.com/thecooltool/machinekit-configs)
 
 ## Getting Started<a name="getting_started" ></a>
 A good way to get started is to watch the video tutorials on YouTube.
