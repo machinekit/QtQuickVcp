@@ -14,6 +14,8 @@
         <file>ZoomOutAction.qml</file>
         <file>ZoomOriginalAction.qml</file>
         <file>ProgramOffsets3D.qml</file>
+        <file>ClearBackplotAction.qml</file>
+        <file>PathViewAction.qml</file>
     </qresource>
     <qresource prefix="/Machinekit/PathView/icons">
         <file alias="view-mode-front">icons/view-mode-front.png</file>
@@ -24,5 +26,6 @@
         <file alias="zoom-in">icons/zoom-in.png</file>
         <file alias="zoom-original">icons/zoom-original.png</file>
         <file alias="zoom-out">icons/zoom-out.png</file>
+        <file alias="clear-preview">icons/clear-preview.png</file>
     </qresource>
 </RCC>

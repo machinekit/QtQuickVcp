@@ -33,21 +33,29 @@ include(../../3rdparty/machinetalk-protobuf-qt/machinetalk-protobuf-lib.pri)
 include(../../src/common/common.pri)
 include(../../src/machinetalk/machinetalk.pri)
 include(../../src/protobuf.pri)
+include(../../3rdparty/qftp/qftp.pri)
 
 APPLICATION_PATH = $$PWD/../../src/application/
 INCLUDEPATH += $$APPLICATION_PATH
 HEADERS += $$APPLICATION_PATH/filewatcher.h \
     $$APPLICATION_PATH/applicationlog.h \
     $$APPLICATION_PATH/applicationlogmessage.h \
+    $$APPLICATION_PATH/applicationfile.h \
+    $$APPLICATION_PATH/applicationfileitem.h \
+    $$APPLICATION_PATH/applicationfilemodel.h \
     logservice.h
 
 SOURCES += $$APPLICATION_PATH/filewatcher.cpp \
     $$APPLICATION_PATH/applicationlog.cpp \
     $$APPLICATION_PATH/applicationlogmessage.cpp \
+    $$APPLICATION_PATH/applicationfile.cpp \
+    $$APPLICATION_PATH/applicationfileitem.cpp \
+    $$APPLICATION_PATH/applicationfilemodel.cpp \
     logservice.cpp
 
 SOURCES += \
     test_filewatcher.cpp \
     test_applicationlog.cpp \
+    test_applicationfile.cpp \
     main.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"

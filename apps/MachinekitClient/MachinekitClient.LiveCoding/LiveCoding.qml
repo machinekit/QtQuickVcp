@@ -29,10 +29,11 @@ import Machinekit.Application 1.0
 
 Item {
     property string title: qsTr("QtQuickVcp Live Coding") + (loader.item ? " - " + loader.item.title : "")
-    property var statusBar: null
-    property var menuBar: null
-    property var toolBar: null
-    property var services: (((loader.item !== null) && (loader.item.services !== undefined)) ? loader.item.services : [])
+    property alias item: loader.item
+    readonly property var statusBar: (((item !== null) && (item.statusBar !== undefined)) ? item.statusBar : null)
+    readonly property var menuBar: (((item !== null) && (item.menuBar !== undefined)) ? item.menuBar : null)
+    readonly property var toolBar: (((item !== null) && (item.toolBar !== undefined)) ? item.toolBar : null)
+    readonly property var services: (((item !== null) && (item.services !== undefined)) ? loader.item.services : [])
 
     /* Disconnects this page */
     signal disconnect()

@@ -20,12 +20,12 @@ public:
     QUrl fileUrl() const;
     bool enabled() const;
     bool recursive() const;
+    bool verbose() const;
 
 signals:
     void fileChanged();
     void fileUrlChanged(const QUrl &fileUrl);
     void enabledChanged(bool enabled);
-
     void recursiveChanged(bool recursive);
 
 public slots:

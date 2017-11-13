@@ -103,12 +103,9 @@ Item {
         if (status.task.file !== "") {
             command.resetProgram('execute');
         }
-        var fileName = file.localFilePath.split('/').reverse()[0];
-        var newPath = file.remotePath + '/' + fileName;
-        file.remoteFilePath = newPath;
         ignoreNextFileChange()
         command.resetProgram('execute');
-        command.openProgram('execute', newPath);
+        command.openProgram('execute', file.remoteFilePath);
     }
 
     function _localFileChanged() {
@@ -208,7 +205,7 @@ Item {
 
     FileWatcher {
         id: fileWatcher
-        fileUrl: enabled ? applicationFile.localFilePath : ""
+        fileUrl: applicationFile.localFilePath
         enabled: applicationFile.transferState === ApplicationFile.NoTransfer
         recursive: false
         onFileChanged: _localFileChanged()

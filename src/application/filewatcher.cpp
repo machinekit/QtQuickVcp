@@ -25,6 +25,9 @@
 #include <QFile>
 #include <QDir>
 #include <QDirIterator>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(loggingCategory, "filewatcher");
 
 namespace qtquickvcp {
 
@@ -78,8 +81,9 @@ void FileWatcher::setEnabled(bool enabled)
 
 void FileWatcher::setRecursive(bool recursive)
 {
-    if (m_recursive == recursive)
+    if (m_recursive == recursive) {
         return;
+    }
 
     m_recursive = recursive;
     emit recursiveChanged(m_recursive);
@@ -101,7 +105,7 @@ void FileWatcher::updateWatchedFile()
     }
 
     if (!m_fileUrl.isLocalFile()) {
-        qWarning() << "Can only watch local files";
+        qCWarning(loggingCategory) << "Can only watch local files";
         return;
     }
     const auto &localFile = m_fileUrl.toLocalFile();
@@ -120,7 +124,9 @@ void FileWatcher::updateWatchedFile()
         m_fileSystemWatcher.addPath(localFile);
     }
     else {
-        qWarning() << "File to watch does not exist" << localFile;
+#ifdef QT_DEBUG
+        qCWarning(loggingCategory) << "File to watch does not exist" << localFile;
+#endif
     }
 }
 

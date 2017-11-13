@@ -24,7 +24,7 @@ Loader {
     source: ((applicationSource !== "") || (applicationConfig === undefined)) ? applicationSource : applicationConfig.selectedConfig.mainFile
 
     onSourceChanged: {
-        console.log("Source changed: " + source + " " + active);
+        console.log("app source changed: " + source + " active: " + active);
     }
 
     onStatusChanged: {

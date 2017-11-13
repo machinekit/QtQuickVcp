@@ -48,10 +48,12 @@ RESOURCES += \
 
 QML_FILES = \
     $$PWD/BoundingBox3D.qml \
+    $$PWD/ClearBackplotAction.qml \
     $$PWD/Coordinate3D.qml \
     $$PWD/GCodeSync.qml \
     $$PWD/Grid3D.qml \
     $$PWD/PathView3D.qml \
+    $$PWD/PathViewAction.qml \
     $$PWD/PathViewCore.qml \
     $$PWD/PathViewObject.qml \
     $$PWD/ProgramExtents3D.qml \

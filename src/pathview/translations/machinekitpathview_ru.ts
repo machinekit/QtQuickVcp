@@ -2,6 +2,17 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
+    <name>ClearBackplotAction</name>
+    <message>
+        <source>Clear Live Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear live plot [%1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SourceView</name>
     <message>
         <source>Run Program from Line %1</source>

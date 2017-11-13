@@ -132,8 +132,8 @@ void ApplicationFile::startDownload()
         return;
     }
 
-    remoteFilePath = m_remoteFilePath.toLocalFile();
-    remotePath = m_remotePath.toLocalFile();
+    remoteFilePath = QDir::cleanPath(m_remoteFilePath.toLocalFile());
+    remotePath = QDir::cleanPath(m_remotePath.toLocalFile());
     fileName = remoteFilePath.mid(remotePath.length() + 1);
 
     int i = fileName.indexOf("/");
@@ -308,7 +308,7 @@ void ApplicationFile::updateError(ApplicationFile::TransferError error, const QS
 QString ApplicationFile::applicationFilePath(const QString &fileName, const QString &serverDirectory) const
 {
     const auto serverPath = QDir(m_localPath.toLocalFile()).filePath(serverDirectory);
-    return QDir(serverPath).filePath(fileName);
+    return QDir(serverPath).absoluteFilePath(fileName);
 }
 
 void ApplicationFile::initializeFtp()
