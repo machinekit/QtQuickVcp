@@ -24,43 +24,41 @@ import QtQuick 2.0
 import Machinekit.Application 1.0
 import Machinekit.PathView 1.0
 
-QtObject {
+Item {
     property var status: { "synced": false }
     property var model: undefined
 
-    property int _lastLine: 1
-    property bool _ready: status.synced
+    QtObject {
+        id: d
+        readonly property int currentLine: status.synced ? status.motion.motionLine: 1
+        readonly property string file: status.synced ? status.task.file : ""
+        property int lastLine: 1
+        readonly property bool ready: status.synced
 
-    on_ReadyChanged: {
-        if (_ready) {
-            status.onMotionChanged.connect(updateLine);
-        }
-        else {
-            status.onMotionChanged.disconnect(updateLine);
-        }
-    }
+        onCurrentLineChanged: updateLine()
+        onFileChanged: updateLine()
 
-    function updateLine() {
-        if (_ready) {
-            var file = status.task.file;
-            var currentLine = status.motion.motionLine;
-            
-            if (_lastLine > currentLine) {
-                for (var line = 1; line <= _lastLine; ++line) {
+        function updateLine() {
+            if (!d.ready) {
+                return;
+            }
+
+            if (d.lastLine > d.currentLine) {
+                for (var line = 1; line <= d.lastLine; ++line) {
                     model.setData(file, line, false, GCodeProgramModel.ExecutedRole);
                     model.setData(file, line, false, GCodeProgramModel.ActiveRole);
                 }
-                _lastLine = currentLine;
+                d.lastLine = d.currentLine;
             }
 
-            for (line = _lastLine; line < currentLine; ++line) {
+            for (line = d.lastLine; line < d.currentLine; ++line) {
                 model.setData(file, line, true, GCodeProgramModel.ExecutedRole);
                 model.setData(file, line, false, GCodeProgramModel.ActiveRole);
             }
 
             model.setData(file, currentLine, true, GCodeProgramModel.ActiveRole);
 
-            _lastLine = currentLine;
+            d.lastLine = d.currentLine;
         }
     }
 }
