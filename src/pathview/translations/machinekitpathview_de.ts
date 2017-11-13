@@ -4,7 +4,11 @@
 <context>
     <name>ClearBackplotAction</name>
     <message>
-        <source>Clear Backplot</source>
+        <source>Clear Live Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear live plot [%1]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
