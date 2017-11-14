@@ -1,6 +1,6 @@
 import QtQuick 2.2
-import QtQuick.Controls 1.2
-import QtQuick.Layouts 1.1
+import QtQuick.Controls 1.4
+import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.0
 import Machinekit.Application 1.0
@@ -14,7 +14,7 @@ Dialog {
     property alias width: content.implicitWidth
     property alias height: content.implicitHeight
 
-    property bool __ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
+    readonly property bool __ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
 
     id: root
     title: qsTr("Remote Files")
@@ -153,6 +153,7 @@ Dialog {
                 role: "name"
                 title: qsTr("Name")
                 width: root.width * 0.4
+                delegate: nameEdit
             }
             TableViewColumn {
                 role: "size"
@@ -163,6 +164,21 @@ Dialog {
                 role: "lastModified"
                 title: qsTr("Last Modified")
                 width: root.width * 0.3
+            }
+
+            Component {
+                id: nameEdit
+                Item {
+                    Text {
+                        anchors.fill: parent
+                        anchors.leftMargin: 5
+                        anchors.rightMargin: 5
+                        elide: Text.ElideRight
+                        color: styleData.textColor
+                        text: styleData.value
+                        font.bold: file.model.getIsDir(styleData.row)
+                    }
+                }
             }
 
             onDoubleClicked: d.openFile(row)
