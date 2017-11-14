@@ -30,8 +30,6 @@ ApplicationWindow {
 
     visibility: (Qt.platform.os === "android") ? "FullScreen" : "AutomaticVisibility"
     visible: true
-    x: (Qt.platform.os === "android") ? 0 : (Screen.width - width ) / 2
-    y: (Qt.platform.os === "android") ? 0 : (Screen.height - height ) / 2
     width: (Qt.platform.os === "android") ? Screen.width : Screen.width * 0.7
     height: (Qt.platform.os === "android") ? Screen.height : Screen.height * 0.7
     title: (mainAppLoader.item !== null) ? mainAppLoader.item.title : "Loading"

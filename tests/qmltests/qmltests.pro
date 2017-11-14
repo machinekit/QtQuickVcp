@@ -9,4 +9,5 @@ IMPORTPATH += "$$PWD/../../app/PMCS_UI.PMCS UI"
 
 DISTFILES += \
     tst_ApplicationObject.qml \
-    tst_JogDistanceHandler.qml
+    tst_JogDistanceHandler.qml \
+    tst_LauncherPage.qml

@@ -9,7 +9,7 @@ Item {
     property int selectedLauncher: 0
     property var configService: {"ready": false}
 
-    property bool hasSmallScreen: (root.width / Screen.pixelDensity) < 110.0
+    readonly property bool hasSmallScreen: (root.width / Screen.pixelDensity) < 110.0
     property string viewMode: hasSmallScreen ? "big" : "small"
 
     signal launcherSelected(int index)
@@ -20,25 +20,28 @@ Item {
     width: 600
     height: 400
 
-    function _filterLaunchers(launchers) {
-        var items = launchers;
+    function __filterLaunchers(launchers) {
+        var items = launchers.slice();
         var running = false;
 
-        function moveItemToFront(index) {
+        function moveItemToFront(index, position) {
             var item = items[index];
             items.splice(index, 1);
-            items.unshift(item);
+            items.splice(position, 0, item);
         }
 
         // move running and important items to the front
+        var importantCount = 0;
         for (var i = 0; i < items.length; ++i) {
             items[i].index = i;  // store the original index
             if (items[i].running) {
                 running = true;
-                moveItemToFront(i);
+                moveItemToFront(i, 0);
+                importantCount++;
             }
             else if (items[i].importance > 0) {
-                moveItemToFront(i);
+                moveItemToFront(i, importantCount);
+                importantCount++;
             }
         }
 
@@ -138,7 +141,7 @@ Item {
             id: launcherItem
 
             Item {
-                property var item: launcherListView.model[index]
+                readonly property var item: launcherListView.model[index]
 
                 width: launcherListView.cellWidth
                 height: launcherListView.cellHeight
@@ -221,7 +224,7 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
             GridView {
-                property var launchers: root._filterLaunchers(applicationLauncher.launchers)
+                readonly property var launchers: root.__filterLaunchers(applicationLauncher.launchers)
 
                 id: launcherListView
                 cellWidth: width * (root.viewMode === "big" ? 0.333 : (root.viewMode === "small" ? 0.199 : 1.0))

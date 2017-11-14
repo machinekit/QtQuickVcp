@@ -25,12 +25,47 @@ import QtQuick.Controls 1.2
 import Machinekit.Application 1.0
 
 ComboBox {
+    property alias settings: appObject.settings
     property alias axis: handler.axis
-    property double distance: handler.distanceModelReverse[root.currentIndex]
     property alias continuousVisible: handler.continuousVisible
     property alias continuousText: handler.continuousText
+    readonly property double distance: (currentIndex < handler.distanceModelReverse.length) ? handler.distanceModelReverse[currentIndex] : 0.0
+
+    readonly property bool __ready: handler.settings.initialized
+
     id: root
     model: handler.incrementsModelReverse
+
+    function __setIndex(index) {
+        if (!__ready) {
+            return;
+        }
+        root.settings.setValue("axis" + axis + ".jogIncrementSelection", index);
+    }
+
+    function __update() {
+        if (!__ready) {
+            return;
+        }
+        var value = root.settings.value("axis" + axis + ".jogIncrementSelection");
+        if (value !== undefined) {
+            root.currentIndex = value;
+        }
+    }
+
+    onActivated: __setIndex(index)
+    on__ReadyChanged: __update()
+    onModelChanged: __update()
+
+    Connections {
+        target: root.settings
+        ignoreUnknownSignals: true
+        onValuesChanged: __update()
+    }
+
+    ApplicationObject {
+        id: appObject
+    }
 
     JogDistanceHandler {
         id: handler
