@@ -28,22 +28,22 @@ ApplicationObject {
     readonly property string units: proportional ? "%" : distanceUnits + "/" + timeUnits
     readonly property string distanceUnits: helper.ready ? helper.distanceUnits : "mm"
     readonly property string timeUnits: helper.ready ? helper.timeUnits : "min"
-    readonly property double displayValue: proportional ? value : value * _timeFactor * _distanceFactor
+    readonly property double displayValue: proportional ? value : value * __timeFactor * __distanceFactor
     property double value: 0
     property double minimumValue: 0
     property double maximumValue: 100
     property bool proportional: false
     property double minimumProportion: 0.0
-    property bool enabled: _ready
+    property bool enabled: __ready
     property bool synced: false
 
-    property double _timeFactor: helper.ready ? helper.timeFactor : 1
-    property double _distanceFactor: helper.ready ? helper.distanceFactor : 1
-    property bool _ready: status.synced && settings.initialized
-    property bool _remoteUpdate: false
+    readonly property double __timeFactor: helper.ready ? helper.timeFactor : 1
+    readonly property double __distanceFactor: helper.ready ? helper.distanceFactor : 1
+    readonly property bool __ready: status.synced && settings.initialized
+    property bool __remoteUpdate: false
 
     onValueChanged: {
-        if (_ready && !_remoteUpdate) {
+        if (__ready && !__remoteUpdate) {
             var velocity = value;
             if (proportional) {
                 velocity /= 100.0;
@@ -54,8 +54,8 @@ ApplicationObject {
         }
     }
 
-    on_ReadyChanged: {
-        if (_ready) {
+    on__ReadyChanged: {
+        if (__ready) {
             _update();
             settings.onValuesChanged.connect(_update);
             status.onConfigChanged.connect(_update);
@@ -70,7 +70,7 @@ ApplicationObject {
     }
 
     onAxisChanged: {
-        if (_ready) {
+        if (__ready) {
             _update();
         }
     }
@@ -85,7 +85,7 @@ ApplicationObject {
     }
 
     function _update() {
-        _remoteUpdate = true;
+        __remoteUpdate = true;
         minimumValue = status.config.minVelocity;
         var axisMaxVel = status.config.axis[axis].maxVelocity;
         var configMaxVel = status.config.maxVelocity;
@@ -109,6 +109,6 @@ ApplicationObject {
         else {
             synced = true;
         }
-        _remoteUpdate = false;
+        __remoteUpdate = false;
     }
 }
