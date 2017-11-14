@@ -14,7 +14,7 @@ Dialog {
     property alias width: content.implicitWidth
     property alias height: content.implicitHeight
 
-    property bool _ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
+    property bool __ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
 
     id: root
     title: qsTr("Remote Files")
@@ -146,7 +146,7 @@ Dialog {
             id: tableView
             Layout.fillHeight: true
             Layout.fillWidth: true
-            enabled: _ready
+            enabled: __ready
             model: file.model
 
             TableViewColumn {
@@ -191,25 +191,25 @@ Dialog {
                 id: fileMenu
                 MenuItem {
                     text: d.directorySelected ? qsTr("Open directory") : qsTr("Open file")
-                    enabled: _ready && (tableView.currentRow > -1)
+                    enabled: __ready && (tableView.currentRow > -1)
                     onTriggered: d.openFile(tableView.currentRow)
                 }
 
                 MenuItem {
                     text: d.directorySelected ? qsTr("Remove directory") : qsTr("Remove file")
-                    enabled: _ready && (tableView.currentRow > -1)
+                    enabled: __ready && (tableView.currentRow > -1)
                     onTriggered: d.removeFile(tableView.currentRow)
                 }
 
                 MenuItem {
                     text: qsTr("Upload file...")
-                    enabled: _ready
+                    enabled: __ready
                     onTriggered: d.uploadFileDialog()
                 }
 
                 MenuItem {
                     text: qsTr("Create directory")
-                    enabled: _ready
+                    enabled: __ready
                     onTriggered: directoryNameDialog.open()
                 }
             }
@@ -226,14 +226,14 @@ Dialog {
 
             Button {
                 text: qsTr("Refresh")
-                enabled: _ready
+                enabled: __ready
                 iconName: "view-refresh"
                 onClicked: file.refreshFiles()
             }
 
             Button {
                 text: qsTr("Upload...")
-                enabled: _ready
+                enabled: __ready
                 iconName: "document-open"
                 onClicked: d.uploadFileDialog()
             }
@@ -241,14 +241,14 @@ Dialog {
             Button {
                 text: qsTr("Remove")
                 iconName: "edit-delete"
-                enabled: _ready && (tableView.currentRow > -1)
+                enabled: __ready && (tableView.currentRow > -1)
                 onClicked: d.removeFile(tableView.currentRow)
             }
 
             Button {
                 text: qsTr("Open")
                 iconName: "document-open-remote"
-                enabled: _ready && (tableView.currentRow > -1)
+                enabled: __ready && (tableView.currentRow > -1)
                 onClicked: d.openFile(tableView.currentRow)
             }
 
