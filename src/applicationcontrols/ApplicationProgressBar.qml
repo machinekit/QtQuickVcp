@@ -30,7 +30,7 @@ Gauge {
     property alias file: object.file
     property alias status: object.status
     property string _mode: getMode()
-    property string _fileName: object.file.remoteFilePath ? object.file.remoteFilePath.split('/').reverse()[0] : ""
+    readonly property string __fileName: object.file.remoteFilePath ? object.file.remoteFilePath.split('/').reverse()[0] : ""
 
     id: progressBar
     value: getProgress()
@@ -62,10 +62,10 @@ Gauge {
             return qsTr("Downloading file %1").arg(file.remoteFilePath.split('/').reverse()[0]);
         }
         else if (_mode === "running") {
-            return qsTr("%1% - %2").arg((value * 100).toFixed(2)).arg(_fileName);
+            return qsTr("%1% - %2").arg((value * 100).toFixed(2)).arg(__fileName);
         }
         else {
-            return _fileName;
+            return __fileName;
         }
     }
 
