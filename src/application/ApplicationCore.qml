@@ -39,8 +39,6 @@ Item {
     id: applicationCore
 
     Component.onCompleted: {
-        status.onTaskChanged.connect(_statusTaskChanged);
-        status.onConfigChanged.connect(_statusConfigChanged);
         file.onUploadFinished.connect(_fileUploadFinished);
         error.onMessageReceived.connect(_errorMessageReceived);
         file.onErrorChanged.connect(_fileServiceError);
@@ -52,38 +50,34 @@ Item {
     QtObject {
         id: d
         property bool ignoreNextFileChange: false // helper to prevent downloading file we just uploaded
+        readonly property string remoteFile: "file://" + status.task.file
+        readonly property string remotePath: "file://" + status.config.remotePath
+
+        onRemoteFileChanged: _checkRemoteFile()
+        onRemotePathChanged: {
+            applicationFile.remotePath = remotePath; // make this is set before calling the next function
+            _checkRemoteFile();
+        }
     }
 
     function ignoreNextFileChange() {
         d.ignoreNextFileChange = true;
     }
 
-    function _statusTaskChanged() {
-        _checkRemoteFile();
-    }
-
-    function _statusConfigChanged() {
-        applicationFile.remotePath = "file://" + status.config.remotePath;
-        _checkRemoteFile();
-    }
-
     function _checkRemoteFile() {
-        var remoteFile = "file://" + status.task.file;
-        var remotePath = "file://" + status.config.remotePath;
-
-        if (file.remoteFilePath === remoteFile) {
+        if (file.remoteFilePath === d.remoteFile) {
             return; // file did not change
         }
 
-        if (remotePath === "file://") {
+        if (d.remotePath === "file://") {
             return; // remote path is invalid
         }
 
-        if (remoteFile === "file://") {
-            file.remoteFilePath = remoteFile; // unload program
+        if (d.remoteFile === "file://") {
+            file.remoteFilePath = d.remoteFile; // unload program
         }
-        else if (remoteFile.indexOf(remotePath) === 0) {
-            file.remoteFilePath = remoteFile;
+        else if (d.remoteFile.indexOf(d.remotePath) === 0) {
+            file.remoteFilePath = d.remoteFile;
             if (!d.ignoreNextFileChange) {
                 file.startDownload(); // only start download when program is open
             }
