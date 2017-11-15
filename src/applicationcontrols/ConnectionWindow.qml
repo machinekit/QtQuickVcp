@@ -258,7 +258,7 @@ Rectangle {
     }
 
     /*! \internal */
-    function goBack()
+    function goBack(shutdown)
     {
         if (mainWindow.state === "instance")
         {
@@ -297,7 +297,11 @@ Rectangle {
             applicationServiceList.services = [];
             serviceDiscovery.updateServices();
 
-            if (autoSelectApplication)  // go back to discovery page
+            if (autoSelectApplication || shutdown) {
+                d.holdLauncher = true;
+            }
+
+            if (autoSelectInstance)  // go back to discovery page
             {
                 serviceDiscoveryFilter.txtRecords = [];
                 serviceDiscovery.updateFilter();
@@ -556,7 +560,7 @@ Rectangle {
         applicationConfig: applicationConfig
         serviceDiscovery: serviceDiscovery
 
-        onGoBack: mainWindow.goBack()
+        onGoBack: mainWindow.goBack(shutdown)
         onServicesChanged: {
             applicationServiceList.services = services;
             serviceDiscovery.updateServices();
