@@ -156,6 +156,11 @@ Rectangle {
         Disconnects the service window if connected.
       */
     signal disconnect()
+    /*! \qmlsignal disconnect
+
+        Signals that the application is beeing shutdown.
+      */
+    signal shutdown()
 
     Component.onCompleted: {
        updateServices();
