@@ -114,6 +114,31 @@ TEST_CASE("FileWatcher Tests", "[application]")
                     }
                 }
             }
+
+            AND_WHEN("a file in with extension from the nameFilters is created") {
+                QStringList nameFilters;
+                nameFilters.append("qmlc");
+                watcher.setNameFilters(nameFilters);
+                const auto &filePath = tempDir.filePath("testfile.qmlc");
+                writeTestFile(filePath);
+
+                THEN ("we receive a file changed signal") { // FIXME: find a way to ignore this too
+                    changedSpy.wait(100);
+
+                    REQUIRE(changedSpy.count() == 1);
+
+                    AND_WHEN("the file is changed") {
+                        changedSpy.clear();
+                        writeTestFile(filePath);
+
+                        THEN("we still don't receive a file changed signal") {
+                            changedSpy.wait(100);
+
+                            REQUIRE(changedSpy.count() == 0);
+                        }
+                    }
+                }
+            }
         }
     }
 }
