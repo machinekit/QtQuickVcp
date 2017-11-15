@@ -57,10 +57,13 @@ ComboBox {
     on__ReadyChanged: __update()
     onModelChanged: __update()
 
-    Connections {
-        target: root.settings
-        ignoreUnknownSignals: true
-        onValuesChanged: __update()
+    /*! /internal
+        Cannot directly connect to slots since the file property is var and not a QObject.
+    */
+    onSettingsChanged: {
+        if (root.settings.onValuesChanged) {
+            root.settings.onValuesChanged.connect(__update)
+        }
     }
 
     ApplicationObject {

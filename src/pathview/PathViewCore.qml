@@ -83,7 +83,7 @@ ApplicationItem {
 
         function onRemoteFilePathChanged(path) {
             if (path === "file://") {
-                clearPreview();  // clear preview when program is unloaded
+                gcodeProgramModel.clear(); // clear preview and source view when program is unloaded
             }
         }
 
