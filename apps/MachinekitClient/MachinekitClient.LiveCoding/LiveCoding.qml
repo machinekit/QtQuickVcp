@@ -119,6 +119,7 @@ Item {
         property bool selected: false
         id: fileDialog
         folder: StandardPaths.writableLocation(StandardPaths.HomeLocation)
+        nameFilters: [qsTr("QML files (*.qml)")]
         onFileChanged: d.reload()
         onAccepted: selected = true
     }
@@ -128,5 +129,8 @@ Item {
         fileUrl: fileDialog.selected ? fileDialog.folder : ""
         recursive: true
         onFileChanged: d.reload()
+        nameFilters: [
+            "qmlc"
+        ]
     }
 }
