@@ -40,6 +40,7 @@ FileWatcher::FileWatcher(QObject *parent)
     connect(this, &FileWatcher::fileUrlChanged, this, &FileWatcher::updateWatchedFile);
     connect(this, &FileWatcher::enabledChanged, this, &FileWatcher::updateWatchedFile);
     connect(this, &FileWatcher::recursiveChanged, this, &FileWatcher::updateWatchedFile);
+    connect(this, &FileWatcher::nameFiltersChanged, this, &FileWatcher::updateWatchedFile);
     connect(&m_fileSystemWatcher, &QFileSystemWatcher::fileChanged, this, &FileWatcher::onWatchedFileChanged);
     connect(&m_fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, &FileWatcher::onWatchedDirectoryChanged);
 }
@@ -57,6 +58,11 @@ bool FileWatcher::enabled() const
 bool FileWatcher::recursive() const
 {
     return m_recursive;
+}
+
+QStringList FileWatcher::nameFilters() const
+{
+    return m_nameFilters;
 }
 
 void FileWatcher::setFileUrl(const QUrl &fileUrl)
@@ -89,6 +95,16 @@ void FileWatcher::setRecursive(bool recursive)
     emit recursiveChanged(m_recursive);
 }
 
+void FileWatcher::setNameFilters(const QStringList &nameFilters)
+{
+    if (m_nameFilters == nameFilters) {
+        return;
+    }
+
+    m_nameFilters = nameFilters;
+    emit nameFiltersChanged(m_nameFilters);
+}
+
 void FileWatcher::updateWatchedFile()
 {
     const auto &files = m_fileSystemWatcher.files();
@@ -114,9 +130,14 @@ void FileWatcher::updateWatchedFile()
     }
 
     if (m_recursive && QDir(localFile).exists()) {
-        QDirIterator it(localFile, QDirIterator::Subdirectories);
+        m_fileSystemWatcher.addPath(localFile);
+        QDirIterator it(localFile, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
         while (it.hasNext()) {
             const auto &file = it.next();
+            if ((it.fileName() == "..") || (it.fileName() == ".")
+                || m_nameFilters.contains(it.fileInfo().completeSuffix())) {
+                continue;
+            }
             m_fileSystemWatcher.addPath(file);
         }
     }
