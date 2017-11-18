@@ -29,13 +29,15 @@ copyqmldesigner.CONFIG += no_link no_clean
 copyqmldesigner.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += copyqmldesigner
 
-copyqmlpropertyeditor.input = QML_PROPERTY_EDITOR_FILES
-copyqmlpropertyeditor.output = $$OUT_PWD/../../imports/$$DESIGNER/$$TARGETPATH/propertyEditorQmlSources/${QMAKE_FILE_IN_BASE}${QMAKE_FILE_EXT}
-!win32: copyqmlpropertyeditor.commands = $$QMAKE_MKDIR $$shell_path($$dirname(copyqmlpropertyeditor.output)) $$escape_expand(\n\t)
-copyqmlpropertyeditor.commands += $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
-copyqmlpropertyeditor.CONFIG += no_link no_clean
-copyqmlpropertyeditor.variable_out = PRE_TARGETDEPS
-QMAKE_EXTRA_COMPILERS += copyqmlpropertyeditor
+exists(QTCREATOR_INSTALL_DIR): CONFIG(release, debug|release): {
+    copyqmlpropertyeditor.input = QML_PROPERTY_EDITOR_FILES
+    copyqmlpropertyeditor.output = $$OUT_PWD/../../imports/$$DESIGNER/$$TARGETPATH/propertyEditorQmlSources/${QMAKE_FILE_IN_BASE}${QMAKE_FILE_EXT}
+    !win32: copyqmlpropertyeditor.commands = $$QMAKE_MKDIR $$shell_path($$dirname(copyqmlpropertyeditor.output)) $$escape_expand(\n\t)
+    copyqmlpropertyeditor.commands += $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+    copyqmlpropertyeditor.CONFIG += no_link no_clean
+    copyqmlpropertyeditor.variable_out = PRE_TARGETDEPS
+    QMAKE_EXTRA_COMPILERS += copyqmlpropertyeditor
+}
 
 android: {
     copyjavafiles.input = JAVAFILES
@@ -80,9 +82,11 @@ copyqmldesigner_install.files = $$QML_DESIGNER_FILES
 copyqmldesigner_install.path = $$[QT_INSTALL_QML]/$$TARGETPATH
 INSTALLS += copyqmldesigner_install
 
-copyqmlpropertyeditor_install.files = $$QML_PROPERTY_EDITOR_FILES
-copyqmlpropertyeditor_install.path = $$QTCREATOR_INSTALL_DIR/share/qtcreator/qmldesigner/propertyEditorQmlSources/$$TARGETPATH
-INSTALLS += copyqmlpropertyeditor_install
+exists(QTCREATOR_INSTALL_DIR): CONFIG(release, debug|release): {
+    copyqmlpropertyeditor_install.files = $$QML_PROPERTY_EDITOR_FILES
+    copyqmlpropertyeditor_install.path = $$QTCREATOR_INSTALL_DIR/share/qtcreator/qmldesigner/propertyEditorQmlSources/$$TARGETPATH
+    INSTALLS += copyqmlpropertyeditor_install
+}
 
 android: {
     copyjavafiles_install.CONFIG = no_files no_path
