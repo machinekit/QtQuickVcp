@@ -44,6 +44,7 @@ ApplicationFile::ApplicationFile(QObject *parent) :
     m_networkReady(false),
     m_model(nullptr),
     m_ready(false),
+    m_showHidden(false),
     m_networkManager(nullptr),
     m_file(nullptr),
     m_ftp(nullptr)
@@ -371,9 +372,11 @@ void ApplicationFile::networkAccessibleChanged(QNetworkAccessManager::NetworkAcc
 
 void ApplicationFile::addToList(const QUrlInfo &urlInfo)
 {
-    ApplicationFileItem *item;
+    if (!m_showHidden && urlInfo.name().startsWith(".")) {
+        return;
+    }
 
-    item = new ApplicationFileItem();
+    auto item = new ApplicationFileItem();
     item->setName(urlInfo.name());
     item->setSize(urlInfo.size());
     item->setOwner(urlInfo.owner());
