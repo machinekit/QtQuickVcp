@@ -49,6 +49,7 @@ class ApplicationFile : public QObject
     Q_PROPERTY(bool networkReady READ networkReady NOTIFY networkReadyChanged)
     Q_PROPERTY(ApplicationFileModel *model READ model NOTIFY modelChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
+    Q_PROPERTY(bool showHidden READ showHidden WRITE setShowHidden NOTIFY showHiddenChanged)
     Q_ENUMS(TransferState TransferError)
 
 public:
@@ -137,6 +138,11 @@ public:
         return m_ready;
     }
 
+    bool showHidden() const
+    {
+        return m_showHidden;
+    }
+
 public slots:
     void setUri(const QString &arg)
     {
@@ -201,6 +207,15 @@ public slots:
         emit readyChanged(ready);
     }
 
+    void setShowHidden(bool showHidden)
+    {
+        if (m_showHidden == showHidden)
+            return;
+
+        m_showHidden = showHidden;
+        emit showHiddenChanged(m_showHidden);
+    }
+
     void startUpload();
     void startDownload();
     void refreshFiles();
@@ -223,7 +238,8 @@ private:
     double          m_progress;
     bool            m_networkReady;
     ApplicationFileModel * m_model;
-    bool m_ready;
+    bool            m_ready;
+    bool            m_showHidden;
 
     QNetworkAccessManager   *m_networkManager;
     std::unique_ptr<QFile>  m_file;
@@ -265,6 +281,7 @@ signals:
     void networkReadyChanged(bool networkReady);
     void modelChanged(ApplicationFileModel * model);
     void readyChanged(bool ready);
+    void showHiddenChanged(bool showHidden);
 }; // class ApplicationFile
 } // namespace qtquickvcp
 
