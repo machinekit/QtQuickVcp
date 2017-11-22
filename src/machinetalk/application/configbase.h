@@ -8,6 +8,7 @@
 #define APPLICATION_CONFIG_BASE_H
 #include <QObject>
 #include <QSet>
+#include <QDebug>
 #include <QQmlParserStatus>
 #include <nzmqt/nzmqt.hpp>
 #include <machinetalk/protobuf/message.pb.h>
