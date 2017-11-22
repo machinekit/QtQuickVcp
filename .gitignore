@@ -22,3 +22,6 @@ Makefile
 
 # unix
 .directory
+
+# project specific
+/dist
