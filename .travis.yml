@@ -10,46 +10,18 @@ matrix:
   #          - env: "JOB=Android_armv7"
             - env: "JOB=MacOSX"
   include:
-    # 1st parallel build job - debug build on Ubuntu
-    # - env: "JOB=Tests"
-    #   addons:
-    #     apt:
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #       packages:
-    #         - g++-4.9
-    #         # not white listed - alsa
-    #         - libsndfile1
-    #         - wget
-    #         - make
-    #         - ant
-    #         - curl
-    #         - libasound2-dev
-    #         - portaudio19-dev
-    #         - libsndfile1-dev
-    #         - zlib1g-dev
-    #         - libfreetype6-dev
-    #         - libfontconfig1-dev
-    #         - lame
-    #         - libmp3lame-dev
-    #         - libegl1-mesa-dev
-    #         - libegl1-mesa
-    #         - ccache
-    #         - libpulse-dev
-    #   cache:
-    #     directories:
-    #       - $HOME/.ccache
-    #   before_install:
-    #     - "source build/travis/job1_Tests/environment.sh"
-    #   install:
-    #     - "./build/travis/job1_Tests/install.sh"
-    #   before_script:
-    #     - "./build/travis/job1_Tests/before_script.sh"
-    #   script:
-    #     - "./build/travis/job1_Tests/run_tests.sh"
-    #   after_script:
-    #     - ARTIFACTS_CACHE_CONTROL='public, max-age=315360000'
-    #     - 'ARTIFACTS_PATHS="$(ls vtest/html | tr "\n" ":")" artifacts upload'
+    # 1st parallel build job - debug build and tests
+    - env: "JOB=Test_x64"
+      addons:
+        apt:
+          packages:
+          - bsdtar
+          - curl
+          # - zsync
+      services:
+        - docker
+      script:
+        - "./build/travis/job1_Test/build.sh --x86_64"
 
     # 2nd parallel build job - portable Linux AppImage 64-bit x86 build on CentOS
     - env: "JOB=AppImage_x64"

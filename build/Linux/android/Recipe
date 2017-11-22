@@ -1,4 +1,4 @@
-!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # Build a portable AppImage starting from a clean system. Other examples at:
 # https://github.com/probonopd/AppImages/blob/master/recipes/scribus/Recipe
@@ -37,29 +37,24 @@ fi
 ##########################################################################
 # BUILD QTQUICKVCP
 ##########################################################################
-export PATH="${PWD}/qt5/bin:$PATH"
-export LD_LIBRARY_PATH="${PWD}/qt5/lib:$LD_LIBRARY_PATH"
-export QT_PLUGIN_PATH="${PWD}/qt5/plugins"
-export QML_IMPORT_PATH="${PWD}/qt5/qml"
-export QML2_IMPORT_PATH="${PWD}/qt5/qml"
-export QT_QPA_PLATFORM_PLUGIN_PATH="${PWD}/qt5/plugins/platforms"
-export QT_INSTALL_PREFIX="${PWD}/qt5"
+export PATH="/qt5/bin:$PATH"
+export LD_LIBRARY_PATH="/qt5/lib:$LD_LIBRARY_PATH"
+export QT_PLUGIN_PATH="/qt5/plugins"
+export QML_IMPORT_PATH="/qt5/qml"
+export QML2_IMPORT_PATH="/qt5/qml"
+export QT_QPA_PLATFORM_PLUGIN_PATH="/qt5/plugins/platforms"
+export QT_INSTALL_PREFIX="/qt5"
 
-export ANDROID_NDK_ROOT="${PWD}/android-ndk"
-export ANDROID_SDK_ROOT="${PWD}/android-sdk"
-export ANDROID_HOME="${PWD}/android-sdk"
-
-# If not building on Travis then might need to fetch QtQuickVcp
-[ -d "QtQuickVcp" ] || git clone --depth 1 https://github.com/qtquickvcp/QtQuickVcp.git
-
-cd QtQuickVcp
+export ANDROID_NDK_ROOT="/android-ndk"
+export ANDROID_SDK_ROOT="/android-sdk"
+export ANDROID_HOME="/android-sdk"
 
 mkdir -p build.release
 cd build.release
 
 # build QtQuickVcp
 qmake -r ..
-make
+make -j$((`nproc` + 1))
 make -C 3rdparty install
 make -C src install
 make INSTALL_ROOT=android-build install

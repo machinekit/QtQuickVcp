@@ -8,7 +8,7 @@ QT       += network testlib
 
 QT       -= gui
 
-TARGET = tst_halpintest
+TARGET = halremotetests
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG += c++14
