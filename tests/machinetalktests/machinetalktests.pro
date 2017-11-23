@@ -7,7 +7,7 @@
 QT       += network testlib qml
 QT       -= gui
 
-TARGET = applicationtests
+TARGET = machinetalktests
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG += c++14
