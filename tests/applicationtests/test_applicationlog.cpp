@@ -30,7 +30,7 @@ TEST_CASE("Application Log Tests", "[application]")
     GIVEN("The log client is running and connected") {
         logService->setReady(true);
         logClient->setReady(true);
-        // would wait here if we would have a reliable protocol
+        QTest::qWait(25); // need to wait here to make sure pub-sub is connected
 
         WHEN("we send a log message via the log service") {
             QSignalSpy spy(logClient.get(), &ApplicationLog::messageReceived);
