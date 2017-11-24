@@ -27,7 +27,7 @@
 #include <QDirIterator>
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(loggingCategory, "filewatcher");
+Q_LOGGING_CATEGORY(filewatcherCategory, "filewatcher");
 
 namespace qtquickvcp {
 
@@ -121,7 +121,7 @@ void FileWatcher::updateWatchedFile()
     }
 
     if (!m_fileUrl.isLocalFile()) {
-        qCWarning(loggingCategory) << "Can only watch local files";
+        qCWarning(filewatcherCategory) << "Can only watch local files";
         return;
     }
     const auto &localFile = m_fileUrl.toLocalFile();
@@ -146,7 +146,7 @@ void FileWatcher::updateWatchedFile()
     }
     else {
 #ifdef QT_DEBUG
-        qCWarning(loggingCategory) << "File to watch does not exist" << localFile;
+        qCWarning(filewatcherCategory) << "File to watch does not exist" << localFile;
 #endif
     }
 }

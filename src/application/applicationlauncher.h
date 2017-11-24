@@ -34,22 +34,15 @@ namespace qtquickvcp {
 class ApplicationLauncher : public machinetalk::application::LauncherBase
 {
     Q_OBJECT
-    Q_PROPERTY(QJsonValue launchers READ launchers NOTIFY launchersChanged)
+    Q_PROPERTY(QVariant launchers READ launchers NOTIFY launchersChanged)
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
 
 public:
     explicit ApplicationLauncher(QObject *parent = 0);
     ~ApplicationLauncher();
 
-    QJsonValue launchers() const
-    {
-        return m_launchers;
-    }
-
-    bool isSynced() const
-    {
-        return m_synced;
-    }
+    QVariant launchers() const;
+    bool isSynced() const;
 
 public slots:
     void start(int index);
@@ -61,7 +54,7 @@ public slots:
     void setImportance(int index, int importance);
 
 private:
-    QJsonValue m_launchers;
+    QObject* m_launcherObject;
     bool m_synced;
 
     std::unique_ptr<QTemporaryDir> m_temporaryDir;
@@ -78,7 +71,7 @@ private slots:
     void unsyncStatus();
 
 signals:
-    void launchersChanged(const QJsonValue &arg);
+    void launchersChanged();
     void syncedChanged(bool arg);
 }; // class ApplicationLauncher
 } // namespace qtquickvcp

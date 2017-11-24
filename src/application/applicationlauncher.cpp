@@ -8,7 +8,7 @@ namespace qtquickvcp {
 
 ApplicationLauncher::ApplicationLauncher(QObject *parent) :
     application::LauncherBase(parent),
-    m_launchers(QJsonValue(QJsonArray())),
+    m_launcherObject(nullptr),
     m_synced(false),
     m_temporaryDir(nullptr)
 {
@@ -19,6 +19,21 @@ ApplicationLauncher::ApplicationLauncher(QObject *parent) :
 
 ApplicationLauncher::~ApplicationLauncher()
 {
+}
+
+QVariant ApplicationLauncher::launchers() const
+{
+    if (m_launcherObject != nullptr) {
+        return m_launcherObject->property("launcher");
+    }
+    else {
+        return QVariant();
+    }
+}
+
+bool ApplicationLauncher::isSynced() const
+{
+    return m_synced;
 }
 
 void ApplicationLauncher::start(int index)
@@ -101,16 +116,16 @@ void ApplicationLauncher::setImportance(int index, int importance)
 void ApplicationLauncher::handleLauncherFullUpdateMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
-    m_launchers = QJsonValue(QJsonArray()); // clear old value
-    MachinetalkService::updateValue(rx, m_launchers, "launcher", m_temporaryDir->path()); // launcher protobuf value, launcher temp path
-    emit launchersChanged(m_launchers);
+    initializeObject(); // clear old value
+    MachinetalkService::recurseMessage(rx, m_launcherObject, m_temporaryDir->path(), "launcher");
+    emit launchersChanged();
 }
 
 void ApplicationLauncher::handleLauncherIncrementalUpdateMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
-    MachinetalkService::updateValue(rx, m_launchers, "launcher", m_temporaryDir->path()); // launcher protobuf value, launcher temp path
-    emit launchersChanged(m_launchers);
+    MachinetalkService::recurseMessage(rx, m_launcherObject, m_temporaryDir->path(), "launcher");
+    emit launchersChanged();
 }
 
 void ApplicationLauncher::syncStatus()
@@ -124,12 +139,15 @@ void ApplicationLauncher::unsyncStatus()
     m_synced = false;
     emit syncedChanged(m_synced);
     initializeObject();
+    emit launchersChanged();
 }
 
 void ApplicationLauncher::initializeObject()
 {
-    m_launchers = QJsonValue(QJsonArray());
-    emit launchersChanged(m_launchers);
+    if (m_launcherObject != nullptr) {
+        m_launcherObject->deleteLater();
+    }
+    m_launcherObject = MachinetalkService::recurseDescriptor(machinetalk::Container::descriptor(), this, "launcher");
 }
 
 void ApplicationLauncher::createTemporaryDir()

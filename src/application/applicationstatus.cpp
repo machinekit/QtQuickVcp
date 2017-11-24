@@ -21,6 +21,7 @@
 ****************************************************************************/
 
 #include "applicationstatus.h"
+#include <QtQml>
 #include <google/protobuf/text_format.h>
 #include <machinetalkservice.h>
 #include "debughelper.h"
@@ -31,6 +32,11 @@ namespace qtquickvcp {
 
 ApplicationStatus::ApplicationStatus(QObject *parent) :
     application::StatusBase(parent),
+    m_config(new QObject(this)),
+    m_motion(new QObject(this)),
+    m_io(new QObject(this)),
+    m_task(new QObject(this)),
+    m_interp(new QObject(this)),
     m_running(false),
     m_synced(false),
     m_syncedChannels(NoChannel),
@@ -41,17 +47,22 @@ ApplicationStatus::ApplicationStatus(QObject *parent) :
     connect(this, &ApplicationStatus::interpChanged,
             this, &ApplicationStatus::updateRunning);
 
+    m_channelMap.insert("motion", MotionChannel);
+    m_channelMap.insert("config", ConfigChannel);
+    m_channelMap.insert("io", IoChannel);
+    m_channelMap.insert("task", TaskChannel);
+    m_channelMap.insert("interp", InterpChannel);
+}
+
+void ApplicationStatus::componentComplete()
+{
     initializeObject(MotionChannel);
     initializeObject(ConfigChannel);
     initializeObject(IoChannel);
     initializeObject(TaskChannel);
     initializeObject(InterpChannel);
 
-    m_channelMap.insert("motion", MotionChannel);
-    m_channelMap.insert("config", ConfigChannel);
-    m_channelMap.insert("io", IoChannel);
-    m_channelMap.insert("task", TaskChannel);
-    m_channelMap.insert("interp", InterpChannel);
+    StatusBase::componentComplete();
 }
 
 void ApplicationStatus::updateSync(ApplicationStatus::StatusChannel channel)
@@ -66,31 +77,31 @@ void ApplicationStatus::updateSync(ApplicationStatus::StatusChannel channel)
 void ApplicationStatus::updateMotionObject(const EmcStatusMotion &motion)
 {
     MachinetalkService::recurseMessage(motion, m_motion);
-    emit motionChanged(m_motion);
+    emit motionChanged();
 }
 
 void ApplicationStatus::updateConfigObject(const EmcStatusConfig &config)
 {
     MachinetalkService::recurseMessage(config, m_config);
-    emit configChanged(m_config);
+    emit configChanged();
 }
 
 void ApplicationStatus::updateIoObject(const EmcStatusIo &io)
 {
     MachinetalkService::recurseMessage(io, m_io);
-    emit ioChanged(m_io);
+    emit ioChanged();
 }
 
 void ApplicationStatus::updateTaskObject(const EmcStatusTask &task)
 {
     MachinetalkService::recurseMessage(task, m_task);
-    emit taskChanged(m_task);
+    emit taskChanged();
 }
 
 void ApplicationStatus::updateInterpObject(const EmcStatusInterp &interp)
 {
     MachinetalkService::recurseMessage(interp, m_interp);
-    emit interpChanged(m_interp);
+    emit interpChanged();
 }
 
 void ApplicationStatus::handleEmcstatFullUpdateMessage(const QByteArray &topic, const Container &rx)
@@ -124,7 +135,7 @@ void ApplicationStatus::updateTopics()
     clearStatusTopics();
     if (m_channels & MotionChannel) {
         addStatusTopic("motion");
-        initializeObject(MotionChannel);
+        //initializeObject(MotionChannel);
     }
     if (m_channels & ConfigChannel) {
         addStatusTopic("config");
@@ -167,15 +178,14 @@ void ApplicationStatus::emcstatUpdateReceived(StatusChannel channel, const Conta
     }
 }
 
-void ApplicationStatus::updateRunning(const QJsonObject &object)
+void ApplicationStatus::updateRunning()
 {
-    Q_UNUSED(object)
     bool running;
 
-    running = m_task["taskMode"].isDouble() && m_interp["interpState"].isDouble()
-            && ((static_cast<int>(m_task["taskMode"].toDouble()) == TaskModeAuto)
-                || (static_cast<int>(m_task["taskMode"].toDouble()) == TaskModeMdi))
-            && (static_cast<int>(m_interp["interpState"].toDouble()) != InterpreterIdle);
+    running = m_task->property("taskMode").isValid() && m_interp->property("interpState").isValid()
+            && ((m_task->property("taskMode").toInt() == TaskModeAuto)
+                || (m_task->property("taskMode").toInt() == TaskModeMdi))
+            && (m_interp->property("interpState").toInt() != InterpreterIdle);
 
     if (running != m_running)
     {
@@ -189,29 +199,25 @@ void ApplicationStatus::initializeObject(ApplicationStatus::StatusChannel channe
     switch (channel)
     {
     case MotionChannel:
-        m_motion = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusMotion::descriptor(), m_motion);
-        emit motionChanged(m_motion);
+        m_motion->deleteLater();
+        m_motion = MachinetalkService::recurseDescriptor(EmcStatusMotion::descriptor(), this);
+        emit motionChanged();
         break;
     case ConfigChannel:
-        m_config = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusConfig::descriptor(), m_config);
-        emit configChanged(m_config);
+        m_config = MachinetalkService::recurseDescriptor(EmcStatusConfig::descriptor(), m_config);
+        emit configChanged();
         break;
     case IoChannel:
-        m_io = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusIo::descriptor(), m_io);
-        emit ioChanged(m_io);
+        m_io = MachinetalkService::recurseDescriptor(EmcStatusIo::descriptor(), m_io);
+        emit ioChanged();
         break;
     case TaskChannel:
-        m_task = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusTask::descriptor(), m_task);
-        emit taskChanged(m_task);
+        m_task = MachinetalkService::recurseDescriptor(EmcStatusTask::descriptor(), m_task);
+        emit taskChanged();
         break;
     case InterpChannel:
-        m_interp = QJsonObject();
-        MachinetalkService::recurseDescriptor(EmcStatusInterp::descriptor(), m_interp);
-        emit interpChanged(m_interp);
+        m_interp = MachinetalkService::recurseDescriptor(EmcStatusInterp::descriptor(), m_interp);
+        emit interpChanged();
         break;
     case NoChannel:
         break;
