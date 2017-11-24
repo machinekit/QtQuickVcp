@@ -49,7 +49,7 @@ cd tests
 for D in *; do
     if [ -d "${D}" ]; then
         cd $D
-        xvfb-run --server-args "-screen 0 1920x1080x24" ./$D
+        xvfb-run -a --server-args "-screen 0 1920x1080x24" ./$D
         cd ..
     fi
 done
@@ -60,7 +60,7 @@ cd ..
 # to see if deployment works
 cd apps/MachinekitClient
 
-xvfb-run --server-args "-screen 0 1920x1080x24" ./machinekit-client --test-deployment true
+xvfb-run -a --server-args "-screen 0 1920x1080x24" ./machinekit-client --test-deployment true
 
 # back to home folder
 cd ../../
