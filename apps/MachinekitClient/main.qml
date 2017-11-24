@@ -102,5 +102,10 @@ Item {
         {
             connectionWindow.configurationFilePath = argument;
         }
+        else if (option === '--test-deployment') {
+            if (argument === 'true') {
+                Qt.quit();
+            }
+        }
     }
 }

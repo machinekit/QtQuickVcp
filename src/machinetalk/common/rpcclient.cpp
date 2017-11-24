@@ -215,7 +215,7 @@ void RpcClient::sendSocketMessage(ContainerType type, Container &tx)
     DEBUG_TAG(3, m_debugName, "sent message" << QString::fromStdString(s));
 #endif
     try {
-        m_socket->sendMessage(QByteArray::fromRawData(tx.SerializeAsString().c_str(), tx.ByteSize()));
+        m_socket->sendMessage(QByteArray(tx.SerializeAsString().c_str(), tx.ByteSize()));
     }
     catch (const zmq::error_t &e) {
         const QString errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());

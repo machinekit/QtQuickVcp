@@ -75,7 +75,7 @@ echo -e "branch=${branch}" >> env.list
 # run build
 docker run --env-file ./env.list -i -v "${PWD}:/QtQuickVcp" \
        machinekoder/qtquickvcp-docker-android-armv7:latest \
-       /bin/bash -c "/QtQuickVcp/build/Linux/android/Recipe"
+       /bin/bash -c "cd QtQuickVcp; ./build/Linux/android/Recipe"
 
 if [ "${upload}" ]; then
     # Upload apk to Bintray

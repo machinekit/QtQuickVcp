@@ -23,7 +23,7 @@ set -x # Be verbose
 if [ "$(grep "Debian GNU/Linux 9 (stretch)" /etc/*release*)" ]; then
   OS="Debian Stretch"
 else
-  echo "${0}: Warning: Not running on Debian Jessie!" >&2
+  echo "${0}: Warning: Not running on Debian Stretch!" >&2
 fi
 
 ##########################################################################
@@ -37,26 +37,21 @@ fi
 ##########################################################################
 # BUILD QTQUICKVCP
 ##########################################################################
-export PATH="${PWD}/qt5/bin:$PATH"
-export LD_LIBRARY_PATH="${PWD}/qt5/lib:$LD_LIBRARY_PATH"
-export QT_PLUGIN_PATH="${PWD}/qt5/plugins"
-export QML_IMPORT_PATH="${PWD}/qt5/qml"
-export QML2_IMPORT_PATH="${PWD}/qt5/qml"
-export QT_QPA_PLATFORM_PLUGIN_PATH="${PWD}/qt5/plugins/platforms"
-export QT_INSTALL_PREFIX="${PWD}/qt5"
-
-# If not building on Travis then might need to fetch QtQuickVcp
-[ -d "QtQuickVcp" ] || git clone --depth 1 https://github.com/qtquickvcp/QtQuickVcp.git
-
-cd QtQuickVcp
+export PATH="/qt5/bin:$PATH"
+export LD_LIBRARY_PATH="/qt5/lib:$LD_LIBRARY_PATH"
+export QT_PLUGIN_PATH="/qt5/plugins"
+export QML_IMPORT_PATH="/qt5/qml"
+export QML2_IMPORT_PATH="/qt5/qml"
+export QT_QPA_PLATFORM_PLUGIN_PATH="/qt5/plugins/platforms"
+export QT_INSTALL_PREFIX="/qt5"
 
 mkdir -p build.release
 cd build.release
 
 qmake -r ..
-make
+make -j$((`nproc` + 1))
 # make docs
-make install
+sudo make install
 # make install_docs
 
 # compress QtQuick module
@@ -88,13 +83,16 @@ appdir=${PWD}/MachinekitClient.AppDir/
 appimage=${PWD}/MachinekitClient.AppImage
 
 # back to home folder
-cd ../../
+cd ../
+
+# cleanup plugins.qmltypes files here, since they have been created with sudo
+sudo chown -R `whoami` ./build.release
 
 ##########################################################################
 # PACKAGE INTO APPIMAGE WITH APPIMAGEKIT
 ##########################################################################
 
-cd AppImageKit/AppImageAssistant.AppDir
+cd /AppImageKit/AppImageAssistant.AppDir
 ./package  "$appdir" "$appimage"
 
 # allow access to AppImage from outside the chroot

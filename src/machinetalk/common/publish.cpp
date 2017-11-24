@@ -152,13 +152,6 @@ void Publish::heartbeatTimerTick()
 void Publish::processSocketMessage(const QList<QByteArray> &messageList)
 {
     Container &rx = m_socketRx;
-    rx.ParseFromArray(messageList.last().data(), messageList.last().size());
-
-#ifdef QT_DEBUG
-    std::string s;
-    gpb::TextFormat::PrintToString(rx, &s);
-    DEBUG_TAG(3, m_debugName, "received message" << QString::fromStdString(s));
-#endif
 
     emit socketMessageReceived(rx);
 }
@@ -178,7 +171,7 @@ void Publish::sendSocketMessage(const QByteArray &topic, ContainerType type, Con
     try {
         QList<QByteArray> message;
         message.append(topic);
-        message.append(QByteArray::fromRawData(tx.SerializeAsString().c_str(), tx.ByteSize()));
+        message.append(QByteArray(tx.SerializeAsString().c_str(), tx.ByteSize()));
         m_socket->sendMessage(message);
     }
     catch (const zmq::error_t &e) {

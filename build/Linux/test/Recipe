@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+# Run tests in a clean environment
+
+# NOTES:
+#
+# 1) IT IS NOT SAFE TO RUN THIS RECIPE ON A PERSISTENT FILESYSTEM! Use either:
+#      * A chroot into a Live ISO, squashfs or Docker Image.
+#      * Or, a virtual machine on a dedicated build server (e.g. Travis CI)
+#    DO NOT RUN THE RECIPE ON A NORMAL COMPUTER OUTSIDE OF A TEMPORARY CHROOT!
+#
+
+set -e # Halt on errors
+set -x # Be verbose
+
+##########################################################################
+# CHECK SYSTEM
+##########################################################################
+
+if [ "$(grep "Debian GNU/Linux 9 (stretch)" /etc/*release*)" ]; then
+  OS="Debian Stretch"
+else
+  echo "${0}: Error: Not running on Debian Stretch!" >&2
+  exit 1
+fi
+
+##########################################################################
+# BUILD APPLICATION
+##########################################################################
+export PATH="/qt5/bin:$PATH"
+export LD_LIBRARY_PATH="/qt5/lib:$LD_LIBRARY_PATH"
+export QT_PLUGIN_PATH="/qt5/plugins"
+export QML_IMPORT_PATH="/qt5/qml"
+export QML2_IMPORT_PATH="/qt5/qml"
+export QT_QPA_PLATFORM_PLUGIN_PATH="/qt5/plugins/platforms"
+export QT_INSTALL_PREFIX="/qt5"
+
+# build and run unit tests
+mkdir -p build.debug
+cd build.debug
+qmake -r CONFIG+=debug ..
+make -j$((`nproc` + 1))
+sudo make install
+
+cd tests
+
+#export QT_DEBUG_PLUGINS=1
+# run all tests
+for D in *; do
+    if [ -d "${D}" ]; then
+        cd $D
+        xvfb-run -a --server-args "-screen 0 1920x1080x24" ./$D
+        cd ..
+    fi
+done
+
+cd ..
+
+# build and run MachinekitClient
+# to see if deployment works
+cd apps/MachinekitClient
+
+xvfb-run -a --server-args "-screen 0 1920x1080x24" ./machinekit-client --test-deployment true
+
+# back to home folder
+cd ../../

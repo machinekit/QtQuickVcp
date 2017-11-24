@@ -8,7 +8,7 @@ QT       += network testlib qml
 
 QT       -= gui
 
-TARGET = tst_servicediscoverytest
+TARGET = servicediscoverytests
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG += c++11
