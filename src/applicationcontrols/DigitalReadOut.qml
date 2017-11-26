@@ -180,7 +180,7 @@ AbstractDigitalReadOut {
                     item.title = Qt.binding(function(){ return (droRect.axisNames[index] + ":"); });
                     item.type = "";
                     item.value = Qt.binding(function(){ return Number(droRect.position[droRect._axisNames[index]]); });
-                    item.homed = Qt.binding(function(){ return ((index < droRect.axisHomed.length) && droRect.axisHomed[index].homed); });
+                    item.homed = Qt.binding(function(){ return ((index < droRect.axisHomed.length) && droRect.axisHomed[droRect._axisIndices[index]].homed); });
                 }
             }
         }

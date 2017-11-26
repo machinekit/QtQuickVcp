@@ -29,9 +29,12 @@ RowLayout {
     property alias core: object.core
     property alias status: object.status
     property alias helper: object.helper
-    property alias axis: axisGroup.currentIndex
-    property var axisNames:helper.ready ? helper.axisNamesUpper: ["X", "Y", "Z"]
-    property int axes: axisNames.length
+    property alias currentIndex: axisGroup.currentIndex
+    property int axis: axisIndices[currentIndex]
+    property var axisNames: helper.ready ? helper.axisNamesUpper: ["X", "Y", "Z"]
+    property var axisIndices: helper.ready ? helper.axisIndices: [0, 1, 2]
+
+    readonly property int __axes: axisNames.length
 
     id: root
     enabled: status.synced
@@ -42,7 +45,7 @@ RowLayout {
     }
 
     Repeater {
-        model: axes
+        model: __axes
         RadioButton {
             id: radioButton
             exclusiveGroup: axisGroup

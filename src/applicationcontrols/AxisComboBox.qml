@@ -30,10 +30,9 @@ ComboBox {
     property alias helper: object.helper
     property int axis: currentIndex
     property var axisNames: helper.ready ? helper.axisNamesUpper: ["X", "Y", "Z"]
-    property int axes: axisNames.length
 
     enabled: status.synced
-    model: axisNames.slice(0, axes)
+    model: axisNames.slice() // note: this works only for machines without "invisible" axes
 
     ApplicationObject {
         id: object

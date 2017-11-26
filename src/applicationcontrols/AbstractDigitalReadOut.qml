@@ -46,11 +46,12 @@ ApplicationItem {
     property int positionFeedback: _ready ? status.config.positionFeedback : ApplicationStatus.ActualPositionFeedback
     property int positionOffset: _ready ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
 
-    property bool _ready: status.synced
-    property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z", "a"]
-    property double _timeFactor: helper.ready ? helper.timeFactor : 1
-    property double _distanceFactor: helper.ready ? helper.distanceFactor : 1
-    property string _distanceUnits: helper.ready ? helper.distanceUnits: "mm"
+    readonly property bool _ready: status.synced
+    readonly property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z", "a"]
+    readonly property var _axisIndices: helper.ready ? helper.axisIndices : [0, 1, 2, 3]
+    readonly property double _timeFactor: helper.ready ? helper.timeFactor : 1
+    readonly property double _distanceFactor: helper.ready ? helper.distanceFactor : 1
+    readonly property string _distanceUnits: helper.ready ? helper.distanceUnits: "mm"
 
     function _scalePosition(pos)
     {
