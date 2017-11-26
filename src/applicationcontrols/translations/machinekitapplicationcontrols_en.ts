@@ -437,11 +437,19 @@
 <context>
     <name>OpenAction</name>
     <message>
-        <source>Open G-Code file [%1]</source>
+        <source>Open File...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open File...</source>
+        <source>Open File from Machine...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open G-Code file stored on machine [%1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open G-Code file stored on local computer [%1]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
