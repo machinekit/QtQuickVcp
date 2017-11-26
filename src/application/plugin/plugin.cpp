@@ -40,6 +40,7 @@
 #include "filewatcher.h"
 #include "revisionsingleton.h"
 #include "applicationhelpers.h"
+#include "applicationfilesynchandler.h"
 
 static void initResources()
 {
@@ -91,6 +92,7 @@ void MachinekitApplicationPlugin::registerTypes(const char *uri)
     qmlRegisterType<qtquickvcp::FileWatcher>(uri, 1, 0, "FileWatcher");
     qmlRegisterSingletonType<qtquickvcp::RevisionSingleton>(uri, 1, 0, "Revision", &qtquickvcp::RevisionSingleton::qmlInstance);
     qmlRegisterSingletonType<qtquickvcp::ApplicationHelpers>(uri, 1, 0, "ApplicationHelpers", &qtquickvcp::ApplicationHelpers::qmlSingletonProvider);
+    qmlRegisterType<qtquickvcp::ApplicationFileSyncHandler>(uri, 1, 0, "ApplicationFileSyncHandler");
 
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {

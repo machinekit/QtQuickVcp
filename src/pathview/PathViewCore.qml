@@ -56,35 +56,25 @@ ApplicationItem {
             if (ready) {
                 file.onUploadFinished.connect(onFileUploadFinished);
                 file.onDownloadFinished.connect(onFileDownloadFinished);
-                file.onRemoteFilePathChanged.connect(onRemoteFilePathChanged);
+                core.onProgramReloaded.connect(onProgramReloaded);
             }
             else {
                 file.onUploadFinished.disconnect(onFileUploadFinished);
                 file.onDownloadFinished.disconnect(onFileDownloadFinished);
-                file.onRemoteFilePathChanged.disconnect(onRemoteFilePathChanged);
+                core.onProgramReloaded.disconnect(onProgramReloaded);
             }
         }
 
         function onFileUploadFinished() {
-            gcodeProgramModel.clear();
-            gcodeProgramLoader.load();
-            if (previewEnabled) {
-                executePreview();
-            }
+            reloadModelAndPreview();
         }
 
         function onFileDownloadFinished() {
-            gcodeProgramModel.clear();
-            gcodeProgramLoader.load();
-            if (previewEnabled) {
-                executePreview();
-            }
+            reloadModelAndPreview();
         }
 
-        function onRemoteFilePathChanged(path) {
-            if (path === "file://") {
-                gcodeProgramModel.clear(); // clear preview and source view when program is unloaded
-            }
+        function onProgramReloaded() {
+            reloadModelAndPreview();
         }
 
         onPreviewEnabledChanged: {
@@ -93,13 +83,21 @@ ApplicationItem {
                 && (file.localFilePath !== "")
                 && (file.transferState === ApplicationFile.NoTransfer))
             {
-                gcodeProgramModel.clearPreview();
+                executePreview();
+            }
+        }
+
+        function reloadModelAndPreview() {
+            gcodeProgramModel.clear();
+            gcodeProgramLoader.load();
+            if (previewEnabled) {
                 executePreview();
             }
         }
 
         function executePreview() {
             if (file.remoteFilePath.split('.').pop() === 'ngc') {   // only open ngc files
+                gcodeProgramModel.clearPreview();
                 command.openProgram('preview', file.remoteFilePath);
                 command.runProgram('preview', 0);
             }
@@ -116,8 +114,6 @@ ApplicationItem {
     }
 
     PreviewClient {
-        property bool _connected: false
-
         id: previewClient
         previewstatusUri: previewStatusService.uri
         previewUri: previewService.uri

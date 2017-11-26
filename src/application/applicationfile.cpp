@@ -29,6 +29,38 @@
 
 namespace qtquickvcp {
 
+/*!
+    \qmltype ApplicationFile
+    \instantiates ApplicationFile
+    \inqmlmodule Machinekit.Application
+    \brief A remote file handler.
+    \ingroup application
+
+    This component interfaces with the Machinekit file service.
+*/
+
+/*! \property string ApplicationFile::localFilePath
+
+    This property holds the path of the local file when loaded.
+*/
+
+/*! \property string ApplicationFile::localPath
+
+    This property holds the path of the local directory for storing files.
+*/
+
+/*! \property string ApplicationFile::remoteFilePath
+
+    This property holds the path of the remote file.
+
+    The local file name is extracted from this property.
+*/
+
+/*! \property string ApplicationFile::remotePath
+
+    This property holds the path of the remote directory for storing files.
+*/
+
 ApplicationFile::ApplicationFile(QObject *parent) :
     QObject(parent),
     m_uri(""),

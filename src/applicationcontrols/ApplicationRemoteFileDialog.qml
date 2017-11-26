@@ -53,9 +53,7 @@ Dialog {
                 return;
             }
 
-            if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
-                command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
-            }
+
             var dir = tableView.model.getIsDir(row);
             var fileName = tableView.model.getName(row);
             if (dir) {
@@ -69,9 +67,8 @@ Dialog {
                 deselectRow();
             }
             else {
-                command.resetProgram('execute');
                 var newPath = file.remotePath + '/' + file.serverDirectory + '/' + fileName;
-                command.openProgram('execute', newPath);
+                core.executeProgram(newPath);
                 root.close();
             }
         }
