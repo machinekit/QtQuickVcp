@@ -166,7 +166,7 @@ Dialog {
             Component {
                 id: nameEdit
                 Item {
-                    Text {
+                    Label {
                         anchors.fill: parent
                         anchors.leftMargin: 5
                         anchors.rightMargin: 5
