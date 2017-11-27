@@ -30,7 +30,7 @@ RowLayout {
     property alias status: object.status
     property alias helper: object.helper
     property alias currentIndex: axisGroup.currentIndex
-    property int axis: axisIndices[currentIndex]
+    property int axis: 0
     property var axisNames: helper.ready ? helper.axisNamesUpper: ["X", "Y", "Z"]
     property var axisIndices: helper.ready ? helper.axisIndices: [0, 1, 2]
 
@@ -38,6 +38,18 @@ RowLayout {
 
     id: root
     enabled: status.synced
+
+    Binding {
+        target: root
+        property: "axis"
+        value: root.axisIndices[root.currentIndex]
+    }
+
+    Binding {
+        target: root
+        property: "currentIndex"
+        value: root.axisIndices.indexOf(root.axis)
+    }
 
     ExclusiveGroup {
         property int currentIndex: 0
