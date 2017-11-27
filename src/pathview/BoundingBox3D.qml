@@ -72,8 +72,8 @@ Canvas3D {
         onMinimumChanged.connect(needsUpdate);
         onMaximumChanged.connect(needsUpdate);
         onColorChanged.connect(needsUpdate);
+        onLineWidthChanged.connect(needsUpdate);
         onLineStippleChanged.connect(needsUpdate);
         onLineStippleLengthChanged.connect(needsUpdate);
-        onLineWidthChanged.connect(needsUpdate);
     }
 }
