@@ -43,6 +43,7 @@ HEADERS += $$APPLICATION_PATH/filewatcher.h \
     $$APPLICATION_PATH/applicationfile.h \
     $$APPLICATION_PATH/applicationfileitem.h \
     $$APPLICATION_PATH/applicationfilemodel.h \
+    $$APPLICATION_PATH/applicationfilesynchandler.h \
     logservice.h
 
 SOURCES += $$APPLICATION_PATH/filewatcher.cpp \
@@ -51,11 +52,13 @@ SOURCES += $$APPLICATION_PATH/filewatcher.cpp \
     $$APPLICATION_PATH/applicationfile.cpp \
     $$APPLICATION_PATH/applicationfileitem.cpp \
     $$APPLICATION_PATH/applicationfilemodel.cpp \
+    $$APPLICATION_PATH/applicationfilesynchandler.cpp \
     logservice.cpp
 
 SOURCES += \
     test_filewatcher.cpp \
     test_applicationlog.cpp \
     test_applicationfile.cpp \
+    test_applicationfilesynchandler.cpp \
     main.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"

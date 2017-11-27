@@ -29,17 +29,39 @@ Gauge {
     property alias core: object.core
     property alias file: object.file
     property alias status: object.status
-    property string _mode: getMode()
+    property string _mode: __getMode()
     readonly property string __fileName: object.file.remoteFilePath ? object.file.remoteFilePath.split('/').reverse()[0] : ""
+    property int __lastLine: 0
 
-    id: progressBar
-    value: getProgress()
+    id: root
+    value: __getProgress()
     fancy: false
     minimumValueVisible: false
     maximumValueVisible: false
     valueVisible: false
 
-    function getMode() {
+    QtObject {
+        id: d
+        readonly property int totalLines: status.synced ? status.task.totalLines : 1
+        readonly property int currentLine: status.synced ? status.motion.motionLine : 0
+        readonly property bool taskIsInReliableState: status.synced ? (status.task.execState === ApplicationStatus.TaskWaitingForMotion
+                                                                       || status.task.execState === ApplicationStatus.TaskDone) : false
+
+        property double progress: 0.0
+
+        onCurrentLineChanged: updateProgress()
+        onTotalLinesChanged: updateProgress()
+
+        function updateProgress() {
+            if (!taskIsInReliableState) {
+                return;
+            }
+
+            progress = (totalLines > 0 ? currentLine / totalLines : 0.0);
+        }
+    }
+
+    function __getMode() {
         if ((file !== undefined) && (file.transferState === ApplicationFile.UploadRunning)) {
             return "upload";
         }
@@ -54,7 +76,7 @@ Gauge {
         }
     }
 
-    function getText() {
+    function __getText() {
         if (_mode === "upload") {
             return qsTr("Uploading file %1").arg(file.localFilePath.split('/').reverse()[0]);
         }
@@ -69,7 +91,7 @@ Gauge {
         }
     }
 
-    function getProgress() {
+    function __getProgress() {
         if (_mode === "upload") {
             return file.progress;
         }
@@ -77,12 +99,7 @@ Gauge {
             return file.progress;
         }
         else if (_mode === "running") {
-            var totalLines = status.task.totalLines;
-            var currentLine = status.motion.motionLine;
-            if (currentLine > totalLines) {
-                currentLine = 0;
-            }
-            return (totalLines > 0 ? currentLine / totalLines : 0.0);
+            return d.progress;
         }
         else {
             return 0.0;
@@ -97,7 +114,7 @@ Gauge {
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
-        text: parent.getText()
+        text: parent.__getText()
     }
 
     TouchButton {

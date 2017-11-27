@@ -26,15 +26,16 @@ import Machinekit.Application 1.0
 
 ApplicationAction {
     property var fileDialog
+    property bool remote: false
 
-    property bool _ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
+    readonly property bool _ready: status.synced && file.ready && (file.transferState === ApplicationFile.NoTransfer)
 
     id: openAction
-    text: qsTr("Open File...")
+    text: remote ? qsTr("Open File from Machine...") : qsTr("Open File...")
     //iconName: "document-open"
-    iconSource: "qrc:Machinekit/Application/Controls/icons/document-open"
-    shortcut: "O"
-    tooltip: qsTr("Open G-Code file [%1]").arg(shortcut)
+    iconSource: remote ? "qrc:Machinekit/Application/Controls/icons/document-open-remote" : "qrc:Machinekit/Application/Controls/icons/document-open"
+    shortcut: remote ? "Shift+O" : "O"
+    tooltip: remote ? qsTr("Open G-Code file stored on machine [%1]").arg(shortcut) : qsTr("Open G-Code file stored on local computer [%1]").arg(shortcut)
     onTriggered: {
         if (_ready)
         {

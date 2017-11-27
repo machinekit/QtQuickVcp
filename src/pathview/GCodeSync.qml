@@ -31,6 +31,8 @@ Item {
     QtObject {
         id: d
         readonly property int currentLine: status.synced ? status.motion.motionLine: 1
+        readonly property bool taskIsInReliableState: status.synced ? (status.task.execState === ApplicationStatus.TaskWaitingForMotion
+                                                                       || status.task.execState === ApplicationStatus.TaskDone) : false
         readonly property string file: status.synced ? status.task.file : ""
         property int lastLine: 1
         readonly property bool ready: status.synced
@@ -39,7 +41,7 @@ Item {
         onFileChanged: updateLine()
 
         function updateLine() {
-            if (!d.ready) {
+            if (!d.ready || !taskIsInReliableState) {
                 return;
             }
 

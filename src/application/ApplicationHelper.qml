@@ -21,24 +21,27 @@ import Machinekit.Application 1.0
 
 Item {
     property var status: { "synced": false }
-    property bool ready: true
+    readonly property bool ready: true
 
-    property var axisNamesUpper: getUpperAxisNames(axisNames)
-    property var axisNames: getAxisNames()
-    property string timeUnits: getTimeUnits()
-    property string distanceUnits: getDistanceUnits()
-    property string machineUnits: getMachineUnits()
-    property double timeFactor: (timeUnits === "min") ? 60 : 1
-    property double distanceFactor: {
-            if(machineUnits === "mm") {
-                return (distanceUnits === "mm") ? 1.0 : ((distanceUnits === "in") ? 0.0393700787 : 0.1);
-            }
-            else if (machineUnits == "in"){
-                return (distanceUnits === "mm") ? 25.4 : ((distanceUnits === "in") ? 1.0 : 2.54);
-            }
-            else {
-                return (distanceUnits === "mm") ? 10.0 : ((distanceUnits === "in") ? 0.393700787 : 1.0);
-            }
+    readonly property var axisNamesUpper: getUpperAxisNames(axisNames)
+    readonly property var axisNames: getAxisNames()
+    readonly property var axisIndices: getAxisIndices()
+    readonly property string timeUnits: getTimeUnits()
+    readonly property string distanceUnits: getDistanceUnits()
+    readonly property string machineUnits: getMachineUnits()
+    readonly property double timeFactor: (timeUnits === "min") ? 60 : 1
+    readonly property double distanceFactor: getDistanceFactor()
+
+    function getDistanceFactor() {
+        if(machineUnits === "mm") {
+            return (distanceUnits === "mm") ? 1.0 : ((distanceUnits === "in") ? 0.0393700787 : 0.1);
+        }
+        else if (machineUnits == "in"){
+            return (distanceUnits === "mm") ? 25.4 : ((distanceUnits === "in") ? 1.0 : 2.54);
+        }
+        else {
+            return (distanceUnits === "mm") ? 10.0 : ((distanceUnits === "in") ? 0.393700787 : 1.0);
+        }
     }
 
     function getTimeUnits() {
@@ -120,5 +123,24 @@ Item {
         }
 
         return ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"];
+    }
+
+    function getAxisIndices() {
+        if (status.synced) {
+            var mask = status.config.axisMask;
+            var indices = [];
+            if (mask & 1) indices.push(0);
+            if (mask & 2) indices.push(1);
+            if (mask & 4) indices.push(2);
+            if (mask & 8) indices.push(3);
+            if (mask & 16) indices.push(4);
+            if (mask & 32) indices.push(5);
+            if (mask & 64) indices.push(6);
+            if (mask & 128) indices.push(7);
+            if (mask & 256) indices.push(8);
+            return indices;
+        }
+
+        return [0, 1, 2, 3, 4, 5, 6, 7, 8];
     }
 }

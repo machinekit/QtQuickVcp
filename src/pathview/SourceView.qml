@@ -24,6 +24,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
+import Machinekit.Application 1.0
 import Machinekit.Application.Controls 1.0
 
 Item {
@@ -36,6 +37,25 @@ Item {
     id: root
 
     SystemPalette { id: systemPalette }
+
+    QtObject {
+        id: d
+        readonly property int currentLine: appObject.status.synced ? appObject.status.motion.motionLine : 1
+        readonly property bool taskIsInReliableState: appObject.status.synced ? (appObject.status.task.execState === ApplicationStatus.TaskWaitingForMotion
+                                                                                 || appObject.status.task.execState === ApplicationStatus.TaskDone) : false
+
+        onCurrentLineChanged: {
+            if (!taskIsInReliableState) {
+                return;
+            }
+
+            listView.positionViewAtIndex(currentLine, ListView.Center);
+        }
+    }
+
+    ApplicationObject {
+        id: appObject
+    }
 
     PathViewObject {
         id: object
@@ -79,12 +99,6 @@ Item {
                 anchors.left: parent ? parent.left : undefined
                 anchors.right: parent ? parent.right : undefined
                 height: dummyLabel.height
-
-                /*onLineActiveChanged: {
-                    if (lineActive) {
-                        listView.positionViewAtIndex(index, ListView.Center)
-                    }
-                }*/
 
                 Item {
                     id: lineNumberRect

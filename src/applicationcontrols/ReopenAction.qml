@@ -33,13 +33,7 @@ ApplicationAction {
     iconSource: "qrc:Machinekit/Application/Controls/icons/view-refresh"
     shortcut: "Ctrl+R"
     tooltip: qsTr("Reopen current file [%1]").arg(shortcut)
-    onTriggered: {
-        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
-            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
-        }
-        command.resetProgram('execute');
-        command.openProgram('execute', file.remoteFilePath);
-    }
+    onTriggered: core.reloadProgram()
     enabled: _ready
              && (status.task.file !== "")
              && !status.running

@@ -33,7 +33,8 @@ SOURCES += \
     filewatcher.cpp \
     applicationhelpers.cpp \
     applicationlog.cpp \
-    applicationlogmessage.cpp
+    applicationlogmessage.cpp \
+    applicationfilesynchandler.cpp
 
 HEADERS += \
     plugin/plugin.h \
@@ -58,7 +59,8 @@ HEADERS += \
     filewatcher.h \
     applicationhelpers.h \
     applicationlog.h \
-    applicationlogmessage.h
+    applicationlogmessage.h \
+    applicationfilesynchandler.h
 
 RESOURCES += \
     application.qrc

@@ -108,7 +108,7 @@ private:
 signals:
     void modelChanged(GCodeProgramModel * arg);
     void interpreterStateChanged(InterpreterState arg);
-    void interpreterNoteChanged(QString arg);
+    void interpreterNoteChanged(const QString &arg);
     void connectedChanged(bool arg);
 }; // class PreviewClient
 } // namespace qtquickvcp
