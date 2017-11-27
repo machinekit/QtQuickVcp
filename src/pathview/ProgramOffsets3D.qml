@@ -88,6 +88,7 @@ Canvas3D {
     Component.onCompleted: {
         onTextSizeChanged.connect(needsUpdate);
         onColorChanged.connect(needsUpdate);
+        onLineWidthChanged.connect(needsUpdate);
         onG5xNamesChanged.connect(needsUpdate);
         onG5xIndexChanged.connect(needsUpdate);
         onG5xOffsetChanged.connect(needsUpdate);
