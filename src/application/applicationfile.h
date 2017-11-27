@@ -250,10 +250,12 @@ private:
     void stop() {}
     void updateState(TransferState state);
     void updateError(TransferError error, const QString &errorString);
-    QString applicationFilePath(const QString &fileName, const QString &serverDirectory) const;
     void initializeFtp();
     void cleanupFtp();
     void cleanupFile();
+
+protected:
+    QString applicationFilePath(const QString &fileName, const QString &serverDirectory) const;
 
 private slots:
     void transferProgress(qint64 bytesSent, qint64 bytesTotal);
