@@ -172,8 +172,13 @@ Item {
 
         onStartFileDownload: {
             applicationFile.remoteFilePath = filePath;
-            applicationFile.remotePath = remotePath;
+            applicationFile.remotePath = remotePath;  // prevents race condition
             applicationFile.startDownload();
+        }
+
+        onRemotePathChanged: {
+            // need to set remotePath if file is going to be uploaded from local computer
+            applicationFile.remotePath = d.remotePath;
         }
     }
 
