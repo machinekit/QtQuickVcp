@@ -32,7 +32,7 @@ FileDialog {
     id: fileDialog
     title: qsTr("Open File")
     onAccepted: {
-        file.localFilePath = fileUrl;
+        file.localFilePath = fileUrl.toString();
         file.startUpload();
     }
 
