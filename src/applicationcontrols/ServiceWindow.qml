@@ -25,6 +25,8 @@ import QtQuick.Controls 1.2
 import QtQuick.Window 2.0
 
 Rectangle {
+    default property alias data: container.data
+
     /*! This property holds the title of the service window.
     */
     property string title: "Window"
@@ -110,11 +112,11 @@ Rectangle {
     */
     function updateServices() {
         var list = [];
-        var nestedList = _recurseObjects(main.data, "Service");
+        var nestedList = _recurseObjects(root.data, "Service");
         if (nestedList.length > 0) {
             list = list.concat(nestedList);
         }
-        main.services = list;
+        root.services = list;
     }
 
     /*! \internal */
@@ -166,12 +168,12 @@ Rectangle {
        updateServices();
     }
 
-    id: main
+    id: root
     color: systemPalette.window
 
     onBackgroundChanged: {
         if (background !== discoveryPage) {
-            background.parent = main;
+            background.parent = root;
             background.z = 1000;
         }
     }
@@ -183,6 +185,11 @@ Rectangle {
 
     Label {
         id: dummyText
+    }
+
+    Item {
+        id: container
+        anchors.fill: parent
     }
 
     /* loads the default discovery page if necessary */
@@ -227,7 +234,7 @@ Rectangle {
                 anchors.top: parent.top
                 anchors.margins: Screen.pixelDensity
                 text: qsTr("Back")
-                onClicked: main.disconnect()
+                onClicked: root.disconnect()
             }
 
             Label {
@@ -245,7 +252,7 @@ Rectangle {
 
                 anchors.centerIn: parent
                 running: true
-                height: Math.min(main.width, main.height) * 0.15
+                height: Math.min(root.width, root.height) * 0.15
                 width: height
             }
 
@@ -256,7 +263,7 @@ Rectangle {
                 anchors.topMargin: Screen.pixelDensity
 
                 Repeater {
-                    model: main._requiredServices.length
+                    model: root._requiredServices.length
 
                     CheckBox {
                         id: checkBox
@@ -283,11 +290,12 @@ Rectangle {
         State {
             name: "disconnected"
             PropertyChanges { target: background; opacity: 1.0; enabled: true }
+            PropertyChanges { target: container; visible: false; enabled: false }
         },
         State {
             name: "connected"
             PropertyChanges { target: background; opacity: 0.0; enabled: false }
-            PropertyChanges { target: main; enabled: true }
+            PropertyChanges { target: container; visible: true; enabled: true }
         }
     ]
 }
