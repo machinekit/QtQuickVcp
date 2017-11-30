@@ -44,6 +44,8 @@ import Machinekit.Service 1.0
 */
 
 Rectangle {
+    default property alias data: container.data
+
     /*! This property holds the title of the application window.
     */
     property string title: "HAL Application Template"
@@ -144,6 +146,18 @@ Rectangle {
     /*! \internal */
     property bool _ready: false
 
+    /*!
+        Updates the services of this window.
+    */
+    function updateServices() {
+        var list = [];
+        var nestedList = _recurseObjects(root.data, "Service");
+        if (nestedList.length > 0) {
+            list = list.concat(nestedList);
+        }
+        root.services = list;
+    }
+
     /*! \internal */
     function _evaluateReady() {
         for (var i = 0; i < _requiredServices.length; ++i) {
@@ -189,15 +203,10 @@ Rectangle {
     signal shutdown()
 
     Component.onCompleted: {
-        var list = main.services;
-        var nestedList = _recurseObjects(main.data, "Service");
-        if (nestedList.length > 0) {
-            list = list.concat(nestedList);
-        }
-        main.services = list;
+        updateServices();
     }
 
-    id: main
+    id: root
 
     width: 500
     height: 800
@@ -212,14 +221,47 @@ Rectangle {
         id: dummyText
     }
 
+    Item {
+        id: container
+        anchors.fill: parent
+
+        Service {
+            id: halrcompService
+            type: "halrcomp"
+            required: true
+        }
+
+        Service {
+            id: halrcmdService
+            type: "halrcmd"
+            required: true
+        }
+
+        HalRemoteComponent {
+            id: remoteComponent
+
+            name: root.name
+            halrcmdUri: halrcmdService.uri
+            halrcompUri: halrcompService.uri
+            ready: (halrcompService.ready && halrcmdService.ready) || remoteComponent.connected
+            containerItem: root
+        }
+    }
+
     Rectangle {
         id: discoveryPage
 
         anchors.fill: parent
         visible: false
-        z: 100
         color: systemPalette.window
 
+        Button {
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: Screen.pixelDensity
+            text: qsTr("Back")
+            onClicked: root.disconnect()
+        }
 
         Label {
             id: connectingLabel
@@ -238,7 +280,7 @@ Rectangle {
 
             anchors.centerIn: parent
             running: true
-            height: parent.height * 0.15
+            height: Math.min(root.width, root.height) * 0.15
             width: height
         }
 
@@ -249,7 +291,7 @@ Rectangle {
             anchors.topMargin: Screen.pixelDensity
 
             Repeater {
-                model: main._requiredServices.length
+                model: root._requiredServices.length
 
                 CheckBox {
                     id: checkBox
@@ -276,28 +318,6 @@ Rectangle {
             font.pointSize: dummyText.font.pointSize * 1.1
             text: qsTr("HAL component error:") + "\n" + remoteComponent.errorString
         }
-    }
-
-    Service {
-        id: halrcompService
-        type: "halrcomp"
-        required: true
-    }
-
-    Service {
-        id: halrcmdService
-        type: "halrcmd"
-        required: true
-    }
-
-    HalRemoteComponent {
-        id: remoteComponent
-
-        name: main.name
-        halrcmdUri: halrcmdService.uri
-        halrcompUri: halrcompService.uri
-        ready: (halrcompService.ready && halrcmdService.ready) || remoteComponent.connected
-        containerItem: parent
     }
 
     /* This timer is a workaround to make the discoveryPage invisible in QML designer */
@@ -334,6 +354,7 @@ Rectangle {
             PropertyChanges { target: connectingIndicator; visible: true }
             PropertyChanges { target: serviceCheckColumn; visible: true }
             PropertyChanges { target: errorLabel; visible: false }
+            PropertyChanges { target: container; visible: false; enabled: false }
         },
         State {
             name: "error"
@@ -342,16 +363,17 @@ Rectangle {
             PropertyChanges { target: connectingIndicator; visible: false }
             PropertyChanges { target: serviceCheckColumn; visible: false }
             PropertyChanges { target: errorLabel; visible: true }
+            PropertyChanges { target: container; visible: false; enabled: false }
         },
         State {
             name: "timeout"
             PropertyChanges { target: discoveryPage; opacity: 0.0; enabled: false }
-            PropertyChanges { target: main; enabled: false }
+            PropertyChanges { target: container; visible: true; enabled: false }
         },
         State {
             name: "connected"
             PropertyChanges { target: discoveryPage; opacity: 0.0; enabled: false }
-            PropertyChanges { target: main; enabled: true }
+            PropertyChanges { target: container; visible: true; enabled: true }
         }
     ]
 
