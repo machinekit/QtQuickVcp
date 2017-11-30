@@ -188,10 +188,12 @@ Linuxcnc needs to know which user-inferface it should use. For mkwrapper you nee
     INTRO_TIME = 0
 
 ##### Modify the HAL-file
-For some user-interface you need a running Haltalk server. You can add one to you existing configuration by adding following in the beginning of the HAL-file:
+For some user-interface you need a running Haltalk server. You can add one to you existing configuration by adding following in the **end of the HAL file**:
 
     # start haltalk server
     loadusr -W haltalk
+
+**Note:** It is important to add the above line to the **end of the HAL file**, not in the beginning or else you will encounter connection problems.
 
 ##### Create a Run-Script
 Machinekit configurations need a few actions to be performed before linuxcnc can start. Take a look at the following script and modify it to fit your configuration. 
