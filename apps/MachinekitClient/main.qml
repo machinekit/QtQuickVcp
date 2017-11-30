@@ -98,7 +98,7 @@ Item {
 
     function processOption(option, argument)
     {
-        if (option === '--config')
+        if ((option === '--config') || (option === '-c'))
         {
             connectionWindow.configurationFilePath = argument;
         }

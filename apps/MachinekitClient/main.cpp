@@ -21,7 +21,10 @@
 ****************************************************************************/
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QCommandLineParser>
 #include <QIcon>
+
+#include "../../src/application/revision.h"
 
 int main(int argc, char *argv[])
 {
@@ -29,9 +32,33 @@ int main(int argc, char *argv[])
     app.setOrganizationName("Machinekit Project");
     app.setOrganizationDomain("machinekit.io");
     app.setApplicationName("MachinekitClient");
+    app.setApplicationVersion(QString(REVISION));
     app.setWindowIcon(QIcon(":/icons/machinekit"));
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QCoreApplication::translate("main", "MachinekitClient - A generic client for QtQuickVcp based user interfaces."));
+    parser.addHelpOption();
+    parser.addVersionOption();
+    QCommandLineOption configOption(QStringList() << "c" << "config",
+        QCoreApplication::translate("main", "Load configuration from <file>."),
+        QCoreApplication::translate("main", "file"));
+    parser.addOption(configOption);
+#ifdef QT_DEBUG
+    QCommandLineOption testDeploymentOption(QStringList() << "t" << "test-deployment",
+        QCoreApplication::translate("main", "Test the application deployment and exit application."));
+    parser.addOption(testDeploymentOption);
+#endif
 #ifdef Q_OS_WIN
-    app.setAttribute(Qt::AA_UseOpenGLES);
+    QCommandLineOption forceAngleOption(QStringList() << "a" << "angle",
+          QCoreApplication::translate("main", "Force ANGLE OpenGL backend."));
+    parser.addOption(forceAngleOption);
+#endif
+    parser.process(app);
+
+#ifdef Q_OS_WIN
+    if (parser.isSet(forceAngleOption)) {
+        app.setAttribute(Qt::AA_UseOpenGLES);
+    }
 #endif
 
     QQmlApplicationEngine engine;
