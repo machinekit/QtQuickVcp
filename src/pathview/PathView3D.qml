@@ -374,7 +374,7 @@ GLView3D {
     ProgramExtents3D {
         id: programExtents
         visible: pathView.programVisible && pathView.programExtentsVisible
-        position: Qt.vector3d(coordinates.g5xOffset.x, coordinates.g5xOffset.y, coordinates.g5xOffset.z)
+        position: coordinates.position
         axes: pathView.axes
         maximum: path.maximumExtents
         minimum: path.minimumExtents
@@ -389,9 +389,9 @@ GLView3D {
     }
 
     Coordinate3D {
-        property var g5xOffset: status.synced ? status.motion.g5xOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
-        property var g92Offset: status.synced ? status.motion.g92Offset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
-        property int positionOffset: status.synced ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
+        readonly property var g5xOffset: status.synced ? status.motion.g5xOffset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
+        readonly property var g92Offset: status.synced ? status.motion.g92Offset : {"x":0.12345, "y":0.234,"z":123.12,"a":324.3}
+        readonly property int positionOffset: status.synced ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
 
         id: coordinates
         visible: pathView.coordinateVisible
@@ -461,7 +461,7 @@ GLView3D {
     Path3D {
         id: path
         visible: pathView.programVisible
-        position: Qt.vector3d(coordinates.g5xOffset.x, coordinates.g5xOffset.y, coordinates.g5xOffset.z)
+        position: coordinates.position
         arcFeedColor: pathView.colors["arc_feed"]
         straightFeedColor: pathView.colors["straight_feed"]
         traverseColor: pathView.colors["traverse"]
