@@ -13,7 +13,7 @@ using namespace machinetalk;
 namespace qtquickvcp {
 /*!
     \qmltype HalRemoteComponent
-    \instantiates QHalRemoteComponent
+    \instantiates qtquickvcp::HalRemoteComponent
     \inqmlmodule Machinekit.HalRemote
     \brief A HAL remote component.
     \ingroup halremote

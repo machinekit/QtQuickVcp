@@ -33,7 +33,7 @@ namespace qtquickvcp {
 
 /*!
     \qmltype MjpegStreamerClient
-    \instantiates QMjpegStreamerClient
+    \instantiates qtquickvcp::MjpegStreamerClient
     \inqmlmodule Machinekit.HalRemote
     \brief Client for a MJPEG video stream
     \ingroup videoview

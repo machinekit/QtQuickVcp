@@ -25,7 +25,7 @@ namespace qtquickvcp {
 
 /*!
     \qmltype HalPin
-    \instantiates QHalPin
+    \instantiates qtquickvcp::HalPin
     \inqmlmodule Machinekit.HalRemote
     \brief A HAL pin.
     \ingroup halremote

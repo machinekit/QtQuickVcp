@@ -68,7 +68,7 @@ GLView3D {
         "backplotfeed": Qt.rgba(0.75, 0.25, 0.25, 0.75),
         "machine_limits": Qt.rgba(1.0, 0.0, 0.0, 1.0)
     }
-    property int axes: _ready ? status.config.axes : 3
+    property int axes: __ready ? status.config.axes : 3
     property string viewMode: "Perspective"
     property real cameraZoom: 0.95
     property vector3d cameraOffset: Qt.vector3d(0, 0, 0)
@@ -89,192 +89,16 @@ GLView3D {
     property bool offsetsVisible: object.settings.initialized && object.settings.values.dro.showOffsets
     property real gridInterval: object.settings.initialized ? object.settings.values.preview.gridInterval : 100.0
 
-    property bool _ready: status.synced
-    property double _distanceFactor: helper.ready ? helper.distanceFactor : 1.0
+    readonly property bool __ready: status.synced
+    readonly property double __distanceFactor: helper.ready ? helper.distanceFactor : 1.0
 
     id: pathView
 
     enabled: object.settings.initialized && object.settings.values.preview.enable
     visible: enabled
 
-    camera: Camera3D {
-        property real heading: pathView.cameraHeading
-        property real pitch: pathView.cameraPitch
-        property real distance: ((programExtents.valid && zoomToProgram) ? (programExtents.size.length() + 40) : boundingBox.size.length()) * 4.5
-        property vector3d centerOffset: pathView.cameraOffset
-
-        id: camera
-        projectionType: {
-            switch (pathView.viewMode) {
-            case "Top":
-            case "RotatedTop":
-            case "Front":
-            case "Side":
-                return Camera3D.Orthographic;
-            case "Perspective":
-                return Camera3D.Perspective;
-            default:
-                return Camera3D.Perspective;
-            }
-        }
-        eye: {
-            var x = camera.centerOffset.x;
-            var y = camera.centerOffset.y;
-            var z = camera.centerOffset.z;
-
-            switch (pathView.viewMode) {
-            case "Top":
-            case "RotatedTop":
-                z = 10000;
-                if (programExtents.valid && zoomToProgram) {
-                    x += programExtents.center.x + programExtents.position.x;
-                    y += programExtents.center.y + programExtents.position.y;
-                } else {
-                    x += boundingBox.center.x;
-                    y += boundingBox.center.y;
-                }
-                break
-            case "Front":
-                y = -10000;
-                if (programExtents.valid && zoomToProgram) {
-                    x += programExtents.center.x + programExtents.position.x;
-                    z += programExtents.center.z + programExtents.position.z;
-                } else {
-                    x += boundingBox.center.x;
-                    z += boundingBox.center.z;
-                }
-                break
-            case "Side":
-                x = 10000
-                if (programExtents.valid && zoomToProgram) {
-                    y += programExtents.center.y + programExtents.position.y;
-                    z += programExtents.center.z + programExtents.position.z;
-                } else {
-                    y += boundingBox.center.y;
-                    z += boundingBox.center.z;
-                }
-                break
-            case "Perspective":
-                if (programExtents.valid && zoomToProgram) {
-                    x += programExtents.center.x + programExtents.position.x;
-                    y += programExtents.center.y + programExtents.position.y;
-                    z += programExtents.center.z + programExtents.position.z;
-                } else {
-                    x += boundingBox.center.x;
-                    y += boundingBox.center.y;
-                    z += boundingBox.center.z;
-                }
-                x += distance * Math.sin(Math.PI*pitch/180) * Math.cos(Math.PI*heading/180) / pathView.cameraZoom;
-                y += distance * Math.sin(Math.PI*pitch/180) * Math.sin(Math.PI*heading/180) / pathView.cameraZoom;
-                z += distance * Math.cos(Math.PI*pitch/180) / pathView.cameraZoom;
-                break;
-            default:
-                break;
-            }
-
-            return Qt.vector3d(x, y, z);
-        }
-        center: {
-            var x = camera.centerOffset.x;
-            var y = camera.centerOffset.y;
-            var z = camera.centerOffset.z;
-
-
-            switch (pathView.viewMode) {
-            case "Top":
-            case "RotatedTop":
-            case "Perspective":
-                if (programExtents.valid && zoomToProgram) {
-                    x += programExtents.center.x +  programExtents.position.x;
-                    y += programExtents.center.y +  programExtents.position.y;
-                    z += programExtents.center.z +  programExtents.position.z;
-                } else {
-                    x += boundingBox.center.x;
-                    y += boundingBox.center.y;
-                    z += boundingBox.center.z;
-                }
-                break;
-            case "Front":
-                y = 0
-                if (programExtents.valid && zoomToProgram) {
-                    x += programExtents.center.x + programExtents.position.x;
-                    z += programExtents.center.z + programExtents.position.z;
-                } else {
-                    x += boundingBox.center.x;
-                    z += boundingBox.center.z;
-                }
-                break;
-            case "Side":
-                x = 0
-                if (programExtents.valid && zoomToProgram) {
-                    y = programExtents.center.y + programExtents.position.y;
-                    z = programExtents.center.z + programExtents.position.z;
-                } else {
-                    y += boundingBox.center.y;
-                    z += boundingBox.center.z;
-                }
-                break;
-            default:
-                break;
-            }
-
-            return Qt.vector3d(x,y,z);
-        }
-        upVector: {
-            switch (pathView.viewMode) {
-            case "Top":
-                return Qt.vector3d(0, 1, 0);
-            case "RotatedTop":
-                return Qt.vector3d(-1, 0, 0);
-            default:
-                return Qt.vector3d(0, 0, 1);
-            }
-        }
-        viewSize: {
-            var side;
-            var u;
-            var v;
-            var viewRatio;
-            var objectRatio;
-
-            switch (pathView.viewMode) {
-            case "Top":
-            case "RotatedTop":
-                if (programExtents.valid && zoomToProgram) {
-                    side = (Math.max(programExtents.size.x, programExtents.size.y) + 40 * sizeFactor) / pathView.cameraZoom;
-                } else {
-                    side = Math.max(boundingBox.size.x, boundingBox.size.y) / pathView.cameraZoom;
-                }
-                return Qt.size(side, side);
-            case "Front":
-                if (programExtents.valid && zoomToProgram) {
-                    side = (Math.max(programExtents.size.x, programExtents.size.z)  + 40 * sizeFactor) / pathView.cameraZoom;
-                } else {
-                    side = Math.max(boundingBox.size.x, boundingBox.size.z) / pathView.cameraZoom;
-                }
-                return Qt.size(side, side);
-            case "Side":
-                if (programExtents.valid && zoomToProgram) {
-                    side = (Math.max(programExtents.size.y, programExtents.size.z)  + 40 * sizeFactor) / pathView.cameraZoom;
-                } else {
-                    side = Math.max(boundingBox.size.y, boundingBox.size.z) / pathView.cameraZoom;
-                }
-                return Qt.size(side, side);
-            default:
-                return Qt.size(1,1);
-            }
-        }
-        nearPlane: 5.0
-        farPlane: 100000.0
-    }
-
-    light: Light3D {
-        id: light
-        position: boundingBox.center
-        intensities: Qt.vector3d(1.0, 1.0, 1.0)
-        ambientCoefficient: 0.7
-        attenuation: 0.01
-    }
+    camera: camera3d
+    light: light3d
 
     ApplicationObject {
         id: object
@@ -284,10 +108,190 @@ GLView3D {
         id: pathViewObject
     }
 
+    Camera3D {
+            readonly property real heading: pathView.cameraHeading
+            readonly property real pitch: pathView.cameraPitch
+            readonly property real distance: ((programExtents.valid && zoomToProgram) ? (programExtents.size.length() + 40) : boundingBox.size.length()) * 4.5
+            readonly property vector3d centerOffset: pathView.cameraOffset
+
+            id: camera3d
+            projectionType: {
+                switch (pathView.viewMode) {
+                case "Top":
+                case "RotatedTop":
+                case "Front":
+                case "Side":
+                    return Camera3D.Orthographic;
+                case "Perspective":
+                    return Camera3D.Perspective;
+                default:
+                    return Camera3D.Perspective;
+                }
+            }
+            eye: {
+                var x = camera3d.centerOffset.x;
+                var y = camera3d.centerOffset.y;
+                var z = camera3d.centerOffset.z;
+
+                switch (pathView.viewMode) {
+                case "Top":
+                case "RotatedTop":
+                    z = 10000;
+                    if (programExtents.valid && zoomToProgram) {
+                        x += programExtents.center.x + programExtents.position.x;
+                        y += programExtents.center.y + programExtents.position.y;
+                    } else {
+                        x += boundingBox.center.x;
+                        y += boundingBox.center.y;
+                    }
+                    break
+                case "Front":
+                    y = -10000;
+                    if (programExtents.valid && zoomToProgram) {
+                        x += programExtents.center.x + programExtents.position.x;
+                        z += programExtents.center.z + programExtents.position.z;
+                    } else {
+                        x += boundingBox.center.x;
+                        z += boundingBox.center.z;
+                    }
+                    break
+                case "Side":
+                    x = 10000
+                    if (programExtents.valid && zoomToProgram) {
+                        y += programExtents.center.y + programExtents.position.y;
+                        z += programExtents.center.z + programExtents.position.z;
+                    } else {
+                        y += boundingBox.center.y;
+                        z += boundingBox.center.z;
+                    }
+                    break
+                case "Perspective":
+                    if (programExtents.valid && zoomToProgram) {
+                        x += programExtents.center.x + programExtents.position.x;
+                        y += programExtents.center.y + programExtents.position.y;
+                        z += programExtents.center.z + programExtents.position.z;
+                    } else {
+                        x += boundingBox.center.x;
+                        y += boundingBox.center.y;
+                        z += boundingBox.center.z;
+                    }
+                    x += distance * Math.sin(Math.PI*pitch/180) * Math.cos(Math.PI*heading/180) / pathView.cameraZoom;
+                    y += distance * Math.sin(Math.PI*pitch/180) * Math.sin(Math.PI*heading/180) / pathView.cameraZoom;
+                    z += distance * Math.cos(Math.PI*pitch/180) / pathView.cameraZoom;
+                    break;
+                default:
+                    break;
+                }
+
+                return Qt.vector3d(x, y, z);
+            }
+            center: {
+                var x = camera3d.centerOffset.x;
+                var y = camera3d.centerOffset.y;
+                var z = camera3d.centerOffset.z;
+
+
+                switch (pathView.viewMode) {
+                case "Top":
+                case "RotatedTop":
+                case "Perspective":
+                    if (programExtents.valid && zoomToProgram) {
+                        x += programExtents.center.x +  programExtents.position.x;
+                        y += programExtents.center.y +  programExtents.position.y;
+                        z += programExtents.center.z +  programExtents.position.z;
+                    } else {
+                        x += boundingBox.center.x;
+                        y += boundingBox.center.y;
+                        z += boundingBox.center.z;
+                    }
+                    break;
+                case "Front":
+                    y = 0
+                    if (programExtents.valid && zoomToProgram) {
+                        x += programExtents.center.x + programExtents.position.x;
+                        z += programExtents.center.z + programExtents.position.z;
+                    } else {
+                        x += boundingBox.center.x;
+                        z += boundingBox.center.z;
+                    }
+                    break;
+                case "Side":
+                    x = 0
+                    if (programExtents.valid && zoomToProgram) {
+                        y = programExtents.center.y + programExtents.position.y;
+                        z = programExtents.center.z + programExtents.position.z;
+                    } else {
+                        y += boundingBox.center.y;
+                        z += boundingBox.center.z;
+                    }
+                    break;
+                default:
+                    break;
+                }
+
+                return Qt.vector3d(x,y,z);
+            }
+            upVector: {
+                switch (pathView.viewMode) {
+                case "Top":
+                    return Qt.vector3d(0, 1, 0);
+                case "RotatedTop":
+                    return Qt.vector3d(-1, 0, 0);
+                default:
+                    return Qt.vector3d(0, 0, 1);
+                }
+            }
+            viewSize: {
+                var side;
+                var u;
+                var v;
+                var viewRatio;
+                var objectRatio;
+
+                switch (pathView.viewMode) {
+                case "Top":
+                case "RotatedTop":
+                    if (programExtents.valid && zoomToProgram) {
+                        side = (Math.max(programExtents.size.x, programExtents.size.y) + 40 * sizeFactor) / pathView.cameraZoom;
+                    } else {
+                        side = Math.max(boundingBox.size.x, boundingBox.size.y) / pathView.cameraZoom;
+                    }
+                    return Qt.size(side, side);
+                case "Front":
+                    if (programExtents.valid && zoomToProgram) {
+                        side = (Math.max(programExtents.size.x, programExtents.size.z)  + 40 * sizeFactor) / pathView.cameraZoom;
+                    } else {
+                        side = Math.max(boundingBox.size.x, boundingBox.size.z) / pathView.cameraZoom;
+                    }
+                    return Qt.size(side, side);
+                case "Side":
+                    if (programExtents.valid && zoomToProgram) {
+                        side = (Math.max(programExtents.size.y, programExtents.size.z)  + 40 * sizeFactor) / pathView.cameraZoom;
+                    } else {
+                        side = Math.max(boundingBox.size.y, boundingBox.size.z) / pathView.cameraZoom;
+                    }
+                    return Qt.size(side, side);
+                default:
+                    return Qt.size(1,1);
+                }
+            }
+            nearPlane: 5.0
+            farPlane: 100000.0
+        }
+
+    Light3D {
+        id: light3d
+        position: boundingBox.center
+        intensities: Qt.vector3d(1.0, 1.0, 1.0)
+        ambientCoefficient: 0.7
+
+        attenuation: 0.01
+    }
+
     Cylinder3D {
-        property var toolInfo: _ready ? getToolInfo() : {"diameter": 0.0, "length": 0.0, "valid": false}
-        property real toolDiameter: toolInfo.diameter
-        property real toolLength: toolInfo.length
+        readonly property var toolInfo: __ready ? getToolInfo() : {"diameter": 0.0, "length": 0.0, "valid": false}
+        readonly property real toolDiameter: toolInfo.diameter
+        readonly property real toolLength: toolInfo.length
 
         function getToolInfo()
         {
@@ -313,9 +317,9 @@ GLView3D {
 
         id: tool
         visible: pathView.toolVisible
-        position.x: _ready ? status.motion.position.x - status.io.toolOffset.x : 0
-        position.y: _ready ? status.motion.position.y - status.io.toolOffset.y : 0
-        position.z: (_ready ? status.motion.position.z - status.io.toolOffset.z : 0) + height
+        position.x: __ready ? status.motion.position.x - status.io.toolOffset.x : 0
+        position.y: __ready ? status.motion.position.y - status.io.toolOffset.y : 0
+        position.z: (__ready ? status.motion.position.z - status.io.toolOffset.z : 0) + height
 
         cone: toolInfo.valid ? false : true
         radius: toolInfo.valid ? toolDiameter / 2.0 : 5.0 * pathView.sizeFactor
@@ -363,12 +367,12 @@ GLView3D {
         axes: pathView.axes
         color: pathView.colors["machine_limits"]
         lineStippleLength: (pathView.viewMode === "Perspective") ? 0.02 * camera.distance / pathView.cameraZoom : 0.02
-        minimum.x: _ready ? status.config.axis[0].minPositionLimit : 0
-        minimum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].minPositionLimit : 0
-        minimum.z: (_ready && status.config.axis.length > 2) ? status.config.axis[2].minPositionLimit : 0
-        maximum.x: _ready ? status.config.axis[0].maxPositionLimit : 0
-        maximum.y: (_ready && status.config.axis.length > 1) ? status.config.axis[1].maxPositionLimit : 0
-        maximum.z: (_ready && status.config.axis.length > 2) ? status.config.axis[2].maxPositionLimit : 0
+        minimum.x: __ready ? status.config.axis[0].minPositionLimit : 0
+        minimum.y: (__ready && status.config.axis.length > 1) ? status.config.axis[1].minPositionLimit : 0
+        minimum.z: (__ready && status.config.axis.length > 2) ? status.config.axis[2].minPositionLimit : 0
+        maximum.x: __ready ? status.config.axis[0].maxPositionLimit : 0
+        maximum.y: (__ready && status.config.axis.length > 1) ? status.config.axis[1].maxPositionLimit : 0
+        maximum.z: (__ready && status.config.axis.length > 2) ? status.config.axis[2].maxPositionLimit : 0
     }
 
     ProgramExtents3D {
@@ -381,11 +385,11 @@ GLView3D {
         limitMinimum: boundingBox.minimum.minus(position)
         limitMaximum: boundingBox.maximum.minus(position)
         textSize: 4 * pathView.sizeFactor
-        decimals: (_ready && (status.interp.programUnits === ApplicationStatus.CanonUnitsInch)) ? 3 : 2
+        decimals: (__ready && (status.interp.programUnits === ApplicationStatus.CanonUnitsInch)) ? 3 : 2
         color: pathView.colors["label_ok"]
         limitColor: pathView.colors["label_limit"]
         viewMode: pathView.viewMode
-        scaleFactor: pathView._distanceFactor
+        scaleFactor: pathView.__distanceFactor
     }
 
     Coordinate3D {
@@ -470,8 +474,8 @@ GLView3D {
         backplotTraverseColor: pathView.colors["backplottraverse"]
         selectedColor: pathView.colors["selected"]
         activeColor: pathView.colors["active"]
-        traverseLineStippleLength: (pathView.viewMode === "Perspective") ? 0.015 * camera.distance / pathView.cameraZoom : 0.015
-        arcDivision: _ready ? status.config.arcdivision : 16
+        traverseLineStippleLength: (pathView.viewMode === "Perspective") ? 0.015 * camera3d.distance / pathView.cameraZoom : 0.015
+        arcDivision: __ready ? status.config.arcdivision : 16
         model: (pathView.model !== undefined) ? pathView.model : tmpModel
     }
 
@@ -508,7 +512,7 @@ GLView3D {
                     return;
                 }
 
-                var scaleFactor = camera.viewSize.height/pathView.height;
+                var scaleFactor = camera3d.viewSize.height/pathView.height;
                 var xOffset = lastX - Math.floor(mouseX);
                 var yOffset = lastY - Math.floor(mouseY);
 
