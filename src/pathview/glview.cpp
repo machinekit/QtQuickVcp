@@ -497,7 +497,7 @@ void GLView::setupCube()
 void GLView::setupShaders()
 {
     // model shader
-    m_modelProgram = new QOpenGLShaderProgram();
+    m_modelProgram = new QOpenGLShaderProgram(this);
     m_modelProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/ModelVertexShader.glsl");
     m_modelProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/ModelFragmentShader.glsl");
     m_modelProgram->link();
@@ -517,7 +517,7 @@ void GLView::setupShaders()
     m_selectionModeLocation = m_modelProgram->uniformLocation("selectionMode");
 
     // line shader
-    m_lineProgram = new QOpenGLShaderProgram();
+    m_lineProgram = new QOpenGLShaderProgram(this);
     m_lineProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/LineVertexShader.glsl");
     m_lineProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/LineFragmentShader.glsl");
     m_lineProgram->link();
@@ -533,7 +533,7 @@ void GLView::setupShaders()
     m_lineSelectionModeLocation = m_lineProgram->uniformLocation("selectionMode");
 
     // text shader
-    m_textProgram = new QOpenGLShaderProgram();
+    m_textProgram = new QOpenGLShaderProgram(this);
     m_textProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/TextVertexShader.glsl");
     m_textProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/TextFragmentShader.glsl");
     m_textProgram->link();
@@ -1608,18 +1608,18 @@ void GLView::paint()
 void GLView::cleanup()
 {
     if (m_modelProgram) {
-        delete m_modelProgram;
-        m_modelProgram = 0;
+        m_modelProgram->deleteLater();
+        m_modelProgram = nullptr;
     }
 
     if (m_lineProgram) {
-        delete m_lineProgram;
-        m_lineProgram = 0;
+        m_lineProgram->deleteLater();
+        m_lineProgram = nullptr;
     }
 
     if (m_textProgram) {
-        delete m_textProgram;
-        m_textProgram = 0;
+        m_textProgram->deleteLater();
+        m_textProgram = nullptr;
     }
 }
 
