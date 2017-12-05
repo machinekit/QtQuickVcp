@@ -5,82 +5,82 @@
     <name>ClearBackplotAction</name>
     <message>
         <source>Clear Live Plot</source>
-        <translation type="unfinished"></translation>
+        <translation>Очистить график</translation>
     </message>
     <message>
         <source>Clear live plot [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Очистить график [%1]</translation>
     </message>
 </context>
 <context>
     <name>SourceView</name>
     <message>
         <source>Run Program from Line %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустить программу с команды %1</translation>
     </message>
 </context>
 <context>
     <name>ViewModeAction</name>
     <message>
         <source>Front</source>
-        <translation type="unfinished"></translation>
+        <translation>Спереди</translation>
     </message>
     <message>
         <source>Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Сверху</translation>
     </message>
     <message>
         <source>Rotated Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Сверху с поворотом</translation>
     </message>
     <message>
         <source>Side</source>
-        <translation type="unfinished"></translation>
+        <translation>Сбоку</translation>
     </message>
     <message>
         <source>Perspective</source>
-        <translation type="unfinished"></translation>
+        <translation>Перспектива</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <source>Front view</source>
-        <translation type="unfinished"></translation>
+        <translation>Вид спереди</translation>
     </message>
     <message>
         <source>Top view</source>
-        <translation type="unfinished"></translation>
+        <translation>Вид сверху</translation>
     </message>
     <message>
         <source>Rotated top view</source>
-        <translation type="unfinished"></translation>
+        <translation>Вид сверху с поворотом</translation>
     </message>
     <message>
         <source>Side view</source>
-        <translation type="unfinished"></translation>
+        <translation>Вид сбоку</translation>
     </message>
 </context>
 <context>
     <name>ZoomInAction</name>
     <message>
         <source>Zoom In</source>
-        <translation type="unfinished"></translation>
+        <translation>Приблизить</translation>
     </message>
 </context>
 <context>
     <name>ZoomOriginalAction</name>
     <message>
         <source>Reset Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Сбросить</translation>
     </message>
 </context>
 <context>
     <name>ZoomOutAction</name>
     <message>
         <source>Zoom Out</source>
-        <translation type="unfinished"></translation>
+        <translation>Отдалить</translation>
     </message>
 </context>
 </TS>
