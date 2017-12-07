@@ -60,6 +60,7 @@ AbstractDigitalReadOut {
             id: root
 
             Label {
+                id: typeLabel
                 width: dummyLabel.font.pixelSize * 2
 
                 color: dummyLabel.color
@@ -68,9 +69,9 @@ AbstractDigitalReadOut {
 
                 Loader {
                     sourceComponent: homedSymbol
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: typeLabel.top
+                    anchors.bottom: typeLabel.bottom
+                    anchors.horizontalCenter: typeLabel.horizontalCenter
                     width: height
                     onLoaded: {
                         item.color = Qt.binding(function(){ return dummyLabel.color; });
