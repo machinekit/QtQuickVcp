@@ -44,105 +44,34 @@ public:
 
     virtual void paint(GLView *glView) = 0; // must be implemented
 
-    QVector3D position() const
-    {
-        return m_position;
-    }
-
-    QVector3D scale() const
-    {
-        return m_scale;
-    }
-
-    QQuaternion rotation() const
-    {
-        return m_rotation;
-    }
-
-    float rotationAngle() const
-    {
-        return m_rotationAngle;
-    }
-
-    QVector3D rotationAxis() const
-    {
-        return m_rotationAxis;
-    }
+    QVector3D position() const;
+    QVector3D scale() const;
+    QQuaternion rotation() const;
+    float rotationAngle() const;
+    QVector3D rotationAxis() const;
 
 signals:
     void needsUpdate();
     void modelIdChanged(quint32 arg);
-    void positionChanged(QVector3D arg);
-    void scaleChanged(QVector3D arg);
-    void rotationChanged(QQuaternion arg);
+    void positionChanged(const QVector3D &arg);
+    void scaleChanged(const QVector3D &arg);
+    void rotationChanged(const QQuaternion &arg);
     void rotationAngleChanged(float arg);
-    void rotationAxisChanged(QVector3D arg);
+    void rotationAxisChanged(const QVector3D &arg);
 
 public slots:
     void requestPaint();
     virtual void selectDrawable(void *pointer) = 0; // must be implemented
 
-    void setPosition(float x, float y, float z)
-    {
-        setPosition(QVector3D(x,y,z));
-    }
-
-    void setPosition(QVector3D arg)
-    {
-        if (m_position != arg) {
-            m_position = arg;
-            emit positionChanged(arg);
-        }
-    }
-
-    void setScale(float x, float y, float z)
-    {
-        setScale(QVector3D(x,y,z));
-    }
-
-    void setScale(QVector3D arg)
-    {
-        if (m_scale != arg) {
-            m_scale = arg;
-            emit scaleChanged(arg);
-        }
-    }
-
-    void setRotation(float angle, float x, float y, float z)
-    {
-        setRotation(angle, QVector3D(x,y,z));
-    }
-
-    void setRotation(float angle, QVector3D axis)
-    {
-        setRotation(QQuaternion(angle, axis));
-    }
-
-    void setRotation(QQuaternion arg)
-    {
-        if (m_rotation != arg) {
-            m_rotation = arg;
-            emit rotationChanged(arg);
-        }
-    }
-
-    void setRotationAngle(float arg)
-    {
-        if (m_rotationAngle != arg) {
-            m_rotationAngle = arg;
-            emit rotationAngleChanged(arg);
-            setRotation(QQuaternion::fromAxisAndAngle(m_rotationAxis, m_rotationAngle));
-        }
-    }
-
-    void setRotationAxis(QVector3D arg)
-    {
-        if (m_rotationAxis != arg) {
-            m_rotationAxis = arg;
-            emit rotationAxisChanged(arg);
-            setRotation(QQuaternion::fromAxisAndAngle(m_rotationAxis, m_rotationAngle));
-        }
-    }
+    void setPosition(float x, float y, float z);
+    void setPosition(const QVector3D &arg);
+    void setScale(float x, float y, float z);
+    void setScale(const QVector3D &arg);
+    void setRotation(float angle, float x, float y, float z);
+    void setRotation(float angle, const QVector3D &axis);
+    void setRotation(const QQuaternion &arg);
+    void setRotationAngle(float arg);
+    void setRotationAxis(const QVector3D &arg);
 
 private:
     QVector3D m_position;
