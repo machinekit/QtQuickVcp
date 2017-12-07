@@ -1,7 +1,7 @@
 #include "machinetalkservice.h"
 #include <QDebug>
 #include <QQmlComponent>
-#include <dynamicobject.h>
+#include <QQmlPropertyMap>
 
 #if defined(Q_OS_IOS)
 namespace gpb = google_public::protobuf;
@@ -29,19 +29,19 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
 {
     int count = 0;
     const bool filterEnabled = !fieldFilter.isEmpty();
-    auto object = new DynamicObject(parent);
+    auto object = new QQmlPropertyMap(parent);
 
     if (descriptor == machinetalk::Position::descriptor())  // add indexes to position messages
     {
         for (int i = 0; i < 9; ++i)
         {
-            object->addProperty(QString::number(i).toLocal8Bit(), "double", QVariant::fromValue(0.0));
+            object->insert(QString::number(i).toLocal8Bit(), QVariant::fromValue(0.0));
             count++;
         }
     }
     else if (descriptor == machinetalk::File::descriptor())
     {
-        object->addProperty("url", "QString", QVariant::fromValue(QString("")));
+        object->insert("url", QVariant::fromValue(QString("")));
         count++;
     }
 
@@ -57,7 +57,7 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
         }
 
         if (field->is_repeated()) {
-            object->addProperty(name, "QVariant", QVariant::fromValue(QList<QVariant>()));
+            object->insert(name, QVariant::fromValue(QList<QVariant>()));
             count++;
             continue;
         }
@@ -86,7 +86,7 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
             break;
         case gpb::FieldDescriptor::CPPTYPE_ENUM:
             type = "int";
-            value = QVariant::fromValue(QString::number(field->enum_type()->value(0)->number(), 10).toLocal8Bit());
+            value = QVariant::fromValue(field->enum_type()->value(0)->number());
             break;
         case gpb::FieldDescriptor::CPPTYPE_MESSAGE:
             QObject* subObject = recurseDescriptor(field->message_type(), parent);
@@ -95,7 +95,7 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
             break;
         }
 
-        object->addProperty(name, type, value);
+        object->insert(name, value);
         count++;
     }
 
@@ -104,7 +104,6 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
         return nullptr; // object had only the index field
     }
     else {
-        object->ready();
         return object;
     }
 }
