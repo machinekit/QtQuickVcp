@@ -756,7 +756,7 @@ void GLView::setupStack()
 void GLView::drawModelVertices(ModelType type)
 {
     QOpenGLBuffer *vertexBuffer = m_vertexBufferMap[type];
-    QList<Parameters*> *modelParametersList = getDrawableList(type);
+    const QList<Parameters*> *modelParametersList = getDrawableList(type);
 
     if (modelParametersList->isEmpty())
     {
@@ -769,9 +769,8 @@ void GLView::drawModelVertices(ModelType type)
     m_modelProgram->setAttributeBuffer(m_positionLocation, GL_FLOAT, 0, 3, sizeof(ModelVertex));
     m_modelProgram->setAttributeBuffer(m_normalLocation, GL_FLOAT, 3*sizeof(GLfloat), 3, sizeof(ModelVertex));
 
-    for (int i = 0; i < modelParametersList->size(); ++i)
+    for (Parameters *modelParameters: *modelParametersList)
     {
-        Parameters *modelParameters = static_cast<Parameters*>(modelParametersList->at(i));
         m_modelProgram->setUniformValue(m_colorLocation, modelParameters->color);
         m_modelProgram->setUniformValue(m_modelMatrixLocation, modelParameters->modelMatrix);
 
@@ -792,7 +791,7 @@ void GLView::drawModelVertices(ModelType type)
 
 void GLView::drawLines()
 {
-    QList<Parameters*>* parametersList = getDrawableList(Line);
+    const QList<Parameters*>* parametersList = getDrawableList(Line);
 
     if (parametersList->isEmpty())
     {
@@ -803,9 +802,9 @@ void GLView::drawLines()
     m_lineProgram->enableAttributeArray(m_linePositionLocation);
     m_lineProgram->setAttributeBuffer(m_linePositionLocation, GL_FLOAT, 0, 3);
 
-    for (int i = 0; i < parametersList->size(); ++i)
+    for (Parameters *parameters: *parametersList)
     {
-        LineParameters *lineParameters = static_cast<LineParameters*>(parametersList->at(i));
+        LineParameters *lineParameters = static_cast<LineParameters*>(parameters);
         m_lineVertexBuffer->write(0, lineParameters->vertices.data(), lineParameters->vertices.size() * static_cast<int>(sizeof(GLvector3D)));
         m_lineProgram->setUniformValue(m_lineColorLocation, lineParameters->color);
         m_lineProgram->setUniformValue(m_lineModelMatrixLocation, lineParameters->modelMatrix);
@@ -842,9 +841,9 @@ void GLView::drawTexts()
     m_textProgram->setAttributeBuffer(m_textPositionLocation, GL_FLOAT, 0, 3, sizeof(TextVertex));
     m_textProgram->setAttributeBuffer(m_textTexCoordinateLocation, GL_FLOAT, 3*sizeof(GLfloat), 2, sizeof(TextVertex));
 
-    for (int i = 0; i < parametersList->size(); ++i)
+    for (Parameters *parameters: *parametersList)
     {
-        TextParameters *textParameters = static_cast<TextParameters*>(parametersList->at(i));
+        TextParameters *textParameters = static_cast<TextParameters*>(parameters);
         QStaticText staticText = textParameters->staticText;
         int textureIndex;
         QOpenGLTexture *texture;
