@@ -108,5 +108,8 @@ void ApplicationFileSyncHandler::checkRemoteFile()
             m_ignoreNextChange = false;
         }
     }
+    else {
+        // subroutine call
+    }
 }
 } // namespace qtquickvcp

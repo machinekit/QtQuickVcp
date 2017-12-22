@@ -188,7 +188,12 @@ Item {
         enabled: applicationFile.transferState === ApplicationFile.NoTransfer
         recursive: false
 
-        onFileChanged: applicationFile.startUpload()
+        onFileChanged: {
+            // file changes when program is running would cause problems on execution
+            if (status.synced && !status.running) {
+                applicationFile.startUpload();
+            }
+        }
     }
 
     ApplicationHelper {
