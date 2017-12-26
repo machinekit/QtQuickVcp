@@ -24,12 +24,12 @@ ParamClient::ParamClient(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Param Client")
+    , m_debugName(QStringLiteral("Param Client"))
     , m_paramcmdChannel(nullptr)
     , m_paramChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize paramcmd channel
     m_paramcmdChannel = new common::RpcClient(this);

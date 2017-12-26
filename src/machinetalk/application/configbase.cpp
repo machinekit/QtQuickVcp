@@ -24,11 +24,11 @@ ConfigBase::ConfigBase(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Config Base")
+    , m_debugName(QStringLiteral("Config Base"))
     , m_configChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize config channel
     m_configChannel = new common::RpcClient(this);

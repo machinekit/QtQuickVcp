@@ -24,11 +24,11 @@ CommandBase::CommandBase(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Command Base")
+    , m_debugName(QStringLiteral("Command Base"))
     , m_commandChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize command channel
     m_commandChannel = new common::RpcClient(this);

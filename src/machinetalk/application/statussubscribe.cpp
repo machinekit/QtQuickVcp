@@ -22,13 +22,13 @@ namespace machinetalk { namespace application {
 StatusSubscribe::StatusSubscribe(QObject *parent)
     : QObject(parent)
     , m_ready(false)
-    , m_debugName("Status Subscribe")
-    , m_socketUri("")
+    , m_debugName(QStringLiteral("Status Subscribe"))
+    , m_socketUri(QStringLiteral(""))
     , m_context(nullptr)
     , m_socket(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
     , m_heartbeatInterval(2500)
     , m_heartbeatLiveness(0)
     , m_heartbeatResetLiveness(5)
@@ -98,7 +98,7 @@ bool StatusSubscribe::startSocket()
         m_socket->connectTo(m_socketUri);
     }
     catch (const zmq::error_t &e) {
-        const QString errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
+        const QString errorString = QStringLiteral("Error %1: ").arg(e.num()) + QString(e.what());
         qCritical() << m_debugName << ":" << errorString;
         return false;
     }
@@ -229,7 +229,7 @@ void StatusSubscribe::processSocketMessage(const QList<QByteArray> &messageList)
 
 void StatusSubscribe::socketError(int errorNum, const QString &errorMsg)
 {
-    const QString errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
+    const QString errorString = QStringLiteral("Error %1: ").arg(errorNum) + errorMsg;
     qCritical() << errorString;
 }
 
