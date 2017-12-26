@@ -92,7 +92,7 @@ public slots:
         emit filterChanged(arg);
     }
 
-    void selectConfig(QString name);
+    void selectConfig(const QString &name);
     void unselectConfig();
 
 private:
