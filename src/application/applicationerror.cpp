@@ -39,7 +39,7 @@ void ApplicationError::errorMessageReceived(const Container &rx)
 {
     for (const std::string &note: rx.note())
     {
-        messageReceived(static_cast<ErrorType>(rx.type()), QString::fromStdString(note));
+        emit messageReceived(static_cast<ErrorType>(rx.type()), QString::fromStdString(note));
     }
 }
 
