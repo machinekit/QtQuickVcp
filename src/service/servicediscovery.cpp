@@ -562,7 +562,7 @@ void ServiceDiscovery::updateServices()
     }
 
     // Iterate trough all items that are left and remove them
-    for (auto iter = oldServiceTypeMap.begin(); iter != oldServiceTypeMap.end(); iter++)
+    for (auto iter = oldServiceTypeMap.begin(); iter != oldServiceTypeMap.end(); ++iter)
     {
         if (m_running && m_networkReady)
         {
@@ -662,7 +662,7 @@ void ServiceDiscovery::setLookupMode(ServiceDiscovery::LookupMode arg)
 
 void ServiceDiscovery::startAllQueries()
 {
-    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); ++iter)
     {
         startQuery(iter.key());
     }
@@ -670,7 +670,7 @@ void ServiceDiscovery::startAllQueries()
 
 void ServiceDiscovery::stopAllQueries()
 {
-    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); ++iter)
     {
         stopQuery(iter.key());
     }
@@ -678,7 +678,7 @@ void ServiceDiscovery::stopAllQueries()
 
 void ServiceDiscovery::refreshAllQueries()
 {
-    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); ++iter)
     {
         refreshQuery(iter.key());
     }
@@ -845,15 +845,16 @@ void ServiceDiscovery::updateServiceType(const QString &serviceType)
 
 void ServiceDiscovery::removeAllServiceTypes()
 {
-    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
+    const auto keys = m_serviceItemsMap.keys(); // copy necessary since we modify the map
+    for (const auto &key: keys)
     {
-        removeServiceType(iter.key());
+        removeServiceType(key);
     }
 }
 
 void ServiceDiscovery::updateAllServiceTypes()
 {
-    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); ++iter)
     {
         updateServiceType(iter.key());
     }
