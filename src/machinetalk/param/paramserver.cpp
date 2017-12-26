@@ -24,12 +24,12 @@ ParamServer::ParamServer(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Param Server")
+    , m_debugName(QStringLiteral("Param Server"))
     , m_paramcmdChannel(nullptr)
     , m_paramChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize paramcmd channel
     m_paramcmdChannel = new common::RpcService(this);

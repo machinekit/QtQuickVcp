@@ -24,11 +24,11 @@ LogServiceBase::LogServiceBase(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Log Service Base")
+    , m_debugName(QStringLiteral("Log Service Base"))
     , m_logChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize log channel
     m_logChannel = new common::Publish(this);

@@ -24,12 +24,12 @@ RemoteComponentBase::RemoteComponentBase(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Remote Component Base")
+    , m_debugName(QStringLiteral("Remote Component Base"))
     , m_halrcmdChannel(nullptr)
     , m_halrcompChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize halrcmd channel
     m_halrcmdChannel = new common::RpcClient(this);

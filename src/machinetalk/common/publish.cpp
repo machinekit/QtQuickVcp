@@ -22,13 +22,13 @@ namespace machinetalk { namespace common {
 Publish::Publish(QObject *parent)
     : QObject(parent)
     , m_ready(false)
-    , m_debugName("Publish")
-    , m_socketUri("")
+    , m_debugName(QStringLiteral("Publish"))
+    , m_socketUri(QStringLiteral(""))
     , m_context(nullptr)
     , m_socket(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
     , m_heartbeatInterval(2500)
 {
 
@@ -88,7 +88,7 @@ bool Publish::startSocket()
         m_socket->bindTo(m_socketUri);
     }
     catch (const zmq::error_t &e) {
-        const QString errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
+        const QString errorString = QStringLiteral("Error %1: ").arg(e.num()) + QString(e.what());
         qCritical() << m_debugName << ":" << errorString;
         return false;
     }
@@ -175,7 +175,7 @@ void Publish::sendSocketMessage(const QByteArray &topic, ContainerType type, Con
         m_socket->sendMessage(message);
     }
     catch (const zmq::error_t &e) {
-        const QString errorString = QString("Error %1: ").arg(e.num()) + QString(e.what());
+        const QString errorString = QStringLiteral("Error %1: ").arg(e.num()) + QString(e.what());
         qCritical() << errorString;
         return;
     }
@@ -202,7 +202,7 @@ void Publish::sendIncrementalUpdate(const QByteArray &topic, Container &tx)
 
 void Publish::socketError(int errorNum, const QString &errorMsg)
 {
-    const QString errorString = QString("Error %1: ").arg(errorNum) + errorMsg;
+    const QString errorString = QStringLiteral("Error %1: ").arg(errorNum) + errorMsg;
     qCritical() << errorString;
 }
 

@@ -24,12 +24,12 @@ LauncherBase::LauncherBase(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Launcher Base")
+    , m_debugName(QStringLiteral("Launcher Base"))
     , m_launchercmdChannel(nullptr)
     , m_launcherChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize launchercmd channel
     m_launchercmdChannel = new common::RpcClient(this);
