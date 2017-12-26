@@ -137,7 +137,7 @@ void GLPathItem::paint(GLView *glView)
     }
     else
     {
-        for (PathItem *pathItem: m_modifiedPathItems)
+        for (PathItem *pathItem: qAsConst(m_modifiedPathItems))
         {
             if (pathItem != nullptr)
             {

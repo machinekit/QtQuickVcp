@@ -110,7 +110,8 @@ void NameServer::handleServers()
        return;
    }
 
-   for (const QDnsHostAddressRecord &record: m_dnsLookup->hostAddressRecords())
+   const auto records = m_dnsLookup->hostAddressRecords();
+   for (const QDnsHostAddressRecord &record: records)
    {
        m_hostAddress = record.value();  // first wins
        emit hostAddressChanged(m_hostAddress);

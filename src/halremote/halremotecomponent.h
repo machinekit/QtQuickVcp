@@ -81,6 +81,16 @@ public:
         return m_bind;
     }
 
+    Q_INVOKABLE int pinCount() const
+    {
+        return m_pins.count();
+    }
+
+    Q_INVOKABLE HalPin *pin(int index) const
+    {
+        return m_pins.at(index);
+    }
+
 public slots:
     void setName(QString name)
     {
@@ -128,14 +138,6 @@ public slots:
     {
         return QQmlListProperty<HalPin>(this, m_pins);
     }
-    int pinCount() const
-    {
-        return m_pins.count();
-    }
-    HalPin *pin(int index) const
-    {
-        return m_pins.at(index);
-    }
 
     void pinChange(QVariant value);
 
@@ -153,7 +155,7 @@ private:
     QHash<int, HalPin*>    m_pinsByHandle;
     QList<HalPin*>         m_pins;
 
-    QObjectList recurseObjects(const QObjectList &list);
+    const QObjectList recurseObjects(const QObjectList &list);
     void bindPins();
     static QString splitPinFromHalName(const QString &name);
 

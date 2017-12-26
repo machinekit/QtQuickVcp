@@ -185,7 +185,7 @@ void Publish::sendSocketMessage(const QByteArray &topic, ContainerType type, Con
 void Publish::sendPing()
 {
     Container &tx = m_socketTx;
-    for (const auto &topic: m_socketTopics) {
+    for (const auto &topic: qAsConst(m_socketTopics)) {
         sendSocketMessage(topic, MT_PING, tx);
     }
 }

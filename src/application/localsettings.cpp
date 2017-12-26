@@ -26,6 +26,7 @@
 #include <QJsonDocument>
 #include <QFileInfo>
 #include <QDir>
+#include <QVector>
 #include <QStandardPaths>
 
 namespace qtquickvcp {
@@ -104,7 +105,7 @@ QJsonValue LocalSettings::value(const QString &key)
 {
     QStringList heritanceList;
     QJsonObject *parentObject;
-    QList<QJsonObject> objectList;
+    QVector<QJsonObject> objectList;
 
     heritanceList = key.split('.');
     parentObject = &m_values;

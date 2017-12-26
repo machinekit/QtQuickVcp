@@ -841,7 +841,7 @@ void GLView::drawTexts()
     m_textProgram->setAttributeBuffer(m_textPositionLocation, GL_FLOAT, 0, 3, sizeof(TextVertex));
     m_textProgram->setAttributeBuffer(m_textTexCoordinateLocation, GL_FLOAT, 3*sizeof(GLfloat), 2, sizeof(TextVertex));
 
-    for (Parameters *parameters: *parametersList)
+    for (Parameters *parameters: qAsConst(*parametersList))
     {
         TextParameters *textParameters = static_cast<TextParameters*>(parameters);
         QStaticText staticText = textParameters->staticText;
@@ -1244,7 +1244,7 @@ void GLView::resetTransformations(bool hard)
     {
         delete m_modelParameters;
         m_modelParameters = m_modelParametersStack.takeFirst();
-        for (Parameters *parameters: m_modelParametersStack)
+        for (Parameters *parameters: qAsConst(m_modelParametersStack))
         {
             delete parameters;
         }
@@ -1253,7 +1253,7 @@ void GLView::resetTransformations(bool hard)
 
         delete m_lineParameters;
         m_lineParameters = m_lineParametersStack.takeFirst();
-        for (LineParameters *parameters: m_lineParametersStack)
+        for (LineParameters *parameters: qAsConst(m_lineParametersStack))
         {
             delete parameters;
         }
@@ -1262,7 +1262,7 @@ void GLView::resetTransformations(bool hard)
 
         delete m_textParameters;
         m_textParameters = m_textParametersStack.takeFirst();
-        for (TextParameters *parameters: m_textParametersStack)
+        for (TextParameters *parameters: qAsConst(m_textParametersStack))
         {
             delete parameters;
         }
