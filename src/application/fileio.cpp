@@ -28,8 +28,8 @@ namespace qtquickvcp {
 
 FileIO::FileIO(QObject *parent) :
     QObject(parent),
-    m_fileUrl(""),
-    m_text(""),
+    m_fileUrl(QLatin1String("")),
+    m_text(QLatin1String("")),
     m_working(false),
     m_temporaryDir(nullptr)
 {

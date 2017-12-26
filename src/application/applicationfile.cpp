@@ -63,15 +63,15 @@ namespace qtquickvcp {
 
 ApplicationFile::ApplicationFile(QObject *parent) :
     QObject(parent),
-    m_uri(""),
-    m_localFilePath("file://"),
-    m_remoteFilePath("file://"),
-    m_localPath(""),
-    m_remotePath(""),
-    m_serverDirectory(""),
+    m_uri(QLatin1String("")),
+    m_localFilePath(QStringLiteral("file://")),
+    m_remoteFilePath(QStringLiteral("file://")),
+    m_localPath(QLatin1String("")),
+    m_remotePath(QLatin1String("")),
+    m_serverDirectory(QLatin1String("")),
     m_transferState(NoTransfer),
     m_error(NoError),
-    m_errorString(""),
+    m_errorString(QLatin1String("")),
     m_progress(0.0),
     m_networkReady(false),
     m_model(nullptr),
@@ -142,7 +142,7 @@ void ApplicationFile::startUpload()
         m_progress = 0.0;
         emit progressChanged(m_progress);
         updateState(UploadRunning);
-        updateError(NoError, "");
+        updateError(NoError, QLatin1String(""));
     }
     else
     {
@@ -169,7 +169,7 @@ void ApplicationFile::startDownload()
     remotePath = QDir::cleanPath(m_remotePath.toLocalFile());
     fileName = remoteFilePath.mid(remotePath.length() + 1);
 
-    int i = fileName.indexOf("/");
+    int i = fileName.indexOf(QLatin1String("/"));
     if (i > -1) // not in root directory
     {
         m_serverDirectory = fileName.left(i);
@@ -207,7 +207,7 @@ void ApplicationFile::startDownload()
         m_progress = 0.0;
         emit progressChanged(m_progress);
         updateState(DownloadRunning);
-        updateError(NoError, "");
+        updateError(NoError, QLatin1String(""));
     }
     else
     {
@@ -311,7 +311,7 @@ void ApplicationFile::abort()
 void ApplicationFile::clearError()
 {
     updateState(NoTransfer);
-    updateError(NoError, "");
+    updateError(NoError, QLatin1String(""));
 }
 
 void ApplicationFile::updateState(ApplicationFile::TransferState state)
@@ -404,7 +404,7 @@ void ApplicationFile::networkAccessibleChanged(QNetworkAccessManager::NetworkAcc
 
 void ApplicationFile::addToList(const QUrlInfo &urlInfo)
 {
-    if (!m_showHidden && urlInfo.name().startsWith(".")) {
+    if (!m_showHidden && urlInfo.name().startsWith(QLatin1String("."))) {
         return;
     }
 

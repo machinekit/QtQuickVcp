@@ -111,7 +111,7 @@ void MachinekitApplicationPlugin::initializeEngine(QQmlEngine *engine, const cha
 QString MachinekitApplicationPlugin::fileLocation() const
 {
     if (isLoadedFromResource())
-        return "qrc:/Machinekit/Application";
+        return QStringLiteral("qrc:/Machinekit/Application");
     return baseUrl().toString();
 }
 

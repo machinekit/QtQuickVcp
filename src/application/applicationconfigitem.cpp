@@ -113,15 +113,15 @@ namespace qtquickvcp {
 
 ApplicationConfigItem::ApplicationConfigItem(QObject *parent) :
     QObject(parent),
-    m_name(""),
-    m_description(""),
+    m_name(QLatin1String("")),
+    m_description(QLatin1String("")),
     m_type(Qt5QmlApplication),
-    m_webUri(""),
+    m_webUri(QLatin1String("")),
     m_loaded(false),
     m_loading(false),
     m_files(QStringList()),
-    m_mainFile(""),
-    m_translationsPath("")
+    m_mainFile(QLatin1String("")),
+    m_translationsPath(QLatin1String(""))
 {
 
 }

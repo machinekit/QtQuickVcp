@@ -28,7 +28,7 @@ public:
 
     QString name() const
     {
-        return QString(REVISION);
+        return QStringLiteral(REVISION);
     }
 
 signals:

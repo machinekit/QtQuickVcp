@@ -63,12 +63,12 @@ QDateTime ApplicationLogMessage::timestamp() const
 QJsonObject ApplicationLogMessage::toJsonObject() const
 {
     QJsonObject object;
-    object["level"] = m_level;
-    object["origin"] = m_origin;
-    object["pid"] = m_pid;
-    object["tag"] = m_tag;
-    object["text"] = m_text;
-    object["timestamp"] = QJsonValue::fromVariant(m_timestamp);
+    object[QStringLiteral("level")] = m_level;
+    object[QStringLiteral("origin")] = m_origin;
+    object[QStringLiteral("pid")] = m_pid;
+    object[QStringLiteral("tag")] = m_tag;
+    object[QStringLiteral("text")] = m_text;
+    object[QStringLiteral("timestamp")] = QJsonValue::fromVariant(m_timestamp);
     return object;
 }
 
