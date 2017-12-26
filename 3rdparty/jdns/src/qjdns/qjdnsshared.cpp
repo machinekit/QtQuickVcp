@@ -169,7 +169,7 @@ JDnsShutdownWorker::JDnsShutdownWorker(const QList<QJDnsShared*> &_list) : QObje
 {
 	foreach(QJDnsShared *i, list)
 	{
-		connect(i, SIGNAL(shutdownFinished()), SLOT(jdns_shutdownFinished()));
+		connect(i, &QJDnsShared::shutdownFinished, this, &JDnsShutdownWorker::jdns_shutdownFinished);
 		i->shutdown(); // MUST support DOR-DS, and it does
 	}
 }
@@ -207,7 +207,7 @@ void JDnsShutdown::run()
 {
 	m.lock();
 	agent = new JDnsShutdownAgent;
-	connect(agent, SIGNAL(started()), SLOT(agent_started()), Qt::DirectConnection);
+	connect(agent, &JDnsShutdownAgent::started, this, &JDnsShutdown::agent_started, Qt::DirectConnection);
 	agent->start();
 	exec();
 	delete agent;
@@ -223,7 +223,7 @@ void JDnsShutdown::agent_started()
 	else
 	{
 		worker = new JDnsShutdownWorker(list);
-		connect(worker, SIGNAL(finished()), SLOT(worker_finished()), Qt::DirectConnection);
+		connect(worker, &JDnsShutdownWorker::finished, this, &JDnsShutdown::worker_finished, Qt::DirectConnection);
 	}
 }
 
@@ -311,11 +311,11 @@ QJDnsSharedRequest *QJDnsSharedPrivate::findRequest(QJDns *jdns, int id) const
 
 void QJDnsSharedPrivate::jdns_link(QJDns *jdns)
 {
-	connect(jdns, SIGNAL(resultsReady(int,QJDns::Response)), SLOT(jdns_resultsReady(int,QJDns::Response)));
-	connect(jdns, SIGNAL(published(int)), SLOT(jdns_published(int)));
-	connect(jdns, SIGNAL(error(int,QJDns::Error)), SLOT(jdns_error(int,QJDns::Error)));
-	connect(jdns, SIGNAL(shutdownFinished()), SLOT(jdns_shutdownFinished()));
-	connect(jdns, SIGNAL(debugLinesReady()), SLOT(jdns_debugLinesReady()));
+	connect(jdns, &QJDns::resultsReady, this, &QJDnsSharedPrivate::jdns_resultsReady);
+	connect(jdns, &QJDns::published, this, &QJDnsSharedPrivate::jdns_published);
+	connect(jdns, &QJDns::error, this, &QJDnsSharedPrivate::jdns_error);
+	connect(jdns, &QJDns::shutdownFinished, this, &QJDnsSharedPrivate::jdns_shutdownFinished);
+	connect(jdns, &QJDns::debugLinesReady, this, &QJDnsSharedPrivate::jdns_debugLinesReady);
 }
 
 int QJDnsSharedPrivate::getNewIndex() const
@@ -479,7 +479,7 @@ QJDnsSharedRequestPrivate::QJDnsSharedRequestPrivate(QJDnsSharedRequest *_q) : Q
 	, error(QJDnsSharedRequest::ErrorNoNet)
 	, lateTimer(this)
 {
-	connect(&lateTimer, SIGNAL(timeout()), SLOT(lateTimer_timeout()));
+	connect(&lateTimer, &SafeTimer::timeout, this, &QJDnsSharedRequestPrivate::lateTimer_timeout);
 }
 
 void QJDnsSharedRequestPrivate::resetSession()
