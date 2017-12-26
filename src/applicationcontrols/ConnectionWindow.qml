@@ -249,7 +249,7 @@ Rectangle {
         if (mode === "local") {
             var application = applications[index];
             applicationTranslator.localName = application.name;
-                        applicationTranslator.localPath = application.translationsPath;
+            applicationTranslator.localPath = application.translationsPath;
             d.applicationSource = application.mainFile;
         }
         else {
