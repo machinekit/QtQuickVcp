@@ -107,7 +107,7 @@ bool Subscribe::startSocket()
             this, &Subscribe::processSocketMessage);
 
 
-    for (const auto &topic: m_socketTopics)
+    for (const auto &topic: qAsConst(m_socketTopics))
     {
         m_socket->subscribeTo(topic);
     }

@@ -85,7 +85,7 @@ void ApplicationPlugins::updatePlugins()
     qDeleteAll(m_plugins);
     m_plugins.clear();
 
-    for (QString path: m_searchPaths) {
+    for (const QString &path: qAsConst(m_searchPaths)) {
         if (!QDir(path).exists())
         {
             continue;

@@ -538,7 +538,7 @@ void ServiceDiscovery::updateServices()
     oldServiceTypeMap = m_serviceItemsMap;
 
     // Iterate through all services and update all service types
-    for (ServiceList *serviceList: m_serviceLists)
+    for (ServiceList *serviceList: qAsConst(m_serviceLists))
     {
         for (Service *service: *serviceList)
         {
@@ -588,7 +588,7 @@ void ServiceDiscovery::updateNameServers()
         return;
     }
 
-    for (const NameServer *nameServer: m_nameServers)
+    for (const NameServer *nameServer: qAsConst(m_nameServers))
     {
         QJDns::NameServer host;
 
@@ -688,7 +688,7 @@ void ServiceDiscovery::startQuery(const QString &serviceType)
 {
     int queryId;
 
-    for (const auto &value: m_queryIdServiceMap)
+    for (const auto &value: qAsConst(m_queryIdServiceMap))
     {
         if (value == serviceType)  // query with the type already running
         {
@@ -821,7 +821,7 @@ void ServiceDiscovery::updateServiceType(const QString &serviceType)
     const auto &serviceDiscoveryItems = m_serviceItemsMap.value(serviceType);
 
     // Iterate through all services and update all service types suitable for the announcement
-    for (ServiceList *serviceList: m_serviceLists)
+    for (ServiceList *serviceList: qAsConst(m_serviceLists))
     {
         for (Service *service: *serviceList)
         {
