@@ -118,7 +118,7 @@ void ApplicationCommand::setDebugLevel(int debugLevel)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_debug_level(debugLevel);
+    commandParams->set_debug_level(static_cast<quint32>(debugLevel));
 
     sendEmcSetDebug(m_tx);
 }
@@ -170,7 +170,7 @@ void ApplicationCommand::homeAxis(int index)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(index);
+    commandParams->set_index(static_cast<quint32>(index));
 
     sendEmcAxisHome(m_tx);
 }
@@ -192,7 +192,7 @@ void ApplicationCommand::jog(ApplicationCommand::JogType type, int axisIndex, do
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(axisIndex);
+    commandParams->set_index(static_cast<quint32>(axisIndex));
 
     if (type == StopJog)
     {
@@ -307,7 +307,7 @@ void ApplicationCommand::setTaskMode(const QString &interpreter, TaskMode mode)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_task_mode((EmcTaskModeType)mode);
+    commandParams->set_task_mode(static_cast<EmcTaskModeType>(mode));
     m_tx.set_interp_name(interpreter.toStdString());
 
     sendEmcTaskSetMode(m_tx);
@@ -365,7 +365,7 @@ void ApplicationCommand::setAnalogOutput(int index, double value)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(index);
+    commandParams->set_index(static_cast<quint32>(index));
     commandParams->set_value(value);
 
     sendEmcMotionSetAout(m_tx);
@@ -390,7 +390,7 @@ void ApplicationCommand::setDigitalOutput(int index, bool enable)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(index);
+    commandParams->set_index(static_cast<quint32>(index));
     commandParams->set_enable(enable);
 
     sendEmcMotionSetDout(m_tx);
@@ -427,7 +427,7 @@ void ApplicationCommand::setAxisMaxPositionLimit(int axisIndex, double value)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(axisIndex);
+    commandParams->set_index(static_cast<quint32>(axisIndex));
     commandParams->set_value(value);
 
     sendEmcAxisSetMaxPositionLimit(m_tx);
@@ -440,7 +440,7 @@ void ApplicationCommand::setAxisMinPositionLimit(int axisIndex, double value)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(axisIndex);
+    commandParams->set_index(static_cast<quint32>(axisIndex));
     commandParams->set_value(value);
 
     sendEmcAxisSetMinPositionLimit(m_tx);
@@ -527,7 +527,7 @@ void ApplicationCommand::setTaskState(const QString &interpreter, TaskState stat
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_task_state((EmcTaskStateType)state);
+    commandParams->set_task_state(static_cast<EmcTaskStateType>(state));
     m_tx.set_interp_name(interpreter.toStdString());
 
     sendEmcTaskSetState(m_tx);
@@ -590,7 +590,7 @@ void ApplicationCommand::setTrajectoryMode(TrajectoryMode mode)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_traj_mode((EmcTrajectoryModeType)mode);
+    commandParams->set_traj_mode(static_cast<EmcTrajectoryModeType>(mode));
 
     sendEmcTrajSetMode(m_tx);
 }
@@ -602,7 +602,7 @@ void ApplicationCommand::unhomeAxis(int index)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(index);
+    commandParams->set_index(static_cast<quint32>(index));
 
     sendEmcAxisUnhome(m_tx);
 }
