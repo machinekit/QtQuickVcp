@@ -28,7 +28,6 @@ class StatusBase
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int statusHeartbeatInterval READ statusHeartbeatInterval WRITE setStatusHeartbeatInterval NOTIFY statusHeartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit StatusBase(QObject *parent = nullptr);
@@ -40,6 +39,7 @@ public:
         Syncing = 2,
         Up = 3,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

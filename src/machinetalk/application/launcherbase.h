@@ -31,7 +31,6 @@ class LauncherBase
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int launchercmdHeartbeatInterval READ launchercmdHeartbeatInterval WRITE setLaunchercmdHeartbeatInterval NOTIFY launchercmdHeartbeatIntervalChanged)
     Q_PROPERTY(int launcherHeartbeatInterval READ launcherHeartbeatInterval WRITE setLauncherHeartbeatInterval NOTIFY launcherHeartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit LauncherBase(QObject *parent = nullptr);
@@ -43,6 +42,7 @@ public:
         Syncing = 2,
         Synced = 3,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

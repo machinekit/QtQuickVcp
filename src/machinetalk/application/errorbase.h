@@ -28,7 +28,6 @@ class ErrorBase
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int errorHeartbeatInterval READ errorHeartbeatInterval WRITE setErrorHeartbeatInterval NOTIFY errorHeartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit ErrorBase(QObject *parent = nullptr);
@@ -39,6 +38,7 @@ public:
         Trying = 1,
         Up = 2,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

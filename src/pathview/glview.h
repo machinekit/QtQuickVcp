@@ -51,7 +51,6 @@ class GLView : public QQuickPaintedItem, protected QOpenGLFunctions
     Q_PROPERTY(QGLCamera *camera READ camera WRITE setCamera NOTIFY cameraChanged)
     Q_PROPERTY(GLLight *light READ light WRITE setLight NOTIFY lightChanged)
     Q_PROPERTY(QQmlListProperty<qtquickvcp::GLItem> glItems READ glItems NOTIFY glItemsChanged)
-    Q_ENUMS(TextAlignment)
 
 public:
     GLView(QQuickItem *parent = 0);
@@ -62,6 +61,7 @@ public:
         AlignCenter = 1,
         AlignRight = 2
     };
+    Q_ENUM(TextAlignment)
 
     QColor backgroundColor() const { return m_backgroundColor; }
     void setBackgroundColor(const QColor &color);

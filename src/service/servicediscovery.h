@@ -49,13 +49,12 @@ class ServiceDiscovery : public QObject, public QQmlParserStatus
     Q_PROPERTY(QQmlListProperty<qtquickvcp::NameServer> nameServers READ nameServers NOTIFY nameServersChanged)
     Q_CLASSINFO("DefaultProperty", "serviceLists")
 
-    Q_ENUMS(LookupMode)
-
 public:
     enum LookupMode{
         MulticastDNS,
         UnicastDNS
     };
+    Q_ENUM(LookupMode)
 
     explicit ServiceDiscovery(QObject *parent = 0);
 

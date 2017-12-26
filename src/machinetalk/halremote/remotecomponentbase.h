@@ -31,7 +31,6 @@ class RemoteComponentBase
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int halrcmdHeartbeatInterval READ halrcmdHeartbeatInterval WRITE setHalrcmdHeartbeatInterval NOTIFY halrcmdHeartbeatIntervalChanged)
     Q_PROPERTY(int halrcompHeartbeatInterval READ halrcompHeartbeatInterval WRITE setHalrcompHeartbeatInterval NOTIFY halrcompHeartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit RemoteComponentBase(QObject *parent = nullptr);
@@ -47,6 +46,7 @@ public:
         Synced = 6,
         Error = 7,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

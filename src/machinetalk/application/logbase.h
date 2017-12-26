@@ -27,7 +27,6 @@ class LogBase
     Q_PROPERTY(QString debugName READ debugName WRITE setDebugName NOTIFY debugNameChanged)
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_ENUMS(State)
 
 public:
     explicit LogBase(QObject *parent = nullptr);
@@ -38,6 +37,7 @@ public:
         Trying = 1,
         Up = 2,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

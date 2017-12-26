@@ -30,7 +30,6 @@ namespace qtquickvcp {
 class ApplicationFileModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_ENUMS(ApplicationFileRoles)
 
 public:
     enum ApplicationFileRoles {
@@ -41,6 +40,7 @@ public:
             LastModifiedRole,
             DirRole
         };
+    Q_ENUM(ApplicationFileRoles)
 
     explicit ApplicationFileModel(QObject *parent = 0);
     ~ApplicationFileModel();
