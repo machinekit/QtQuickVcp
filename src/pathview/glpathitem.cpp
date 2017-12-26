@@ -279,10 +279,10 @@ void GLPathItem::setModel(GCodeProgramModel *arg)
 
         if (m_model != nullptr)
         {
-            connect(m_model, SIGNAL(modelReset()),
-                    this, SLOT(drawPath()));
-            connect(m_model, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
-                    this, SLOT(modelDataChanged(QModelIndex,QModelIndex,QVector<int>)));
+            connect(m_model, &QAbstractItemModel::modelReset,
+                    this, &GLPathItem::drawPath);
+            connect(m_model, &QAbstractItemModel::dataChanged,
+                    this, &GLPathItem::modelDataChanged);
 
             if (m_model->rowCount() > 0)
             {

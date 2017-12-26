@@ -378,8 +378,8 @@ void HalRemoteComponent::addPins()
         }
         m_pinsByName[pin->name()] = pin;
         m_pins.append(pin);
-        connect(pin, SIGNAL(valueChanged(QVariant)),
-                this, SLOT(pinChange(QVariant)));
+        connect(pin, &HalPin::valueChanged,
+                this, &HalRemoteComponent::pinChange);
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_name, "pin added: " << pin->name())
 #endif
