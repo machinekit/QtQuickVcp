@@ -65,8 +65,8 @@ namespace qtquickvcp {
 ApplicationConfigFilter::ApplicationConfigFilter(QObject *parent) :
     QObject(parent),
     m_type(Qt5QmlApplication),
-    m_name(""),
-    m_description("")
+    m_name(QLatin1String("")),
+    m_description(QLatin1String(""))
 {
 }
 

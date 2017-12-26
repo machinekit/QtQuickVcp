@@ -235,25 +235,25 @@ void ApplicationCommand::updateToolTable(const QJsonArray &toolTable)
         const QJsonObject object = toolTable.at(i).toObject();
         auto toolData = commandParams->add_tool_table();
         toolData->set_index(i);
-        toolData->set_id(object.value("id").toInt(0));
-        toolData->set_pocket(object.value("pocket").toInt(0));
-        toolData->set_diameter(object.value("diameter").toDouble(0.0));
-        toolData->set_backangle(object.value("backangle").toDouble(0.0));
-        toolData->set_frontangle(object.value("frontangle").toDouble(0.0));
-        toolData->set_orientation(object.value("orientation").toInt(0));
-        toolData->set_comment(object.value("comment").toString().toStdString());
+        toolData->set_id(object.value(QStringLiteral("id")).toInt(0));
+        toolData->set_pocket(object.value(QStringLiteral("pocket")).toInt(0));
+        toolData->set_diameter(object.value(QStringLiteral("diameter")).toDouble(0.0));
+        toolData->set_backangle(object.value(QStringLiteral("backangle")).toDouble(0.0));
+        toolData->set_frontangle(object.value(QStringLiteral("frontangle")).toDouble(0.0));
+        toolData->set_orientation(object.value(QStringLiteral("orientation")).toInt(0));
+        toolData->set_comment(object.value(QStringLiteral("comment")).toString().toStdString());
 
-        const QJsonObject offsetObject = object.value("offset").toObject();
+        const QJsonObject offsetObject = object.value(QStringLiteral("offset")).toObject();
         auto offset = toolData->mutable_offset();
-        offset->set_x(offsetObject.value("x").toDouble(0.0));
-        offset->set_y(offsetObject.value("y").toDouble(0.0));
-        offset->set_z(offsetObject.value("z").toDouble(0.0));
-        offset->set_a(offsetObject.value("a").toDouble(0.0));
-        offset->set_b(offsetObject.value("b").toDouble(0.0));
-        offset->set_c(offsetObject.value("c").toDouble(0.0));
-        offset->set_u(offsetObject.value("u").toDouble(0.0));
-        offset->set_v(offsetObject.value("v").toDouble(0.0));
-        offset->set_w(offsetObject.value("w").toDouble(0.0));
+        offset->set_x(offsetObject.value(QStringLiteral("x")).toDouble(0.0));
+        offset->set_y(offsetObject.value(QStringLiteral("y")).toDouble(0.0));
+        offset->set_z(offsetObject.value(QStringLiteral("z")).toDouble(0.0));
+        offset->set_a(offsetObject.value(QStringLiteral("a")).toDouble(0.0));
+        offset->set_b(offsetObject.value(QStringLiteral("b")).toDouble(0.0));
+        offset->set_c(offsetObject.value(QStringLiteral("c")).toDouble(0.0));
+        offset->set_u(offsetObject.value(QStringLiteral("u")).toDouble(0.0));
+        offset->set_v(offsetObject.value(QStringLiteral("v")).toDouble(0.0));
+        offset->set_w(offsetObject.value(QStringLiteral("w")).toDouble(0.0));
     }
 
     sendEmcToolUpdateToolTable(m_tx);

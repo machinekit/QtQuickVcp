@@ -33,8 +33,8 @@ namespace qtquickvcp {
 
 LocalSettings::LocalSettings(QObject *parent) :
     QObject(parent),
-    m_application("machinekit"),
-    m_name("settings")
+    m_application(QStringLiteral("machinekit")),
+    m_name(QStringLiteral("settings"))
 {
     updateFilePath();
 }

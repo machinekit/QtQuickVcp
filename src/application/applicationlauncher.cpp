@@ -117,14 +117,14 @@ void ApplicationLauncher::handleLauncherFullUpdateMessage(const QByteArray &topi
 {
     Q_UNUSED(topic);
     initializeObject(); // clear old value
-    MachinetalkService::recurseMessage(rx, m_launcherObject, m_temporaryDir->path(), "launcher");
+    MachinetalkService::recurseMessage(rx, m_launcherObject, m_temporaryDir->path(), QStringLiteral("launcher"));
     emit launchersChanged();
 }
 
 void ApplicationLauncher::handleLauncherIncrementalUpdateMessage(const QByteArray &topic, const Container &rx)
 {
     Q_UNUSED(topic);
-    MachinetalkService::recurseMessage(rx, m_launcherObject, m_temporaryDir->path(), "launcher");
+    MachinetalkService::recurseMessage(rx, m_launcherObject, m_temporaryDir->path(), QStringLiteral("launcher"));
     emit launchersChanged();
 }
 
@@ -147,7 +147,7 @@ void ApplicationLauncher::initializeObject()
     if (m_launcherObject != nullptr) {
         m_launcherObject->deleteLater();
     }
-    m_launcherObject = MachinetalkService::recurseDescriptor(machinetalk::Container::descriptor(), this, "launcher");
+    m_launcherObject = MachinetalkService::recurseDescriptor(machinetalk::Container::descriptor(), this, QStringLiteral("launcher"));
 }
 
 void ApplicationLauncher::createTemporaryDir()

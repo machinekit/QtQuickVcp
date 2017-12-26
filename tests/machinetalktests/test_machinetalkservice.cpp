@@ -221,7 +221,7 @@ TEST_CASE("MachinetalkService Tests", "[machinetalk]")
     }
 
     SECTION("creating Container object with filter works") {
-        QObject *output = MachinetalkService::recurseDescriptor(Container::descriptor(), &parent, "launcher");
+        QObject *output = MachinetalkService::recurseDescriptor(Container::descriptor(), &parent, QStringLiteral("launcher"));
 
          REQUIRE(output != nullptr);
 
@@ -240,7 +240,7 @@ TEST_CASE("MachinetalkService Tests", "[machinetalk]")
              launcher->set_index(0);
              launcher->set_name("Test Launcher");
              launcher->set_description("A test launcher");
-             MachinetalkService::recurseMessage(message, output, QString(), "launcher");
+             MachinetalkService::recurseMessage(message, output, QString(), QStringLiteral("launcher"));
 
              auto list = output->property("launcher").toList();
              REQUIRE(list.count() == 1);
