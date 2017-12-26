@@ -37,7 +37,7 @@ void GLCanvas::paint(GLView *glView)
         emit contextChanged(glView);
     }
 
-    paint();
+    emit paint();
 }
 
 void GLCanvas::selectDrawable(void *pointer)
