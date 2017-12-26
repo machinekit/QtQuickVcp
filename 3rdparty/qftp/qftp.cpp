@@ -574,7 +574,7 @@ static void _q_parseDosDir(const QStringList &tokens, const QString &userName, Q
 
     QString name = tokens.at(3);
     info->setName(name);
-    info->setSymLink(name.toLower().endsWith(QLatin1String(".lnk")));
+    info->setSymLink(name.endsWith(QLatin1String(".lnk"), Qt::CaseInsensitive));
 
     if (tokens.at(2) == QLatin1String("<DIR>")) {
         info->setFile(false);
@@ -952,7 +952,7 @@ void QFtpPI::readyRead()
 
         while (lineLeft4 != endOfMultiLine) {
             if (lineLeft4 == lineCont)
-                replyText += line.mid(4); // strip 'xyz-'
+                replyText += line.midRef(4); // strip 'xyz-'
             else
                 replyText += line;
             if (!commandSocket.canReadLine())
@@ -960,7 +960,7 @@ void QFtpPI::readyRead()
             line = QString::fromLatin1(commandSocket.readLine());
             lineLeft4 = line.left(4);
         }
-        replyText += line.mid(4); // strip reply code 'xyz '
+        replyText += line.midRef(4); // strip reply code 'xyz '
         if (replyText.endsWith(QLatin1String("\r\n")))
             replyText.chop(2);
 
