@@ -42,7 +42,7 @@ SafeTimer::SafeTimer(QObject *parent)
 	: QObject(parent)
 {
 	t = new QTimer(this);
-	connect(t, SIGNAL(timeout()), SIGNAL(timeout()));
+	connect(t, &QTimer::timeout, this, &SafeTimer::timeout);
 }
 
 SafeTimer::~SafeTimer()
@@ -324,13 +324,13 @@ QJDns::Private::Private(QJDns *_q)
 	, pPublished(NULL)
 	, pResponses(NULL)
 {
-	connect(&stepTrigger, SIGNAL(timeout()), SLOT(doNextStepSlot()));
+	connect(&stepTrigger, &SafeTimer::timeout, this, &Private::doNextStepSlot);
 	stepTrigger.setSingleShot(true);
 
-	connect(&debugTrigger, SIGNAL(timeout()), SLOT(doDebug()));
+	connect(&debugTrigger, &SafeTimer::timeout, this, &Private::doDebug);
 	debugTrigger.setSingleShot(true);
 
-	connect(&stepTimeout, SIGNAL(timeout()), SLOT(st_timeout()));
+	connect(&stepTimeout, &SafeTimer::timeout, this, &Private::st_timeout);
 	stepTimeout.setSingleShot(true);
 
 	my_srand();
@@ -710,11 +710,11 @@ int QJDns::Private::cb_udp_bind(jdns_session_t *, void *app, const jdns_address_
 	QHostAddress host = addr2qt(addr);
 
 	QUdpSocket *sock = new QUdpSocket(self);
-	self->connect(sock, SIGNAL(readyRead()), SLOT(udp_readyRead()));
+	self->connect(sock, &QIODevice::readyRead, self, &Private::udp_readyRead);
 
 	// use queued for bytesWritten, since qt is evil and emits before writeDatagram returns
 	qRegisterMetaType<qint64>("qint64");
-	self->connect(sock, SIGNAL(bytesWritten(qint64)), SLOT(udp_bytesWritten(qint64)), Qt::QueuedConnection);
+	self->connect(sock, &QIODevice::bytesWritten, self, &Private::udp_bytesWritten, Qt::QueuedConnection);
 
 	QUdpSocket::BindMode mode;
 	mode |= QUdpSocket::ShareAddress;
