@@ -50,7 +50,6 @@ class ApplicationFile : public QObject
     Q_PROPERTY(ApplicationFileModel *model READ model NOTIFY modelChanged)
     Q_PROPERTY(bool ready READ ready WRITE setReady NOTIFY readyChanged)
     Q_PROPERTY(bool showHidden READ showHidden WRITE setShowHidden NOTIFY showHiddenChanged)
-    Q_ENUMS(TransferState TransferError)
 
 public:
     explicit ApplicationFile(QObject *parent = 0);
@@ -66,12 +65,14 @@ public:
         CreateDirectoryRunning = 6,
         Error = 7
     };
+    Q_ENUM(TransferState)
 
     enum TransferError {
         NoError = 0,
         FtpError = 1,
         FileError = 2
     };
+    Q_ENUM(TransferError)
 
     QString uri() const
     {

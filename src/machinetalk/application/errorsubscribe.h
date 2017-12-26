@@ -25,7 +25,6 @@ class ErrorSubscribe
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int heartbeatInterval READ heartbeatInterval WRITE setHeartbeatInterval NOTIFY heartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit ErrorSubscribe(QObject *parent = nullptr);
@@ -36,6 +35,7 @@ public:
         Trying = 1,
         Up = 2,
     };
+    Q_ENUM(State)
 
     QString socketUri() const
     {

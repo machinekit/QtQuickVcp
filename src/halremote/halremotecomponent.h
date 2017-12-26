@@ -41,7 +41,6 @@ class HalRemoteComponent : public machinetalk::halremote::RemoteComponentBase
     Q_PROPERTY(bool create READ create WRITE setCreate NOTIFY createChanged)
     Q_PROPERTY(bool bind READ bind WRITE setBind NOTIFY bindChanged)
     Q_PROPERTY(QQmlListProperty<qtquickvcp::HalPin> pins READ pins NOTIFY pinsChanged)
-    Q_ENUMS(ConnectionError)
 
 public:
     explicit HalRemoteComponent(QObject *parent  = nullptr);
@@ -50,6 +49,7 @@ public:
         NoError = 0,
         ComponentError  = 1
     };
+    Q_ENUM(ConnectionError)
 
     QString name() const
     {

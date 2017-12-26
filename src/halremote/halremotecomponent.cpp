@@ -310,7 +310,7 @@ void HalRemoteComponent::bindPins()
     for (HalPin *pin: m_pinsByName)
     {
         Pin *halPin = component->add_pin();
-        halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());  // pin name is always component.name
+        halPin->set_name(QString("%1.%2").arg(m_name, pin->name()).toStdString());  // pin name is always component.name
         halPin->set_type(static_cast<ValueType>(pin->type()));
         halPin->set_dir(static_cast<HalPinDirection>(pin->direction()));
         if (pin->type() == HalPin::Float)

@@ -562,13 +562,13 @@ void ServiceDiscovery::updateServices()
     }
 
     // Iterate trough all items that are left and remove them
-    for (const auto &key: oldServiceTypeMap.keys())
+    for (auto iter = oldServiceTypeMap.begin(); iter != oldServiceTypeMap.end(); iter++)
     {
         if (m_running && m_networkReady)
         {
-            stopQuery(key);
+            stopQuery(iter.key());
         }
-        removeServiceType(key);
+        removeServiceType(iter.key());
     }
 
     updateAllServiceTypes(); // now we need to refill all queries with fresh data
@@ -662,25 +662,25 @@ void ServiceDiscovery::setLookupMode(ServiceDiscovery::LookupMode arg)
 
 void ServiceDiscovery::startAllQueries()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
     {
-        startQuery(key);
+        startQuery(iter.key());
     }
 }
 
 void ServiceDiscovery::stopAllQueries()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
     {
-        stopQuery(key);
+        stopQuery(iter.key());
     }
 }
 
 void ServiceDiscovery::refreshAllQueries()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
     {
-        refreshQuery(key);
+        refreshQuery(iter.key());
     }
 }
 
@@ -688,7 +688,7 @@ void ServiceDiscovery::startQuery(const QString &serviceType)
 {
     int queryId;
 
-    for (const auto &value: m_queryIdServiceMap.values())
+    for (const auto &value: m_queryIdServiceMap)
     {
         if (value == serviceType)  // query with the type already running
         {
@@ -845,17 +845,17 @@ void ServiceDiscovery::updateServiceType(const QString &serviceType)
 
 void ServiceDiscovery::removeAllServiceTypes()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
     {
-        removeServiceType(key);
+        removeServiceType(iter.key());
     }
 }
 
 void ServiceDiscovery::updateAllServiceTypes()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); iter++)
     {
-        updateServiceType(key);
+        updateServiceType(iter.key());
     }
 }
 

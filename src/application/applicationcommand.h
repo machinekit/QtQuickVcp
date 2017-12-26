@@ -34,7 +34,6 @@ class ApplicationCommand : public machinetalk::application::CommandBase
 {
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
-    Q_ENUMS(SpindleBrake JogType TaskState TaskMode SpindleMode TrajectoryMode)
 
 public:
     explicit ApplicationCommand(QObject *parent = 0);
@@ -43,12 +42,14 @@ public:
         ReleaseBrake,
         EngageBrake
     };
+    Q_ENUM(SpindleBrake)
 
     enum JogType {
         StopJog = 0,
         ContinuousJog = 1,
         IncrementJog = 2
     };
+    Q_ENUM(JogType)
 
     enum SpindleMode {
         SpindleForward,
@@ -58,6 +59,7 @@ public:
         SpindleIncrease,
         SpindleConstant
     };
+    Q_ENUM(SpindleMode)
 
     enum TaskState {
         TaskStateEstop = machinetalk::EMC_TASK_STATE_ESTOP,
@@ -65,18 +67,21 @@ public:
         TaskStateOff = machinetalk::EMC_TASK_STATE_OFF,
         TaskStateOn = machinetalk::EMC_TASK_STATE_ON
     };
+    Q_ENUM(TaskState)
 
     enum TaskMode {
         TaskModeManual = machinetalk::EMC_TASK_MODE_MANUAL,
         TaskModeAuto = machinetalk::EMC_TASK_MODE_AUTO,
         TaskModeMdi = machinetalk::EMC_TASK_MODE_MDI
     };
+    Q_ENUM(TaskMode)
 
     enum TrajectoryMode {
         FreeMode = machinetalk::EMC_TRAJ_MODE_FREE,
         CoordinatedMode = machinetalk::EMC_TRAJ_MODE_COORD,
         TeleopMode = machinetalk::EMC_TRAJ_MODE_TELEOP
     };
+    Q_ENUM(TrajectoryMode)
 
     bool isConnected() const
     {

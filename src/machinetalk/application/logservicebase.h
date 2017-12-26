@@ -28,7 +28,6 @@ class LogServiceBase
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int logHeartbeatInterval READ logHeartbeatInterval WRITE setLogHeartbeatInterval NOTIFY logHeartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit LogServiceBase(QObject *parent = nullptr);
@@ -38,6 +37,7 @@ public:
         Down = 0,
         Up = 1,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */
