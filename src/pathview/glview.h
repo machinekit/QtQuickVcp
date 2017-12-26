@@ -158,10 +158,10 @@ public slots:
         if (m_camera != arg) {
             m_camera = arg;
             emit cameraChanged(arg);
-            connect(m_camera, SIGNAL(projectionChanged()),
-                    this, SLOT(updateProjectionMatrix()));
-            connect(m_camera, SIGNAL(viewChanged()),
-                    this, SLOT(updateViewMatrix()));
+            connect(m_camera, &QGLCamera::projectionChanged,
+                    this, &GLView::updateProjectionMatrix);
+            connect(m_camera, &QGLCamera::viewChanged,
+                    this, &GLView::updateViewMatrix);
         }
     }
 
