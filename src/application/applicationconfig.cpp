@@ -308,7 +308,7 @@ void ApplicationConfig::unsyncConfig()
     emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
 }
 
-void ApplicationConfig::selectConfig(QString name)
+void ApplicationConfig::selectConfig(const QString &name)
 {
     m_selectedConfig->setLoaded(false);
     m_selectedConfig->setLoading(true);
