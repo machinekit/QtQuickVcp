@@ -680,7 +680,7 @@ NZMQT_INLINE SocketNotifierZMQSocket::SocketNotifierZMQSocket(ZMQContext* contex
     int fd = fileDescriptor();
 
     socketNotifyRead_ = new QSocketNotifier(fd, QSocketNotifier::Read, this);
-    QObject::connect(socketNotifyRead_, SIGNAL(activated(int)), this, SLOT(socketReadActivity()));
+    QObject::connect(socketNotifyRead_, &QSocketNotifier::activated, this, &SocketNotifierZMQSocket::socketReadActivity);
 
 //    socketNotifyWrite_ = new QSocketNotifier(fd, QSocketNotifier::Write, this);
 //    socketNotifyWrite_->setEnabled(false);
