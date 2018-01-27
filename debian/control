@@ -12,8 +12,8 @@ Build-Depends: debhelper (>= 9),
                qtdeclarative5-dev-tools
 Build-Depends-Indep: qttools5-dev-tools (>= 5.7.1~20161021~)
 Standards-Version: 3.9.8
-Homepage: https://github.com/qtquickvcp/QtQuickVcp
-Vcs-Git: https://github.com/qtquickvcp/QtQuickVcp.git
+Homepage: https://github.com/machinekit/QtQuickVcp
+Vcs-Git: https://github.com/machinekit/QtQuickVcp.git
 Vcs-Browser: https://anonscm.debian.org/git/pkg-kde/qt/qtquickcontrols
 
 Package: qml-module-qtquick-vcp

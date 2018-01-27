@@ -37,8 +37,8 @@ BINTRAY_API_KEY="${BINTRAY_API_KEY:?Environment variable missing/empty!}" # env
 BINTRAY_REPO_OWNER="${BINTRAY_REPO_OWNER:-$BINTRAY_USER}" # env, or use BINTRAY_USER as default
 [ "${BINTRAY_REPO_OWNER}" == "machinekoder" ] && TRUSTED="true" || TRUSTED="false"
 
-WEBSITE_URL="https://github.com/qtquickvcp/QtQuickVcp"
-ISSUE_TRACKER_URL="https://github.com/qtquickvcp/QtQuickVcp/issues"
+WEBSITE_URL="https://github.com/machinekit/QtQuickVcp"
+ISSUE_TRACKER_URL="https://github.com/machinekit/QtQuickVcp/issues"
 GITHUB_REPO="qtquickvcp/QtQuickVcp"
 VCS_URL="https://github.com/${GITHUB_REPO}.git" # Mandatory for packages in free Bintray repos
 LICENSE="LGPL-2.1"
