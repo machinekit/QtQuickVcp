@@ -58,16 +58,16 @@ void ApplicationPlugins::readPluginFile(QString filePath)
     QUrl mainFile;
     ApplicationPluginItem::PluginType type = ApplicationPluginItem::Qt5QmlPlugin;
 
-    ini.beginGroup("Default");
-    name = ini.value("name", "Unnamed").toString();
-    description = ini.value("description", "").toString();
-    typeString = ini.value("type", "QT5_QML").toString();
+    ini.beginGroup(QStringLiteral("Default"));
+    name = ini.value(QStringLiteral("name"), "Unnamed").toString();
+    description = ini.value(QStringLiteral("description"), "").toString();
+    typeString = ini.value(QStringLiteral("type"), "QT5_QML").toString();
     ini.endGroup();
-    if (typeString == "QT5_QML")
+    if (typeString == QLatin1String("QT5_QML"))
     {
         type = ApplicationPluginItem::Qt5QmlPlugin;
     }
-    else if (typeString == "PYTHON")
+    else if (typeString == QLatin1String("PYTHON"))
     {
         type = ApplicationPluginItem::PythonPlugin;
     }
@@ -85,7 +85,7 @@ void ApplicationPlugins::updatePlugins()
     qDeleteAll(m_plugins);
     m_plugins.clear();
 
-    for (QString path: m_searchPaths) {
+    for (const QString &path: qAsConst(m_searchPaths)) {
         if (!QDir(path).exists())
         {
             continue;
@@ -96,7 +96,7 @@ void ApplicationPlugins::updatePlugins()
         {
             dirIterator.next();
             QFileInfo info = dirIterator.fileInfo();
-            if (info.isFile() && info.fileName() == "plugin.ini")
+            if (info.isFile() && info.fileName() == QLatin1String("plugin.ini"))
             {
                 readPluginFile(info.filePath());
             }

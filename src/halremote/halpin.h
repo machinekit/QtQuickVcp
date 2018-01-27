@@ -39,8 +39,6 @@ class HalPin : public QObject
     Q_PROPERTY(int handle READ handle NOTIFY handleChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
-    Q_ENUMS(HalPinType)
-    Q_ENUMS(HalPinDirection)
 
 public:
     explicit HalPin(QObject *parent = 0);
@@ -51,12 +49,14 @@ public:
         S32 = machinetalk::HAL_S32,
         U32 = machinetalk::HAL_U32
     };
+    Q_ENUM(HalPinType)
 
     enum HalPinDirection {
       In = machinetalk::HAL_IN,
       Out = machinetalk::HAL_OUT,
       IO = machinetalk::HAL_IO
     };
+    Q_ENUM(HalPinDirection)
 
     QString name() const
     {

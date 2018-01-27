@@ -31,7 +31,6 @@ class ParamClient
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int paramcmdHeartbeatInterval READ paramcmdHeartbeatInterval WRITE setParamcmdHeartbeatInterval NOTIFY paramcmdHeartbeatIntervalChanged)
     Q_PROPERTY(int paramHeartbeatInterval READ paramHeartbeatInterval WRITE setParamHeartbeatInterval NOTIFY paramHeartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit ParamClient(QObject *parent = nullptr);
@@ -44,6 +43,7 @@ public:
         Trying = 3,
         Up = 4,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

@@ -236,7 +236,7 @@ void HalRemoteComponent::pinChange(QVariant value)
 }
 
 /** Recurses through a list of objects */
-QObjectList HalRemoteComponent::recurseObjects(const QObjectList &list)
+const QObjectList HalRemoteComponent::recurseObjects(const QObjectList &list)
 {
     QObjectList halObjects;
 
@@ -307,10 +307,10 @@ void HalRemoteComponent::bindPins()
     component = m_tx.add_comp();
     component->set_name(m_name.toStdString());
     component->set_no_create(!m_create);
-    for (HalPin *pin: m_pinsByName)
+    for (HalPin *pin: qAsConst(m_pinsByName))
     {
         Pin *halPin = component->add_pin();
-        halPin->set_name(QString("%1.%2").arg(m_name).arg(pin->name()).toStdString());  // pin name is always component.name
+        halPin->set_name(QString("%1.%2").arg(m_name, pin->name()).toStdString());  // pin name is always component.name
         halPin->set_type(static_cast<ValueType>(pin->type()));
         halPin->set_dir(static_cast<HalPinDirection>(pin->direction()));
         if (pin->type() == HalPin::Float)
@@ -360,8 +360,6 @@ QString HalRemoteComponent::splitPinFromHalName(const QString &name)
 /** Scans all children of the container item for pins and adds them to a map */
 void HalRemoteComponent::addPins()
 {
-    QObjectList halObjects;
-
     if (m_containerItem == nullptr)
     {
         return;
@@ -370,7 +368,7 @@ void HalRemoteComponent::addPins()
     clearHalrcompTopics();
     addHalrcompTopic(m_name.toLocal8Bit());
 
-    halObjects = recurseObjects(m_containerItem->children());
+    const auto halObjects = recurseObjects(m_containerItem->children());
     for (QObject *object: halObjects)
     {
         HalPin *pin = static_cast<HalPin *>(object);
@@ -380,8 +378,8 @@ void HalRemoteComponent::addPins()
         }
         m_pinsByName[pin->name()] = pin;
         m_pins.append(pin);
-        connect(pin, SIGNAL(valueChanged(QVariant)),
-                this, SLOT(pinChange(QVariant)));
+        connect(pin, &HalPin::valueChanged,
+                this, &HalRemoteComponent::pinChange);
 #ifdef QT_DEBUG
         DEBUG_TAG(1, m_name, "pin added: " << pin->name())
 #endif
@@ -393,7 +391,7 @@ void HalRemoteComponent::addPins()
 /** Removes all previously added pins */
 void HalRemoteComponent::removePins()
 {
-    for (HalPin *pin: m_pinsByName)
+    for (HalPin *pin: qAsConst(m_pinsByName))
     {
         disconnect(pin, &HalPin::valueChanged,
                 this, &HalRemoteComponent::pinChange);
@@ -413,7 +411,7 @@ void HalRemoteComponent::removePins()
 /** Sets synced of all pins to false */
 void HalRemoteComponent::unsyncPins()
 {
-    for (HalPin *pin: m_pinsByName) {
+    for (HalPin *pin: qAsConst(m_pinsByName)) {
         pin->setSynced(false);
     }
 }

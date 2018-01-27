@@ -60,6 +60,9 @@ linux: !android: {
 	} else {
 		PROTOBUF_INCLUDE_PATH = /usr/include
 	}
+    linux-clang: {
+        PROTOBUF_INCLUDE_PATH =
+    }
 }
 
 # Qt SDK directory - autodetected based on qmake path

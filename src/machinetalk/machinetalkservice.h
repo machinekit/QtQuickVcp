@@ -24,7 +24,7 @@ namespace MachinetalkService
     QObject* recurseDescriptor(const google::protobuf::Descriptor *descriptor, QObject *parent,
                                const QString &fieldFilter = QString());
     int recurseMessage(const google::protobuf::Message &message, QObject *object,
-                       const QString &tempDir = QString("json"), const QString &fieldFilter = QString());
+                       const QString &tempDir = QStringLiteral("json"), const QString &fieldFilter = QString());
 
     void updateSimpleRepeatedField(QObject *object, const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field);
     void updateComplexRepeatedField(QObject *object, const google::protobuf::Message &message, const google::protobuf::FieldDescriptor *field,

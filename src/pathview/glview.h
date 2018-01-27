@@ -51,7 +51,6 @@ class GLView : public QQuickPaintedItem, protected QOpenGLFunctions
     Q_PROPERTY(QGLCamera *camera READ camera WRITE setCamera NOTIFY cameraChanged)
     Q_PROPERTY(GLLight *light READ light WRITE setLight NOTIFY lightChanged)
     Q_PROPERTY(QQmlListProperty<qtquickvcp::GLItem> glItems READ glItems NOTIFY glItemsChanged)
-    Q_ENUMS(TextAlignment)
 
 public:
     GLView(QQuickItem *parent = 0);
@@ -62,6 +61,7 @@ public:
         AlignCenter = 1,
         AlignRight = 2
     };
+    Q_ENUM(TextAlignment)
 
     QColor backgroundColor() const { return m_backgroundColor; }
     void setBackgroundColor(const QColor &color);
@@ -158,10 +158,10 @@ public slots:
         if (m_camera != arg) {
             m_camera = arg;
             emit cameraChanged(arg);
-            connect(m_camera, SIGNAL(projectionChanged()),
-                    this, SLOT(updateProjectionMatrix()));
-            connect(m_camera, SIGNAL(viewChanged()),
-                    this, SLOT(updateViewMatrix()));
+            connect(m_camera, &QGLCamera::projectionChanged,
+                    this, &GLView::updateProjectionMatrix);
+            connect(m_camera, &QGLCamera::viewChanged,
+                    this, &GLView::updateViewMatrix);
         }
     }
 

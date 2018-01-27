@@ -26,14 +26,15 @@
 #include <QJsonDocument>
 #include <QFileInfo>
 #include <QDir>
+#include <QVector>
 #include <QStandardPaths>
 
 namespace qtquickvcp {
 
 LocalSettings::LocalSettings(QObject *parent) :
     QObject(parent),
-    m_application("machinekit"),
-    m_name("settings")
+    m_application(QStringLiteral("machinekit")),
+    m_name(QStringLiteral("settings"))
 {
     updateFilePath();
 }
@@ -104,7 +105,7 @@ QJsonValue LocalSettings::value(const QString &key)
 {
     QStringList heritanceList;
     QJsonObject *parentObject;
-    QList<QJsonObject> objectList;
+    QVector<QJsonObject> objectList;
 
     heritanceList = key.split('.');
     parentObject = &m_values;

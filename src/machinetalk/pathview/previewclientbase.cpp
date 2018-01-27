@@ -24,12 +24,12 @@ PreviewClientBase::PreviewClientBase(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Preview Client Base")
+    , m_debugName(QStringLiteral("Preview Client Base"))
     , m_previewChannel(nullptr)
     , m_previewstatusChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize preview channel
     m_previewChannel = new pathview::PreviewSubscribe(this);

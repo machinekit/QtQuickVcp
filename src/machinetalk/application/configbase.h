@@ -28,7 +28,6 @@ class ConfigBase
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int configHeartbeatInterval READ configHeartbeatInterval WRITE setConfigHeartbeatInterval NOTIFY configHeartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit ConfigBase(QObject *parent = nullptr);
@@ -41,6 +40,7 @@ public:
         Up = 3,
         Loading = 4,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

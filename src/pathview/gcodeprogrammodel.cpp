@@ -284,7 +284,7 @@ void GCodeProgramModel::clearBackplot(bool update)
     {
         beginUpdate();
     }
-    for (auto item: m_items) {
+    for (auto item: qAsConst(m_items)) {
         item->setExecuted(false);
         item->setActive(false);
         item->setSelected(false);
@@ -302,7 +302,7 @@ void GCodeProgramModel::clearSelectionAndSelectLine(const QString &fileName, int
 
 void GCodeProgramModel::clearSelectionAndSelectLine(const QModelIndex &index)
 {
-    for (auto item: m_items) {
+    for (auto item: qAsConst(m_items)) {
         if (item->selected()) {
             item->setSelected(false);
             setData(item->fileName(), item->lineNumber(), false, SelectedRole);

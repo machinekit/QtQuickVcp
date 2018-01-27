@@ -85,7 +85,7 @@ Rectangle {
         Per default this property is set using the internal services
         if you want to overwrite the services set this property to \c true.
     */
-    property bool ready: remoteComponent.ready && _ready
+    property bool ready: remoteComponent.ready && __ready
 
     /*! \qmlproperty list<Service> services
 
@@ -138,13 +138,15 @@ Rectangle {
             }
         }
 
-        _ready = newReady;  // if no required service we are ready
+        __ready = newReady;  // if no required service we are ready
 
         return required;
     }
 
     /*! \internal */
-    property bool _ready: false
+    property bool __ready: false
+    /*! \internal */
+    property bool __initialized: false
 
     /*!
         Updates the services of this window.
@@ -162,12 +164,12 @@ Rectangle {
     function _evaluateReady() {
         for (var i = 0; i < _requiredServices.length; ++i) {
             if (!_requiredServices[i].ready) {
-                _ready = false;
+                __ready = false;
                 return;
             }
         }
 
-        _ready = true;
+        __ready = true;
         return;
     }
 
@@ -204,6 +206,7 @@ Rectangle {
 
     Component.onCompleted: {
         updateServices();
+        __initialized = true;
     }
 
     id: root
@@ -243,7 +246,7 @@ Rectangle {
             name: root.name
             halrcmdUri: halrcmdService.uri
             halrcompUri: halrcompService.uri
-            ready: (halrcompService.ready && halrcmdService.ready) || remoteComponent.connected
+            ready: root.__initialized && (halrcompService.ready && halrcmdService.ready) || remoteComponent.connected
             containerItem: root
         }
     }
@@ -333,7 +336,7 @@ Rectangle {
     state: {
         switch (remoteComponent.connectionState) {
         case HalRemoteComponent.Synced:
-            if (_ready) {
+            if (__ready) {
                 return "connected";
             }
             else {

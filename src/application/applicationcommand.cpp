@@ -118,7 +118,7 @@ void ApplicationCommand::setDebugLevel(int debugLevel)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_debug_level(debugLevel);
+    commandParams->set_debug_level(static_cast<quint32>(debugLevel));
 
     sendEmcSetDebug(m_tx);
 }
@@ -170,7 +170,7 @@ void ApplicationCommand::homeAxis(int index)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(index);
+    commandParams->set_index(static_cast<quint32>(index));
 
     sendEmcAxisHome(m_tx);
 }
@@ -192,7 +192,7 @@ void ApplicationCommand::jog(ApplicationCommand::JogType type, int axisIndex, do
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(axisIndex);
+    commandParams->set_index(static_cast<quint32>(axisIndex));
 
     if (type == StopJog)
     {
@@ -235,25 +235,25 @@ void ApplicationCommand::updateToolTable(const QJsonArray &toolTable)
         const QJsonObject object = toolTable.at(i).toObject();
         auto toolData = commandParams->add_tool_table();
         toolData->set_index(i);
-        toolData->set_id(object.value("id").toInt(0));
-        toolData->set_pocket(object.value("pocket").toInt(0));
-        toolData->set_diameter(object.value("diameter").toDouble(0.0));
-        toolData->set_backangle(object.value("backangle").toDouble(0.0));
-        toolData->set_frontangle(object.value("frontangle").toDouble(0.0));
-        toolData->set_orientation(object.value("orientation").toInt(0));
-        toolData->set_comment(object.value("comment").toString().toStdString());
+        toolData->set_id(object.value(QStringLiteral("id")).toInt(0));
+        toolData->set_pocket(object.value(QStringLiteral("pocket")).toInt(0));
+        toolData->set_diameter(object.value(QStringLiteral("diameter")).toDouble(0.0));
+        toolData->set_backangle(object.value(QStringLiteral("backangle")).toDouble(0.0));
+        toolData->set_frontangle(object.value(QStringLiteral("frontangle")).toDouble(0.0));
+        toolData->set_orientation(object.value(QStringLiteral("orientation")).toInt(0));
+        toolData->set_comment(object.value(QStringLiteral("comment")).toString().toStdString());
 
-        const QJsonObject offsetObject = object.value("offset").toObject();
+        const QJsonObject offsetObject = object.value(QStringLiteral("offset")).toObject();
         auto offset = toolData->mutable_offset();
-        offset->set_x(offsetObject.value("x").toDouble(0.0));
-        offset->set_y(offsetObject.value("y").toDouble(0.0));
-        offset->set_z(offsetObject.value("z").toDouble(0.0));
-        offset->set_a(offsetObject.value("a").toDouble(0.0));
-        offset->set_b(offsetObject.value("b").toDouble(0.0));
-        offset->set_c(offsetObject.value("c").toDouble(0.0));
-        offset->set_u(offsetObject.value("u").toDouble(0.0));
-        offset->set_v(offsetObject.value("v").toDouble(0.0));
-        offset->set_w(offsetObject.value("w").toDouble(0.0));
+        offset->set_x(offsetObject.value(QStringLiteral("x")).toDouble(0.0));
+        offset->set_y(offsetObject.value(QStringLiteral("y")).toDouble(0.0));
+        offset->set_z(offsetObject.value(QStringLiteral("z")).toDouble(0.0));
+        offset->set_a(offsetObject.value(QStringLiteral("a")).toDouble(0.0));
+        offset->set_b(offsetObject.value(QStringLiteral("b")).toDouble(0.0));
+        offset->set_c(offsetObject.value(QStringLiteral("c")).toDouble(0.0));
+        offset->set_u(offsetObject.value(QStringLiteral("u")).toDouble(0.0));
+        offset->set_v(offsetObject.value(QStringLiteral("v")).toDouble(0.0));
+        offset->set_w(offsetObject.value(QStringLiteral("w")).toDouble(0.0));
     }
 
     sendEmcToolUpdateToolTable(m_tx);
@@ -307,7 +307,7 @@ void ApplicationCommand::setTaskMode(const QString &interpreter, TaskMode mode)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_task_mode((EmcTaskModeType)mode);
+    commandParams->set_task_mode(static_cast<EmcTaskModeType>(mode));
     m_tx.set_interp_name(interpreter.toStdString());
 
     sendEmcTaskSetMode(m_tx);
@@ -365,7 +365,7 @@ void ApplicationCommand::setAnalogOutput(int index, double value)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(index);
+    commandParams->set_index(static_cast<quint32>(index));
     commandParams->set_value(value);
 
     sendEmcMotionSetAout(m_tx);
@@ -390,7 +390,7 @@ void ApplicationCommand::setDigitalOutput(int index, bool enable)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(index);
+    commandParams->set_index(static_cast<quint32>(index));
     commandParams->set_enable(enable);
 
     sendEmcMotionSetDout(m_tx);
@@ -427,7 +427,7 @@ void ApplicationCommand::setAxisMaxPositionLimit(int axisIndex, double value)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(axisIndex);
+    commandParams->set_index(static_cast<quint32>(axisIndex));
     commandParams->set_value(value);
 
     sendEmcAxisSetMaxPositionLimit(m_tx);
@@ -440,7 +440,7 @@ void ApplicationCommand::setAxisMinPositionLimit(int axisIndex, double value)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(axisIndex);
+    commandParams->set_index(static_cast<quint32>(axisIndex));
     commandParams->set_value(value);
 
     sendEmcAxisSetMinPositionLimit(m_tx);
@@ -527,7 +527,7 @@ void ApplicationCommand::setTaskState(const QString &interpreter, TaskState stat
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_task_state((EmcTaskStateType)state);
+    commandParams->set_task_state(static_cast<EmcTaskStateType>(state));
     m_tx.set_interp_name(interpreter.toStdString());
 
     sendEmcTaskSetState(m_tx);
@@ -590,7 +590,7 @@ void ApplicationCommand::setTrajectoryMode(TrajectoryMode mode)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_traj_mode((EmcTrajectoryModeType)mode);
+    commandParams->set_traj_mode(static_cast<EmcTrajectoryModeType>(mode));
 
     sendEmcTrajSetMode(m_tx);
 }
@@ -602,7 +602,7 @@ void ApplicationCommand::unhomeAxis(int index)
     }
 
     EmcCommandParameters *commandParams = m_tx.mutable_emc_command_params();
-    commandParams->set_index(index);
+    commandParams->set_index(static_cast<quint32>(index));
 
     sendEmcAxisUnhome(m_tx);
 }

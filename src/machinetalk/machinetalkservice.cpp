@@ -22,7 +22,7 @@ QString MachinetalkService::enumNameToCamelCase(const QString &name)
         partList[i][0] = partList[i][0].toUpper();
     }
 
-    return partList.join("");
+    return partList.join(QLatin1String(""));
 }
 
 QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descriptor *descriptor, QObject *parent, const QString &fieldFilter)
@@ -41,7 +41,7 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
     }
     else if (descriptor == machinetalk::File::descriptor())
     {
-        object->insert("url", QVariant::fromValue(QString("")));
+        object->insert(QStringLiteral("url"), QVariant::fromValue(QStringLiteral("")));
         count++;
     }
 
@@ -82,7 +82,7 @@ QObject *MachinetalkService::recurseDescriptor(const google::protobuf::Descripto
             break;
         case gpb::FieldDescriptor::CPPTYPE_STRING:
             type = "QString";
-            value = QVariant::fromValue(QString(""));
+            value = QVariant::fromValue(QStringLiteral(""));
             break;
         case gpb::FieldDescriptor::CPPTYPE_ENUM:
             type = "int";

@@ -133,7 +133,7 @@ void MachinekitApplicationControlsPlugin::initializeEngine(QQmlEngine *engine, c
 QString MachinekitApplicationControlsPlugin::fileLocation() const
 {
     if (isLoadedFromResource())
-        return "qrc:/Machinekit/Application/Controls";
+        return QStringLiteral("qrc:/Machinekit/Application/Controls");
     return baseUrl().toString();
 }
 

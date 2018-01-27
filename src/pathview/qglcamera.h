@@ -56,7 +56,6 @@ class QGLPainter;
 class QGLCamera : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(ProjectionType RotateOrder Eye)
     Q_PROPERTY(ProjectionType projectionType READ projectionType WRITE setProjectionType NOTIFY projectionChanged)
     Q_PROPERTY(float fieldOfView READ fieldOfView WRITE setFieldOfView NOTIFY projectionChanged)
     Q_PROPERTY(float nearPlane READ nearPlane WRITE setNearPlane NOTIFY projectionChanged)
@@ -79,6 +78,7 @@ public:
         Perspective,
         Orthographic
     };
+    Q_ENUM(ProjectionType)
 
     enum Eye
     {
@@ -86,6 +86,18 @@ public:
         LeftEye,
         RightEye
     };
+    Q_ENUM(Eye)
+
+    enum RotateOrder
+    {
+        TiltPanRoll,
+        TiltRollPan,
+        PanTiltRoll,
+        PanRollTilt,
+        RollTiltPan,
+        RollPanTilt
+    };
+    Q_ENUM(RotateOrder)
 
     QGLCamera::ProjectionType projectionType() const;
     void setProjectionType(QGLCamera::ProjectionType value);
@@ -141,16 +153,6 @@ public:
     QVector3D mapPoint
         (const QPoint& point, float aspectRatio,
          const QSize& viewportSize) const;
-
-    enum RotateOrder
-    {
-        TiltPanRoll,
-        TiltRollPan,
-        PanTiltRoll,
-        PanRollTilt,
-        RollTiltPan,
-        RollPanTilt
-    };
 
     QGLCamera *clone(QObject *parent = 0) const;
 

@@ -24,11 +24,11 @@ ErrorBase::ErrorBase(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Error Base")
+    , m_debugName(QStringLiteral("Error Base"))
     , m_errorChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize error channel
     m_errorChannel = new application::ErrorSubscribe(this);

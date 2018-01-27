@@ -288,7 +288,7 @@ QFtpDTP::QFtpDTP(QFtpPI *p, QObject *parent) :
 {
     clearData();
     listener.setObjectName(QLatin1String("QFtpDTP active state server"));
-    connect(&listener, SIGNAL(newConnection()), SLOT(setupSocket()));
+    connect(&listener, &QTcpServer::newConnection, this, &QFtpDTP::setupSocket);
 }
 
 void QFtpDTP::setData(QByteArray *ba)
@@ -324,11 +324,11 @@ void QFtpDTP::connectToHost(const QString & host, quint16 port)
     socket->setProperty("_q_networksession", property("_q_networksession"));
 #endif
     socket->setObjectName(QLatin1String("QFtpDTP Passive state socket"));
-    connect(socket, SIGNAL(connected()), SLOT(socketConnected()));
-    connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
+    connect(socket, &QAbstractSocket::connected, this, &QFtpDTP::socketConnected);
+    connect(socket, &QIODevice::readyRead, this, &QFtpDTP::socketReadyRead);
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(socketError(QAbstractSocket::SocketError)));
-    connect(socket, SIGNAL(disconnected()), SLOT(socketConnectionClosed()));
-    connect(socket, SIGNAL(bytesWritten(qint64)), SLOT(socketBytesWritten(qint64)));
+    connect(socket, &QAbstractSocket::disconnected, this, &QFtpDTP::socketConnectionClosed);
+    connect(socket, &QIODevice::bytesWritten, this, &QFtpDTP::socketBytesWritten);
 
     socket->connectToHost(host, port);
 }
@@ -574,7 +574,7 @@ static void _q_parseDosDir(const QStringList &tokens, const QString &userName, Q
 
     QString name = tokens.at(3);
     info->setName(name);
-    info->setSymLink(name.toLower().endsWith(QLatin1String(".lnk")));
+    info->setSymLink(name.endsWith(QLatin1String(".lnk"), Qt::CaseInsensitive));
 
     if (tokens.at(2) == QLatin1String("<DIR>")) {
         info->setFile(false);
@@ -766,11 +766,11 @@ void QFtpDTP::setupSocket()
 {
     socket = listener.nextPendingConnection();
     socket->setObjectName(QLatin1String("QFtpDTP Active state socket"));
-    connect(socket, SIGNAL(connected()), SLOT(socketConnected()));
-    connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
+    connect(socket, &QAbstractSocket::connected, this, &QFtpDTP::socketConnected);
+    connect(socket, &QIODevice::readyRead, this, &QFtpDTP::socketReadyRead);
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(socketError(QAbstractSocket::SocketError)));
-    connect(socket, SIGNAL(disconnected()), SLOT(socketConnectionClosed()));
-    connect(socket, SIGNAL(bytesWritten(qint64)), SLOT(socketBytesWritten(qint64)));
+    connect(socket, &QAbstractSocket::disconnected, this, &QFtpDTP::socketConnectionClosed);
+    connect(socket, &QIODevice::bytesWritten, this, &QFtpDTP::socketBytesWritten);
 
     listener.close();
 }
@@ -798,19 +798,19 @@ QFtpPI::QFtpPI(QObject *parent) :
     waitForDtpToClose(false)
 {
     commandSocket.setObjectName(QLatin1String("QFtpPI_socket"));
-    connect(&commandSocket, SIGNAL(hostFound()),
-            SLOT(hostFound()));
-    connect(&commandSocket, SIGNAL(connected()),
-            SLOT(connected()));
-    connect(&commandSocket, SIGNAL(disconnected()),
-            SLOT(connectionClosed()));
-    connect(&commandSocket, SIGNAL(readyRead()),
-            SLOT(readyRead()));
+    connect(&commandSocket, &QAbstractSocket::hostFound,
+            this, &QFtpPI::hostFound);
+    connect(&commandSocket, &QAbstractSocket::connected,
+            this, &QFtpPI::connected);
+    connect(&commandSocket, &QAbstractSocket::disconnected,
+            this, &QFtpPI::connectionClosed);
+    connect(&commandSocket, &QIODevice::readyRead,
+            this, &QFtpPI::readyRead);
     connect(&commandSocket, SIGNAL(error(QAbstractSocket::SocketError)),
             SLOT(error(QAbstractSocket::SocketError)));
 
-    connect(&dtp, SIGNAL(connectState(int)),
-             SLOT(dtpConnectState(int)));
+    connect(&dtp, &QFtpDTP::connectState,
+             this, &QFtpPI::dtpConnectState);
 }
 
 void QFtpPI::connectToHost(const QString &host, quint16 port)
@@ -952,7 +952,7 @@ void QFtpPI::readyRead()
 
         while (lineLeft4 != endOfMultiLine) {
             if (lineLeft4 == lineCont)
-                replyText += line.mid(4); // strip 'xyz-'
+                replyText += line.midRef(4); // strip 'xyz-'
             else
                 replyText += line;
             if (!commandSocket.canReadLine())
@@ -960,7 +960,7 @@ void QFtpPI::readyRead()
             line = QString::fromLatin1(commandSocket.readLine());
             lineLeft4 = line.left(4);
         }
-        replyText += line.mid(4); // strip reply code 'xyz '
+        replyText += line.midRef(4); // strip reply code 'xyz '
         if (replyText.endsWith(QLatin1String("\r\n")))
             replyText.chop(2);
 
@@ -1422,12 +1422,12 @@ QFtp::QFtp(QObject *parent)
     connect(&d->pi, SIGNAL(rawFtpReply(int,QString)),
             SLOT(_q_piFtpReply(int,QString)));
 
-    connect(&d->pi.dtp, SIGNAL(readyRead()),
-            SIGNAL(readyRead()));
-    connect(&d->pi.dtp, SIGNAL(dataTransferProgress(qint64,qint64)),
-            SIGNAL(dataTransferProgress(qint64,qint64)));
-    connect(&d->pi.dtp, SIGNAL(listInfo(QUrlInfo)),
-            SIGNAL(listInfo(QUrlInfo)));
+    connect(&d->pi.dtp, &QFtpDTP::readyRead,
+            this, &QFtp::readyRead);
+    connect(&d->pi.dtp, &QFtpDTP::dataTransferProgress,
+            this, &QFtp::dataTransferProgress);
+    connect(&d->pi.dtp, &QFtpDTP::listInfo,
+            this, &QFtp::listInfo);
 }
 
 /*!

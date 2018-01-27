@@ -33,7 +33,7 @@ namespace qtquickvcp {
 
 FileWatcher::FileWatcher(QObject *parent)
     : QObject(parent)
-    , m_fileUrl("")
+    , m_fileUrl(QLatin1String(""))
     , m_enabled(true)
     , m_recursive(false)
 {
@@ -134,7 +134,7 @@ void FileWatcher::updateWatchedFile()
         QDirIterator it(localFile, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
         while (it.hasNext()) {
             const auto &file = it.next();
-            if ((it.fileName() == "..") || (it.fileName() == ".")
+            if ((it.fileName() == QLatin1String("..")) || (it.fileName() == QLatin1String("."))
                 || m_nameFilters.contains(it.fileInfo().completeSuffix())) {
                 continue;
             }

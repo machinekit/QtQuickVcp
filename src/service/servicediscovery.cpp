@@ -538,7 +538,7 @@ void ServiceDiscovery::updateServices()
     oldServiceTypeMap = m_serviceItemsMap;
 
     // Iterate through all services and update all service types
-    for (ServiceList *serviceList: m_serviceLists)
+    for (ServiceList *serviceList: qAsConst(m_serviceLists))
     {
         for (Service *service: *serviceList)
         {
@@ -562,13 +562,13 @@ void ServiceDiscovery::updateServices()
     }
 
     // Iterate trough all items that are left and remove them
-    for (const auto &key: oldServiceTypeMap.keys())
+    for (auto iter = oldServiceTypeMap.begin(); iter != oldServiceTypeMap.end(); ++iter)
     {
         if (m_running && m_networkReady)
         {
-            stopQuery(key);
+            stopQuery(iter.key());
         }
-        removeServiceType(key);
+        removeServiceType(iter.key());
     }
 
     updateAllServiceTypes(); // now we need to refill all queries with fresh data
@@ -588,7 +588,7 @@ void ServiceDiscovery::updateNameServers()
         return;
     }
 
-    for (const NameServer *nameServer: m_nameServers)
+    for (const NameServer *nameServer: qAsConst(m_nameServers))
     {
         QJDns::NameServer host;
 
@@ -662,25 +662,25 @@ void ServiceDiscovery::setLookupMode(ServiceDiscovery::LookupMode arg)
 
 void ServiceDiscovery::startAllQueries()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); ++iter)
     {
-        startQuery(key);
+        startQuery(iter.key());
     }
 }
 
 void ServiceDiscovery::stopAllQueries()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); ++iter)
     {
-        stopQuery(key);
+        stopQuery(iter.key());
     }
 }
 
 void ServiceDiscovery::refreshAllQueries()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); ++iter)
     {
-        refreshQuery(key);
+        refreshQuery(iter.key());
     }
 }
 
@@ -688,7 +688,7 @@ void ServiceDiscovery::startQuery(const QString &serviceType)
 {
     int queryId;
 
-    for (const auto &value: m_queryIdServiceMap.values())
+    for (const auto &value: qAsConst(m_queryIdServiceMap))
     {
         if (value == serviceType)  // query with the type already running
         {
@@ -821,7 +821,7 @@ void ServiceDiscovery::updateServiceType(const QString &serviceType)
     const auto &serviceDiscoveryItems = m_serviceItemsMap.value(serviceType);
 
     // Iterate through all services and update all service types suitable for the announcement
-    for (ServiceList *serviceList: m_serviceLists)
+    for (ServiceList *serviceList: qAsConst(m_serviceLists))
     {
         for (Service *service: *serviceList)
         {
@@ -845,7 +845,8 @@ void ServiceDiscovery::updateServiceType(const QString &serviceType)
 
 void ServiceDiscovery::removeAllServiceTypes()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    const auto keys = m_serviceItemsMap.keys(); // copy necessary since we modify the map
+    for (const auto &key: keys)
     {
         removeServiceType(key);
     }
@@ -853,9 +854,9 @@ void ServiceDiscovery::removeAllServiceTypes()
 
 void ServiceDiscovery::updateAllServiceTypes()
 {
-    for (const auto &key: m_serviceItemsMap.keys())
+    for (auto iter = m_serviceItemsMap.begin(); iter != m_serviceItemsMap.end(); ++iter)
     {
-        updateServiceType(key);
+        updateServiceType(iter.key());
     }
 }
 

@@ -41,7 +41,6 @@ class HalRemoteComponent : public machinetalk::halremote::RemoteComponentBase
     Q_PROPERTY(bool create READ create WRITE setCreate NOTIFY createChanged)
     Q_PROPERTY(bool bind READ bind WRITE setBind NOTIFY bindChanged)
     Q_PROPERTY(QQmlListProperty<qtquickvcp::HalPin> pins READ pins NOTIFY pinsChanged)
-    Q_ENUMS(ConnectionError)
 
 public:
     explicit HalRemoteComponent(QObject *parent  = nullptr);
@@ -50,6 +49,7 @@ public:
         NoError = 0,
         ComponentError  = 1
     };
+    Q_ENUM(ConnectionError)
 
     QString name() const
     {
@@ -79,6 +79,16 @@ public:
     bool bind() const
     {
         return m_bind;
+    }
+
+    Q_INVOKABLE int pinCount() const
+    {
+        return m_pins.count();
+    }
+
+    Q_INVOKABLE HalPin *pin(int index) const
+    {
+        return m_pins.at(index);
     }
 
 public slots:
@@ -128,14 +138,6 @@ public slots:
     {
         return QQmlListProperty<HalPin>(this, m_pins);
     }
-    int pinCount() const
-    {
-        return m_pins.count();
-    }
-    HalPin *pin(int index) const
-    {
-        return m_pins.at(index);
-    }
 
     void pinChange(QVariant value);
 
@@ -153,7 +155,7 @@ private:
     QHash<int, HalPin*>    m_pinsByHandle;
     QList<HalPin*>         m_pins;
 
-    QObjectList recurseObjects(const QObjectList &list);
+    const QObjectList recurseObjects(const QObjectList &list);
     void bindPins();
     static QString splitPinFromHalName(const QString &name);
 
