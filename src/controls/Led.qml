@@ -133,7 +133,7 @@ Rectangle {
         onTriggered: helpItem.blinkHelper = !helpItem.blinkHelper
     }
 
-    Item {
+    QtObject {
         id: helpItem
         property bool blinkHelper: true
     }
