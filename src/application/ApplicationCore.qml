@@ -37,6 +37,7 @@ Item {
     property string applicationName: "machinekit"
 
     signal programReloaded()
+    signal programClosed()
 
     id: applicationCore
 
@@ -65,6 +66,14 @@ Item {
     function reloadProgram() {
         executeProgram(file.remoteFilePath);
         programReloaded();
+    }
+
+    function closeProgram() {
+        if (status.task.taskMode !== ApplicationStatus.TaskModeAuto) {
+            command.setTaskMode('execute', ApplicationCommand.TaskModeAuto);
+        }
+        command.resetProgram('execute');
+        programClosed();
     }
 
     function _errorMessageReceived(type, text) {

@@ -57,11 +57,13 @@ ApplicationItem {
                 file.onUploadFinished.connect(onFileUploadFinished);
                 file.onDownloadFinished.connect(onFileDownloadFinished);
                 core.onProgramReloaded.connect(onProgramReloaded);
+                core.onProgramClosed.connect(onProgramClosed);
             }
             else {
                 file.onUploadFinished.disconnect(onFileUploadFinished);
                 file.onDownloadFinished.disconnect(onFileDownloadFinished);
                 core.onProgramReloaded.disconnect(onProgramReloaded);
+                core.onProgramClosed.connect(onProgramClosed);
             }
         }
 
@@ -75,6 +77,10 @@ ApplicationItem {
 
         function onProgramReloaded() {
             reloadModelAndPreview();
+        }
+
+        function onProgramClosed() {
+            pathViewCore.clearPreview();
         }
 
         onPreviewEnabledChanged: {
