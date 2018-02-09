@@ -179,6 +179,22 @@
         <source>DTG:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Rad:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dia:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DTG</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLO</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EditToolTableAction</name>

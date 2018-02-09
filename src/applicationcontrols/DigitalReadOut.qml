@@ -71,7 +71,8 @@ AbstractDigitalReadOut {
                     sourceComponent: homedSymbol
                     anchors.top: typeLabel.top
                     anchors.bottom: typeLabel.bottom
-                    anchors.horizontalCenter: typeLabel.horizontalCenter
+                    //anchors.horizontalCenter: typeLabel.horizontalCenter
+                    anchors.left: typeLabel.left
                     width: height
                     onLoaded: {
                         item.color = Qt.binding(function(){ return dummyLabel.color; });
@@ -81,7 +82,7 @@ AbstractDigitalReadOut {
                 }
             }
             Label {
-                width: dummyLabel.font.pixelSize * 1.3
+                width: dummyLabel.font.pixelSize * 1.4
 
                 color: dummyLabel.color
                 font: dummyLabel.font
@@ -173,15 +174,40 @@ AbstractDigitalReadOut {
         anchors.margins: Screen.pixelDensity
         spacing: Screen.pixelDensity * 0.7
 
+        Loader {
+            sourceComponent: textLine
+            active: droRect.lathe
+            visible: active
+            onLoaded: {
+                item.title = qsTr("Rad:");
+                item.type = "";
+                item.value = Qt.binding(function(){ return Number(droRect.position['x']); });
+                item.homed = Qt.binding(function(){ return droRect.axisHomed[0].homed; });
+            }
+        }
+
+        Loader {
+            sourceComponent: textLine
+            active: droRect.lathe
+            visible: active
+            onLoaded: {
+                item.title = qsTr("Dia:");
+                item.type = "";
+                item.value = Qt.binding(function(){ return Number(droRect.position['x']) * 2.0; });
+                item.homed = false;
+            }
+        }
+
         Repeater {
-            model: droRect.axes
+            model: droRect.axes - Number(droRect.lathe)
             Loader {
+                readonly property int pos: index + Number(droRect.lathe)
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){ return (droRect.axisNames[index] + ":"); });
+                    item.title = Qt.binding(function(){ return (droRect.axisNames[pos] + ":"); });
                     item.type = "";
-                    item.value = Qt.binding(function(){ return Number(droRect.position[droRect._axisNames[index]]); });
-                    item.homed = Qt.binding(function(){ return ((index < droRect.axisHomed.length) && droRect.axisHomed[droRect._axisIndices[index]].homed); });
+                    item.value = Qt.binding(function(){ return Number(droRect.position[droRect._axisNames[pos]]); });
+                    item.homed = Qt.binding(function(){ return ((pos < droRect.axisHomed.length) && droRect.axisHomed[droRect._axisIndices[pos]].homed); });
                 }
             }
         }
@@ -230,16 +256,34 @@ AbstractDigitalReadOut {
         spacing: Screen.pixelDensity * 0.7
         visible: droRect.offsetsVisible
 
+        Loader {
+            id: radiusDtg
+            sourceComponent: textLine
+            active: droRect.lathe
+            visible: active
+            onLoaded: {
+                item.title = "R:";
+                item.type = qsTr("DTG");
+                item.value = Qt.binding(function(){ return Number(droRect.dtg['x']); });
+            }
+        }
+
         Repeater {
-            model: droRect.axes
+            model: droRect.axes - Number(droRect.lathe)
             Loader {
+                readonly property int pos: index + Number(droRect.lathe)
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){ return droRect.axisNames[index]; });
-                    item.type = "DTG";
-                    item.value = Qt.binding(function(){ return Number(droRect.dtg[droRect._axisNames[index]]); });
+                    item.title = Qt.binding(function(){ return droRect.axisNames[pos] + ":"; });
+                    item.type = qsTr("DTG");
+                    item.value = Qt.binding(function(){ return Number(droRect.dtg[droRect._axisNames[pos]]); });
                 }
             }
+        }
+
+        Item {
+            height: radiusDtg.height
+            visible: radiusDtg.visible
         }
     }
 
@@ -257,10 +301,19 @@ AbstractDigitalReadOut {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){ return droRect.axisNames[index]; });
+                    item.title = Qt.binding(function(){ return droRect.axisNames[index] + ":"; });
                     item.type = Qt.binding(function(){ return droRect.g5xNames[droRect.g5xIndex-1]; });
                     item.value = Qt.binding(function(){ return Number(droRect.g5xOffset[droRect._axisNames[index]]); });
                 }
+            }
+        }
+
+        Loader {
+            sourceComponent: textLine
+            onLoaded: {
+                item.title = "R:";
+                item.type = Qt.binding(function(){ return droRect.g5xNames[droRect.g5xIndex-1]; });
+                item.value = Qt.binding(function(){ return Number(droRect.rotationXy); });
             }
         }
     }
@@ -279,7 +332,7 @@ AbstractDigitalReadOut {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){ return droRect.axisNames[index]; });
+                    item.title = Qt.binding(function(){ return droRect.axisNames[index] + ":"; });
                     item.type = "G92";
                     item.value = Qt.binding(function(){ return Number(droRect.g92Offset[droRect._axisNames[index]]); });
                 }
@@ -301,8 +354,8 @@ AbstractDigitalReadOut {
             Loader {
                 sourceComponent: textLine
                 onLoaded: {
-                    item.title = Qt.binding(function(){ return droRect.axisNames[index]});
-                    item.type = "TLO";
+                    item.title = Qt.binding(function(){ return droRect.axisNames[index] + ":"});
+                    item.type = qsTr("TLO");
                     item.value = Qt.binding(function(){ return Number(droRect.toolOffset[droRect._axisNames[index]]); });
                 }
             }

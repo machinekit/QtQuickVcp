@@ -71,6 +71,7 @@ Canvas3D {
             yAxisOffset = Qt.vector3d(root.maximum.x + lineOffset, root.minimum.y, root.minimum.z);
             break;
         case "Front":
+        case "Lathe":
             yAxisVisible = false;
             xAxisRotation = 90;
             xAxisOffset = Qt.vector3d(root.minimum.x, 0.0, root.minimum.z - lineOffset);

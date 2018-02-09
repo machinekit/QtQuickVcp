@@ -29,7 +29,7 @@ GLItem::GLItem(QQuickItem *parent) :
     m_position(QVector3D(0,0,0)),
     m_scale(QVector3D(1,1,1)),
     m_rotation(QQuaternion()),
-    m_rotationAngle(0),
+    m_rotationAngle(0.0),
     m_rotationAxis(QVector3D())
 {
     connect(this, &GLItem::positionChanged,
@@ -137,4 +137,21 @@ void GLItem::setRotationAxis(const QVector3D &arg)
         setRotation(QQuaternion::fromAxisAndAngle(m_rotationAxis, m_rotationAngle));
     }
 }
+
+void GLItem::setRotationVector(const QVector3D &rotationVector)
+{
+    if (m_rotationVector == rotationVector) {
+        return;
+    }
+
+    m_rotationVector = rotationVector;
+    emit rotationVectorChanged(m_rotationVector);
+    setRotation(QQuaternion::fromEulerAngles(m_rotationVector));
+}
+
+QVector3D qtquickvcp::GLItem::rotationVector() const
+{
+    return m_rotationVector;
+}
+
 } // namespace qtquickvcp

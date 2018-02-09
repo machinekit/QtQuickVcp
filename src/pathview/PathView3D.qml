@@ -46,7 +46,7 @@ GLView3D {
         "label_limit": Qt.rgba(1.0, 0.21, 0.23, 1.0),
         "selected": Qt.rgba(0.0, 1.0, 1.0, 1.0),
         "active": Qt.rgba(1.0, 0.0, 0.0, 1.0),
-        "lathetool": Qt.rgba(0.8, 0.8, 0.8, 1.0),
+        "lathetool": Qt.rgba(0.8, 0.8, 0.8, 0.1),
         "m1xx": Qt.rgba(0.5, 0.5, 1.0, 1.0),
         "dwell": Qt.rgba(1.0, 0.5, 0.5, 1.0),
         "overlay_foreground": Qt.rgba(1.0, 1.0, 1.0, 0.75),
@@ -69,7 +69,7 @@ GLView3D {
         "machine_limits": Qt.rgba(1.0, 0.0, 0.0, 1.0)
     }
     property int axes: __ready ? status.config.axes : 3
-    property string viewMode: "Perspective"
+    property string viewMode: __ready && status.config.lathe ? "Lathe" : "Perspective"
     property real cameraZoom: 0.95
     property vector3d cameraOffset: Qt.vector3d(0, 0, 0)
     property real cameraHeading: -135
@@ -121,6 +121,7 @@ GLView3D {
                 case "RotatedTop":
                 case "Front":
                 case "Side":
+                case "Lathe":
                     return Camera3D.Orthographic;
                 case "Perspective":
                     return Camera3D.Perspective;
@@ -146,6 +147,7 @@ GLView3D {
                     }
                     break
                 case "Front":
+                case "Lathe":
                     y = -10000;
                     if (programExtents.valid && zoomToProgram) {
                         x += programExtents.center.x + programExtents.position.x;
@@ -206,6 +208,7 @@ GLView3D {
                     }
                     break;
                 case "Front":
+                case "Lathe":
                     y = 0
                     if (programExtents.valid && zoomToProgram) {
                         x += programExtents.center.x + programExtents.position.x;
@@ -237,6 +240,8 @@ GLView3D {
                     return Qt.vector3d(0, 1, 0);
                 case "RotatedTop":
                     return Qt.vector3d(-1, 0, 0);
+                case "Lathe":
+                    return Qt.vector3d(-1, 0, 0)
                 default:
                     return Qt.vector3d(0, 0, 1);
                 }
@@ -258,6 +263,7 @@ GLView3D {
                     }
                     return Qt.size(side, side);
                 case "Front":
+                case "Lathe":
                     if (programExtents.valid && zoomToProgram) {
                         side = (Math.max(programExtents.size.x, programExtents.size.z)  + 40 * sizeFactor) / pathView.cameraZoom;
                     } else {
@@ -289,9 +295,11 @@ GLView3D {
     }
 
     Cylinder3D {
-        readonly property var toolInfo: __ready ? getToolInfo() : {"diameter": 0.0, "length": 0.0, "valid": false}
+        readonly property var toolInfo: __ready ? getToolInfo() : {"diameter": 0.0, "length": 0.0, "valid": false, "orientation": 0}
         readonly property real toolDiameter: toolInfo.diameter
         readonly property real toolLength: toolInfo.length
+        readonly property int toolOrientation: toolInfo.orientation
+        readonly property var toolAngles: [270.0, 135.0, 45.0, 315.0, 225.0, 180.0, 90.0, 0.0, 270.0, 0.0]
 
         function getToolInfo()
         {
@@ -300,6 +308,7 @@ GLView3D {
             var diameter = 0.0;
             var length = 0.0;
             var valid = false;
+            var orientation = 0;
             for (var i = 0; i < toolTable.length; i++)
             {
                 var tool = toolTable[i]
@@ -307,26 +316,36 @@ GLView3D {
                 {
                     diameter = tool.diameter;
                     length = tool.offset.z;
+                    orientation = tool.orientation;
                     valid = true;
                     break;
                 }
             }
 
-            return {"diameter": diameter, "length": length, "valid": valid };
+            return {"diameter": diameter, "length": length, "valid": valid, "orientation": orientation};
+        }
+
+        function getRotation()
+        {
+            if (pathView.viewMode !== "Lathe") {
+                return Qt.vector3d(0, 0, 0);
+            }
+            else {
+                return Qt.vector3d(0, toolAngles[toolOrientation], 0);
+            }
         }
 
         id: tool
         visible: pathView.toolVisible
         position.x: __ready ? status.motion.position.x - status.io.toolOffset.x : 0
         position.y: __ready ? status.motion.position.y - status.io.toolOffset.y : 0
-        position.z: (__ready ? status.motion.position.z - status.io.toolOffset.z : 0) + height
+        position.z: (__ready ? status.motion.position.z - status.io.toolOffset.z : 0)
 
         cone: toolInfo.valid ? false : true
         radius: toolInfo.valid ? toolDiameter / 2.0 : 5.0 * pathView.sizeFactor
         height: toolInfo.valid ? toolLength : 10.0 * pathView.sizeFactor
         color: pathView.colors["tool_diffuse"]
-        rotationAngle: 180
-        rotationAxis: Qt.vector3d(1,0,0)
+        rotationVector: getRotation()
     }
 
     Grid3D {
@@ -350,6 +369,7 @@ GLView3D {
             case "RotatedTop":
                 return "XY";
             case "Front":
+            case "Lathe":
                 return "XZ";
             case "Side":
                 return "YZ";
@@ -406,7 +426,7 @@ GLView3D {
         xAxisColor: pathView.colors["axis_x"]
         yAxisColor: pathView.colors["axis_y"]
         zAxisColor: pathView.colors["axis_z"]
-        xAxisRotation: (pathView.viewMode === "Front") ? 90 : 0
+        xAxisRotation: (pathView.viewMode === "Front" || pathView.viewMode === "Lathe") ? 90 : 0
         yAxisRotation: (pathView.viewMode === "Side") ? 90 : 0
         zAxisRotation: (pathView.viewMode === "Side") ? 90 : 0
 
@@ -525,6 +545,10 @@ GLView3D {
                 case "Front":
                     pathView.cameraOffset.x += xOffset * scaleFactor;
                     pathView.cameraOffset.z -= yOffset * scaleFactor;
+                    break;
+                case "Lathe":
+                    pathView.cameraOffset.x += yOffset * scaleFactor;
+                    pathView.cameraOffset.z += xOffset * scaleFactor;
                     break;
                 case "Side":
                     pathView.cameraOffset.y += xOffset * scaleFactor;
