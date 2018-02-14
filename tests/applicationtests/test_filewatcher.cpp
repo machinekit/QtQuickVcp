@@ -24,7 +24,7 @@ QString createTestDir(const QString &rootPath, const QString &name)
     return dir.filePath(name);
 }
 
-TEST_CASE("FileWatcher Tests", "[application]")
+TEST_CASE("FileWatcher Tests", "[application][!mayfail]")
 {
     QTemporaryDir tempDir;
     FileWatcher watcher;
