@@ -25,10 +25,10 @@
 namespace qtquickvcp {
 
 ApplicationFileItem::ApplicationFileItem():
-    m_name(""),
+    m_name(QLatin1String("")),
     m_size(0),
-    m_owner(""),
-    m_group(""),
+    m_owner(QLatin1String("")),
+    m_group(QLatin1String("")),
     m_lastModified(QDateTime()),
     m_dir(false)
 {

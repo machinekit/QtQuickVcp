@@ -75,17 +75,17 @@ namespace qtquickvcp {
 ApplicationDescription::ApplicationDescription(QObject *parent) :
     QObject(parent),
     m_componentCompleted(false),
-    m_sourceDir(""),
-    m_mainFile(""),
-    m_name(""),
-    m_description(""),
+    m_sourceDir(QLatin1String("")),
+    m_mainFile(QLatin1String("")),
+    m_name(QLatin1String("")),
+    m_description(QLatin1String("")),
     m_valid(false)
 {
 }
 
 bool ApplicationDescription::refresh()
 {
-    const QString iniName = "description.ini";
+    const QString iniName = QStringLiteral("description.ini");
     QString sourcePath;
     QStringList fileList;
     QString baseFilePath;
@@ -104,7 +104,7 @@ bool ApplicationDescription::refresh()
         sourcePath = m_sourceDir.toString(QUrl::RemoveScheme);
     }
 
-    if (m_sourceDir.scheme() == "qrc")  // if qrc we must prepend the :
+    if (m_sourceDir.scheme() == QLatin1String("qrc"))  // if qrc we must prepend the :
     {
         sourcePath.prepend(":");
     }
@@ -136,10 +136,10 @@ bool ApplicationDescription::refresh()
 
     QSettings settings(baseFilePath + iniName, QSettings::IniFormat);
 
-    name = settings.value("Default/name", QString("")).toString();
-    description = settings.value("Default/description", QString("")).toString();
-    mainFile = settings.value("Default/mainFile", QString("")).toString();
-    translationsPath = settings.value("Default/translationsPath", QString("")).toString();
+    name = settings.value(QStringLiteral("Default/name"), QStringLiteral("")).toString();
+    description = settings.value(QStringLiteral("Default/description"), QStringLiteral("")).toString();
+    mainFile = settings.value(QStringLiteral("Default/mainFile"), QStringLiteral("")).toString();
+    translationsPath = settings.value(QStringLiteral("Default/translationsPath"), QStringLiteral("")).toString();
 
     if (name.isEmpty() || description.isEmpty())
     {

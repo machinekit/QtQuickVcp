@@ -25,7 +25,6 @@ class Publish
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int heartbeatInterval READ heartbeatInterval WRITE setHeartbeatInterval NOTIFY heartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit Publish(QObject *parent = nullptr);
@@ -35,6 +34,7 @@ public:
         Down = 0,
         Up = 1,
     };
+    Q_ENUM(State)
 
     QString socketUri() const
     {

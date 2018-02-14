@@ -28,7 +28,6 @@ class CommandBase
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int commandHeartbeatInterval READ commandHeartbeatInterval WRITE setCommandHeartbeatInterval NOTIFY commandHeartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit CommandBase(QObject *parent = nullptr);
@@ -39,6 +38,7 @@ public:
         Trying = 1,
         Up = 2,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

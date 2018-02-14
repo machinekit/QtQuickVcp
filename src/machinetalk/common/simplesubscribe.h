@@ -23,7 +23,6 @@ class SimpleSubscribe
     Q_PROPERTY(QString debugName READ debugName WRITE setDebugName NOTIFY debugNameChanged)
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_ENUMS(State)
 
 public:
     explicit SimpleSubscribe(QObject *parent = nullptr);
@@ -33,6 +32,7 @@ public:
         Down = 0,
         Up = 1,
     };
+    Q_ENUM(State)
 
     QString socketUri() const
     {

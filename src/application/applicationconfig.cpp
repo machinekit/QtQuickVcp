@@ -308,7 +308,7 @@ void ApplicationConfig::unsyncConfig()
     emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
 }
 
-void ApplicationConfig::selectConfig(QString name)
+void ApplicationConfig::selectConfig(const QString &name)
 {
     m_selectedConfig->setLoaded(false);
     m_selectedConfig->setLoading(true);
@@ -324,11 +324,11 @@ void ApplicationConfig::unselectConfig()
 {
     m_temporaryDir.release();
 
-    m_selectedConfig->setName("");
-    m_selectedConfig->setDescription("");
+    m_selectedConfig->setName(QStringLiteral(""));
+    m_selectedConfig->setDescription(QStringLiteral(""));
     m_selectedConfig->setFiles(QStringList());
-    m_selectedConfig->setMainFile(QUrl(""));
-    m_selectedConfig->setTranslationsPath(QUrl(""));
+    m_selectedConfig->setMainFile(QUrl(QStringLiteral("")));
+    m_selectedConfig->setTranslationsPath(QUrl(QStringLiteral("")));
     m_selectedConfig->setLoaded(false);
     m_selectedConfig->setLoading(false);
 }

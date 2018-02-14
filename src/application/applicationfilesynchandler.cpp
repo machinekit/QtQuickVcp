@@ -4,11 +4,11 @@ namespace qtquickvcp {
 
 ApplicationFileSyncHandler::ApplicationFileSyncHandler(QObject *parent)
     : QObject(parent)
-    , m_remoteFilePath("file://")
-    , m_remotePath("file://")
+    , m_remoteFilePath(QStringLiteral("file://"))
+    , m_remotePath(QStringLiteral("file://"))
     , m_ignoreNextChange(false)
     , m_ready(false)
-    , m_lastRemoteFilePath("file://")
+    , m_lastRemoteFilePath(QStringLiteral("file://"))
 {
     connect(this, &ApplicationFileSyncHandler::remoteFilePathChanged, this, &ApplicationFileSyncHandler::checkRemoteFile);
     connect(this, &ApplicationFileSyncHandler::remotePathChanged, this, &ApplicationFileSyncHandler::checkRemoteFile);
@@ -88,7 +88,7 @@ void ApplicationFileSyncHandler::checkRemoteFile()
         return;
     }
 
-    if (remotePathUrl.toLocalFile() == "") {
+    if (remotePathUrl.toLocalFile() == QLatin1String("")) {
         return; // remote path is invalid
     }
 
@@ -96,7 +96,7 @@ void ApplicationFileSyncHandler::checkRemoteFile()
         return; // filename did not change
     }
 
-    if (remoteFilePathUrl.toLocalFile() == "") {
+    if (remoteFilePathUrl.toLocalFile() == QLatin1String("")) {
         emit programUnloaded();
     }
     else if (remoteFilePathUrl.toLocalFile().indexOf(remotePathUrl.toLocalFile()) == 0) {

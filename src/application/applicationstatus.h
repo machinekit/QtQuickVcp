@@ -41,10 +41,6 @@ class ApplicationStatus : public machinetalk::application::StatusBase
     Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
     Q_PROPERTY(StatusChannels channels READ channels WRITE setChannels NOTIFY channelsChanged)
-    Q_ENUMS(OriginIndex TrajectoryMode MotionStatus
-            AxisType KinematicsType CanonUnits TaskExecState TaskState
-            TaskMode InterpreterState InterpreterExitCode PositionOffset
-            PositionFeedback TimeUnits MotionType)
     Q_FLAGS(StatusChannels)
 
 public:
@@ -61,12 +57,14 @@ public:
         OriginG59_2 = machinetalk::ORIGIN_G59_2,
         OriginG59_3 = machinetalk::ORIGIN_G59_3
     };
+    Q_ENUM(OriginIndex)
 
     enum TrajectoryMode {
         FreeMode = machinetalk::EMC_TRAJ_MODE_FREE,
         CoordinatedMode = machinetalk::EMC_TRAJ_MODE_COORD,
         TeleopMode = machinetalk::EMC_TRAJ_MODE_TELEOP
     };
+    Q_ENUM(TrajectoryMode)
 
     enum MotionStatus {
         MotionUninitialized = machinetalk::UNINITIALIZED_STATUS,
@@ -75,6 +73,7 @@ public:
         MotionError = machinetalk::RCS_ERROR,
         MotionReceived = machinetalk::RCS_RECEIVED
     };
+    Q_ENUM(MotionStatus)
 
     enum MotionType {
         NoneType = machinetalk::_EMC_MOTION_TYPE_NONE,
@@ -85,11 +84,13 @@ public:
         ProbingType = machinetalk::_EMC_MOTION_TYPE_PROBING,
         IndexRotaryType = machinetalk::_EMC_MOTION_TYPE_INDEXROTARY
     };
+    Q_ENUM(MotionType)
 
     enum AxisType {
         LinearAxis = machinetalk::EMC_AXIS_LINEAR,
         AngularAxis = machinetalk::EMC_AXIS_ANGULAR
     };
+    Q_ENUM(AxisType)
 
     enum KinematicsType {
         IdentityKinematics = machinetalk::KINEMATICS_IDENTITY,
@@ -97,17 +98,20 @@ public:
         InverseOnlyKinematics = machinetalk::KINEMATICS_INVERSE_ONLY,
         BothKinematics = machinetalk::KINEMATICS_BOTH
     };
+    Q_ENUM(KinematicsType)
 
     enum CanonUnits {
         CanonUnitsInch = machinetalk::CANON_UNITS_INCH,
         CanonUnitsMm = machinetalk::CANON_UNITS_MM,
         CanonUnitsCm = machinetalk::CANON_UNITS_CM
     };
+    Q_ENUM(CanonUnits)
 
     enum TimeUnits {
         TimeUnitsMinute = machinetalk::TIME_UNITS_MINUTE,
         TimeUnitsSecond = machinetalk::TIME_UNITS_SECOND
     };
+    Q_ENUM(TimeUnits)
 
     enum TaskExecState {
         TaskError = machinetalk::EMC_TASK_EXEC_ERROR,
@@ -120,12 +124,14 @@ public:
         TaskWaitingForSystemCmd = machinetalk::EMC_TASK_EXEC_WAITING_FOR_SYSTEM_CMD,
         TaskWaitingForSpindleOriented = machinetalk::EMC_TASK_EXEC_WAITING_FOR_SPINDLE_ORIENTED
     };
+    Q_ENUM(TaskExecState)
 
     enum TaskMode {
         TaskModeManual = machinetalk::EMC_TASK_MODE_MANUAL,
         TaskModeAuto = machinetalk::EMC_TASK_MODE_AUTO,
         TaskModeMdi = machinetalk::EMC_TASK_MODE_MDI
     };
+    Q_ENUM(TaskMode)
 
     enum TaskState {
         TaskStateEstop = machinetalk::EMC_TASK_STATE_ESTOP,
@@ -133,6 +139,7 @@ public:
         TaskStateOff = machinetalk::EMC_TASK_STATE_OFF,
         TaskStateOn = machinetalk::EMC_TASK_STATE_ON
     };
+    Q_ENUM(TaskState)
 
     enum InterpreterState {
         InterpreterIdle = machinetalk::EMC_TASK_INTERP_IDLE,
@@ -140,6 +147,7 @@ public:
         InterpreterPaused = machinetalk::EMC_TASK_INTERP_PAUSED,
         InterpreterWaiting = machinetalk::EMC_TASK_INTERP_WAITING
     };
+    Q_ENUM(InterpreterState)
 
     enum InterpreterExitCode {
         InterpreterExitOk = machinetalk::EMC_INTERP_EXIT_OK,
@@ -149,16 +157,19 @@ public:
         InterpreterExitFileNotOpen = machinetalk::EMC_INTERP_EXIT_FILE_NOT_OPEN,
         InterpreterExitError = machinetalk::EMC_INTERP_EXIT_ERROR
     };
+    Q_ENUM(InterpreterExitCode)
 
     enum PositionOffset {
         RelativePositionOffset = machinetalk::EMC_CONFIG_RELATIVE_OFFSET,
         MachinePositionOffset = machinetalk::EMC_CONFIG_MACHINE_OFFSET
     };
+    Q_ENUM(PositionOffset)
 
     enum PositionFeedback {
         ActualPositionFeedback = machinetalk::EMC_CONFIG_ACTUAL_FEEDBACK,
         CommandedPositionFeedback = machinetalk::EMC_CONFIG_COMMANDED_FEEDBACK
     };
+    Q_ENUM(PositionFeedback)
 
     enum StatusChannel {
         NoChannel = 0x0,
@@ -168,6 +179,7 @@ public:
         TaskChannel   = 0x8,
         InterpChannel = 0x10
     };
+    Q_FLAG(StatusChannel)
     Q_DECLARE_FLAGS(StatusChannels, StatusChannel)
 
     void componentComplete();

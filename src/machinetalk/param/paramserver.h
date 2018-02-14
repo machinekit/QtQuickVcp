@@ -30,7 +30,6 @@ class ParamServer
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
     Q_PROPERTY(int paramHeartbeatInterval READ paramHeartbeatInterval WRITE setParamHeartbeatInterval NOTIFY paramHeartbeatIntervalChanged)
-    Q_ENUMS(State)
 
 public:
     explicit ParamServer(QObject *parent = nullptr);
@@ -40,6 +39,7 @@ public:
         Down = 0,
         Up = 1,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

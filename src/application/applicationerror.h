@@ -33,7 +33,6 @@ class ApplicationError : public machinetalk::application::ErrorBase
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(ErrorChannels channels READ channels WRITE setChannels NOTIFY channelsChanged)
-    Q_ENUMS(ErrorType)
     Q_FLAGS(ErrorChannels)
 
 public:
@@ -47,6 +46,7 @@ public:
         OperatorText = machinetalk::MT_EMC_OPERATOR_TEXT,
         OperatorDisplay = machinetalk::MT_EMC_OPERATOR_DISPLAY
     };
+    Q_ENUM(ErrorType)
 
     enum ErrorChannelEnum {
         NoChannel      = 0x0,
@@ -55,6 +55,7 @@ public:
         DisplayChannel = 0x4,
     };
     Q_DECLARE_FLAGS(ErrorChannels, ErrorChannelEnum)
+    Q_FLAG(ErrorChannelEnum)
 
     ErrorChannels channels() const
     {

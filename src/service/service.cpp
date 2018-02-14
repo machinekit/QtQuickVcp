@@ -289,7 +289,7 @@ const QString Service::composeSdString(const QString &subType, const QString &ty
     }
     else
     {
-        return QString("_%1._sub._%2._%3.%4").arg(subType).arg(type).arg(protocol).arg(domain);
+        return QString("_%1._sub._%2._%3.%4").arg(subType, type, protocol, domain);
     }
 }
 

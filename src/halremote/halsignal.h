@@ -38,7 +38,6 @@ class HalSignal : public QObject
     Q_PROPERTY(int handle READ handle NOTIFY handleChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool synced READ synced NOTIFY syncedChanged)
-    Q_ENUMS(ValueType)
 
 public:
     explicit HalSignal(QObject *parent = 0);
@@ -49,6 +48,7 @@ public:
         S32 = machinetalk::HAL_S32,
         U32 = machinetalk::HAL_U32
     };
+    Q_ENUM(ValueType)
 
     QString name() const
     {

@@ -29,7 +29,6 @@ class PreviewClientBase
     Q_PROPERTY(QString debugName READ debugName WRITE setDebugName NOTIFY debugNameChanged)
     Q_PROPERTY(State connectionState READ state NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
-    Q_ENUMS(State)
 
 public:
     explicit PreviewClientBase(QObject *parent = nullptr);
@@ -42,6 +41,7 @@ public:
         Statustrying = 3,
         Up = 4,
     };
+    Q_ENUM(State)
 
     void classBegin() {}
     /** componentComplete is executed when the QML component is fully loaded */

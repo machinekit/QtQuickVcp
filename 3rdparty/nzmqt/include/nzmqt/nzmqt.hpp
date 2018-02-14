@@ -109,7 +109,6 @@ namespace nzmqt
     class NZMQT_API ZMQSocket : public QObject, private zmq::socket_t
     {
         Q_OBJECT
-        Q_ENUMS(Type Event SendFlag ReceiveFlag Option)
         Q_FLAGS(Event Events)
         Q_FLAGS(SendFlag SendFlags)
         Q_FLAGS(ReceiveFlag ReceiveFlags)
@@ -132,6 +131,7 @@ namespace nzmqt
             TYP_XPUB = ZMQ_XPUB,
             TYP_XSUB = ZMQ_XSUB
         };
+        Q_ENUM(Type)
 
         enum Event
         {
@@ -139,6 +139,7 @@ namespace nzmqt
             EVT_POLLOUT = ZMQ_POLLOUT,
             EVT_POLLERR = ZMQ_POLLERR
         };
+        Q_ENUM(Event)
         Q_DECLARE_FLAGS(Events, Event)
 
         enum SendFlag
@@ -146,12 +147,14 @@ namespace nzmqt
             SND_MORE = ZMQ_SNDMORE,
             SND_NOBLOCK = ZMQ_DONTWAIT
         };
+        Q_FLAG(SendFlag)
         Q_DECLARE_FLAGS(SendFlags, SendFlag)
 
         enum ReceiveFlag
         {
             RCV_NOBLOCK = ZMQ_DONTWAIT
         };
+        Q_FLAG(ReceiveFlag)
         Q_DECLARE_FLAGS(ReceiveFlags, ReceiveFlag)
 
         enum Option
@@ -186,6 +189,7 @@ namespace nzmqt
             OPT_CURVE_PUBLICKEY = ZMQ_CURVE_PUBLICKEY,
             OPT_CURVE_SERVERKEY = ZMQ_CURVE_SERVERKEY
         };
+        Q_ENUM(Option)
 
         ~ZMQSocket();
 

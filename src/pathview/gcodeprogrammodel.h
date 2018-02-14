@@ -32,7 +32,6 @@ namespace qtquickvcp {
 class GCodeProgramModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_ENUMS(GCodeProgramRoles)
 
 public:
     class PreviewItem {
@@ -49,6 +48,7 @@ public:
             ActiveRole,
             ExecutedRole
         };
+    Q_ENUM(GCodeProgramRoles)
 
     explicit GCodeProgramModel(QObject *parent = 0);
     ~GCodeProgramModel();

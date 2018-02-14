@@ -36,7 +36,6 @@ class ApplicationLog : public machinetalk::application::LogBase
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(LogLevel logLevel READ logLevel WRITE setLogLevel NOTIFY logLevelChanged)
-    Q_ENUMS(LogLevel LogOrigin)
 
 public:
     ApplicationLog(QObject *parent = nullptr);
@@ -49,12 +48,14 @@ public:
         Debug = machinetalk::RTAPI_MSG_DBG,
         All = machinetalk::RTAPI_MSG_ALL
     };
+    Q_ENUM(LogLevel)
 
     enum LogOrigin {
         Kernel = machinetalk::MSG_KERNEL,
         RtUser = machinetalk::MSG_RTUSER,
         Ulapi = machinetalk::MSG_ULAPI
     };
+    Q_ENUM(LogOrigin)
 
     bool isConnected() const;
     LogLevel logLevel() const;

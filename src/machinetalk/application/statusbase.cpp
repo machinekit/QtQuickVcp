@@ -24,11 +24,11 @@ StatusBase::StatusBase(QObject *parent)
     , QQmlParserStatus()
     , m_componentCompleted(false)
     , m_ready(false)
-    , m_debugName("Status Base")
+    , m_debugName(QStringLiteral("Status Base"))
     , m_statusChannel(nullptr)
     , m_state(State::Down)
     , m_previousState(State::Down)
-    , m_errorString("")
+    , m_errorString(QStringLiteral(""))
 {
     // initialize status channel
     m_statusChannel = new application::StatusSubscribe(this);
