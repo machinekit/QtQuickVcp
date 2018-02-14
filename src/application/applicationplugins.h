@@ -64,7 +64,7 @@ private:
     QList<ApplicationPluginItem*> m_plugins;
     QStringList m_searchPaths;
 
-    void readPluginFile(QString filePath);
+    void readPluginFile(const QString &filePath);
 
 signals:
     void searchPathsChanged(const QStringList &searchPaths);
