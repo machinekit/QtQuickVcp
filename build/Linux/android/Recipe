@@ -75,28 +75,32 @@ chmod a+rwx .
 ls -lh $zipfile
 rm -r qml
 
-# create apk file
-qt-deploy ../build/deployment-scripts/android_armv7.ini --deploy
-
-package=${PWD}/MachinekitClient.apk
-
-# back to home folder
-cd ../
-
 ##########################################################################
 # CREATE ANDROID PACKAGE
 ##########################################################################
 
-# allow access to Package from outside the chroot
-chmod a+rwx "$package"
-parent_dir="$(dirname "$package")"
-while [ "$(dirname "$parent_dir")" != "$parent_dir" ]; do
-  [ "$parent_dir" == "/" ] && break
-  chmod a+rwx "$parent_dir"
-  parent_dir="$(dirname "$parent_dir")"
-done
+if [ -f ../build/Linux/android/storepass ]; then
+    # create apk file
+    qt-deploy ../build/deployment-scripts/android_armv7.ini --deploy
 
-ls -lh "$package"
+    package=${PWD}/MachinekitClient.apk
+
+    # allow access to Package from outside the chroot
+    chmod a+rwx "$package"
+    parent_dir="$(dirname "$package")"
+    while [ "$(dirname "$parent_dir")" != "$parent_dir" ]; do
+        [ "$parent_dir" == "/" ] && break
+        chmod a+rwx "$parent_dir"
+        parent_dir="$(dirname "$parent_dir")"
+    done
+
+    ls -lh "$package"
+else
+    echo "No Android key found, package will not be built."
+fi
+
+# back to home folder
+cd ../
 
 ##########################################################################
 # UPLOAD ANDROID PACKAGE

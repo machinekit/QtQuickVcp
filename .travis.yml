@@ -45,11 +45,6 @@ matrix:
             # - zsync
       services:
         - docker
-      before_install:
-        - echo "$ANDROID_STOREPASS" > ./build/Linux/android/storepass
-        - echo "$ANDROID_KEYPASS" > ./build/Linux/android/keypass
-        - openssl aes-256-cbc -K $encrypted_3915c3e19012_key -iv $encrypted_3915c3e19012_iv -in ./build/Linux/android/secrets.tar.enc -out ./build/Linux/android/secrets.tar -d
-        - tar xvf ./build/Linux/android/secrets.tar -C ./build/Linux/android/
 
       script:
           - "./build/travis/job3_Android/build.sh --upload-branches $ANDROID_UPLOAD_BRANCHES"
