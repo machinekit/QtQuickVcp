@@ -64,6 +64,14 @@ if [ "${upload}" != "true" ]; then
 fi
 platform="armv7"
 
+if [ "${upload}" ]; then
+    # prepare Android keys
+    echo "$ANDROID_STOREPASS" > ./build/Linux/android/storepass
+    echo "$ANDROID_KEYPASS" > ./build/Linux/android/keypass
+    openssl aes-256-cbc -K $encrypted_3915c3e19012_key -iv $encrypted_3915c3e19012_iv -in ./build/Linux/android/secrets.tar.enc -out ./build/Linux/android/secrets.tar -d
+    tar xvf ./build/Linux/android/secrets.tar -C ./build/Linux/android/
+fi
+
 # write env file
 echo -e "upload=${upload}" >> env.list
 echo -e "platform=${platform}" >> env.list
