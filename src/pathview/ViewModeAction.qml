@@ -22,14 +22,16 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 1.2
+import Machinekit.Application 1.0
 
-Action {
+ApplicationAction {
     property var view: null
     property string viewMode: "Perspective"
+    readonly property bool visible: status.synced ? !status.config.lathe : true
 
     id: root
     shortcut: "V"
-    enabled: view !== null
+    enabled: (view !== null) && (core !== null)
     checkable: true
     checked: (view !== null) && (view.viewMode === viewMode)
     text: {
