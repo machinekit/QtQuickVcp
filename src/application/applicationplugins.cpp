@@ -47,7 +47,7 @@ ApplicationPluginItem *ApplicationPlugins::plugin(int index) const
     return m_plugins.at(index);
 }
 
-void ApplicationPlugins::readPluginFile(QString filePath)
+void ApplicationPlugins::readPluginFile(const QString &filePath)
 {
     QSettings ini(filePath, QSettings::IniFormat);
     QFileInfo info(filePath);

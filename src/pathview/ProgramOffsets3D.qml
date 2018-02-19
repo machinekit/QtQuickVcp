@@ -76,7 +76,8 @@ Canvas3D {
                 context.text("G92", GLView3D.AlignLeft);
             };
 
-            context.lineTo(g92Offset.x, g92Offset.y, g92Offset.z);
+            context.lineFromTo(0.0, 0.0, 0.0,
+                               g92Offset.x, g92Offset.y, g92Offset.z);
             context.endUnion();
         }
 
