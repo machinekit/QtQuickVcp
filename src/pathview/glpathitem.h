@@ -95,6 +95,21 @@ private:
         float u = 0.0f;
         float v = 0.0f;
         float w = 0.0f;
+
+        float & operator [] (int index) {
+            switch (index) {
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+            case 3: return a;
+            case 4: return b;
+            case 5: return c;
+            case 6: return u;
+            case 7: return v;
+            case 8: return w;
+            default: return x;
+            }
+        }
     };
 
     struct Offsets {

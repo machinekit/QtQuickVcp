@@ -1377,21 +1377,15 @@ void *GLView::lineTo(float x, float y, float z)
         m_lineParameters->modelMatrix.translate(vector.x,
                                                 vector.y,
                                                 vector.z);
-        vector.x = x;
-        vector.y = y;
-        vector.z = z;
+
         m_lineParameters->vertices.removeLast();
-        m_lineParameters->vertices.append(vector);
+        m_lineParameters->vertices.append({x, y, z});
 
         return parameters;
     }
     else
     {
-        GLvector3D vector;
-        vector.x = x;
-        vector.y = y;
-        vector.z = z;
-        m_lineParameters->vertices.append(vector);
+        m_lineParameters->vertices.append({x, y, z});
     }
 
     return nullptr;
@@ -1409,11 +1403,10 @@ void *GLView::lineFromTo(float x1, float y1, float z1, float x2, float y2, float
 
 void *GLView::lineFromTo(const QVector3D &startPosition, const QVector3D &endPosition)
 {
-    QVector3D diffVector = endPosition - startPosition;
     GLvector3D vector;
-    vector.x = diffVector.x();
-    vector.y = diffVector.y();
-    vector.z = diffVector.z();
+    vector.x = endPosition.x() - startPosition.x();
+    vector.y = endPosition.y() - startPosition.y();
+    vector.z = endPosition.z() - startPosition.z();
     m_lineParameters->vertices.append(vector);
 
     m_lineParameters->modelMatrix.translate(startPosition);
@@ -1437,16 +1430,9 @@ void *GLView::endPath()
 
 void *GLView::arc(float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise, float helixOffset, int arcDivison)
 {
-    float currentX;
-    float currentY;
-    float currentZ;
     float startX = 0.0f;
     float startY = 0.0f;
-    int nSegments;
     float totalAngle;
-    float segmentAngle;
-    float segmentZ;
-    bool inPath;
 
     if (anticlockwise && (startAngle > endAngle)) {
         totalAngle = std::fabs(endAngle - (startAngle - 2.0f * PI_F));
@@ -1458,31 +1444,33 @@ void *GLView::arc(float x, float y, float radius, float startAngle, float endAng
         totalAngle = std::fabs(endAngle - startAngle);
     }
 
-    nSegments = static_cast<int>(std::ceil(totalAngle * static_cast<float>(arcDivison) / (2.0f * PI_F)));
-    segmentAngle = totalAngle / static_cast<float>(nSegments);
+    const int nSegments = static_cast<int>(std::ceil(totalAngle * static_cast<float>(arcDivison) / (2.0f * PI_F)));
+    float segmentAngle = totalAngle / static_cast<float>(nSegments);
     if (!anticlockwise) {
         segmentAngle *= -1.0;
     }
-    segmentZ = helixOffset / static_cast<float>(nSegments);
+    const float segmentZ = helixOffset / static_cast<float>(nSegments);
 
-    inPath = m_pathEnabled;
-    beginPath();
+    const bool wasInPath = m_pathEnabled;
+    if (!wasInPath) {
+        beginPath();
+    }
     for (int i = 0; i < (nSegments + 1); ++i)
     {
-        currentX = std::cos(startAngle + segmentAngle * static_cast<float>(i)) * radius + x;
-        currentY = std::sin(startAngle + segmentAngle * static_cast<float>(i)) * radius + y;
-        currentZ = static_cast<float>(i) * segmentZ;
+        const float currentX = std::cos(startAngle + segmentAngle * static_cast<float>(i)) * radius + x;
+        const float currentY = std::sin(startAngle + segmentAngle * static_cast<float>(i)) * radius + y;
+        const float currentZ = static_cast<float>(i) * segmentZ;
         if (i > 0) {
             lineTo(currentX - startX, currentY - startY, currentZ);
         }
         else {
             startX = currentX;
             startY = currentY;
-            translate(startX, startY, 0);
+            translate(startX, startY, 0.0f);
         }
     }
 
-    if (!inPath)    // if no path was previousle active end the path started in this function
+    if (!wasInPath)    // if no path was previousle active end the path started in this function
     {
         return endPath();
     }
@@ -1528,10 +1516,10 @@ void GLView::endUnion()
 
 void GLView::updateColor(void *drawablePointer, const QColor &color)
 {
-    Parameters *parameters;
-
-    parameters = static_cast<Parameters*>(drawablePointer);
-    parameters->color = color;
+    Parameters *parameters = static_cast<Parameters*>(drawablePointer);
+    if (parameters != nullptr) {
+        parameters->color = color;
+    }
 }
 
 void GLView::paint()
