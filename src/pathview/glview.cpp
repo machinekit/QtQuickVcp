@@ -388,8 +388,8 @@ void GLView::setupVBOs()
     setupCylinder(1.0, QVector3D(0,0,0),
                   1.0, QVector3D(0,0,1),
                   16, Cylinder);
-    setupCylinder(1.0, QVector3D(0,0,0),
-                  0.0, QVector3D(0,0,1),
+    setupCylinder(0.0, QVector3D(0,0,0),
+                  1.0, QVector3D(0,0,1),
                   16, Cone);
     setupSphere(16);
     setupLineVertexBuffer();

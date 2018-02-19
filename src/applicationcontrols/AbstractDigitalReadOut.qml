@@ -38,6 +38,8 @@ ApplicationItem {
     property var g5xOffset: _ready ? _scalePosition(status.motion.g5xOffset) : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
     property var g92Offset: _ready ? _scalePosition(status.motion.g92Offset) : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
     property var toolOffset: _ready ? _scalePosition(status.io.toolOffset) : {"x":0.0, "y":0.0, "z":0.0, "a":0.0, "b":0.0, "c":0.0, "u":0.0, "v":0.0, "w":0.0}
+    property double rotationXy: _ready ? status.motion.rotationXy : 0.0
+    property bool lathe: _ready ? status.config.lathe : false
     property double velocity: _ready ? status.motion.currentVel * _timeFactor * _distanceFactor : 0.0
     property double distanceToGo: _ready ? status.motion.distanceToGo * _distanceFactor : 0.0
     property bool offsetsVisible: settings.initialized && settings.values.dro.showOffsets

@@ -38,6 +38,7 @@ class GLItem : public QQuickItem
     Q_PROPERTY(QQuaternion rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
     Q_PROPERTY(float rotationAngle READ rotationAngle WRITE setRotationAngle NOTIFY rotationAngleChanged)
     Q_PROPERTY(QVector3D rotationAxis READ rotationAxis WRITE setRotationAxis NOTIFY rotationAxisChanged)
+    Q_PROPERTY(QVector3D rotationVector READ rotationVector WRITE setRotationVector NOTIFY rotationVectorChanged)
 
 public:
     explicit GLItem(QQuickItem *parent = 0);
@@ -49,6 +50,7 @@ public:
     QQuaternion rotation() const;
     float rotationAngle() const;
     QVector3D rotationAxis() const;
+    QVector3D rotationVector() const;
 
 signals:
     void needsUpdate();
@@ -58,6 +60,7 @@ signals:
     void rotationChanged(const QQuaternion &arg);
     void rotationAngleChanged(float arg);
     void rotationAxisChanged(const QVector3D &arg);
+    void rotationVectorChanged(const QVector3D &rotationVector);
 
 public slots:
     void requestPaint();
@@ -72,6 +75,7 @@ public slots:
     void setRotation(const QQuaternion &arg);
     void setRotationAngle(float arg);
     void setRotationAxis(const QVector3D &arg);
+    void setRotationVector(const QVector3D &rotationVector);
 
 private:
     QVector3D m_position;
@@ -79,7 +83,10 @@ private:
     QQuaternion m_rotation;
     float m_rotationAngle;
     QVector3D m_rotationAxis;
-}; // class GLItem
+    QVector3D m_rotationVector;
+};
+
+// class GLItem
 } // namespace qtquickvcp
 
 #endif // GLITEM_H
