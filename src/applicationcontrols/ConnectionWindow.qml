@@ -172,7 +172,7 @@ Rectangle {
 
     /*! This property holds the title of the window.
     */
-    readonly property string title: appPage.active ? appPage.title : defaultTitle
+    readonly property string title: (appPage.active ? appPage.title : defaultTitle) + d.instanceText
 
     /*! This property holds the title of the window displayed if no application is loaded.
     */
@@ -493,6 +493,7 @@ Rectangle {
         property bool holdLauncher: false       // when this property is true we do not automatically proceed to the config state
         property bool freshStart: true          // indicates if this session was freshly started
         property int selectedLauncher: 0        // index of the selected launcher
+        readonly property string instanceText: instanceSelected ? " - " + launcherService.hostName + ' - ' + launcherService.hostAddress : ""
     }
 
     SystemPalette {

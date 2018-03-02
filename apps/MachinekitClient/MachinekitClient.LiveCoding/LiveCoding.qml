@@ -130,7 +130,8 @@ Item {
         recursive: true
         onFileChanged: d.reload()
         nameFilters: [
-            "qmlc"
+            "qmlc",
+            "jsc"
         ]
     }
 }
