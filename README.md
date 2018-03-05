@@ -12,14 +12,14 @@ A remote UI implementation for [Machinekit](https://github.com/machinekit/machin
 
 * enables building remote user interfaces for Machinekit
 * automatic service discovery
-* control one or multiple Machinekit instance
+* control one or multiple Machinekit instances
 * remote UI deployment via MachinekitClient
 * remote Machinekit instance launcher
 * UI components for machine control applications
 * textual GCode preview
 * 3D GCode preview
 * QML live-coding support
-* cross-platform: runs on **Windows**, **Linux**, **Mac OS X**, **Android** and **iOS**
+* cross-platform: runs on **Windows**, **Linux**, **Mac OS X**, **Android**, and **iOS**
 
 
 ## Download
@@ -34,19 +34,19 @@ The MachinekitClient is available in following app stores:
 | Google Play Store | [![Get it on Google Play!](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=io.machinekit.appdiscover) |
 
 ### Rolling releases
-You can find rolling releases of the MachinekitClient and the QtQuickVcp library below. Stable releases have been dropped in favor of continuous deployment to decrease maintainance effort.
+You can find rolling releases of the MachinekitClient and the QtQuickVcp library below. Stable releases have been dropped in favor of continuous deployment to decrease maintenance effort.
 
 | Operating System   |  MachinekitClient  | QtQuickVcp |
 |----------|:-------------:|:----:|
-| Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/_latestVersion#files) |
-| Windows 32bit  |  [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/_latestVersion#files) |
+| Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64-signed/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64-signed/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/_latestVersion#files) |
+| Windows 32bit  |  [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86-signed/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86-signed/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/_latestVersion#files) |
 | Linux 64bit    | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Linux-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Linux-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Linux-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Linux-master-x64/_latestVersion#files) |
 | Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-MacOSX-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-MacOSX-master-x64/_latestVersion#files) |
 | Android armv7  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Android-master-armv7/_latestVersion#files) |
 
 **QtQuickVcp direct download links**
 
-For integration into your CI system QtQuickVcp can be directly downloaded using as simple shell script. For example, the latest QtQuickVcp Android build can be downloaded with the following command:
+For integration into your CI system, QtQuickVcp can be directly downloaded using a simple shell script. For example, the latest QtQuickVcp Android build can be downloaded with the following command:
 
 ```bash
 arch=armv7
