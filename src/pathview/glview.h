@@ -192,7 +192,8 @@ private:
         Sphere = 3,
         Cone = 4,
         Text = 5,
-        Line = 6
+        Line = 6,
+        Polygon = 7
     };
 
     typedef struct {
@@ -268,8 +269,6 @@ private:
 
     // vertex buffers
     QMap<ModelType, QOpenGLBuffer*> m_vertexBufferMap;
-    QOpenGLBuffer *m_lineVertexBuffer;
-    QOpenGLBuffer *m_textVertexBuffer;
 
     // transformation matrices
     QMatrix4x4 m_viewMatrix;
