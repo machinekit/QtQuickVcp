@@ -129,6 +129,7 @@ public slots:
     void *cylinder(float r, float h);
     void *cone(float r, float h);
     void *sphere(float r);
+    void *polygon(const QVector<QVector3D> &points);
 
     // line functions
     void lineWidth(float width);
@@ -233,6 +234,7 @@ private:
         QMatrix4x4 modelMatrix;
         QColor color;
         bool deleteFlag;    // marks the parameter to delete
+        QVector<GLvector3D> vertices;
     };
 
     class LineParameters: public Parameters {
@@ -240,7 +242,6 @@ private:
         LineParameters();
         LineParameters(LineParameters *parameters);
 
-        QVector<GLvector3D> vertices;
         GLfloat width;
         bool stipple;
         GLfloat stippleLength;
@@ -390,7 +391,7 @@ private:
     void initializeVertexBuffer(ModelType type, const QVector<ModelVertex> & vertices);
     void initializeVertexBuffer(ModelType type, const void *bufferData, int bufferLength);
     void setupVBOs();
-    void setupLineVertexBuffer();
+    void setupGenericVertexBuffer(ModelType type);
     void setupTextVertexBuffer();
     void setupShaders();
     void setupWindow();

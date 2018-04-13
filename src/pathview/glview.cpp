@@ -294,6 +294,7 @@ void GLView::drawDrawables(GLView::ModelType type)
     case Cylinder:
     case Cone:
     case Sphere:
+    case Polygon:
         drawModelVertices(type);
         break;
     case Text:
@@ -392,11 +393,12 @@ void GLView::setupVBOs()
                   1.0, QVector3D(0,0,1),
                   16, Cone);
     setupSphere(16);
-    setupLineVertexBuffer();
+    setupGenericVertexBuffer(Polygon);
+    setupGenericVertexBuffer(Line);
     setupTextVertexBuffer();
 }
 
-void GLView::setupLineVertexBuffer()
+void GLView::setupGenericVertexBuffer(ModelType type)
 {
     QOpenGLBuffer *glBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     glBuffer->create();
@@ -405,8 +407,8 @@ void GLView::setupLineVertexBuffer()
     glBuffer->allocate(MAX_LINES_PER_PATH*sizeof(GLvector3D));
     glBuffer->release();
 
-    m_vertexBufferMap.insert(Line, glBuffer);
-    addDrawableList(Line);
+    m_vertexBufferMap.insert(type, glBuffer);
+    addDrawableList(type);
 }
 
 void GLView::setupTextVertexBuffer()
@@ -781,6 +783,9 @@ void GLView::drawModelVertices(ModelType type)
             m_currentDrawableId++;
         }
 
+        if (type == Polygon) {
+            vertexBuffer->write(0, modelParameters->vertices.data(), modelParameters->vertices.size() * static_cast<int>(sizeof(GLvector3D)));
+        }
         glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size() / static_cast<int>(sizeof(ModelVertex)));
     }
 
@@ -1324,6 +1329,17 @@ void *GLView::sphere(float r)
     return parameters;
 }
 
+void *GLView::polygon(const QVector<QVector3D> &points)
+{
+    Parameters *parameters = addDrawableData(Polygon, m_modelParameters);
+    for (const auto &point: points) {
+        GLvector3D vector = {point.x(), point.y(), point.z()};
+        parameters->vertices.append(vector);
+    }
+    resetTransformations();
+    return parameters;
+}
+
 void GLView::lineWidth(float width)
 {
     m_lineParameters->width = width;
@@ -1581,6 +1597,7 @@ void GLView::paint()
     drawDrawables(Cylinder);
     drawDrawables(Cone);
     drawDrawables(Sphere);
+    drawDrawables(Polygon);
     m_modelProgram->release();
 
     if (m_selectionModeActive)
