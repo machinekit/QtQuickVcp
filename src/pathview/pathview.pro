@@ -24,7 +24,8 @@ SOURCES += \
     gllight.cpp \
     glsphereitem.cpp \
     glview.cpp \
-    previewclient.cpp
+    previewclient.cpp \
+    gllathetoolitem.cpp
 
 HEADERS += \
     plugin/plugin.h \
@@ -40,7 +41,8 @@ HEADERS += \
     glpathitem.h \
     glsphereitem.h \
     glview.h \
-    previewclient.h
+    previewclient.h \
+    gllathetoolitem.h
 
 RESOURCES += \
     shaders.qrc \
