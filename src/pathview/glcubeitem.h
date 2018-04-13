@@ -36,7 +36,7 @@ class GLCubeItem : public GLItem
     Q_PROPERTY(bool selected READ isSelected NOTIFY selectedChanged)
 
 public:
-    explicit GLCubeItem(QQuickItem *parent = 0);
+    explicit GLCubeItem(QQuickItem *parent = nullptr);
 
     virtual void paint(GLView *glView);
 
@@ -64,7 +64,6 @@ signals:
     void sizeChanged(QVector3D arg);
     void colorChanged(QColor arg);
     void centeredChanged(bool arg);
-
     void selectedChanged(bool arg);
 
 public slots:
@@ -83,7 +82,7 @@ public slots:
         }
     }
 
-    void setColor(QColor arg)
+    void setColor(const QColor& arg)
     {
         if (m_color != arg) {
             m_color = arg;
