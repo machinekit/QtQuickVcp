@@ -1,6 +1,7 @@
 #include "gllathetoolitem.h"
 
 #include <cmath>
+#include "pi_constants.h"
 
 namespace qtquickvcp {
 
@@ -55,7 +56,7 @@ void GLLatheToolItem::paintToolShape(GLView *glView)
     if (m_orientation == 9) {
         points.append(QVector3D(0.0f, 0.0f, 0.0f));
         for (int i = 0; i < 37; ++i) {
-            const float t = static_cast<float>(i) * static_cast<float>(M_PI) / 18.0f;
+            float t = static_cast<float>(i) * PI_F / 18.0f;
             points.append(QVector3D(radius * std::cos(t), 0.0f, radius * std::sin(t)));
         }
     }
@@ -63,16 +64,16 @@ void GLLatheToolItem::paintToolShape(GLView *glView)
         float dx = LATHE_SHAPES[m_orientation][0];
         float dy = LATHE_SHAPES[m_orientation][1];
 
-        float minAngle = qMin(m_backangle, m_frontangle) * static_cast<float>(M_PI) / 180.0f;
-        float maxAngle = qMax(m_backangle, m_frontangle) * static_cast<float>(M_PI) / 180.0f;
+        float minAngle = qMin(m_backangle, m_frontangle) * PI_F / 180.0f;
+        float maxAngle = qMax(m_backangle, m_frontangle) * PI_F / 180.0f;
 
         float sinMax = std::sin(maxAngle);
         float cosMax = std::cos(maxAngle);
         float sinMin = std::sin(minAngle);
         float cosMin = std::cos(minAngle);
 
-        float circleMinAngle = - static_cast<float>(M_PI_2) + minAngle;
-        float circleMaxAngle = - 3*static_cast<float>(M_PI_2) + maxAngle;
+        float circleMinAngle = - (PI_F/2) + minAngle;
+        float circleMaxAngle = - 3*(PI_F/2) + maxAngle;
 
         float sz = qMax(w, 3*radius);
 

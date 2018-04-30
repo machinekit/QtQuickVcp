@@ -28,7 +28,8 @@
 #include <QtCore/qmath.h>
 #include <QDateTime>
 
-const float PI_F = 3.14159265358979f;
+#include "pi_constants.h"
+
 const int MAX_LINES_PER_PATH = 200;
 
 namespace qtquickvcp {

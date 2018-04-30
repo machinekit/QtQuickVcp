@@ -42,7 +42,8 @@ HEADERS += \
     glsphereitem.h \
     glview.h \
     previewclient.h \
-    gllathetoolitem.h
+    gllathetoolitem.h \
+    pi_constants.h
 
 RESOURCES += \
     shaders.qrc \
