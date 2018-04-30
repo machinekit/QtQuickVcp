@@ -53,14 +53,12 @@ void GLCubeItem::paint(GLView *glView)
 
 void GLCubeItem::selectDrawable(void *pointer)
 {
-    bool selected;
-
     if (m_cubePointer == nullptr)
     {
         return;
     }
 
-    selected = (pointer == m_cubePointer);
+    bool selected = (pointer == m_cubePointer);
 
     if (selected != m_selected)
     {

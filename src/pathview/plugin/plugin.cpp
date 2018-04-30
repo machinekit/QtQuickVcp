@@ -29,6 +29,7 @@
 #include "qglcamera.h"
 #include "glpathitem.h"
 #include "gllight.h"
+#include "gllathetoolitem.h"
 #include "glcanvas.h"
 #include "gcodeprogrammodel.h"
 #include "gcodeprogramloader.h"
@@ -77,6 +78,7 @@ void MachinekitPathViewPlugin::registerTypes(const char *uri)
     qmlRegisterType<qtquickvcp::PreviewClient>(uri, 1, 0, "PreviewClient");
     qmlRegisterType<qtquickvcp::GCodeProgramModel>(uri, 1, 0, "GCodeProgramModel");
     qmlRegisterType<qtquickvcp::GCodeProgramLoader>(uri, 1, 0, "GCodeProgramLoader");
+    qmlRegisterType<qtquickvcp::GLLatheToolItem>(uri, 1, 0, "LatheTool3D");
 
     const QString filesLocation = fileLocation();
     for (int i = 0; i < int(sizeof(qmldir)/sizeof(qmldir[0])); i++) {

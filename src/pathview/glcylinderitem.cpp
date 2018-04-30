@@ -45,7 +45,7 @@ GLCylinderItem::GLCylinderItem(QQuickItem *parent) :
 
 void GLCylinderItem::paint(GLView *glView)
 {
-    glView->prepare(this);\
+    glView->prepare(this);
 
     glView->reset();
     glView->beginUnion();

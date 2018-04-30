@@ -28,7 +28,9 @@
 #include <QtCore/qmath.h>
 #include <QDateTime>
 
-const float PI_F = 3.14159265358979f;
+#include "pi_constants.h"
+
+const int MAX_LINES_PER_PATH = 200;
 
 namespace qtquickvcp {
 
@@ -38,8 +40,6 @@ GLView::GLView(QQuickItem *parent)
     , m_modelProgram(nullptr)
     , m_lineProgram(nullptr)
     , m_textProgram(nullptr)
-    , m_lineVertexBuffer(nullptr)
-    , m_textVertexBuffer(nullptr)
     , m_projectionAspectRatio(1.0)
     , m_positionLocation(0)
     , m_normalLocation(0)
@@ -103,6 +103,7 @@ GLView::~GLView()
 {
     clearDrawables();
     qDeleteAll(m_drawableMap);
+    qDeleteAll(m_vertexBufferMap);
 }
 
 void GLView::setBackgroundColor(const QColor &color)
@@ -294,6 +295,7 @@ void GLView::drawDrawables(GLView::ModelType type)
     case Cylinder:
     case Cone:
     case Sphere:
+    case Polygon:
         drawModelVertices(type);
         break;
     case Text:
@@ -392,22 +394,22 @@ void GLView::setupVBOs()
                   1.0, QVector3D(0,0,1),
                   16, Cone);
     setupSphere(16);
-    setupLineVertexBuffer();
+    setupGenericVertexBuffer(Polygon);
+    setupGenericVertexBuffer(Line);
     setupTextVertexBuffer();
 }
 
-void GLView::setupLineVertexBuffer()
+void GLView::setupGenericVertexBuffer(ModelType type)
 {
-    const int MaxLinesPerPath = 100;
+    QOpenGLBuffer *glBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    glBuffer->create();
+    glBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    glBuffer->bind();
+    glBuffer->allocate(MAX_LINES_PER_PATH*sizeof(GLvector3D));
+    glBuffer->release();
 
-    m_lineVertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-    m_lineVertexBuffer->create();
-    m_lineVertexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    m_lineVertexBuffer->bind();
-    m_lineVertexBuffer->allocate(MaxLinesPerPath*sizeof(GLvector3D));
-    m_lineVertexBuffer->release();
-
-    addDrawableList(Line);
+    m_vertexBufferMap.insert(type, glBuffer);
+    addDrawableList(type);
 }
 
 void GLView::setupTextVertexBuffer()
@@ -427,13 +429,14 @@ void GLView::setupTextVertexBuffer()
         {{0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
     };
 
-    m_textVertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-    m_textVertexBuffer->create();
-    m_textVertexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    m_textVertexBuffer->bind();
-    m_textVertexBuffer->allocate(vertices, sizeof(vertices));
-    m_textVertexBuffer->release();
+    QOpenGLBuffer *glBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    glBuffer->create();
+    glBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    glBuffer->bind();
+    glBuffer->allocate(vertices, sizeof(vertices));
+    glBuffer->release();
 
+    m_vertexBufferMap.insert(Text, glBuffer);
     addDrawableList(Text);
 }
 
@@ -769,7 +772,7 @@ void GLView::drawModelVertices(ModelType type)
     m_modelProgram->setAttributeBuffer(m_positionLocation, GL_FLOAT, 0, 3, sizeof(ModelVertex));
     m_modelProgram->setAttributeBuffer(m_normalLocation, GL_FLOAT, 3*sizeof(GLfloat), 3, sizeof(ModelVertex));
 
-    for (Parameters *modelParameters: *modelParametersList)
+    for (Parameters *modelParameters: qAsConst(*modelParametersList))
     {
         m_modelProgram->setUniformValue(m_colorLocation, modelParameters->color);
         m_modelProgram->setUniformValue(m_modelMatrixLocation, modelParameters->modelMatrix);
@@ -781,7 +784,13 @@ void GLView::drawModelVertices(ModelType type)
             m_currentDrawableId++;
         }
 
-        glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size() / static_cast<int>(sizeof(ModelVertex)));
+        if (type == Polygon) {
+            vertexBuffer->write(0, modelParameters->shapeVertices.data(), modelParameters->shapeVertices.size() * static_cast<int>(sizeof(ModelVertex)));
+            glDrawArrays(GL_TRIANGLE_FAN, 0, modelParameters->shapeVertices.size());
+        }
+        else {
+            glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size() / static_cast<int>(sizeof(ModelVertex)));
+        }
     }
 
     m_modelProgram->disableAttributeArray(m_positionLocation);
@@ -791,6 +800,7 @@ void GLView::drawModelVertices(ModelType type)
 
 void GLView::drawLines()
 {
+    QOpenGLBuffer *vertexBuffer = m_vertexBufferMap[Line];
     const QList<Parameters*>* parametersList = getDrawableList(Line);
 
     if (parametersList->isEmpty())
@@ -798,14 +808,14 @@ void GLView::drawLines()
         return;
     }
 
-    m_lineVertexBuffer->bind();
+    vertexBuffer->bind();
     m_lineProgram->enableAttributeArray(m_linePositionLocation);
     m_lineProgram->setAttributeBuffer(m_linePositionLocation, GL_FLOAT, 0, 3);
 
-    for (Parameters *parameters: *parametersList)
+    for (Parameters *parameters: qAsConst(*parametersList))
     {
         LineParameters *lineParameters = static_cast<LineParameters*>(parameters);
-        m_lineVertexBuffer->write(0, lineParameters->vertices.data(), lineParameters->vertices.size() * static_cast<int>(sizeof(GLvector3D)));
+        vertexBuffer->write(0, lineParameters->vertices.data(), lineParameters->vertices.size() * static_cast<int>(sizeof(GLvector3D)));
         m_lineProgram->setUniformValue(m_lineColorLocation, lineParameters->color);
         m_lineProgram->setUniformValue(m_lineModelMatrixLocation, lineParameters->modelMatrix);
         m_lineProgram->setUniformValue(m_lineStippleLocation, lineParameters->stipple);
@@ -823,11 +833,12 @@ void GLView::drawLines()
     }
 
     m_lineProgram->disableAttributeArray(m_linePositionLocation);
-    m_lineVertexBuffer->release();
+    vertexBuffer->release();
 }
 
 void GLView::drawTexts()
 {
+    QOpenGLBuffer *vertexBuffer = m_vertexBufferMap[Text];
     QList<Parameters*>* parametersList = getDrawableList(Text);
 
     if (parametersList->isEmpty())
@@ -835,7 +846,7 @@ void GLView::drawTexts()
         return;
     }
 
-    m_textVertexBuffer->bind();
+    vertexBuffer->bind();
     m_textProgram->enableAttributeArray(m_textPositionLocation);
     m_textProgram->enableAttributeArray(m_textTexCoordinateLocation);
     m_textProgram->setAttributeBuffer(m_textPositionLocation, GL_FLOAT, 0, 3, sizeof(TextVertex));
@@ -872,13 +883,13 @@ void GLView::drawTexts()
         }
 
         texture->bind(texture->textureId());
-        glDrawArrays(GL_TRIANGLES, 0, m_textVertexBuffer->size() / static_cast<int>(sizeof(TextVertex)));
+        glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size() / static_cast<int>(sizeof(TextVertex)));
         texture->release(texture->textureId());
     }
 
     m_textProgram->disableAttributeArray(m_textPositionLocation);
     m_textProgram->disableAttributeArray(m_textTexCoordinateLocation);
-    m_textVertexBuffer->release();
+    vertexBuffer->release();
 }
 
 void GLView::prepareTextTexture(const QStaticText &staticText, const QFont &font)
@@ -1322,6 +1333,17 @@ void *GLView::sphere(float r)
     return parameters;
 }
 
+void *GLView::polygon(const QVector<QVector3D> &points)
+{
+    Parameters *parameters = addDrawableData(Polygon, m_modelParameters);
+    for (const auto &point: points) {
+        ModelVertex vertex = {{point.x(), point.y(), point.z()}, {0.0f, 1.0f, 0.0f}};
+        parameters->shapeVertices.append(vertex);
+    }
+    resetTransformations();
+    return parameters;
+}
+
 void GLView::lineWidth(float width)
 {
     m_lineParameters->width = width;
@@ -1579,6 +1601,7 @@ void GLView::paint()
     drawDrawables(Cylinder);
     drawDrawables(Cone);
     drawDrawables(Sphere);
+    drawDrawables(Polygon);
     m_modelProgram->release();
 
     if (m_selectionModeActive)

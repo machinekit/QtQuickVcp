@@ -129,6 +129,7 @@ public slots:
     void *cylinder(float r, float h);
     void *cone(float r, float h);
     void *sphere(float r);
+    void *polygon(const QVector<QVector3D> &points);
 
     // line functions
     void lineWidth(float width);
@@ -192,7 +193,8 @@ private:
         Sphere = 3,
         Cone = 4,
         Text = 5,
-        Line = 6
+        Line = 6,
+        Polygon = 7
     };
 
     typedef struct {
@@ -232,6 +234,7 @@ private:
         QMatrix4x4 modelMatrix;
         QColor color;
         bool deleteFlag;    // marks the parameter to delete
+        QVector<ModelVertex> shapeVertices;
     };
 
     class LineParameters: public Parameters {
@@ -239,10 +242,10 @@ private:
         LineParameters();
         LineParameters(LineParameters *parameters);
 
-        QVector<GLvector3D> vertices;
         GLfloat width;
         bool stipple;
         GLfloat stippleLength;
+        QVector<GLvector3D> vertices;
     };
 
     class TextParameters: public Parameters {
@@ -268,8 +271,6 @@ private:
 
     // vertex buffers
     QMap<ModelType, QOpenGLBuffer*> m_vertexBufferMap;
-    QOpenGLBuffer *m_lineVertexBuffer;
-    QOpenGLBuffer *m_textVertexBuffer;
 
     // transformation matrices
     QMatrix4x4 m_viewMatrix;
@@ -391,7 +392,7 @@ private:
     void initializeVertexBuffer(ModelType type, const QVector<ModelVertex> & vertices);
     void initializeVertexBuffer(ModelType type, const void *bufferData, int bufferLength);
     void setupVBOs();
-    void setupLineVertexBuffer();
+    void setupGenericVertexBuffer(ModelType type);
     void setupTextVertexBuffer();
     void setupShaders();
     void setupWindow();
