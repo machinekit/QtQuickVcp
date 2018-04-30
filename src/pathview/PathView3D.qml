@@ -299,7 +299,8 @@ GLView3D {
         readonly property real toolDiameter: toolInfo.diameter
         readonly property real toolLength: toolInfo.length
         readonly property int toolOrientation: toolInfo.orientation
-        readonly property var toolAngles: [270.0, 135.0, 45.0, 315.0, 225.0, 180.0, 90.0, 0.0, 270.0, 0.0]
+        readonly property bool latheMode: pathView.viewMode == "Lathe"
+        readonly property bool latheToolMode: latheMode && (toolOrientation != 0)
 
         function getToolInfo()
         {
@@ -309,6 +310,8 @@ GLView3D {
             var length = 0.0;
             var valid = false;
             var orientation = 0;
+            var frontangle = 0;
+            var backangle = 0;
             for (var i = 0; i < toolTable.length; i++)
             {
                 var tool = toolTable[i]
@@ -317,26 +320,19 @@ GLView3D {
                     diameter = tool.diameter;
                     length = tool.offset.z;
                     orientation = tool.orientation;
+                    frontangle = tool.frontangle;
+                    backangle = tool.backangle;
                     valid = true;
                     break;
                 }
             }
 
-            return {"diameter": diameter, "length": length, "valid": valid, "orientation": orientation};
-        }
-
-        function getRotation()
-        {
-            if (pathView.viewMode !== "Lathe") {
-                return Qt.vector3d(0, 0, 0);
-            }
-            else {
-                return Qt.vector3d(0, toolAngles[toolOrientation], 0);
-            }
+            return {"diameter": diameter, "length": length, "valid": valid, "orientation": orientation,
+                    "frontangle": frontangle, "backangle": backangle};
         }
 
         id: tool
-        visible: pathView.toolVisible
+        visible: pathView.toolVisible && !latheToolMode
         position.x: __ready ? status.motion.position.x - status.io.toolOffset.x : 0
         position.y: __ready ? status.motion.position.y - status.io.toolOffset.y : 0
         position.z: (__ready ? status.motion.position.z - status.io.toolOffset.z : 0)
@@ -345,7 +341,21 @@ GLView3D {
         radius: toolInfo.valid ? toolDiameter / 2.0 : 5.0 * pathView.sizeFactor
         height: toolInfo.valid ? toolLength : 10.0 * pathView.sizeFactor
         color: pathView.colors["tool_diffuse"]
-        rotationVector: getRotation()
+        rotationVector: latheMode ? Qt.vector3d(0, 90.0, 0) : Qt.vector3d(0, 0, 0)
+    }
+
+    LatheTool3D {
+        id: latheTool
+        visible: pathView.toolVisible && tool.latheToolMode
+        position.x: __ready ? status.motion.position.x - status.io.toolOffset.x : 0
+        position.y: __ready ? status.motion.position.y - status.io.toolOffset.y : 0
+        position.z: (__ready ? status.motion.position.z - status.io.toolOffset.z : 0)
+        orientation: tool.toolInfo.valid ? tool.toolInfo.orientation : 0
+        diameter: tool.toolInfo.valid ? tool.toolInfo.diameter : 0.0
+        frontangle: tool.toolInfo.valid ? tool.toolInfo.frontangle: 0.0
+        backangle: tool.toolInfo.valid ? tool.toolInfo.backangle: 0.0
+        crossColor: pathView.colors["lathetool"]
+        shapeColor: pathView.colors["tool_diffuse"]
     }
 
     Grid3D {

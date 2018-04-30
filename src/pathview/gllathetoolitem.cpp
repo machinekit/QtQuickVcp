@@ -53,19 +53,13 @@ void GLLatheToolItem::paintToolShape(GLView *glView)
     );
 
     if (m_orientation == 9) {
-        for (int i = 0; i < 36; ++i) {
-            const float t1 = static_cast<float>(i) * static_cast<float>(M_PI) / 18.0f;
-            const float t2 = static_cast<float>(i+1) * static_cast<float>(M_PI) / 18.0f;
-            // front
-            points.append(QVector3D(0.0f, 0.0f, 0.0f));
-            points.append(QVector3D(radius * std::cos(t2), 0.0f, radius * std::sin(t2)));
-            points.append(QVector3D(radius * std::cos(t1), 0.0f, radius * std::sin(t1)));
-            //points.append(QVector3D(radius * std::cos(t1), 0.0f, radius * std::sin(t1)));
-            //points.append(QVector3D(radius * std::cos(t2), 0.0f, radius * std::sin(t2)));
-            //points.append(QVector3D(0.0f, 0.0f, 0.0f));
+        points.append(QVector3D(0.0f, 0.0f, 0.0f));
+        for (int i = 0; i < 37; ++i) {
+            const float t = static_cast<float>(i) * static_cast<float>(M_PI) / 18.0f;
+            points.append(QVector3D(radius * std::cos(t), 0.0f, radius * std::sin(t)));
         }
     }
-    else if(0 < m_orientation && m_orientation < 9) {
+    else if (0 < m_orientation && m_orientation < 9) {
         float dx = LATHE_SHAPES[m_orientation][0];
         float dy = LATHE_SHAPES[m_orientation][1];
 
@@ -83,36 +77,30 @@ void GLLatheToolItem::paintToolShape(GLView *glView)
         float sz = qMax(w, 3*radius);
 
         // first fin
-        points.append(QVector3D(dx, 0.0f, dy));
-        points.append(QVector3D(
-            radius * dx + radius * std::sin(circleMinAngle),
-            0.0f,
-            radius * dy + radius * std::cos(circleMinAngle)
-        ));
+        points.append(QVector3D(radius * dx, 0.0f, radius * dy));
         points.append(QVector3D(
             radius * dx + radius * std::sin(circleMinAngle) + sz * sinMin,
             0.0f,
             radius * dy + radius * std::cos(circleMinAngle) + sz * cosMin
         ));
         // half circle
-        for (int i = 0; i < 36; ++i) {
-            float t1 = circleMinAngle + i * (circleMaxAngle - circleMinAngle) / 36.0f;
-            float t2 = circleMinAngle + (i+1) * (circleMaxAngle - circleMinAngle) / 36.0f;
-            points.append(QVector3D(dx, 0.0f, dy));
-            points.append(QVector3D(radius * dx + radius * std::sin(t2), 0.0f, radius * dy + radius * std::cos(t2)));
-            points.append(QVector3D(radius * dx + radius * std::sin(t1), 0.0f, radius * dy + radius * std::cos(t1)));
+        for (int i = 0; i < 37; ++i) {
+            float t = circleMinAngle + i * (circleMaxAngle - circleMinAngle) / 36.0f;
+            points.append(QVector3D(radius * dx + radius * std::sin(t),
+                                    0.0f,
+                                    radius * dy + radius * std::cos(t)));
         }
         // second fin
-        points.append(QVector3D(dx, 0.0f, dy));
         points.append(QVector3D(
             radius * dx + radius * std::sin(circleMaxAngle) + sz * sinMax,
             0.0f,
             radius * dy + radius * std::cos(circleMaxAngle) + sz * cosMax
         ));
+        // close
         points.append(QVector3D(
-            radius * dx + radius * std::sin(circleMaxAngle),
+            radius * dx + radius * std::sin(circleMinAngle) + sz * sinMin,
             0.0f,
-            radius * dy + radius * std::cos(circleMaxAngle)
+            radius * dy + radius * std::cos(circleMinAngle) + sz * cosMin
         ));
     }
     else {

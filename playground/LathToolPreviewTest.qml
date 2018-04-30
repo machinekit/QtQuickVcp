@@ -13,21 +13,14 @@ ConnectedTestBase {
 
         visible: true
         enabled: true
-        cameraZoom: 8
+        cameraZoom: 1
 
-        Sphere3D {
-            radius: 3.0
-            position: Qt.vector3d(15.0, 15.0, 2.0)
-            visible: true
-            color: "red"
-        }
-
-        LatheToolItem {
+        LatheTool3D {
             id: latheTool
-            orientation: 6
+            orientation: 9
             diameter: 2.0
             frontangle: 0.0
-            backangle: 45.0
+            backangle: 70.0
         }
    }
 }

@@ -784,9 +784,12 @@ void GLView::drawModelVertices(ModelType type)
         }
 
         if (type == Polygon) {
-            vertexBuffer->write(0, modelParameters->vertices.data(), modelParameters->vertices.size() * static_cast<int>(sizeof(GLvector3D)));
+            vertexBuffer->write(0, modelParameters->shapeVertices.data(), modelParameters->shapeVertices.size() * static_cast<int>(sizeof(ModelVertex)));
+            glDrawArrays(GL_TRIANGLE_FAN, 0, modelParameters->shapeVertices.size());
         }
-        glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size() / static_cast<int>(sizeof(ModelVertex)));
+        else {
+            glDrawArrays(GL_TRIANGLES, 0, vertexBuffer->size() / static_cast<int>(sizeof(ModelVertex)));
+        }
     }
 
     m_modelProgram->disableAttributeArray(m_positionLocation);
@@ -1333,8 +1336,8 @@ void *GLView::polygon(const QVector<QVector3D> &points)
 {
     Parameters *parameters = addDrawableData(Polygon, m_modelParameters);
     for (const auto &point: points) {
-        GLvector3D vector = {point.x(), point.y(), point.z()};
-        parameters->vertices.append(vector);
+        ModelVertex vertex = {{point.x(), point.y(), point.z()}, {0.0f, 1.0f, 0.0f}};
+        parameters->shapeVertices.append(vertex);
     }
     resetTransformations();
     return parameters;

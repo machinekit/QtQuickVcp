@@ -234,7 +234,7 @@ private:
         QMatrix4x4 modelMatrix;
         QColor color;
         bool deleteFlag;    // marks the parameter to delete
-        QVector<GLvector3D> vertices;
+        QVector<ModelVertex> shapeVertices;
     };
 
     class LineParameters: public Parameters {
@@ -245,6 +245,7 @@ private:
         GLfloat width;
         bool stipple;
         GLfloat stippleLength;
+        QVector<GLvector3D> vertices;
     };
 
     class TextParameters: public Parameters {
