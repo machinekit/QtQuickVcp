@@ -26,6 +26,7 @@ import Machinekit.Application 1.0
 
 ApplicationAction {
     property bool _ready: status.synced && command.connected
+    property bool _paused: status.synced && status.task.taskPaused
 
     id: root
     text: qsTr("Step")
@@ -41,5 +42,5 @@ ApplicationAction {
     enabled: _ready
              && (status.task.taskState === ApplicationStatus.TaskStateOn)
              && (status.task.file !== "")
-             && !status.running
+             && (!status.running || _paused)
 }
