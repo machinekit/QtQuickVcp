@@ -1,3 +1,4 @@
+syntax = "proto2";
 import "machinetalk/protobuf/nanopb.proto";
 
 // see README.msgid
@@ -7,7 +8,7 @@ import "machinetalk/protobuf/types.proto";
 import "machinetalk/protobuf/emcclass.proto";
 import "machinetalk/protobuf/motcmds.proto";
 
-package pb;
+package machinetalk;
 
 // communicated by message type only since no params:
 // Emc_Start_Change

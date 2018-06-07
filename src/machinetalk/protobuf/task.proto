@@ -1,3 +1,4 @@
+syntax = "proto2";
 // interpreter protocol messages
 
 
@@ -41,7 +42,7 @@ import "machinetalk/protobuf/nanopb.proto";
 // see README.msgid
 // msgid base: 1200
 
-package pb;
+package machinetalk;
 
 
 message TaskPlanExecute {
