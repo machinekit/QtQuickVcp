@@ -317,5 +317,10 @@ Item {
             }
         }
     }
-}
 
+    LanguageControlButton {
+        anchors.right: discoveryView.right
+        anchors.top: discoveryView.top
+        anchors.margins: Screen.pixelDensity
+    }
+}

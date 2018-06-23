@@ -23,6 +23,7 @@
 #include <QQmlApplicationEngine>
 #include <QCommandLineParser>
 #include <QIcon>
+#include <QSettings>
 
 #include "../../src/application/revision.h"
 
@@ -34,6 +35,12 @@ int main(int argc, char *argv[])
     app.setApplicationName("MachinekitClient");
     app.setApplicationVersion(QString(REVISION));
     app.setWindowIcon(QIcon(":/icons/machinekit"));
+
+    // load language from settings
+    QSettings settings;
+    const auto languages = QLocale().uiLanguages();
+    const auto &language = settings.value("language", languages.first()).toString();
+    QLocale::setDefault(QLocale(language));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main", "MachinekitClient - A generic client for QtQuickVcp based user interfaces."));

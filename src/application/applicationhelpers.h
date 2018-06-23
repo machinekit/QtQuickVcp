@@ -9,6 +9,9 @@ namespace qtquickvcp {
 class ApplicationHelpers : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString currentLanguage READ currentLanguage CONSTANT)
+
 public:
     explicit ApplicationHelpers(QQmlEngine *engine, QObject *parent = nullptr);
 
@@ -30,6 +33,21 @@ public:
      * Clear QML component cache of the main QQmlEngine.
      */
     Q_INVOKABLE void clearQmlComponentCache() const;
+
+    /**
+     * Holds the currently active UI language.
+     */
+    QString currentLanguage() const;
+
+    /**
+     * Sets the new UI language. Changes take effect after a restart.
+     */
+    Q_INVOKABLE void setLanguage(const QString &language);
+
+    /**
+     * Restarts the application.
+     */
+    Q_INVOKABLE void restartApplication();
 
 private:
     QQmlEngine *m_engine;

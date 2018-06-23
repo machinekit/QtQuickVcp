@@ -86,8 +86,13 @@
         <file alias="star-border-black">icons/ic_star_border_black_48dp.png</file>
         <file alias="document-edit">icons/document-edit.png</file>
         <file alias="document-open-remote">icons/document-open-remote.png</file>
+        <file alias="flag-english">icons/flags/english.png</file>
+        <file alias="flag-german">icons/flags/german.png</file>
+        <file alias="flag-italian">icons/flags/italian.png</file>
+        <file alias="flag-russian">icons/flags/russian.png</file>
+        <file alias="flag-spanish">icons/flags/spanish.png</file>
+        <file alias="flag-turkish">icons/flags/turkish.png</file>
+        <file alias="flag-ukrainian">icons/flags/ukrainian.png</file>
     </qresource>
-    <qresource prefix="/">
-        <file>EditWithSystemEditorAction.qml</file>
-    </qresource>
+    <qresource prefix="/"/>
 </RCC>

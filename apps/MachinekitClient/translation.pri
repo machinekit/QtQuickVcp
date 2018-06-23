@@ -31,4 +31,4 @@ updateqm.CONFIG += no_link
 updateqm.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += updateqm
 
-OTHER_FILES += $$TRANSLATIONS_OUT
+OTHER_FILES += $${TRANSLATIONS_OUT}
