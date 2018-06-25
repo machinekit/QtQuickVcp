@@ -362,6 +362,30 @@
     </message>
 </context>
 <context>
+    <name>LanguageControlButton</name>
+    <message>
+        <source>English</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>German</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Russian</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restart Application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>For the change to take effect, you need to restart the application.
+Restart now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>LauncherPage</name>
     <message>
         <source>System Shutdown</source>

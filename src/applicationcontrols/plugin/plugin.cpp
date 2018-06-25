@@ -123,6 +123,8 @@ void MachinekitApplicationControlsPlugin::initializeEngine(QQmlEngine *engine, c
                         qmldirprivate[i].major, qmldirprivate[i].minor, qmldirprivate[i].type);
     }
 
+    qDebug() << QLocale().name();
+
     if (m_translator.load(QLocale(), QLatin1String("machinekitapplicationcontrols"),
                           QLatin1String("_"), QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
     {

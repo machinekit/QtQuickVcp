@@ -1,5 +1,9 @@
 #include "applicationhelpers.h"
 #include <QDesktopServices>
+#include <QLocale>
+#include <QProcess>
+#include <QSettings>
+#include <QCoreApplication>
 
 namespace qtquickvcp {
 
@@ -18,6 +22,25 @@ bool ApplicationHelpers::openUrlWithDefaultApplication(const QUrl &url) const
 void ApplicationHelpers::clearQmlComponentCache() const
 {
     m_engine->clearComponentCache();
+}
+
+QString ApplicationHelpers::currentLanguage() const
+{
+    const auto languages = QLocale().uiLanguages();
+    return languages.first();
+}
+
+void ApplicationHelpers::setLanguage(const QString &language)
+{
+    QSettings settings;
+    settings.setValue("language", language);
+    settings.sync();
+}
+
+void ApplicationHelpers::restartApplication()
+{
+    qApp->quit();
+    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
 }
 
 } // namespace qtquickvcp

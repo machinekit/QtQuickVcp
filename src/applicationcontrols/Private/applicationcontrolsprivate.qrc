@@ -8,5 +8,6 @@
         <file>ConfigPage.qml</file>
         <file>AppPage.qml</file>
         <file>StarButton.qml</file>
+        <file>LanguageControlButton.qml</file>
     </qresource>
 </RCC>

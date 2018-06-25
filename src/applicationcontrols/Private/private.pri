@@ -7,7 +7,8 @@ PRIVATE_QML_FILES += \
     $$PWD/AppPage.qml \
     $$PWD/LoadingPage.qml \
     $$PWD/ErrorPage.qml \
-    $$PWD/StarButton.qml
+    $$PWD/StarButton.qml \
+    $$PWD/LanguageControlButton.qml
 
 QML_FILES += $$PRIVATE_QML_FILES
 
