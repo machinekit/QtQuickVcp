@@ -5,9 +5,11 @@ import QtQuick.Window 2.0
 import Machinekit.Application 1.0
 
 Image {
+    readonly  property string activeLanguage: getLanguage()
+
     id: root
     fillMode: Image.PreserveAspectFit
-    source: "qrc:Machinekit/Application/Controls/icons/flag-" + getLanguage()
+    source: "qrc:Machinekit/Application/Controls/icons/flag-" + activeLanguage
     height: dummyButton.height
 
     function getLanguage() {
@@ -47,19 +49,32 @@ Image {
         MenuItem {
             text: qsTr("English")
             iconSource: "qrc:Machinekit/Application/Controls/icons/flag-english"
+            checkable: true
+            checked: root.activeLanguage == "english"
+            exclusiveGroup: exclusiveGroup
             onTriggered: root.setLanguage("en")
         }
 
         MenuItem {
             text: qsTr("German")
             iconSource: "qrc:Machinekit/Application/Controls/icons/flag-german"
+            checkable: true
+            checked: root.activeLanguage == "german"
+            exclusiveGroup: exclusiveGroup
             onTriggered: root.setLanguage("de")
         }
 
         MenuItem {
             text: qsTr("Russian")
             iconSource: "qrc:Machinekit/Application/Controls/icons/flag-russian"
+            checkable: true
+            checked: root.activeLanguage == "russian"
+            exclusiveGroup: exclusiveGroup
             onTriggered: root.setLanguage("ru")
+        }
+
+        ExclusiveGroup {
+            id: exclusiveGroup
         }
     }
 
