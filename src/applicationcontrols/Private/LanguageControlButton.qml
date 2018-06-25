@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
-import QtQuick.Dialogs 1.3
+import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.0
 import Machinekit.Application 1.0
 
