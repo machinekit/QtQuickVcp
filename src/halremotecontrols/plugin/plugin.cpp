@@ -70,10 +70,19 @@ void MachinekitHalRemoteControlsPlugin::initializeEngine(QQmlEngine *engine, con
     if (isLoadedFromResource())
         engine->addImportPath(QStringLiteral("qrc:/"));
 
-    if (m_translator.load(QLocale(), QLatin1String("machinekithalremotecontrols"),
-                          QLatin1String("_"), QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
-    {
-        QCoreApplication::installTranslator(&m_translator);
+    // translate the plugin
+    QVector<QString> paths;
+    paths.push_back(QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    paths.push_back(QCoreApplication::applicationDirPath());
+    paths.push_back(QDir(QCoreApplication::applicationDirPath()).filePath("translations"));
+
+    for (const auto &path: paths) {
+        if (m_translator.load(QLocale(), QLatin1String("machinekithalremotecontrols"),
+                              QLatin1String("_"), path))
+        {
+            QCoreApplication::installTranslator(&m_translator);
+            break;
+        }
     }
 }
 
