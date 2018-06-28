@@ -5,7 +5,7 @@
     <name>AppPage</name>
     <message>
         <source>QML Error:</source>
-        <translation>QML Fehler</translation>
+        <translation>QML Fehler:</translation>
     </message>
     <message>
         <source>Loading QML file failed</source>
@@ -33,7 +33,7 @@
     </message>
     <message>
         <source>Open File</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei öffnen</translation>
     </message>
 </context>
 <context>
@@ -103,27 +103,27 @@
     </message>
     <message>
         <source>Remote Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Netzwerkdateien</translation>
     </message>
     <message>
         <source>Up</source>
-        <translation type="unfinished"></translation>
+        <translation>Nach oben</translation>
     </message>
     <message>
         <source>Open directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordner öffnen</translation>
     </message>
     <message>
         <source>Remove directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordner löschen</translation>
     </message>
     <message>
         <source>Create directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Neuer Ordner</translation>
     </message>
     <message>
         <source>Enter Directory Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordnernamen eingeben</translation>
     </message>
 </context>
 <context>
@@ -194,41 +194,41 @@
     </message>
     <message>
         <source>Rad:</source>
-        <translation type="unfinished"></translation>
+        <translation>Rad:</translation>
     </message>
     <message>
         <source>Dia:</source>
-        <translation type="unfinished"></translation>
+        <translation>Dm:</translation>
     </message>
     <message>
         <source>DTG</source>
-        <translation type="unfinished"></translation>
+        <translation>DTG</translation>
     </message>
     <message>
         <source>TLO</source>
-        <translation type="unfinished"></translation>
+        <translation>TLO</translation>
     </message>
 </context>
 <context>
     <name>EditToolTableAction</name>
     <message>
         <source>Edit &amp;Tool Table...</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkzeugtabelle &amp;bearbeiten...</translation>
     </message>
     <message>
         <source>Edit Tool Table [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkzeugtabelle bearbeiten [%1]</translation>
     </message>
 </context>
 <context>
     <name>EditWithSystemEditorAction</name>
     <message>
         <source>Edit G-Code file with System Editor [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>G-Code Datei mit Systemeditor bearbeiten [%1]</translation>
     </message>
     <message>
         <source>&amp;Edit File with System Editor...</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei mit Systemeditor &amp;bearbeiten...</translation>
     </message>
 </context>
 <context>
@@ -344,7 +344,7 @@
     </message>
     <message>
         <source>Warning!&lt;br&gt;No network connection found, service discovery unavailable. Please check your network connection.</source>
-        <translation type="unfinished">Warnung!&lt;br&gt;Keine Netzwerkverbindung gefunden. Dienstsuche nicht verfügbar. Bitte prüfen Sie Ihre Netzwerkverbindung.</translation>
+        <translation>Warnung!&lt;br&gt;Keine Netzwerkverbindung gefunden. Dienstsuche nicht verfügbar. Bitte prüfen Sie Ihre Netzwerkverbindung.</translation>
     </message>
 </context>
 <context>
@@ -365,24 +365,25 @@
     <name>LanguageControlButton</name>
     <message>
         <source>English</source>
-        <translation type="unfinished"></translation>
+        <translation>Englisch</translation>
     </message>
     <message>
         <source>German</source>
-        <translation type="unfinished"></translation>
+        <translation>Deutsch</translation>
     </message>
     <message>
         <source>Russian</source>
-        <translation type="unfinished"></translation>
+        <translation>Russisch</translation>
     </message>
     <message>
         <source>Restart Application</source>
-        <translation type="unfinished"></translation>
+        <translation>Applikation neustarten</translation>
     </message>
     <message>
         <source>For the change to take effect, you need to restart the application.
 Restart now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Damit die Änderung übernommen wird, muss die Anwendung neugestartet werden.
+Jetzt neustarten?</translation>
     </message>
 </context>
 <context>
@@ -477,7 +478,7 @@ Restart now?</source>
     </message>
     <message>
         <source>Clear History</source>
-        <translation type="unfinished"></translation>
+        <translation>Verlauf löschen</translation>
     </message>
 </context>
 <context>
@@ -503,19 +504,19 @@ Restart now?</source>
     </message>
     <message>
         <source>Open File...</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei öffnen...</translation>
     </message>
     <message>
         <source>Open File from Machine...</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei von Maschine öffnen...</translation>
     </message>
     <message>
         <source>Open G-Code file stored on machine [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Auf der Maschine gespeicherte G-Code Datei öffnen [%1]</translation>
     </message>
     <message>
         <source>Open G-Code file stored on local computer [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Auf dem lokalen Computer gespeicherte G-Code Datei öffnen [%1]</translation>
     </message>
 </context>
 <context>
@@ -530,7 +531,7 @@ Restart now?</source>
     </message>
     <message>
         <source>Optional Stop (M1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Optionaler Stop (M1)</translation>
     </message>
 </context>
 <context>
@@ -586,7 +587,7 @@ Restart now?</source>
     </message>
     <message>
         <source>Reopen File</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei erneut öffnen</translation>
     </message>
 </context>
 <context>
@@ -624,11 +625,11 @@ Restart now?</source>
     </message>
     <message>
         <source>Application Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgabe der Anwendung</translation>
     </message>
     <message>
         <source>Machinekit Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Machinekit Log</translation>
     </message>
 </context>
 <context>
@@ -735,116 +736,116 @@ Restart now?</source>
     </message>
     <message>
         <source>Teleop Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Teleop Modus</translation>
     </message>
 </context>
 <context>
     <name>ToolTableEditor</name>
     <message>
         <source>Tool ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkzeug ID</translation>
     </message>
     <message>
         <source>Pocket</source>
-        <translation type="unfinished"></translation>
+        <translation>Position</translation>
     </message>
     <message>
         <source>X</source>
-        <translation type="unfinished"></translation>
+        <translation>X</translation>
     </message>
     <message>
         <source>Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Y</translation>
     </message>
     <message>
         <source>Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Z</translation>
     </message>
     <message>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>A</translation>
     </message>
     <message>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
     <message>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>C</translation>
     </message>
     <message>
         <source>U</source>
-        <translation type="unfinished"></translation>
+        <translation>U</translation>
     </message>
     <message>
         <source>V</source>
-        <translation type="unfinished"></translation>
+        <translation>V</translation>
     </message>
     <message>
         <source>W</source>
-        <translation type="unfinished"></translation>
+        <translation>W</translation>
     </message>
     <message>
         <source>Diameter</source>
-        <translation type="unfinished"></translation>
+        <translation>Durchmesser</translation>
     </message>
     <message>
         <source>Front Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorderer Winkel</translation>
     </message>
     <message>
         <source>Back Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Hinterer Winkel</translation>
     </message>
     <message>
         <source>Orientation</source>
-        <translation type="unfinished"></translation>
+        <translation>Orientierung</translation>
     </message>
     <message>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Kommentar</translation>
     </message>
 </context>
 <context>
     <name>ToolTableEditorDialog</name>
     <message>
         <source>Tool Table Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkzeug Editor</translation>
     </message>
     <message>
         <source>Error in tool table.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler in Werkzeugtabelle.</translation>
     </message>
     <message>
         <source>Tool table has modifications.</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkzeugtabelle wurde verändert.</translation>
     </message>
     <message>
         <source>Add Row</source>
-        <translation type="unfinished"></translation>
+        <translation>Reihe hinzufügen</translation>
     </message>
     <message>
         <source>Remove Row</source>
-        <translation type="unfinished"></translation>
+        <translation>Reihe entfernen</translation>
     </message>
     <message>
         <source>Reset Modifications</source>
-        <translation type="unfinished"></translation>
+        <translation>Änderungen zurücksetzen</translation>
     </message>
     <message>
         <source>Update Tool Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkzeugtabelle übernehmen</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation type="unfinished">Schließen</translation>
+        <translation>Schließen</translation>
     </message>
 </context>
 <context>
     <name>TouchOffAction</name>
     <message>
         <source>Touch Off</source>
-        <translation> Abweichung setzen</translation>
+        <translation>Abweichung setzen</translation>
     </message>
     <message>
         <source>Set G5x offset for active axis [%1]</source>
@@ -855,7 +856,7 @@ Restart now?</source>
     <name>TouchOffDialog</name>
     <message>
         <source>Touch Off</source>
-        <translation>Abweichung setzen </translation>
+        <translation>Abweichung setzen</translation>
     </message>
     <message>
         <source>Enter %1 coordinate relative to workpiece:</source>

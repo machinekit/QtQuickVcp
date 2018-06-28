@@ -38,11 +38,11 @@
     </message>
     <message>
         <source>HAL component error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler in der HAL Komponente:</translation>
     </message>
     <message>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Zurück</translation>
     </message>
 </context>
 </TS>

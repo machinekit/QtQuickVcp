@@ -5,18 +5,18 @@
     <name>ClearBackplotAction</name>
     <message>
         <source>Clear Live Plot</source>
-        <translation type="unfinished"></translation>
+        <translation>Live Plot zurücksetzen</translation>
     </message>
     <message>
         <source>Clear live plot [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation>Live Plot zurücksetzen [%1]</translation>
     </message>
 </context>
 <context>
     <name>SourceView</name>
     <message>
         <source>Run Program from Line %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Program von Zeile %1 starten</translation>
     </message>
 </context>
 <context>
