@@ -82,6 +82,8 @@ void MachinekitControlsPlugin::initializeEngine(QQmlEngine *engine, const char *
     paths.push_back(QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     paths.push_back(QCoreApplication::applicationDirPath());
     paths.push_back(QDir(QCoreApplication::applicationDirPath()).filePath("translations"));
+    paths.push_back(QDir::currentPath());
+    paths.push_back(QDir(QDir::currentPath()).filePath("translations"));
 
     for (const auto &path: paths) {
         if (m_translator.load(QLocale(), QLatin1String("machinekitcontrols"),

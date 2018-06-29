@@ -186,7 +186,7 @@
     <name>DigitalReadOut</name>
     <message>
         <source>Vel:</source>
-        <translation>Geschw:</translation>
+        <translation>Gsw:</translation>
     </message>
     <message>
         <source>DTG:</source>
