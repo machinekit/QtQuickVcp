@@ -61,7 +61,7 @@ mkdir qml
 mkdir lib
 cp -r ${QML_IMPORT_PATH}/Machinekit qml/Machinekit
 cp ${QT_INSTALL_PREFIX}/lib/libmachinetalk* lib/
-tar -zcf $zipfile qml lib
+tar -zcf $zipfile qml lib translations
 # allow access to archive from outside the chroot
 chmod a+rwx $zipfile
 chmod a+rwx .
@@ -74,9 +74,9 @@ qt-deploy ../build/deployment-scripts/linux_x64.ini --deploy
 
 # prepare AppDir
 cd MachinekitClient.AppDir
-mkdir translations
-cp ${QT_TRANSLATIONS_PATH}/*_de.qm ./translations/
-cp ${QT_TRANSLATIONS_PATH}/*_ru.qm ./translations/
+cp -r ../translations .
+cp ${QT_TRANSLATIONS_PATH}/*_de.qm translations/
+cp ${QT_TRANSLATIONS_PATH}/*_ru.qm translations/
 cp /usr/share/pixmaps/machinekit.png .
 cp /usr/share/applications/machinekit-client.desktop .
 mv machinekit-client AppRun
