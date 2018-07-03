@@ -11,8 +11,8 @@ TRANSLATIONS = $$prependAll(LANGUAGES, $${TRANSLATIONS_PATH}/$${TARGET_NAME}_, .
 TRANSLATIONS_OUT = $$prependAll(LANGUAGES, $${OUTPUT_DIR}/$${TARGET_NAME}_, .qm)
 
 isEmpty(QMAKE_LUPDATE) {
-    win32:QMAKE_LUPDATE = $$[QT_INSTALL_BINS]\lupdate.exe
-    else:QMAKE_LUPDATE = $$[QT_INSTALL_BINS]/lupdate
+    win32:QMAKE_LUPDATE = $$shell_path($$[QT_INSTALL_BINS]\lupdate.exe)
+    else:QMAKE_LUPDATE = $$shell_path($$[QT_INSTALL_BINS]/lupdate)
 }
 
 for(a,TRANSLATIONS): {
@@ -20,8 +20,8 @@ for(a,TRANSLATIONS): {
 }
 
 isEmpty(QMAKE_LRELEASE) {
-    win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\lrelease.exe
-    else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
+    win32:QMAKE_LRELEASE = $$shell_path($$[QT_INSTALL_BINS]\lrelease.exe)
+    else:QMAKE_LRELEASE = $$shell_path($$[QT_INSTALL_BINS]/lrelease)
 }
 updateqm.input = TRANSLATIONS
 updateqm.output = $${OUTPUT_DIR}/${QMAKE_FILE_BASE}.qm

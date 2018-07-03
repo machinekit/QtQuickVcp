@@ -9,6 +9,7 @@ Image {
 
     id: root
     fillMode: Image.PreserveAspectFit
+    smooth: true
     source: "qrc:Machinekit/Application/Controls/icons/flag-" + activeLanguage
     height: dummyButton.height
 

@@ -94,6 +94,7 @@ mkdir MachinekitClient
 cd MachinekitClient
 cp ../apps/MachinekitClient/release/machinekit-client.exe . || goto :error
 windeployqt --angle --release --qmldir ../../apps/MachinekitClient/ machinekit-client.exe || goto :error
+cp ../translations/*.qm translations/ || goto :error
 cp %QTDIR%\bin\libzmq.dll . || goto :error
 cd .. || goto :error
 7z a MachinekitClient.zip MachinekitClient/ || goto :error
@@ -102,7 +103,7 @@ mkdir qml
 mkdir lib
 cp -r %QTDIR%/qml/Machinekit qml/ || goto :error
 cp -r %QTDIR%/bin/libzmq.dll lib/ || goto :error
-7z a QtQuickVcp.zip qml/ lib/ || goto :error
+7z a QtQuickVcp.zip qml/ lib/ translations/ || goto :error
 
 :: rename deployment files
 set platform=%ARCH%
