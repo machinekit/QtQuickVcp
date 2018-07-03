@@ -30,6 +30,6 @@ updateqm.CONFIG += no_link
 updateqm.variable_out = PRE_TARGETDEPS
 QMAKE_EXTRA_COMPILERS += updateqm
 
-updateqm_install.files = $${TRANSLATIONS_OUT}
+updateqm_install.files = $$TRANSLATIONS_OUT
 updateqm_install.path = $$[QT_INSTALL_TRANSLATIONS]
 INSTALLS += updateqm_install
