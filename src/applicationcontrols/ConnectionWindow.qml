@@ -180,7 +180,7 @@ Rectangle {
 
     /*! This property holds the list of local applications.
     */
-    default property var applications: []
+    default property list<ApplicationDescription> applications
 
     /*!
         \qmlproperty Item toolBar
