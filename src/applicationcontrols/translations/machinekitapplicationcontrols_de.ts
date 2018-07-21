@@ -385,6 +385,10 @@ Restart now?</source>
         <translation>Damit die Änderung übernommen wird, muss die Anwendung neugestartet werden.
 Jetzt neustarten?</translation>
     </message>
+    <message>
+        <source>Spanish</source>
+        <translation>Spanisch</translation>
+    </message>
 </context>
 <context>
     <name>LauncherPage</name>
