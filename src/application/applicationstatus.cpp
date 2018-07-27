@@ -41,7 +41,8 @@ ApplicationStatus::ApplicationStatus(QObject *parent) :
     m_running(false),
     m_synced(false),
     m_syncedChannels(NoChannel),
-    m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel | UiChannel)
+    m_channels(MotionChannel | ConfigChannel | IoChannel | TaskChannel | InterpChannel),
+    m_optionalChannels(UiChannel)
 {
     connect(this, &ApplicationStatus::taskChanged,
             this, &ApplicationStatus::updateRunning);
@@ -71,8 +72,16 @@ void ApplicationStatus::componentComplete()
 void ApplicationStatus::updateSync(ApplicationStatus::StatusChannel channel)
 {
     m_syncedChannels |= channel;
+    bool flagsMatch = (
+                (!(m_channels & MotionChannel) || (m_syncedChannels & MotionChannel)) &&
+                (!(m_channels & ConfigChannel) || (m_syncedChannels & ConfigChannel)) &&
+                (!(m_channels & IoChannel) || (m_syncedChannels & IoChannel)) &&
+                (!(m_channels & TaskChannel) || (m_syncedChannels & TaskChannel)) &&
+                (!(m_channels & InterpChannel) || (m_syncedChannels & InterpChannel)) &&
+                (!(m_channels & UiChannel) || (m_syncedChannels & UiChannel))
+                );
 
-    if (m_syncedChannels == m_channels && !m_synced) {
+    if (flagsMatch && !m_synced) {
         channelsSynced();
     }
 }
@@ -142,27 +151,27 @@ void ApplicationStatus::unsyncStatus()
 void ApplicationStatus::updateTopics()
 {
     clearStatusTopics();
-    if (m_channels & MotionChannel) {
+    if ((m_channels | m_optionalChannels) & MotionChannel) {
         addStatusTopic("motion");
         initializeObject(MotionChannel);
     }
-    if (m_channels & ConfigChannel) {
+    if ((m_channels | m_optionalChannels) & ConfigChannel) {
         addStatusTopic("config");
         initializeObject(ConfigChannel);
     }
-    if (m_channels & TaskChannel) {
+    if ((m_channels | m_optionalChannels) & TaskChannel) {
         addStatusTopic("task");
         initializeObject(TaskChannel);
     }
-    if (m_channels & IoChannel) {
+    if ((m_channels | m_optionalChannels) & IoChannel) {
         addStatusTopic("io");
         initializeObject(IoChannel);
     }
-    if (m_channels & InterpChannel) {
+    if ((m_channels | m_optionalChannels) & InterpChannel) {
         addStatusTopic("interp");
         initializeObject(InterpChannel);
     }
-    if (m_channels & UiChannel) {
+    if ((m_channels | m_optionalChannels) & UiChannel) {
         addStatusTopic("ui");
         initializeObject(UiChannel);
     }
