@@ -42,6 +42,7 @@ class ApplicationStatus : public machinetalk::application::StatusBase
     Q_PROPERTY(bool running READ isRunning NOTIFY runningChanged)
     Q_PROPERTY(bool synced READ isSynced NOTIFY syncedChanged)
     Q_PROPERTY(StatusChannels channels READ channels WRITE setChannels NOTIFY channelsChanged)
+    Q_PROPERTY(StatusChannels optionalChannels READ optionalChannels WRITE setOptionalChannels NOTIFY optionalChannelsChanged)
     Q_FLAGS(StatusChannels)
 
 public:
@@ -220,6 +221,11 @@ public:
         return m_channels;
     }
 
+    StatusChannels optionalChannels() const
+    {
+        return m_optionalChannels;
+    }
+
     bool isRunning() const
     {
         return m_running;
@@ -240,6 +246,15 @@ public slots:
         emit channelsChanged(arg);
     }
 
+    void setOptionalChannels(StatusChannels optionalChannels)
+    {
+        if (m_optionalChannels == optionalChannels)
+            return;
+
+        m_optionalChannels = optionalChannels;
+        emit optionalChannelsChanged(m_optionalChannels);
+    }
+
 private:
     QObject     *m_config;
     QObject     *m_motion;
@@ -251,6 +266,7 @@ private:
     bool            m_synced;
     StatusChannels  m_syncedChannels;
     StatusChannels  m_channels;
+    StatusChannels  m_optionalChannels;
     QHash<QByteArray, StatusChannel> m_channelMap;
 
     void emcstatUpdateReceived(StatusChannel channel, const machinetalk::Container &rx);
@@ -281,6 +297,7 @@ signals:
     void interpChanged();
     void uiChanged();
     void channelsChanged(StatusChannels arg);
+    void optionalChannelsChanged(StatusChannels optionalChannels);
     void runningChanged(bool arg);
     void syncedChanged(bool arg);
 }; // class ApplicationStatus
