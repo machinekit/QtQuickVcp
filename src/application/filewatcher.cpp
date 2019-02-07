@@ -103,9 +103,19 @@ void FileWatcher::setNameFilters(const QStringList &nameFilters)
 
     m_nameFilters = nameFilters;
     emit nameFiltersChanged(m_nameFilters);
+
+    updateRegExps();
 }
 
-void FileWatcher::updateWatchedFile()
+void FileWatcher::updateRegExps()
+{
+    m_regExps.clear();
+    for (QString &filter: m_nameFilters) {
+        m_regExps.append(QRegExp(filter, Qt::CaseInsensitive, QRegExp::WildcardUnix));
+    }
+}
+
+bool FileWatcher::updateWatchedFile()
 {
     const auto &files = m_fileSystemWatcher.files();
     if (files.length() > 0) {
@@ -117,29 +127,43 @@ void FileWatcher::updateWatchedFile()
     }
 
      if (!m_fileUrl.isValid() || !m_enabled) {
-        return;
+        return false;
     }
 
     if (!m_fileUrl.isLocalFile()) {
         qCWarning(filewatcherCategory) << "Can only watch local files";
-        return;
+        return false;
     }
     const auto &localFile = m_fileUrl.toLocalFile();
     if (localFile.isEmpty()) {
-        return;
+        return false;
     }
 
     if (m_recursive && QDir(localFile).exists()) {
+        QSet<QString> newPaths;
         m_fileSystemWatcher.addPath(localFile);
+        newPaths.insert(localFile);
+
         QDirIterator it(localFile, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
         while (it.hasNext()) {
             const auto &file = it.next();
+            const QString extension = it.fileInfo().completeSuffix();
+            bool filtered = false;
+            for (QRegExp &regExp: m_regExps) {
+                if (regExp.exactMatch(extension)) {
+                    filtered = true;
+                    break;
+                }
+            }
             if ((it.fileName() == QLatin1String("..")) || (it.fileName() == QLatin1String("."))
-                || m_nameFilters.contains(it.fileInfo().completeSuffix())) {
+                || filtered) {
                 continue;
             }
             m_fileSystemWatcher.addPath(file);
+            newPaths.insert(it.filePath());
         }
+
+        return newPaths != QSet<QString>::fromList(files).unite(QSet<QString>::fromList(directories));
     }
     else if (QFile::exists(localFile)) {
         m_fileSystemWatcher.addPath(localFile);
@@ -149,6 +173,7 @@ void FileWatcher::updateWatchedFile()
         qCWarning(filewatcherCategory) << "File to watch does not exist" << localFile;
 #endif
     }
+    return false;
 }
 
 void FileWatcher::onWatchedFileChanged()
@@ -160,8 +185,9 @@ void FileWatcher::onWatchedFileChanged()
 
 void FileWatcher::onWatchedDirectoryChanged(const QString &)
 {
-    updateWatchedFile();
-    onWatchedFileChanged(); // propagate event
+    if (updateWatchedFile()) {
+        onWatchedFileChanged(); // propagate event
+    }
 }
 
 } // namespace qtquickvcp
