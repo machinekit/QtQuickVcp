@@ -524,6 +524,14 @@ not enable 3D acceleration or OpenGL will not work inside the VM.
 
 ##### Protobuf and ZeroMQ packages
 
+**Debian Stretch**
+
+```bash
+sudo apt install libprotobuf-dev protobuf-compiler libzmq5-dev
+```
+
+**Debian Jessie**
+
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 43DDF224
     sudo sh -c \
     "echo 'deb http://deb.machinekit.io/debian jessie main' > \
