@@ -55,7 +55,7 @@ win32-g++ {
 }
 linux: !android: {
 	equals(QMAKE_CXX, g++) \
-	: system(g++ -dumpversion | grep ^6 ) {
+    : system(g++ -dumpversion | grep ^6 ) | system(g++ -dumpversion | grep ^7 ) {
 		PROTOBUF_INCLUDE_PATH =
 	} else {
 		PROTOBUF_INCLUDE_PATH = /usr/include
