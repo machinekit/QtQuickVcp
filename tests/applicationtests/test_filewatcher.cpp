@@ -117,7 +117,7 @@ TEST_CASE("FileWatcher Tests", "[application][!mayfail]")
 
             AND_WHEN("a file in with extension from the nameFilters is created") {
                 QStringList nameFilters;
-                nameFilters.append("qmlc");
+                nameFilters.append("*.qmlc");
                 watcher.setNameFilters(nameFilters);
                 const auto &filePath = tempDir.filePath("testfile.qmlc");
                 writeTestFile(filePath);
