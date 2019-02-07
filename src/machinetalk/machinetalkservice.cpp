@@ -115,7 +115,7 @@ int MachinetalkService::recurseMessage(const google::protobuf::Message &message,
     const bool filterEnabled = !fieldFilter.isEmpty();
     bool isPosition = false;
     const gpb::Reflection *reflection = message.GetReflection();
-    gpb::vector< const gpb::FieldDescriptor * > output;
+    std::vector< const gpb::FieldDescriptor * > output;
     reflection->ListFields(message, &output);
 
     if (message.GetDescriptor() == machinetalk::File::descriptor())  // handle files with binary data
@@ -190,7 +190,7 @@ void MachinetalkService::updateSimpleRepeatedField(QObject *object, const gpb::M
             list.append(QVariant());
         }
 
-        gpb::vector< const gpb::FieldDescriptor * > output;
+        std::vector< const gpb::FieldDescriptor * > output;
         subReflection->ListFields(subMessage, &output);
         if (output.size() > 1) // index and value field
         {
