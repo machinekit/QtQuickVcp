@@ -395,7 +395,7 @@ private:
     void setupGenericVertexBuffer(ModelType type);
     void setupTextVertexBuffer();
     void setupShaders();
-    void setupWindow();
+    bool setupWindow();
     void setupCube();
     void setupCylinder(GLfloat originRadius, QVector3D originPoint, GLfloat endRadius, QVector3D endPoint, int detail, ModelType type);
     void setupSphere(int detail);

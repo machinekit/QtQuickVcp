@@ -121,7 +121,7 @@ QString MachinekitPathViewPlugin::fileLocation() const
 bool MachinekitPathViewPlugin::isLoadedFromResource() const
 {
     // If one file is missing, it will load all the files from the resource
-    QFile file(baseUrl().toLocalFile() + "/PathView3D.qml");
+    QFile file(baseUrl().toLocalFile() + "/" + qmldir[0].type + ".qml");
     if (!file.exists())
         return true;
     return false;

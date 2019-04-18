@@ -118,7 +118,7 @@ QString MachinekitApplicationPlugin::fileLocation() const
 bool MachinekitApplicationPlugin::isLoadedFromResource() const
 {
     // If one file is missing, it will load all the files from the resource
-    QFile file(baseUrl().toLocalFile() + "/ApplicationCore.qml");
+    QFile file(baseUrl().toLocalFile() + "/" + qmldir[0].type + ".qml");
     if (!file.exists())
         return true;
     return false;

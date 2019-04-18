@@ -554,8 +554,11 @@ void GLView::setupShaders()
     m_textSelectionModeLocation = m_textProgram->uniformLocation("selectionMode");
 }
 
-void GLView::setupWindow()
+bool GLView::setupWindow()
 {
+    if (!window()) {
+        return false;
+    }
     connect(window()->openglContext(), &QOpenGLContext::aboutToBeDestroyed,
             this, &GLView::cleanup, Qt::DirectConnection);
 
@@ -563,6 +566,8 @@ void GLView::setupWindow()
     format.setDepthBufferSize(24);
     format.setSamples(4);
     window()->setFormat(format);
+
+    return true;
 }
 
 void GLView::setupCylinder(GLfloat r2, QVector3D P2, GLfloat r1, QVector3D P1, int detail, ModelType type)
@@ -1637,9 +1642,11 @@ void GLView::sync()
 {
     if (!m_initialized)
     {
+        if (setupWindow() == false) {
+            return;
+        }
         initializeOpenGLFunctions();
         setupShaders();
-        setupWindow();
         setupVBOs();
         setupStack();
         m_initialized = true;

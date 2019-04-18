@@ -105,7 +105,7 @@ QString MachinekitControlsPlugin::fileLocation() const
 bool MachinekitControlsPlugin::isLoadedFromResource() const
 {
     // If one file is missing, it will load all the files from the resource
-    QFile file(baseUrl().toLocalFile() + "/ColorPicker.qml");
+    QFile file(baseUrl().toLocalFile() + "/" + qmldir[0].type + ".qml");
     if (!file.exists())
         return true;
     return false;
