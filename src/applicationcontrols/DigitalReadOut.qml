@@ -245,6 +245,18 @@ AbstractDigitalReadOut {
             active: true
             visible: !droRect.offsetsVisible && distanceToGoVisible
         }
+
+        Loader {
+            sourceComponent: textLine
+            onLoaded: {
+                item.title = qsTr("S:")
+                item.type = Qt.binding(function() { return droRect.spindleDirection === 1 ? "⟳" : (droRect.spindleDirection === -1 ? "⟲" : ""); });
+                item.homed = false;
+                item.value = Qt.binding(function() { return droRect.spindleSpeed; });
+            }
+            active: true
+            visible: !droRect.offsetsVisible && spindleSpeedVisible
+        }
     }
 
     ColumnLayout {

@@ -47,6 +47,9 @@ ApplicationItem {
     property bool distanceToGoVisible: settings.initialized && settings.values.dro.showDistanceToGo
     property int positionFeedback: _ready ? status.config.positionFeedback : ApplicationStatus.ActualPositionFeedback
     property int positionOffset: _ready ? status.config.positionOffset : ApplicationStatus.RelativePositionOffset
+    property double spindleSpeed: _ready ? Math.abs(status.motion.spindleSpeed) : 0.0
+    property int spindleDirection: _ready ? status.motion.spindleDirection: 0
+    property bool spindleSpeedVisible: _ready && settings.initialized ? settings.values.dro.showSpindleSpeed && status.ui.spindlePlusVisible : false
 
     readonly property bool _ready: status.synced
     readonly property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z", "a"]

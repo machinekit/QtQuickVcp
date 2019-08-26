@@ -35,6 +35,7 @@ Item {
                                                                        || status.task.execState === ApplicationStatus.TaskDone) : false
         readonly property string file: status.synced ? status.task.file : ""
         property int lastLine: 1
+        property string lastFile: ""
         readonly property bool ready: status.synced
 
         onCurrentLineChanged: updateLine()
@@ -45,22 +46,11 @@ Item {
                 return;
             }
 
-            if (d.lastLine > d.currentLine) {
-                for (var line = 1; line <= d.lastLine; ++line) {
-                    model.setData(file, line, false, GCodeProgramModel.ExecutedRole);
-                    model.setData(file, line, false, GCodeProgramModel.ActiveRole);
-                }
-                d.lastLine = d.currentLine;
-            }
-
-            for (line = d.lastLine; line < d.currentLine; ++line) {
-                model.setData(file, line, true, GCodeProgramModel.ExecutedRole);
-                model.setData(file, line, false, GCodeProgramModel.ActiveRole);
-            }
-
+            model.setData(d.lastFile, d.lastLine, false, GCodeProgramModel.ActiveRole)
             model.setData(file, currentLine, true, GCodeProgramModel.ActiveRole);
 
             d.lastLine = d.currentLine;
+            d.lastFile = d.file;
         }
     }
 }
