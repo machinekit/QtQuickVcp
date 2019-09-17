@@ -260,12 +260,12 @@ void MjpegStreamerClient::updateMessageReceived(const QList<QByteArray> &message
 #endif
 
         streamBufferItem.image = QImage::fromData(data, "JPG");
-        streamBufferItem.timestamp = (double)frame.timestamp_s()*1000 +  (double)frame.timestamp_us() / 1000.0;
+        streamBufferItem.timestamp = static_cast<double>(frame.timestamp_s())*1000.0 +  static_cast<double>(frame.timestamp_us()) / 1000.0;
 
-        dateTime.setMSecsSinceEpoch((quint64)frame.timestamp_unix()*(quint64)1000);
+        dateTime.setMSecsSinceEpoch(static_cast<qint64>(frame.timestamp_unix()) * 1000);
         dateTime = dateTime.toLocalTime();
         time = dateTime.time();
-        streamBufferItem.time = time.addMSecs(frame.timestamp_us()/1000.0);
+        streamBufferItem.time = time.addMSecs(static_cast<int>(frame.timestamp_us() / 1000));
 
 #ifdef QT_DEBUG
         qDebug() << "time: " << streamBufferItem.time;
@@ -301,7 +301,7 @@ void MjpegStreamerClient::updateStreamBuffer()
         m_currentStreamBufferItem = m_streamBuffer.dequeue();
         interval = m_currentStreamBufferItem.timestamp - timestamp;
 
-        m_streamBufferTimer->start(qMax((int)interval, 0));
+        m_streamBufferTimer->start(qMax(static_cast<int>(interval), 0));
     }
 
 }
