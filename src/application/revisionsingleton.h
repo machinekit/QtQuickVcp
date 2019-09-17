@@ -12,7 +12,9 @@ class RevisionSingleton : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(RevisionSingleton)
-    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
+    Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(QString runtimeQtVersion READ runtimeQtVersion CONSTANT)
+    Q_PROPERTY(QString compiledQtVersion READ compiledQtVersion CONSTANT)
 
     RevisionSingleton() {
     }
@@ -20,8 +22,8 @@ class RevisionSingleton : public QObject
 public:
     static QObject *qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
     {
-        Q_UNUSED(engine);
-        Q_UNUSED(scriptEngine);
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
 
         return new RevisionSingleton;
     }
@@ -31,8 +33,16 @@ public:
         return QStringLiteral(REVISION);
     }
 
-signals:
-    void nameChanged(const QString &name);
+    QString runtimeQtVersion() const
+    {
+        return qVersion();
+    }
+
+    QString compiledQtVersion() const
+    {
+        return QT_VERSION_STR;
+    }
+
 }; // class RevisionSingleton
 } // namespace qtquickvcp
 

@@ -208,6 +208,10 @@
         <source>TLO</source>
         <translation>TLO</translation>
     </message>
+    <message>
+        <source>S:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EditToolTableAction</name>
