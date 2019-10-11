@@ -167,7 +167,8 @@ Item {
         ready: fileService.ready
 
         onUploadFinished: {
-            fileSyncHandler.ignoreNextChange = true;
+            var extension = remoteFilePath.split('.').pop();
+            fileSyncHandler.ignoreNextChange =  ["ngc", "txt"].indexOf(extension) != -1;
             executeProgram(remoteFilePath);
         }
     }
