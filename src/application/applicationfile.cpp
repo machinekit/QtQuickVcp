@@ -162,6 +162,7 @@ void ApplicationFile::startDownload()
 
     if (!ready() || (m_transferState != NoTransfer))
     {
+        qDebug() << "download failed" << ready() << m_transferState;
         return;
     }
 
@@ -439,31 +440,34 @@ void ApplicationFile::ftpCommandFinished(int, bool error)
     {
     case QFtp::Get:
         cleanupFile();
-        emit downloadFinished();
         updateState(NoTransfer);
+        emit downloadFinished();
         return;
     case QFtp::List:
-        emit refreshFinished();
         updateState(NoTransfer);
+        emit refreshFinished();
         return;
     case QFtp::Put:
         cleanupFile();
+        updateState(NoTransfer);
         emit uploadFinished();
-        break;
+        return;
     case QFtp::Remove:
+        updateState(NoTransfer);
         emit removeFinished();
         break;
     case QFtp::Rmdir:
+        updateState(NoTransfer);
         emit removeDirectoryFinished();
         break;
     case QFtp::Mkdir:
+        updateState(NoTransfer);
         emit createDirectoryFinished();
         break;
     default:
         return;
     }
 
-    updateState(NoTransfer);
     refreshFiles();
 }
 } // namespace qtquickvcp
