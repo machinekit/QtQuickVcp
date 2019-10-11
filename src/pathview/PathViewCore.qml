@@ -112,11 +112,9 @@ ApplicationItem {
         }
 
         function executePreview() {
-            if (file.remoteFilePath.split('.').pop() === 'ngc') {   // only open ngc files
-                gcodeProgramModel.clearPreview();
-                command.openProgram('preview', file.remoteFilePath);
-                command.runProgram('preview', 0);
-            }
+            gcodeProgramModel.clearPreview();
+            command.openProgram('preview', file.remoteFilePath);
+            command.runProgram('preview', 0);
         }
     }
 

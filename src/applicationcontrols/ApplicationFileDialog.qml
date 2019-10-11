@@ -38,7 +38,7 @@ FileDialog {
 
     nameFilters: {
         var filters = []
-        var allExtensions = ["*.ngc"]
+        var allExtensions = ["*.ngc *.txt"]
 
         if ((status.synced) && (status.config.programExtension !== undefined))
         {
@@ -63,6 +63,7 @@ FileDialog {
 
         filters.unshift(qsTr("All machinable files (%1)").arg(allExtensions.join(" ")));
         filters.push(qsTr("rs274ngc files (*.ngc)"));
+        filters.push(qsTr("Text files (*.txt)"));
         filters.push(qsTr("All files (*)"));
         return filters;
     }
