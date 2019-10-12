@@ -252,7 +252,7 @@ void MjpegStreamerClient::updateMessageReceived(const QList<QByteArray> &message
         StreamBufferItem streamBufferItem;
 
         frame = m_rx.frame(i);
-        data = QByteArray(frame.blob().data(), frame.blob().size());
+        data = QByteArray(frame.blob().data(), static_cast<int>(frame.blob().size()));
 
 #ifdef QT_DEBUG
         qDebug() << "received frame" << topic;
