@@ -63,13 +63,13 @@ FILE="$1"
 # Package: MachinekitClient-Nightly-MacOSX-<branch>-<arch> (e.g. MachinekitClient-Nightly-master-x64)
 
 # Read app name from file name (get characters before first dash)
-APPNAME="$(basename "$FILE" | sed -r 's|^([^-]*)-.*$|\1|')"
+APPNAME="$(basename "$FILE" | sed -E 's|^([^-]*)-.*$|\1|')"
 
 # Read version from the file name (get characters between first and last dash)
-VERSION="$(basename "$FILE" | sed -r 's|^[^-]*-(.*)-[^-]*$|\1|')"
+VERSION="$(basename "$FILE" | sed -E 's|^[^-]*-(.*)-[^-]*$|\1|')"
 
 # Read architecture from file name (characters between last dash and .dmg)
-ARCH="$(basename "$FILE" | sed -r 's|^.*-([^-]*)\.dmg$|\1|')"
+ARCH="$(basename "$FILE" | sed -E 's|^.*-([^-]*)\.dmg$|\1|')"
 
 case "${ARCH}" in
   x86_64|x64|amd64 )
@@ -107,10 +107,10 @@ else
   url_query="publish=1&override=1" # Automatically publish, overwrite existing
 
   # Get Git branch from $VERSION (get characters between first and last dash)
-  BRANCH="$(echo $VERSION | sed -r 's|^[^-]*-(.*)-[^-]*$|\1|')"
+  BRANCH="$(echo $VERSION | sed -E 's|^[^-]*-(.*)-[^-]*$|\1|')"
 
   # Get Git commit from $VERSION (get characters after last dash)
-  COMMIT="$(echo $VERSION | sed -r 's|^.*-([^-]*)$|\1|')"
+  COMMIT="$(echo $VERSION | sed -E 's|^.*-([^-]*)$|\1|')"
 
   PCK_NAME="$APPNAME-MacOSX-$BRANCH-$ARCH"
   BINTRAY_REPO="${BINTRAY_REPO:-MachinekitClient-Development}" # env, or use "MachinekitClient-Development"
