@@ -803,58 +803,49 @@ GLPathItem::Position GLPathItem::calculateNewPosition(const machinetalk::Positio
     if (newPosition.has_x()) {
         position.x = m_activeOffsets.g92Offset.x;
         position.x += m_activeOffsets.g5xOffsets.at(m_activeOffsets.g5xOffsetIndex-1).x;
-        position.x += m_activeOffsets.toolOffset.x;
         position.x += newPosition.x();
     }
 
     if (newPosition.has_y()) {
         position.y = m_activeOffsets.g92Offset.y;
         position.y += m_activeOffsets.g5xOffsets.at(m_activeOffsets.g5xOffsetIndex-1).y;
-        position.y += m_activeOffsets.toolOffset.y;
         position.y += newPosition.y();
     }
 
     if (newPosition.has_z()) {
         position.z = m_activeOffsets.g92Offset.z;
         position.z += m_activeOffsets.g5xOffsets.at(m_activeOffsets.g5xOffsetIndex-1).z;
-        position.z += m_activeOffsets.toolOffset.z;
         position.z += newPosition.z();
     }
 
     if (newPosition.has_a()) {
         position.a = m_activeOffsets.g92Offset.a;
         position.a += m_activeOffsets.g5xOffsets.at(m_activeOffsets.g5xOffsetIndex-1).a;
-        position.a += m_activeOffsets.toolOffset.a;
         position.a += newPosition.a();
     }
     if (newPosition.has_b()) {
         position.b = m_activeOffsets.g92Offset.b;
         position.b += m_activeOffsets.g5xOffsets.at(m_activeOffsets.g5xOffsetIndex-1).b;
-        position.b += m_activeOffsets.toolOffset.b;
         position.b += newPosition.b();
     }
     if (newPosition.has_c()) {
         position.c = m_activeOffsets.g92Offset.c;
         position.c += m_activeOffsets.g5xOffsets.at(m_activeOffsets.g5xOffsetIndex-1).c;
-        position.c += m_activeOffsets.toolOffset.c;
         position.c += newPosition.c();
     }
     if (newPosition.has_u()) {
         position.u = m_activeOffsets.g92Offset.u;
         position.u += m_activeOffsets.g5xOffsets.at(m_activeOffsets.g5xOffsetIndex-1).u;
-        position.u += m_activeOffsets.toolOffset.u;
         position.u += newPosition.u();
     }
     if (newPosition.has_v()) {
         position.v = m_activeOffsets.g92Offset.v;
         position.v += m_activeOffsets.g5xOffsets.at(m_activeOffsets.g5xOffsetIndex-1).v;
-        position.v += m_activeOffsets.toolOffset.v;
         position.v += newPosition.v();
     }
     if (newPosition.has_w()) {
         position.w = m_activeOffsets.g92Offset.w;
         position.w += m_activeOffsets.g5xOffsets.at(m_activeOffsets.g5xOffsetIndex-1).w;
-        position.w += m_activeOffsets.toolOffset.w;
         position.w += newPosition.w();
     }
 
