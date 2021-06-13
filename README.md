@@ -2,9 +2,9 @@
 
 A remote UI implementation for [Machinekit](https://github.com/machinekit/machinekit) written in Qt/C++/QML. <a href="#contents">More info...</a>
 
-|   |  Travis CI | AppVeyor |
-|----------|:----:|:----:|
-| Build Status | [![Build Status](https://api.travis-ci.org/machinekit/QtQuickVcp.svg?branch=master)](http://travis-ci.org/machinekit/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/h8pi1hm0gj15nmgm?svg=true)](https://ci.appveyor.com/project/machinekoder/qtquickvcp) |
+|   |  Travis CI | AppVeyor | Github Actions |
+|----------|:----:|:----:|:----:|
+| Build Status | [![Build Status](https://api.travis-ci.org/machinekit/QtQuickVcp.svg?branch=master)](http://travis-ci.org/machinekit/QtQuickVcp) | [![Build Status](https://ci.appveyor.com/api/projects/status/h8pi1hm0gj15nmgm?svg=true)](https://ci.appveyor.com/project/machinekoder/qtquickvcp) | [![Build Status](https://github.com/machinekit/QtQuickVcp/actions/workflows/builder-workflow.yaml/badge.svg)](https://github.com/machinekit/QtQuickVcp/actions) |
 
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/10524/badge.svg)](https://scan.coverity.com/projects/qtquickvcp-qtquickvcp)
 
@@ -36,13 +36,13 @@ The MachinekitClient is available in following app stores:
 ### Rolling releases
 You can find rolling releases of the MachinekitClient and the QtQuickVcp library below. Stable releases have been dropped in favor of continuous deployment to decrease maintenance effort.
 
-| Operating System   |  MachinekitClient  | QtQuickVcp |
-|----------|:-------------:|:----:|
-| Windows 64bit  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64-signed/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x64-signed/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x64/_latestVersion#files) |
-| Windows 32bit  |  [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86-signed/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Windows-master-x86-signed/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Windows-master-x86/_latestVersion#files) |
-| Linux 64bit    | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Linux-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Linux-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Linux-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Linux-master-x64/_latestVersion#files) |
-| Mac OS X 64bit | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-MacOSX-master-x64/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-MacOSX-master-x64/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-MacOSX-master-x64/_latestVersion#files) |
-| Android armv7  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/_latestVersion#files) | [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Android-master-armv7/_latestVersion#files) |
+| Operating System   |  MachinekitClient and QtQuickVcp |
+|----------|:-----------------:|
+| Windows 64bit  | [ ![GitHub release (latest by date)](https://img.shields.io/github/v/release/machinekit/QtQuickVcp?label=x64%20zip&logo=github&style=for-the-badge) ](https://github.com/machinekit/QtQuickVcp/releases/latest) |
+| Windows 32bit  | [ ![GitHub release (latest by date)](https://img.shields.io/github/v/release/machinekit/QtQuickVcp?label=x86%20zip&logo=github&style=for-the-badge) ](https://github.com/machinekit/QtQuickVcp/releases/latest) |
+| Linux 64bit    | [ ![GitHub release (latest by date)](https://img.shields.io/github/v/release/machinekit/QtQuickVcp?label=x64&logo=github&style=for-the-badge) ](https://github.com/machinekit/QtQuickVcp/releases/latest) |
+| macOS 64bit    | [ ![GitHub release (latest by date)](https://img.shields.io/github/v/release/machinekit/QtQuickVcp?label=x64&logo=github&style=for-the-badge) ](https://github.com/machinekit/QtQuickVcp/releases/latest) |
+| Android armv7  | [ ![Download](https://api.bintray.com/packages/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/MachinekitClient-Development/MachinekitClient_Development-Android-master-armv7/_latestVersion#files) [ ![Download](https://api.bintray.com/packages/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Android-master-armv7/images/download.svg) ](https://bintray.com/machinekoder/QtQuickVcp-Development/QtQuickVcp_Development-Android-master-armv7/_latestVersion#files) |
 
 **QtQuickVcp direct download links**
 

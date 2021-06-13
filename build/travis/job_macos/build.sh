@@ -4,7 +4,7 @@ set -e
 set -x
 
 # do not build mac for PR
-if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+if [ ! -z "${TRAVIS_PULL_REQUEST}" ] && [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
   exit 0
 fi
 
@@ -88,21 +88,21 @@ if [ "${upload}" != "true" ]; then
     fi
     platform=x64
     # skip pull requests
-    if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+    if [ ! -z "${TRAVIS_PULL_REQUEST}" ] && [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
         upload=
     fi
 fi
 
 if [ "${upload}" ]; then
     # rename binaries
-    # and upload dmg to Bintray
     if [ $release -eq 1 ]; then
         target="QtQuickVcp"
     else
         target="QtQuickVcp_Development"
     fi
     mv build.release/QtQuickVcp.tar.gz ${target}-${version}-MacOSX-${platform}.tar.gz
-    ./build/travis/job_macos/bintray_lib.sh ${target}-${version}*.tar.gz
+    # and upload dmg to Bintray
+    # ./build/travis/job_macos/bintray_lib.sh ${target}-${version}*.tar.gz
 
     if [ $release -eq 1 ]; then
         target="MachinekitClient"
@@ -110,7 +110,7 @@ if [ "${upload}" ]; then
         target="MachinekitClient_Development"
     fi
     mv build.release/MachinekitClient.dmg ${target}-${version}-${platform}.dmg
-    ./build/travis/job_macos/bintray_app.sh ${target}*.dmg
+    # ./build/travis/job_macos/bintray_app.sh ${target}*.dmg
 else
   echo "On branch '$branch' so dmg will not be uploaded." >&2
 fi

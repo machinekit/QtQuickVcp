@@ -1,0 +1,62 @@
+name: build Linux/macOS
+
+on:
+  push:
+    branches:
+    - '**'
+    tags-ignore:
+    - '*'
+
+jobs:
+  buildTest_x64:
+    name: Test_x64
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Install extra packages
+      run: |
+        sudo apt-get update        
+        sudo apt-get install bsdtar
+    - run: ./build/travis/job1_Test/build.sh --x86_64
+
+  buildAppImage_x64:
+    name: AppImage_x64
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Install extra packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install bsdtar
+    - run: ./build/travis/job2_AppImage/build.sh --x86_64
+    - name: Release
+      run: ./build/github/release.sh "$APP" "$LIB" "Linux 64bit"
+      env:
+        APP: '*x64.AppImage'
+        LIB: '*x64.tar.gz'
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  buildMacOS:
+    name: macOS
+    runs-on: macos-10.15
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - run: echo "QT_SHORT_VERSION=5.8" >> $GITHUB_ENV
+    - run: echo "QT_LONG_VERSION=5.8.0" >> $GITHUB_ENV
+    - run: echo "QT_INSTALLER_ROOT=qt-opensource-mac-x64-clang-${QT_LONG_VERSION}" >> $GITHUB_ENV
+    - run: echo "QT_INSTALLER_FILENAME=${QT_INSTALLER_ROOT}.dmg" >> $GITHUB_ENV
+    - run: echo "QT_PATH=$HOME/qt" >> $GITHUB_ENV
+    - run: echo "QT_MACOS=$QT_PATH/$QT_SHORT_VERSION/clang_64" >> $GITHUB_ENV
+    - run: echo "$QT_MACOS/bin" >> $GITHUB_PATH
+    - run: echo "/usr/local/opt/gnu-tar/libexec/gnubin" >> $GITHUB_PATH
+    - run: ./build/travis/job_macos/install.sh
+    - run: ./build/travis/job_macos/build.sh
+    - name: Release
+      run: ./build/github/release.sh "$APP" "$LIB" "macOS 64bit"
+      env:
+        APP: '*x64.dmg'
+        LIB: '*x64.tar.gz'
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

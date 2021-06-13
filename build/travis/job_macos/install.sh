@@ -3,7 +3,7 @@
 set -x
 
 # do not build mac for PR
-if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+if [ ! -z "${TRAVIS_PULL_REQUEST}" ] && [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
   exit 0
 fi
 
@@ -21,14 +21,14 @@ fi
 
 brew update
 brew install libtool automake autoconf pkg-config bash coreutils
-brew install gnu-sed --with-default-names
+brew install gnu-sed
 
 # install zeromq
 git clone https://github.com/zeromq/zeromq4-x.git
 cd zeromq4-x
 git checkout v4.0.8
 sh autogen.sh
-./configure --disable-static --enable-shared --prefix=/opt/local CC=clang CXX=clang++ CFLAGS="-arch x86_64" CXXFLAGS="-std=c++11 -stdlib=libstdc++ -O3 -arch x86_64" LDFLAGS="-stdlib=libstdc++"
+./configure --disable-static --enable-shared --prefix=/opt/local CC=clang CXX=clang CFLAGS="-arch x86_64" CXXFLAGS="-std=c++11 -stdlib=libc++ -O3 -arch x86_64" LDFLAGS="-stdlib=libc++"
 make
 sudo make install
 cd ..
@@ -76,7 +76,7 @@ echo "QT_LONG_VERSION QT_LONG_VERSION"
 if [[ "$QMAKE_VERSION" != "${QT_LONG_VERSION}" ]]; then
   rm -rf $QT_PATH
   echo "Downloading Qt"
-  wget -c --no-check-certificate -nv https://download.qt.io/archive/qt/${QT_SHORT_VERSION}/${QT_LONG_VERSION}/${QT_INSTALLER_FILENAME}
+  wget -c --no-check-certificate -nv https://download.qt.io/new_archive/qt/${QT_SHORT_VERSION}/${QT_LONG_VERSION}/${QT_INSTALLER_FILENAME}
   hdiutil mount ${QT_INSTALLER_FILENAME}
   cp -rf /Volumes/${QT_INSTALLER_ROOT}/${QT_INSTALLER_ROOT}.app $HOME/${QT_INSTALLER_ROOT}.app
   QT_INSTALLER_EXE=$HOME/${QT_INSTALLER_ROOT}.app/Contents/MacOS/${QT_INSTALLER_ROOT}
