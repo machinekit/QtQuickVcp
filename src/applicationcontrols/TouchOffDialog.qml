@@ -34,6 +34,7 @@ Dialog {
     property int axis: 0
     property var axisNames: helper.ready ? helper.axisNamesUpper : ["X", "Y", "Z"]
     property var _axisNames: helper.ready ? helper.axisNames : ["x", "y", "z"]
+    property int _index: helper.ready ? helper.axisIndices.indexOf(axis) : 0
 
     property bool _ready: status.synced && command.connected
     property bool _done: true
@@ -56,10 +57,10 @@ Dialog {
             if (status.task.taskMode !== ApplicationStatus.TaskModeMdi) {
                 command.setTaskMode('execute', ApplicationCommand.TaskModeMdi);
             }
-            var axisName = _axisNames[axis];
+            var axisName = _axisNames[_index];
             var position = status.motion.position[axisName] - status.motion.g92Offset[axisName] - status.io.toolOffset[axisName];
             var newOffset = (position - coordinateSpin.value);
-            var mdi = "G10 L2 P" + (coordinateSystemCombo.currentIndex + 1) + " " + axisNames[axis] + newOffset.toFixed(6);
+            var mdi = "G10 L2 P" + (coordinateSystemCombo.currentIndex + 1) + " " + axisNames[_index] + newOffset.toFixed(6);
             command.executeMdi('execute', mdi);
         }
 
@@ -69,7 +70,7 @@ Dialog {
     ColumnLayout {
         anchors.fill: parent
         Label {
-            text: qsTr("Enter %1 coordinate relative to workpiece:").arg(dialog.axisNames[dialog.axis])
+            text: qsTr("Enter %1 coordinate relative to workpiece:").arg(dialog.axisNames[dialog._index])
         }
         SpinBox {
             id: coordinateSpin
