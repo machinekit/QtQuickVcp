@@ -26,6 +26,10 @@
         <source>All files (*)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Text files (*.txt)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ApplicationProgressBar</name>

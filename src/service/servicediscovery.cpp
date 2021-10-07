@@ -32,7 +32,7 @@ namespace qtquickvcp {
 /*!
     \qmltype ServiceDiscovery
     \instantiates QServiceDiscovery
-    \inqmlmodule Machinekit.HalRemote
+    \inqmlmodule Machinekit.Service
     \brief Service discovery component
     \ingroup halremote
 
@@ -1070,7 +1070,7 @@ void ServiceDiscovery::resultsReady(int id, const QJDns::Response &results)
             m_queryIdTypeMap.remove(id);
             m_queryIdItemMap.remove(id);
 
-            for (const QString &string: r.texts)
+            for (const QByteArray &string: r.texts)
             {
                 txtRecords.append(string);
             }

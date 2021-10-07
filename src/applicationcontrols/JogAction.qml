@@ -39,6 +39,7 @@ ApplicationAction {
         if (status.task.taskMode !== ApplicationStatus.TaskModeManual) {
             command.setTaskMode('execute', ApplicationCommand.TaskModeManual);
         }
+        command.setTeleopEnabled(true);
         if (velocity !== 0.0) {
             if (distance === 0.0) {
                 command.jog(ApplicationCommand.ContinuousJog, axis, velocity);

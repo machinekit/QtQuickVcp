@@ -35,6 +35,10 @@
         <source>Open File</source>
         <translation>Datei öffnen</translation>
     </message>
+    <message>
+        <source>Text files (*.txt)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ApplicationProgressBar</name>

@@ -149,7 +149,7 @@ Service::Service(QObject *parent) :
     QObject(parent),
     m_type(""),
     m_domain("local"),
-    m_baseType("machinekit"),
+    m_baseType("machinetalk"),
     m_protocol("tcp"),
     m_name(""),
     m_uri(""),

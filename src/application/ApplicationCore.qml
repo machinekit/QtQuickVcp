@@ -125,7 +125,7 @@ Item {
     Service {
         id: fileService
         type: "file"
-        required: true
+        required: false
     }
 
     ApplicationStatus {

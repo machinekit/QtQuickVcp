@@ -21,11 +21,11 @@
 ****************************************************************************/
 #ifndef DEBUGHELPER_H
 #define DEBUGHELPER_H
-
+#define QT_DEBUG 1
 #ifdef QT_DEBUG
 #include <QDebug>
 
-const int debugLevel = 3;
+const int debugLevel = 2;
 
 #define DEBUG(l, x) if (debugLevel >= l) qDebug() << x;
 #define DEBUG_TAG(l, tag, x) if (debugLevel >= l) qDebug() << "[" << tag << "]" << x;

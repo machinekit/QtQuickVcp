@@ -30,7 +30,7 @@ Item {
     Connections {
         target: configService
         ignoreUnknownSignals: true
-        onReadyChanged: _evaluateAutoSelection()
+        function onReadyChanged() {_evaluateAutoSelection()}
     }
 
     Label {
