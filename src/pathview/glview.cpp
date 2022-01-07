@@ -1461,10 +1461,10 @@ void *GLView::arc(float x, float y, float radius, float startAngle, float endAng
     float startY = 0.0f;
     float totalAngle;
 
-    if (anticlockwise && (startAngle > endAngle)) {
+    if (anticlockwise && (startAngle >= endAngle)) {
         totalAngle = std::fabs(endAngle - (startAngle - 2.0f * PI_F));
     }
-    else if (!anticlockwise && (startAngle < endAngle)) {
+    else if (!anticlockwise && (startAngle <= endAngle)) {
         totalAngle = std::fabs(endAngle - (startAngle + 2.0f * PI_F));
     }
     else {
