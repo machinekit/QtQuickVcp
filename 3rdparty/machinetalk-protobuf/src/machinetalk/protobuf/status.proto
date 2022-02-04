@@ -33,6 +33,7 @@ enum EmcInterpStateType {
     EMC_TASK_INTERP_READING = 2;  /// Task interpreter is reading.
     EMC_TASK_INTERP_PAUSED  = 3;  /// Task interpreter is paused.
     EMC_TASK_INTERP_WAITING = 4;  /// Task interpreter is waiting.
+    EMC_TASK_INTERP_SEEKING = 5;  /// Task interpreter is seeking.
 }
 
 /**
@@ -130,6 +131,14 @@ enum EmcAxisType {
 }
 
 /**
+ * Joint types.
+ */
+enum EmcJointType {
+    EMC_JOINT_LINEAR     = 1;  /// Joint is using linear units.
+    EMC_JOINT_ANGULAR    = 2;  /// Joint is using angular units.
+}
+
+/**
  * Position offset types.
  */
 enum EmcPositionOffsetType {
@@ -217,6 +226,68 @@ message EmcStatusConfigAxis {
     optional double         max_acceleration    = 10; /// Maximum acceleration. Reflects [AXIS_N]MAX_ACCELERATION
     optional double         max_velocity        = 11; /// Maximum velocity. Reflects [AXIS_N]MAX_VELOCITY
     optional string         increments          = 12; /// Axis increments space separated.Reflects [AXIS_N]INCREMENTS or [DISPLAY]INCREMENTS
+}
+
+/**
+ * Stores per joint information from motion.
+ */
+message EmcStatusMotionJoint {
+
+    option (nanopb_msgopt).msgid = 1118;
+
+    required int32          index           = 1;  /// Joint index.
+    optional bool           enabled         = 2;  /// Joint is enabled.
+    optional bool           fault           = 3;  /// Joint amp fault.
+    optional double         ferror_current  = 4;  /// Current following error.
+    optional double         ferror_highmark = 5;  /// Magnitude of maximum following error.
+    optional bool           homed           = 6;  /// Joint has been homed.
+    optional bool           homing          = 7;  /// Homing currently progress.
+    optional bool           inpos           = 8;  /// Joint is in position.
+    optional double         input           = 9;  /// Current input position.
+    optional bool           max_hard_limit  = 10; /// Maximum hard limit exceeded.
+    optional bool           max_soft_limit  = 11; /// Maximum position limit was exceeded.
+    optional bool           min_hard_limit  = 12; /// Minimum hard limit was exceeded.
+    optional bool           min_soft_limit  = 13; /// Minimum position limit was exceeded.
+    optional double         output          = 14; /// Commanded output position.
+    optional bool           override_limits = 15; /// Limits are overridden.
+    optional double         velocity        = 16; /// Current velocity.
+}
+
+/**
+ * Stores per joint information from configuration.
+ */
+message EmcStatusConfigJoint {
+
+    option (nanopb_msgopt).msgid = 1119;
+
+    required int32          index               = 1;  /// Joint index.
+    optional EmcJointType   joint_type          = 2;  /// Type of joint. Reflects [JOINT_N]TYPE
+    optional double         backlash            = 3;  /// Joint backlash. Reflects [JOINT_N]BACKLASH
+    optional double         max_ferror          = 4;  /// Maximum following error. Reflects [JOINT_N]FERROR
+    optional double         max_position_limit  = 5;  /// Maximum position limit. Reflects [JOINT_N]MAX_LIMIT
+    optional double         min_ferror          = 6;  /// Minimum following error.
+    optional double         min_position_limit  = 7;  /// Minimum position limit. Reflects [AXIS_N]MIN_LIMIT
+}
+
+
+/**
+ * Stores per joint information from configuration.
+ */
+message EmcStatusMotionSpindle {
+
+    option (nanopb_msgopt).msgid = 1120;
+
+    required int32          index               = 1;  /// Spindle index.
+    optional bool           brake               = 2;  /// Spindle braked.
+    optional int32          direction           = 3;  /// Rotational direction of the spindle. forward=1, reverse=-1.
+    optional bool           enabled             = 4;  /// Spindle enabled.
+    optional bool           override_enabled    = 5;  /// Spindle override is enabled.
+    optional double         speed               = 6;  /// Spindle speed value in rpm. > 0 is clockwise, < 0 is counterclockwise
+    optional bool           homed               = 7;  /// Spindle is homed.
+    optional bool           orient_fault        = 8;  /// Spindle orientation faulted.
+    optional bool           orient_state        = 9;  /// Spindle orientation running.
+    optional bool           increasing          = 10; /// Spindle speed increasing?
+    optional double         override            = 11; /// Spindle speed override scale.
 }
 
 /**
@@ -342,6 +413,10 @@ message EmcStatusConfig {
     optional string                     name                     = 37; /// Machine name. Reflects [EMC]MACHINE
     repeated EmcStatusUserCommand       user_command             = 38; /// List of user commands. Reflects [DISPLAY]USER_COMMAND
     optional EmcAngularUnitsType        angular_units            = 39; /// Angular machine units. Reflects [TRAJ]ANGULAR_UNITS
+    optional int32                      joints                   = 40; /// Number of joints. Reflects [TRAJ]JOINTS
+    repeated EmcStatusConfigJoint       joint                    = 41; /// Per joint configuration value
+    optional int32                      extrajoints              = 42; /// Number of extra joints (not used in kinematics);
+    optional int32                      spindles                 = 43; /// Number of spindles.
 }
 
 /**
@@ -400,6 +475,8 @@ message EmcStatusMotion {
     optional double                 max_velocity            = 48; /// Maximum velocity override.
     optional double                 max_acceleration        = 49; /// TODO remove
     optional double                 rapidrate               = 50; /// Current rapid override.
+    repeated EmcStatusMotionJoint   joint                   = 51; /// Per joint motion values.
+    repeated EmcStatusMotionSpindle spindle                 = 52; /// Per spindle motion values.
 }
 
 /**
@@ -444,6 +521,7 @@ message EmcStatusTask {
     optional int32                  task_paused         = 8;  /// Task paused.
     optional EmcTaskStateType       task_state          = 9;  /// Current task state.
     optional int32                  total_lines         = 10; /// Total number of lines of currently active program file.
+    optional int32                  call_level          = 11; /// Call level
 }
 
 /**

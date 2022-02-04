@@ -387,6 +387,9 @@ enum ContainerType {
     MT_FULL_UPDATE = 370;
     MT_INCREMENTAL_UPDATE = 371;
 
+    // generic cmd reply
+    MT_CMD_COMPLETE = 380;
+
     // task/client comms
     MT_TASK_REPLY     = 400;
     MT_TICKET_UPDATE  = 401;
@@ -697,6 +700,15 @@ enum ContainerType {
     MT_LAUNCHER_CALL = 12614;
     MT_LAUNCHER_SHUTDOWN = 12615;
     MT_LAUNCHER_SET = 12616;
+
+    // remote file
+    MT_FILE_GET     = 12700;
+    MT_FILE_PUT     = 12701;
+    MT_FILE_LS      = 12702;
+    MT_FILE_MKDIR   = 12703;
+    MT_FILE_DELETE  = 12704;
+    MT_FILE_DATA    = 12705;
+    MT_FILE_LISTING = 12706;
 }
 
 enum OriginIndex {
