@@ -22,6 +22,7 @@ SOURCES += \
     applicationdescription.cpp \
     applicationerror.cpp \
     applicationfile.cpp \
+    applicationfile2.cpp \
     applicationfileitem.cpp \
     applicationfilemodel.cpp \
     applicationlauncher.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     applicationdescription.h \
     applicationerror.h \
     applicationfile.h \
+    applicationfile2.h \
     applicationfileitem.h \
     applicationfilemodel.h \
     applicationlauncher.h \

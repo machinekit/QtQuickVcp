@@ -32,6 +32,7 @@ SOURCES += $$PWD/common/rpcclient.cpp \
            $$PWD/application/logservicebase.cpp \
            $$PWD/pathview/previewclientbase.cpp \
            $$PWD/pathview/previewsubscribe.cpp \
+           $$PWD/remotefile/filebase.cpp \
            $$PWD/machinetalkservice.cpp \
 
 HEADERS += $$PWD/common/rpcclient.h \
@@ -52,7 +53,8 @@ HEADERS += $$PWD/common/rpcclient.h \
            $$PWD/application/logservicebase.h \
            $$PWD/pathview/previewclientbase.h \
            $$PWD/pathview/previewsubscribe.h \
-           $$PWD/machinetalkservice.h \\
+           $$PWD/remotefile/filebase.h \
+           $$PWD/machinetalkservice.h \
            $$PWD/machinetalk_global.h
 
 include(../../paths.pri)
