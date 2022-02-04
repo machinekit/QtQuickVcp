@@ -21,9 +21,12 @@ message File {
 
     option (nanopb_msgopt).msgid = 200; // see README.msgid
 
-    required string       name          = 1; // flat for now
-    required FileContent  encoding      = 2;
-    optional bytes        blob          = 3;
+    required string       name          = 1;                   // file name or path, flat for now
+    required FileContent  encoding      = 2;                   // file encoding
+    optional bytes        blob          = 3 [default = ""];    // file data
+    optional uint32       size          = 4 [default = 0];     // file size
+    optional bool         is_dir        = 5 [default = false]; // indicates if file is actually a directo
+    optional uint64       last_modified = 6 [default = 0];     // timestamp of last modification
 }
 
 message Application {
@@ -77,4 +80,9 @@ message Launcher {
     optional string       workdir        = 12; // working dir of the command
     optional uint32       priority       = 13; // priority for sorting, smaller means lower priority
     optional uint32       importance     = 14; // importance set by the user, smaller means less important
+}
+
+// message for file service
+message FileServiceData {
+    repeated File  files           = 1; // list of files
 }

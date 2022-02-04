@@ -1,0 +1,26 @@
+syntax = "proto2";
+package machinetalk;
+
+// This message contains a Sample.
+// A sample is a value of a type.
+// A sample can contain a timestamp
+
+// see README.msgid
+// msgid base: 360
+
+import "machinetalk/protobuf/nanopb.proto";
+
+
+message Sample {
+    option (nanopb_msgopt).msgid = 361;
+
+    optional fixed64  timestamp = 1;
+    optional bytes    v_bytes   = 2;
+    optional sfixed32 v_int32   = 3;
+    optional sfixed64 v_int64   = 4;
+    optional fixed32  v_uint32  = 5;
+    optional fixed64  v_uint64  = 6;
+    optional double   v_double  = 7;
+    optional string   v_string  = 8 [(nanopb).max_size = 41];
+    optional bool     v_bool    = 9;
+}
