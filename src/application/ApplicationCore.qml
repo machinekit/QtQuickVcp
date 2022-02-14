@@ -27,7 +27,7 @@ import Machinekit.Application 1.0
 Item {
     property ApplicationStatus status: applicationStatus
     property ApplicationCommand command: applicationCommand
-    property ApplicationFile file: applicationFile
+    property QtObject file: applicationFile.ready ? applicationFile : applicationFile2
     property ApplicationError error: applicationError
     property ApplicationHelper helper: applicationHelper
     property ApplicationSettings settings: uiSettings
@@ -83,8 +83,8 @@ Item {
     }
 
     function _fileServiceError() {
-        if (file.error !== ApplicationFile.NoError) {
-            console.warn("file service error: " + file.errorString);
+        if (applicationCore.file.error !== ApplicationFile2.NoError) {
+            console.warn("file service error: " + applicationCore.file.errorString);
             file.clearError();  // ignore errors from FTP
         }
     }
@@ -125,6 +125,11 @@ Item {
     Service {
         id: fileService
         type: "file"
+        required: false
+    }
+    Service {
+        id: file2Service
+        type: "file2"
         required: false
     }
 
@@ -173,35 +178,47 @@ Item {
         }
     }
 
+    ApplicationFile2 {
+        id: applicationFile2
+        uri: file2Service.uri
+        ready: file2Service.ready
+
+        onUploadFinished: {
+            var extension = remoteFilePath.split('.').pop();
+            fileSyncHandler.ignoreNextChange =  ["ngc", "txt"].indexOf(extension) != -1;
+            executeProgram(remoteFilePath);
+        }
+    }
+
     ApplicationFileSyncHandler {
         id: fileSyncHandler
-        ready: applicationFile.ready && applicationStatus.ready && applicationCommand.ready
+        ready: applicationCore.file.ready && applicationStatus.ready && applicationCommand.ready
         remoteFilePath: d.remoteFilePath
         remotePath: d.remotePath
         ignoreNextChange: false
 
         onStartFileDownload: {
-            applicationFile.remoteFilePath = filePath;
-            applicationFile.remotePath = remotePath;  // prevents race condition
-            applicationFile.startDownload();
+            applicationCore.file.remoteFilePath = filePath;
+            applicationCore.file.remotePath = remotePath;  // prevents race condition
+            applicationCore.file.startDownload();
         }
 
         onRemotePathChanged: {
             // need to set remotePath if file is going to be uploaded from local computer
-            applicationFile.remotePath = d.remotePath;
+            applicationCore.file.remotePath = d.remotePath;
         }
     }
 
     FileWatcher {
         id: fileWatcher
-        fileUrl: applicationFile.localFilePath
-        enabled: applicationFile.transferState === ApplicationFile.NoTransfer
+        fileUrl: applicationCore.file.localFilePath
+        enabled: applicationCore.file.transferState === ApplicationFile2.NoTransfer
         recursive: false
 
         onFileChanged: {
             // file changes when program is running would cause problems on execution
             if (status.synced && !status.running) {
-                applicationFile.startUpload();
+                applicationCore.file.startUpload();
             }
         }
     }

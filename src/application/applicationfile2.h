@@ -150,8 +150,8 @@ public slots:
     void cleanupFile();
 
 private slots:
-    void listingReceived(const machinetalk::Container &rx);
-    void fileDataReceived(const machinetalk::Container &rx);
+    void handleFileListingMessage(const machinetalk::Container &rx);
+    void handleFileDataMessage(const machinetalk::Container &rx);
     void setConnected();
     void clearConnected();
     void getCmdStarted();

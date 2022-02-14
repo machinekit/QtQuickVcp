@@ -28,6 +28,7 @@
 #include "applicationcommand.h"
 #include "applicationerror.h"
 #include "applicationfile.h"
+#include "applicationfile2.h"
 #include "applicationfilemodel.h"
 #include "applicationlauncher.h"
 #include "applicationplugins.h"
@@ -80,6 +81,7 @@ void MachinekitApplicationPlugin::registerTypes(const char *uri)
     qmlRegisterType<qtquickvcp::ApplicationCommand>(uri, 1, 0, "ApplicationCommand");
     qmlRegisterType<qtquickvcp::ApplicationError>(uri, 1, 0, "ApplicationError");
     qmlRegisterType<qtquickvcp::ApplicationFile>(uri, 1, 0, "ApplicationFile");
+    qmlRegisterType<qtquickvcp::ApplicationFile2>(uri, 1, 0, "ApplicationFile2");
     qmlRegisterType<qtquickvcp::ApplicationFileModel>(uri, 1, 0, "ApplicationFileModel");
     qmlRegisterType<qtquickvcp::ApplicationLauncher>(uri, 1, 0, "ApplicationLauncher");
     qmlRegisterType<qtquickvcp::LocalSettings>(uri, 1, 0, "LocalSettings");

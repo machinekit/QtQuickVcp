@@ -189,7 +189,7 @@ void ApplicationFile2::cleanupFile()
     m_file = nullptr;
 }
 
-void ApplicationFile2::listingReceived(const machinetalk::Container &rx)
+void ApplicationFile2::handleFileListingMessage(const machinetalk::Container &rx)
 {
     for (int i = 0; i < rx.file_service_data().files_size(); ++i)
     {
@@ -213,7 +213,7 @@ void ApplicationFile2::listingReceived(const machinetalk::Container &rx)
     emit refreshFinished();
 }
 
-void ApplicationFile2::fileDataReceived(const machinetalk::Container &rx)
+void ApplicationFile2::handleFileDataMessage(const machinetalk::Container &rx)
 {
     QByteArray data;
 
