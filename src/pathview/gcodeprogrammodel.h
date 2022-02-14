@@ -61,7 +61,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QHash<int, QByteArray> roleNames() const;
-    QLinkedList<PreviewItem> previewItems() const;
+    std::list<PreviewItem> previewItems() const;
 
 public slots:
     void prepareFile(const QString &fileName, int lineCount);
@@ -86,7 +86,7 @@ private:
 
     QList<GCodeProgramItem*> m_items;
     QHash<QString, FileIndex> m_fileIndices;
-    QLinkedList<PreviewItem> m_previewItems;
+    std::list<PreviewItem> m_previewItems;
 
     QVariant internalData(const QModelIndex &index, int role) const;
     bool internalSetData(const QModelIndex &index, const QVariant &value, int role);

@@ -163,7 +163,7 @@ bool FileWatcher::updateWatchedFile()
             newPaths.insert(it.filePath());
         }
 
-        return newPaths != QSet<QString>::fromList(files).unite(QSet<QString>::fromList(directories));
+        return newPaths != QSet<QString>(files.begin(), files.end()).unite(QSet<QString>(directories.begin(), directories.end()));
     }
     else if (QFile::exists(localFile)) {
         m_fileSystemWatcher.addPath(localFile);

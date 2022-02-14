@@ -136,7 +136,7 @@ public slots:
 
     QQmlListProperty<HalPin> pins()
     {
-        return QQmlListProperty<HalPin>(this, m_pins);
+        return QQmlListProperty<HalPin>(this, &m_pins);
     }
 
     void pinChange(QVariant value);

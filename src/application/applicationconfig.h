@@ -63,7 +63,7 @@ public:
 
     QQmlListProperty<ApplicationConfigItem> configs()
     {
-        return QQmlListProperty<ApplicationConfigItem>(this, m_configs);
+        return QQmlListProperty<ApplicationConfigItem>(this, &m_configs);
     }
     int appConfigCount() const
     {

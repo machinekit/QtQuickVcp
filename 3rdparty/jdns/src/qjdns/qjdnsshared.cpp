@@ -44,7 +44,7 @@ class SystemInfoCache
 {
 public:
 	QJDns::SystemInfo info;
-	QTime time;
+    QElapsedTimer time;
 };
 
 Q_GLOBAL_STATIC(QMutex, jdnsshared_mutex)
@@ -57,7 +57,7 @@ static QJDns::SystemInfo get_sys_info()
 
 	// cache info for 1/2 second, enough to prevent re-reading of sys
 	//   info 20 times because of all the different resolves
-	if(c->time.isNull() || c->time.elapsed() >= 500)
+    if(!c->time.isValid() || c->time.elapsed() >= 500)
 	{
 		c->info = QJDns::systemInfo();
 		c->time.start();
@@ -101,7 +101,7 @@ static bool matchRecordExceptTtl(const QJDns::Record &a, const QJDns::Record &b)
 static void getHex(unsigned char in, char *hi, char *lo)
 {
 	QString str;
-	str.sprintf("%02x", in);
+    str.asprintf("%02x", in);
 	*hi = str[0].toLatin1();
 	*lo = str[1].toLatin1();
 }

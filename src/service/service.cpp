@@ -191,7 +191,7 @@ Service::Service(QObject *parent) :
 
 QQmlListProperty<ServiceDiscoveryItem> Service::items()
 {
-    return QQmlListProperty<ServiceDiscoveryItem>(this, m_items);
+    return QQmlListProperty<ServiceDiscoveryItem>(this, &m_items);
 }
 
 int Service::itemCount() const
@@ -246,7 +246,7 @@ void Service::serviceQueryItemsUpdated(QQmlListProperty<ServiceDiscoveryItem> ne
 
 QQmlListProperty<ServiceDiscoveryQuery> Service::queries()
 {
-    return QQmlListProperty<ServiceDiscoveryQuery>(this, m_queries);
+    return QQmlListProperty<ServiceDiscoveryQuery>(this, &m_queries);
 }
 
 int Service::queriesCount() const

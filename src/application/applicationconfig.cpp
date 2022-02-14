@@ -195,7 +195,7 @@ void ApplicationConfig::handleDescribeApplicationMessage(const Container &rx)
             appConfigItem->setDescription(description);
             appConfigItem->setType(static_cast<ApplicationConfigItem::ApplicationType>(type));
             m_configs.append(appConfigItem);
-            emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
+            emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, &m_configs));
         }
     }
 }
@@ -305,7 +305,7 @@ void ApplicationConfig::unsyncConfig()
     emit syncedChanged(m_synced);
 
     m_configs.clear();
-    emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, m_configs));
+    emit configsChanged(QQmlListProperty<ApplicationConfigItem>(this, &m_configs));
 }
 
 void ApplicationConfig::selectConfig(const QString &name)
@@ -324,11 +324,11 @@ void ApplicationConfig::unselectConfig()
 {
     m_temporaryDir.release();
 
-    m_selectedConfig->setName(QStringLiteral(""));
-    m_selectedConfig->setDescription(QStringLiteral(""));
+    m_selectedConfig->setName(QLatin1String(""));
+    m_selectedConfig->setDescription(QLatin1String(""));
     m_selectedConfig->setFiles(QStringList());
-    m_selectedConfig->setMainFile(QUrl(QStringLiteral("")));
-    m_selectedConfig->setTranslationsPath(QUrl(QStringLiteral("")));
+    m_selectedConfig->setMainFile(QUrl(QLatin1String("")));
+    m_selectedConfig->setTranslationsPath(QUrl(QLatin1String("")));
     m_selectedConfig->setLoaded(false);
     m_selectedConfig->setLoading(false);
 }

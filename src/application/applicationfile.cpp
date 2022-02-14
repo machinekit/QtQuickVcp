@@ -391,9 +391,9 @@ void ApplicationFile::transferProgress(qint64 bytesSent, qint64 bytesTotal)
     emit progressChanged(m_progress);
 }
 
-void ApplicationFile::networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accesible)
+void ApplicationFile::networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accessible)
 {
-    if (accesible == QNetworkAccessManager::Accessible)
+    if (accessible == QNetworkAccessManager::Accessible)
     {
         initializeFtp();
     }

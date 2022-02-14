@@ -69,7 +69,7 @@ ServiceList::ServiceList(QObject *parent) :
 
 QQmlListProperty<Service> ServiceList::services()
 {
-    return QQmlListProperty<Service>(this, m_services);
+    return QQmlListProperty<Service>(this, &m_services);
 }
 
 int ServiceList::serviceCount() const

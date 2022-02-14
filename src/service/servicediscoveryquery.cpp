@@ -33,7 +33,7 @@ ServiceDiscoveryQuery::ServiceDiscoveryQuery(QObject *parent) : QObject(parent),
 
 QQmlListProperty<ServiceDiscoveryItem> ServiceDiscoveryQuery::items()
 {
-    return QQmlListProperty<ServiceDiscoveryItem>(this, m_items);
+    return QQmlListProperty<ServiceDiscoveryItem>(this, &m_items);
 }
 
 int ServiceDiscoveryQuery::itemCount() const

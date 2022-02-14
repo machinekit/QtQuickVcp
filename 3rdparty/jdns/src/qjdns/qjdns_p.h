@@ -86,7 +86,7 @@ public:
 	bool shutting_down;
 	SafeTimer stepTrigger, debugTrigger;
 	SafeTimer stepTimeout;
-	QTime clock;
+    QElapsedTimer clock;
 	QStringList debug_strings;
 	bool new_debug_strings;
 	int next_handle;

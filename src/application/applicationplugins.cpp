@@ -34,7 +34,7 @@ ApplicationPlugins::ApplicationPlugins(QObject *parent) :
 
 QQmlListProperty<ApplicationPluginItem> ApplicationPlugins::plugins()
 {
-    return QQmlListProperty<ApplicationPluginItem>(this, m_plugins);
+    return QQmlListProperty<ApplicationPluginItem>(this, &m_plugins);
 }
 
 int ApplicationPlugins::pluginCount() const
@@ -103,7 +103,7 @@ void ApplicationPlugins::updatePlugins()
         }
     }
 
-    emit pluginsChanged(QQmlListProperty<ApplicationPluginItem>(this, m_plugins));
+    emit pluginsChanged(QQmlListProperty<ApplicationPluginItem>(this, &m_plugins));
 }
 
 void ApplicationPlugins::clearPlugins()
@@ -111,6 +111,6 @@ void ApplicationPlugins::clearPlugins()
     qDeleteAll(m_plugins);
     m_plugins.clear();
 
-    emit pluginsChanged(QQmlListProperty<ApplicationPluginItem>(this, m_plugins));
+    emit pluginsChanged(QQmlListProperty<ApplicationPluginItem>(this, &m_plugins));
 }
 } // namespace qtquickvcp

@@ -704,7 +704,7 @@ void GLPathItem::processArcFeed(const Preview &preview)
     arcPathItem->movementType = FeedMove;
     arcPathItem->modelIndex = m_currentModelIndex;
     m_previewPathItems.append(arcPathItem);
-    m_modelPathMap.insertMulti(m_currentModelIndex, arcPathItem);   // mapping model index to the item
+    m_modelPathMap.insert(m_currentModelIndex, arcPathItem);   // mapping model index to the item
 
     m_currentPosition = newPosition;
     m_relativePosition = preview.pos();
@@ -884,11 +884,8 @@ void GLPathItem::drawPath()
     m_modelPathMap.clear();
     m_drawablePathMap.clear();
 
-    QLinkedList<GCodeProgramModel::PreviewItem> previewItems = m_model->previewItems();
-    QLinkedListIterator<GCodeProgramModel::PreviewItem> i(previewItems);
-    while (i.hasNext())
-    {
-        GCodeProgramModel::PreviewItem item = i.next();
+    std::list<GCodeProgramModel::PreviewItem> previewItems = m_model->previewItems();
+    for (const auto &item: previewItems) {
         m_currentModelIndex = item.modelIndex;
         processPreview(item.previewItem);
     }

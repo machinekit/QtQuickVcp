@@ -260,7 +260,7 @@ protected:
 
 private slots:
     void transferProgress(qint64 bytesSent, qint64 bytesTotal);
-    void networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accesible);
+    void networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accessible);
     void addToList(const QUrlInfo &urlInfo);
     void ftpCommandFinished(int, bool error);
 

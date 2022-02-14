@@ -144,7 +144,7 @@ void ApplicationStatus::syncStatus()
 void ApplicationStatus::unsyncStatus()
 {
     m_synced = false;
-    m_syncedChannels = 0;
+    m_syncedChannels = StatusChannels();
     emit syncedChanged(m_synced);
 }
 

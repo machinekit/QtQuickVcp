@@ -51,7 +51,7 @@ Qt::ItemFlags ApplicationFileModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
-        return 0;
+        return Qt::ItemFlags();
     }
     else
     {

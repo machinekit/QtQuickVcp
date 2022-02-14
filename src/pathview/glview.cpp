@@ -93,7 +93,7 @@ GLView::GLView(QQuickItem *parent)
     // queue this connection to prevent trigger on destruction
     connect(this, &GLView::childrenChanged,
             this, &GLView::updateChildren, Qt::QueuedConnection);
-    connect(m_propertySignalMapper, static_cast<void (QSignalMapper::*)(QObject *)>(&QSignalMapper::mapped),
+    connect(m_propertySignalMapper, static_cast<void (QSignalMapper::*)(QObject *)>(&QSignalMapper::mappedObject),
             this, &GLView::updateItem);
 
     setRenderTarget(QQuickPaintedItem::InvertedYFramebufferObject);
@@ -1063,7 +1063,7 @@ quint32 GLView::getSelection()
     for (const quint32 id: ids)
     {
         int count = 0;
-        qCount(ids.begin(), ids.end(), id, count);
+        count = std::count(ids.begin(), ids.end(), id);
         if (count > maxCount) {
             sortedIds.prepend(id);
             maxCount = count;
@@ -1154,7 +1154,7 @@ void GLView::prepare(GLItem *glItem)
 
 QQmlListProperty<GLItem> GLView::glItems()
 {
-    return QQmlListProperty<GLItem>(this, m_glItems);
+    return QQmlListProperty<GLItem>(this, &m_glItems);
 }
 
 int GLView::glItemCount() const

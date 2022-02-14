@@ -441,7 +441,7 @@ void ServiceDiscovery::unicastLookup()
 
 QQmlListProperty<ServiceList> ServiceDiscovery::serviceLists()
 {
-    return QQmlListProperty<ServiceList>(this, m_serviceLists);
+    return QQmlListProperty<ServiceList>(this, &m_serviceLists);
 }
 
 int ServiceDiscovery::serviceListCount() const
@@ -456,7 +456,7 @@ ServiceList *ServiceDiscovery::serviceList(int index) const
 
 QQmlListProperty<NameServer> ServiceDiscovery::nameServers()
 {
-    return QQmlListProperty<NameServer>(this, m_nameServers);
+    return QQmlListProperty<NameServer>(this, &m_nameServers);
 }
 
 int ServiceDiscovery::nameServerCount() const

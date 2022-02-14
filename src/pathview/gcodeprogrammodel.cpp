@@ -84,7 +84,7 @@ Qt::ItemFlags GCodeProgramModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
-        return 0;
+        return Qt::ItemFlags();
     }
     else
     {
@@ -110,7 +110,7 @@ QHash<int, QByteArray> GCodeProgramModel::roleNames() const
     return roles;
 }
 
-QLinkedList<GCodeProgramModel::PreviewItem> GCodeProgramModel::previewItems() const
+std::list<GCodeProgramModel::PreviewItem> GCodeProgramModel::previewItems() const
 {
     return m_previewItems;
 }
@@ -230,7 +230,7 @@ void GCodeProgramModel::addPreviewItem(const QModelIndex &index, const Preview &
     PreviewItem item;
     item.modelIndex = index;
     item.previewItem = previewItem;
-    m_previewItems.append(item);
+    m_previewItems.push_back(item);
 }
 
 QVariant GCodeProgramModel::data(const QString &fileName, int lineNumber, int role) const
