@@ -38,9 +38,10 @@ Loader {
     Connections {
         target: applicationLoader.item
         ignoreUnknownSignals: true
-        onServicesChanged: serviceDiscovery.updateServices()
-        onDisconnect: goBack(false)
-        onShutdown: goBack(true)
+
+        function onServicesChanged() { serviceDiscovery.updateServices() }
+        function onDisconnect() { goBack(false) }
+        function onShutdown() { goBack(true) }
     }
 }
 
