@@ -180,7 +180,7 @@ Item {
 
     ApplicationFile2 {
         id: applicationFile2
-        uri: file2Service.uri
+        file2Uri: file2Service.uri
         ready: file2Service.ready
 
         onUploadFinished: {

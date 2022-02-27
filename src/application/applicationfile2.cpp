@@ -2,17 +2,17 @@
 
 namespace qtquickvcp {
 
-ApplicationFile2::ApplicationFile2(QObject *parent):
-    machinetalk::remotefile::FileBase(parent),
-    m_connected(false),
-    m_remoteFilePath(""),
-    m_localFilePath(""),
-    m_remotePath(""),
-    m_localPath(""),
-    m_serverDirectory(""),
-    m_transferState(NoTransfer),
-    m_error(NoError),
-    m_file(nullptr)
+ApplicationFile2::ApplicationFile2(QObject* parent)
+    : machinetalk::remotefile::FileBase(parent)
+    , m_connected(false)
+    , m_remoteFilePath("")
+    , m_localFilePath("")
+    , m_remotePath("")
+    , m_localPath("")
+    , m_serverDirectory("")
+    , m_transferState(NoTransfer)
+    , m_error(NoError)
+    , m_file(nullptr)
 {
     m_localPath = generateTempPath();
 
@@ -33,15 +33,13 @@ void ApplicationFile2::startUpload()
     QString remoteFilePath;
     QString uploadFilePath;
 
-    if (!m_connected || (m_transferState != NoTransfer))
-    {
+    if (!m_connected || (m_transferState != NoTransfer)) {
         return;
     }
 
     // create the remote path to send to service
     remotePath = "";
-    if (!m_serverDirectory.isEmpty())
-    {
+    if (!m_serverDirectory.isEmpty()) {
         remotePath.append(m_serverDirectory);
     }
     uploadFilePath = QDir(remotePath).filePath(fileInfo.fileName());
@@ -53,18 +51,16 @@ void ApplicationFile2::startUpload()
     emit remoteFilePathChanged(m_remoteFilePath);
 
     m_file = new QFile(fileInfo.filePath(), this);
-    if (m_file->open(QIODevice::ReadOnly))
-    {
-        machinetalk::File *fileEntry =  m_tx.mutable_file_service_data()->add_files();
+    if (m_file->open(QIODevice::ReadOnly)) {
+        machinetalk::File* fileEntry = m_tx.mutable_file_service_data()->add_files();
 
         fileEntry->set_name(uploadFilePath.toStdString());
         fileEntry->set_blob(m_file->readAll().toStdString());
+        fileEntry->set_encoding(machinetalk::CLEARTEXT);
         this->sendFilePut(m_tx);
 
         updateError(NoError);
-    }
-    else
-    {
+    } else {
         updateState(Error);
         updateError(FileError); // TODO: , m_file->errorString()
     }
@@ -78,8 +74,7 @@ void ApplicationFile2::startDownload()
     QString remotePath;
     QString fileName;
 
-    if (!m_connected || (m_transferState != NoTransfer))
-    {
+    if (!m_connected || (m_transferState != NoTransfer)) {
         return;
     }
 
@@ -101,33 +96,36 @@ void ApplicationFile2::startDownload()
 
     QFileInfo fileInfo(localFilePath);
 
-    if (!dir.mkpath(fileInfo.absolutePath()))
-    {
+    if (!dir.mkpath(fileInfo.absolutePath())) {
         updateState(Error);
         updateError(FileError); // TODO: tr("Cannot create directory: %1").arg(fileInfo.absolutePath())
         return;
     }
 
     m_file = new QFile(localFilePath, this);
-    if (m_file->open(QIODevice::WriteOnly))
-    {
-        machinetalk::File *fileEntry =  m_tx.mutable_file_service_data()->add_files();
-        fileEntry->set_name(QString(m_serverDirectory + "/" + fileName).toStdString());
+    if (m_file->open(QIODevice::WriteOnly)) {
+
+        machinetalk::File* fileEntry = m_tx.mutable_file_service_data()->add_files();
+        if (m_serverDirectory.isEmpty()) {
+            fileEntry->set_name(fileName.toStdString());
+        } else {
+            fileEntry->set_name(QDir::cleanPath(m_serverDirectory + "/" + fileName).toStdString());
+        }
+        fileEntry->set_encoding(machinetalk::CLEARTEXT);
         this->sendFileGet(m_tx);
 
         updateError(NoError);
-    }
-    else
-    {
+        m_progress = 0.0;
+        emit progressChanged(m_progress);
+    } else {
         updateState(Error);
-        updateError(FileError); // TODO: , m_file->errorString()
+        updateError(FileError, m_file->errorString());
     }
 }
 
 void ApplicationFile2::refreshFiles()
 {
-    if (!m_connected || (m_transferState != NoTransfer))
-    {
+    if (!m_connected || (m_transferState != NoTransfer)) {
         return;
     }
 
@@ -137,31 +135,33 @@ void ApplicationFile2::refreshFiles()
     if (remotePath.indexOf("//") == 0) {
         remotePath = remotePath.mid(2);
     }
-    machinetalk::File *fileEntry =  m_tx.mutable_file_service_data()->add_files();
+    if (!remotePath.isEmpty()) {
+        remotePath = QDir::cleanPath(remotePath + "/" + m_serverDirectory);
+    }
+    machinetalk::File* fileEntry = m_tx.mutable_file_service_data()->add_files();
     fileEntry->set_name(remotePath.toStdString());
+    // TODO: use show hidden property
     this->sendFileLs(m_tx);
 }
 
-void ApplicationFile2::removeFile(const QString &name)
+void ApplicationFile2::removeFile(const QString& name)
 {
-    if (!m_connected || (m_transferState != NoTransfer))
-    {
+    if (!m_connected || (m_transferState != NoTransfer)) {
         return;
     }
 
-    machinetalk::File *fileEntry =  m_tx.mutable_file_service_data()->add_files();
+    machinetalk::File* fileEntry = m_tx.mutable_file_service_data()->add_files();
     fileEntry->set_name(name.toStdString());
     this->sendFileDelete(m_tx);
 }
 
-void ApplicationFile2::createDirectory(const QString &name)
+void ApplicationFile2::createDirectory(const QString& name)
 {
-    if (!m_connected || (m_transferState != NoTransfer))
-    {
+    if (!m_connected || (m_transferState != NoTransfer)) {
         return;
     }
 
-    machinetalk::File *fileEntry =  m_tx.mutable_file_service_data()->add_files();
+    machinetalk::File* fileEntry = m_tx.mutable_file_service_data()->add_files();
     fileEntry->set_name(name.toStdString());
     this->sendFileMkdir(m_tx);
 }
@@ -179,8 +179,7 @@ void ApplicationFile2::clearError()
 
 void ApplicationFile2::cleanupFile()
 {
-    if (m_file == nullptr)
-    {
+    if (m_file == nullptr) {
         return;
     }
 
@@ -189,19 +188,17 @@ void ApplicationFile2::cleanupFile()
     m_file = nullptr;
 }
 
-void ApplicationFile2::handleFileListingMessage(const machinetalk::Container &rx)
+void ApplicationFile2::handleFileListingMessage(const machinetalk::Container& rx)
 {
-    for (int i = 0; i < rx.file_service_data().files_size(); ++i)
-    {
-        const machinetalk::File &fileEntry = rx.file_service_data().files(i);
-        ApplicationFileItem *item;
+    for (int i = 0; i < rx.file_service_data().files_size(); ++i) {
+        const machinetalk::File& fileEntry = rx.file_service_data().files(i);
+        ApplicationFileItem* item;
         bool isDir;
 
         item = new ApplicationFileItem();
         isDir = fileEntry.is_dir();
         item->setDir(isDir);
-        if (!isDir)
-        {
+        if (!isDir) {
             item->setSize(static_cast<int>(fileEntry.size()));
         }
         item->setName(QString::fromStdString(fileEntry.name()));
@@ -213,28 +210,28 @@ void ApplicationFile2::handleFileListingMessage(const machinetalk::Container &rx
     emit refreshFinished();
 }
 
-void ApplicationFile2::handleFileDataMessage(const machinetalk::Container &rx)
+void ApplicationFile2::handleFileDataMessage(const machinetalk::Container& rx)
 {
     QByteArray data;
 
-    if (rx.file_service_data().files_size() == 0)
-    {
+    if (rx.file_service_data().files_size() == 0) {
         return;
     }
 
-    const machinetalk::File &fileEntry = rx.file_service_data().files(0);
+    const machinetalk::File& fileEntry = rx.file_service_data().files(0);
     data = QByteArray(fileEntry.blob().data(), static_cast<int>(fileEntry.blob().size()));
 
     m_file->write(data);
     cleanupFile();
 
     emit downloadFinished();
+    m_progress = 1.0; // TODO: implement file progress
+    emit progressChanged(m_progress);
 }
 
 QString ApplicationFile2::generateTempPath() const
 {
-    return QUrl::fromLocalFile(QString("%1/machinetalk-%2").arg(QDir::tempPath())
-                               .arg(QCoreApplication::applicationPid())).toString();
+    return QUrl::fromLocalFile(QString("%1/machinetalk-%2").arg(QDir::tempPath()).arg(QCoreApplication::applicationPid())).toString();
 }
 
 void ApplicationFile2::cleanupTempPath()
@@ -243,7 +240,7 @@ void ApplicationFile2::cleanupTempPath()
     dir.removeRecursively();
 }
 
-QString ApplicationFile2::applicationFilePath(const QString &fileName, const QString &serverDirectory) const
+QString ApplicationFile2::applicationFilePath(const QString& fileName, const QString& serverDirectory) const
 {
     return QDir(QUrl(m_localPath).toLocalFile() + "/" + serverDirectory).filePath(fileName);
 }
@@ -264,17 +261,20 @@ void ApplicationFile2::commandFailed()
 
 void ApplicationFile2::updateState(ApplicationFile2::TransferState state)
 {
-    if (state != m_transferState)
-    {
+    if (state != m_transferState) {
         m_transferState = state;
         emit transferStateChanged(m_transferState);
     }
 }
 
-void ApplicationFile2::updateError(ApplicationFile2::TransferError error)
+void ApplicationFile2::updateError(ApplicationFile2::TransferError error, const QString& errorString)
 {
-    if (m_error != error)
-    {
+    if (m_errorString != errorString) {
+        m_errorString = errorString;
+        emit errorStringChanged(m_errorString);
+    }
+
+    if (m_error != error) {
         m_error = error;
         emit errorChanged(m_error);
     }
@@ -375,6 +375,5 @@ void ApplicationFile2::deleteCmdFailed()
 {
     commandFailed();
 }
-
 
 } // namespace qtquickvcp

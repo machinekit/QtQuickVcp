@@ -36,6 +36,20 @@ Dialog {
             }
         }
 
+        function pathJoin(parts, sep){
+            const separator = sep || '/';
+            parts = parts.map((part, index)=>{
+                if (index) {
+                    part = part.replace(new RegExp('^' + separator), '');
+                }
+                if (index !== parts.length - 1) {
+                    part = part.replace(new RegExp(separator + '$'), '');
+                }
+                return part;
+            })
+            return parts.join(separator);
+         }
+
         function folderUp(folder) {
             var pos = folder.lastIndexOf("/", folder.length-2);
             if (pos > -1) {
@@ -58,7 +72,7 @@ Dialog {
             var fileName = tableView.model.getName(row);
             if (dir) {
                 if (currentFolder !== "") {
-                    d.currentFolder += "/" + fileName;
+                    d.currentFolder = pathJoin([d.currentFolder, fileName], "/");
                 }
                 else {
                     d.currentFolder = fileName;
@@ -67,7 +81,7 @@ Dialog {
                 deselectRow();
             }
             else {
-                var newPath = file.remotePath + '/' + file.serverDirectory + '/' + fileName;
+                var newPath = pathJoin([file.remotePath, file.serverDirectory, fileName], "/");
                 core.executeProgram(newPath);
                 root.close();
             }
@@ -312,4 +326,3 @@ Dialog {
         }
     }
 }
-

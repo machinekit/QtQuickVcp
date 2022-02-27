@@ -1,21 +1,19 @@
 #ifndef APPLICATIONFILE2_H
 #define APPLICATIONFILE2_H
-#include <QObject>
-#include <QDir>
-#include <QUrl>
-#include <QFileInfo>
-#include <QFile>
-#include <QCoreApplication>
-#include <machinetalk/protobuf/message.pb.h>
-#include <machinetalk/protobuf/config.pb.h>
-#include <remotefile/filebase.h>
 #include "applicationfilemodel.h"
+#include <QCoreApplication>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QObject>
+#include <QUrl>
+#include <machinetalk/protobuf/config.pb.h>
+#include <machinetalk/protobuf/message.pb.h>
+#include <remotefile/filebase.h>
 
 namespace qtquickvcp {
 
-
-class ApplicationFile2 : public machinetalk::remotefile::FileBase
-{
+class ApplicationFile2 : public machinetalk::remotefile::FileBase {
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
     Q_PROPERTY(QString remoteFilePath READ remoteFilePath WRITE setRemoteFilePath NOTIFY remoteFilePathChanged)
@@ -25,11 +23,14 @@ class ApplicationFile2 : public machinetalk::remotefile::FileBase
     Q_PROPERTY(QString serverDirectory READ serverDirectory WRITE setServerDirectory NOTIFY serverDirectoryChanged)
     Q_PROPERTY(TransferState transferState READ transferState NOTIFY transferStateChanged)
     Q_PROPERTY(TransferError error READ error NOTIFY errorChanged)
-    Q_PROPERTY(ApplicationFileModel *model READ model NOTIFY modelChanged)
+    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
+    Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
+    Q_PROPERTY(ApplicationFileModel* model READ model NOTIFY modelChanged)
+    Q_PROPERTY(bool showHidden READ showHidden WRITE setShowHidden NOTIFY showHiddenChanged)
     Q_ENUMS(TransferState TransferError)
 
 public:
-    explicit ApplicationFile2(QObject *parent = nullptr);
+    explicit ApplicationFile2(QObject* parent = nullptr);
     ~ApplicationFile2();
 
     enum TransferState {
@@ -89,9 +90,24 @@ public:
         return m_error;
     }
 
-    ApplicationFileModel * model() const
+    ApplicationFileModel* model() const
     {
         return m_model;
+    }
+
+    QString errorString() const
+    {
+        return m_errorString;
+    }
+
+    double progress() const
+    {
+        return m_progress;
+    }
+
+    bool showHidden() const
+    {
+        return m_showHidden;
     }
 
 public slots:
@@ -140,18 +156,27 @@ public slots:
         emit serverDirectoryChanged(serverDirectory);
     }
 
+    void setShowHidden(bool showHidden)
+    {
+        if (m_showHidden == showHidden)
+            return;
+
+        m_showHidden = showHidden;
+        emit showHiddenChanged(m_showHidden);
+    }
+
     void startUpload();
     void startDownload();
     void refreshFiles();
-    void removeFile(const QString &name);
-    void createDirectory(const QString &name);
+    void removeFile(const QString& name);
+    void createDirectory(const QString& name);
     void abort();
     void clearError();
     void cleanupFile();
 
 private slots:
-    void handleFileListingMessage(const machinetalk::Container &rx);
-    void handleFileDataMessage(const machinetalk::Container &rx);
+    void handleFileListingMessage(const machinetalk::Container& rx);
+    void handleFileDataMessage(const machinetalk::Container& rx);
     void setConnected();
     void clearConnected();
     void getCmdStarted();
@@ -184,7 +209,13 @@ signals:
     void serverDirectoryChanged(QString serverDirectory);
     void transferStateChanged(TransferState transferState);
     void errorChanged(TransferError error);
-    void modelChanged(ApplicationFileModel * model);
+    void modelChanged(ApplicationFileModel* model);
+
+    void errorStringChanged(QString errorString);
+
+    void progressChanged(double progress);
+
+    void showHiddenChanged(bool showHidden);
 
 private:
     bool m_connected;
@@ -195,22 +226,25 @@ private:
     QString m_serverDirectory;
     TransferState m_transferState;
     TransferError m_error;
-    ApplicationFileModel * m_model;
+    ApplicationFileModel* m_model;
 
-    QFile *m_file;
+    QFile* m_file;
 
     // more efficient to reuse a protobuf Message
-    machinetalk::Container   m_tx;
+    machinetalk::Container m_tx;
 
     QString generateTempPath() const;
     void cleanupTempPath();
-    QString applicationFilePath(const QString &remoteFilePath, const QString &serverDirectory) const;
+    QString applicationFilePath(const QString& remoteFilePath, const QString& serverDirectory) const;
 
     void commandSucceded();
     void commandFailed();
     void updateState(TransferState state);
-    void updateError(TransferError error);
+    void updateError(TransferError error, const QString& errorString = QLatin1String(""));
 
+    QString m_errorString;
+    double m_progress;
+    bool m_showHidden;
 }; // class ApplicationFile2
 
 } // namespace qtquickvcp
